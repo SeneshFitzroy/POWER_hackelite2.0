@@ -239,6 +239,71 @@ const PharmacyPOSFirebaseIntegrated = () => {
     }
   };
 
+  // Open unit selection modal for medicine
+  const openUnitSelectionModal = (medicine) => {
+    setSelectedMedicineForUnit(medicine);
+    setSelectedUnitType('tablets'); // Default selection
+    setShowUnitSelectionModal(true);
+  };
+
+  // Handle unit selection and add to cart
+  const handleUnitSelectionAndAddToCart = () => {
+    if (!selectedMedicineForUnit) return;
+
+    const currentStock = getMedicineStock(selectedMedicineForUnit);
+    
+    if (!currentStock || currentStock <= 0) {
+      alert('This medicine is currently out of stock.');
+      setShowUnitSelectionModal(false);
+      return;
+    }
+
+    const existingItem = cart.find(item => item.id === selectedMedicineForUnit.id);
+    if (existingItem) {
+      const incrementValue = selectedUnitType === 'cards' ? 10 : 1;
+      if (existingItem.quantity + incrementValue > currentStock) {
+        alert(`Only ${currentStock} units available.`);
+        setShowUnitSelectionModal(false);
+        return;
+      }
+
+      setCart(cart.map(item =>
+        item.id === selectedMedicineForUnit.id
+          ? { ...item, quantity: item.quantity + incrementValue }
+          : item
+      ));
+      
+      // Update unit type
+      setCartItemUnits(prev => ({
+        ...prev,
+        [selectedMedicineForUnit.id]: selectedUnitType
+      }));
+    } else {
+      const initialQuantity = selectedUnitType === 'cards' ? 10 : 1;
+      if (initialQuantity > currentStock) {
+        alert(`Only ${currentStock} units available.`);
+        setShowUnitSelectionModal(false);
+        return;
+      }
+
+      setCart([...cart, { 
+        ...selectedMedicineForUnit, 
+        quantity: initialQuantity, 
+        stock: currentStock,
+        stockQuantity: currentStock
+      }]);
+      
+      // Set unit type
+      setCartItemUnits(prev => ({
+        ...prev,
+        [selectedMedicineForUnit.id]: selectedUnitType
+      }));
+    }
+
+    setShowUnitSelectionModal(false);
+    setSelectedMedicineForUnit(null);
+  };
+
   // Add to cart with stock validation
   const addToCart = (medicine) => {
     const currentStock = getMedicineStock(medicine);
@@ -779,7 +844,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 searchResults.map((medicine) => (
                   <ListItem
                     key={medicine.id}
-                    onClick={() => addToCart(medicine)}
+                    onClick={() => openUnitSelectionModal(medicine)}
                     sx={{
                       cursor: 'pointer',
                       backgroundColor: 'white',
@@ -1300,6 +1365,204 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 sx={{ background: '#1e40af', color: 'white' }}
               >
                 Print Receipt
+              </Button>
+            </Box>
+          </Box>
+        )}
+      </Dialog>
+
+      {/* UNIT SELECTION MODAL */}
+      <Dialog 
+        open={showUnitSelectionModal} 
+        onClose={() => setShowUnitSelectionModal(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            overflow: 'hidden'
+          }
+        }}
+      >
+        <Box sx={{ 
+          background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+          color: 'white',
+          p: 3,
+          textAlign: 'center'
+        }}>
+          <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
+            Select Unit Type
+          </Typography>
+          <Typography variant="body1" sx={{ opacity: 0.9 }}>
+            Choose how you want to add this medicine to cart
+          </Typography>
+        </Box>
+
+        {selectedMedicineForUnit && (
+          <Box sx={{ p: 4 }}>
+            {/* Medicine Information */}
+            <Box sx={{ 
+              backgroundColor: '#f8fafc', 
+              borderRadius: 2, 
+              p: 3, 
+              mb: 4,
+              border: '1px solid #e2e8f0'
+            }}>
+              <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 1 }}>
+                {selectedMedicineForUnit.name}
+              </Typography>
+              <Typography variant="body2" color="#6b7280" sx={{ mb: 2 }}>
+                {selectedMedicineForUnit.genericName} - {selectedMedicineForUnit.strength}
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6" sx={{ color: '#1e40af', fontWeight: 'bold' }}>
+                  {formatCurrency(selectedMedicineForUnit.sellingPrice)} per unit
+                </Typography>
+                <Chip 
+                  label={`Stock: ${getMedicineStock(selectedMedicineForUnit)}`}
+                  size="small"
+                  sx={{
+                    backgroundColor: '#dbeafe',
+                    color: '#1e40af',
+                    fontWeight: 'bold'
+                  }}
+                />
+              </Box>
+            </Box>
+
+            {/* Unit Selection */}
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Select Unit Type:
+            </Typography>
+
+            <RadioGroup
+              value={selectedUnitType}
+              onChange={(e) => setSelectedUnitType(e.target.value)}
+              sx={{ mb: 4 }}
+            >
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Paper
+                  sx={{
+                    p: 3,
+                    border: selectedUnitType === 'tablets' ? '2px solid #1e40af' : '2px solid #e5e7eb',
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      borderColor: '#1e40af',
+                      backgroundColor: '#f8fafc'
+                    }
+                  }}
+                  onClick={() => setSelectedUnitType('tablets')}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Radio
+                        value="tablets"
+                        checked={selectedUnitType === 'tablets'}
+                        sx={{ 
+                          color: '#1e40af',
+                          '&.Mui-checked': { color: '#1e40af' }
+                        }}
+                      />
+                      <Box sx={{ ml: 2 }}>
+                        <Typography variant="h6" fontWeight="bold" color="#1f2937">
+                          Individual Tablets/Capsules
+                        </Typography>
+                        <Typography variant="body2" color="#6b7280">
+                          Add one tablet/capsule at a time
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography variant="body1" fontWeight="bold" color="#1e40af">
+                        +1 unit
+                      </Typography>
+                      <Typography variant="body2" color="#6b7280">
+                        {formatCurrency(selectedMedicineForUnit.sellingPrice)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Paper>
+
+                <Paper
+                  sx={{
+                    p: 3,
+                    border: selectedUnitType === 'cards' ? '2px solid #1e40af' : '2px solid #e5e7eb',
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      borderColor: '#1e40af',
+                      backgroundColor: '#f8fafc'
+                    }
+                  }}
+                  onClick={() => setSelectedUnitType('cards')}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Radio
+                        value="cards"
+                        checked={selectedUnitType === 'cards'}
+                        sx={{ 
+                          color: '#1e40af',
+                          '&.Mui-checked': { color: '#1e40af' }
+                        }}
+                      />
+                      <Box sx={{ ml: 2 }}>
+                        <Typography variant="h6" fontWeight="bold" color="#1f2937">
+                          Full Card/Strip
+                        </Typography>
+                        <Typography variant="body2" color="#6b7280">
+                          Add a complete card (10 tablets/capsules)
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography variant="body1" fontWeight="bold" color="#1e40af">
+                        +10 units
+                      </Typography>
+                      <Typography variant="body2" color="#6b7280">
+                        {formatCurrency(selectedMedicineForUnit.sellingPrice * 10)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Paper>
+              </Box>
+            </RadioGroup>
+
+            {/* Action Buttons */}
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+              <Button
+                variant="outlined"
+                onClick={() => setShowUnitSelectionModal(false)}
+                sx={{ 
+                  borderColor: '#6b7280', 
+                  color: '#6b7280',
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 2,
+                  fontWeight: 'bold'
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleUnitSelectionAndAddToCart}
+                sx={{ 
+                  background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                  color: 'white',
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 2,
+                  fontWeight: 'bold',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)'
+                  }
+                }}
+              >
+                Add to Cart
               </Button>
             </Box>
           </Box>
