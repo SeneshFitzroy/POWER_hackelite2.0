@@ -197,8 +197,6 @@ const PharmacyPOSClean = () => {
         await medicineService.updateStock(item.id, -item.quantity);
       }
 
-      showAlert('Sale completed successfully!', 'success');
-      
       // Reset form
       setCart([]);
       setCashReceived(0);
