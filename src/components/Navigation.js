@@ -43,6 +43,26 @@ export default function Navigation() {
           CoreERP
         </Typography>
         
+        {/* Navigation Buttons */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+          <Button
+            color="inherit"
+            startIcon={<Dashboard />}
+            onClick={() => navigate('/dashboard')}
+            sx={{ mr: 2 }}
+          >
+            Dashboard
+          </Button>
+          <Button
+            color="inherit"
+            startIcon={<TrendingUp />}
+            onClick={() => navigate('/sales')}
+            sx={{ mr: 2 }}
+          >
+            Sales
+          </Button>
+        </Box>
+        
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography variant="body2" sx={{ mr: 2 }}>
             {user?.displayName || user?.email}
