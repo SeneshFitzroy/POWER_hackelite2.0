@@ -93,7 +93,15 @@ const PharmacyPOSComplete = () => {
       setLoading(true);
       
       // Load medicines
-      const medicineData = await medicineService.getAllMedicines();
+      let medicineData = await medicineService.getAllMedicines();
+      
+      // If no medicines found, initialize sample data
+      if (medicineData.length === 0) {
+        showAlert('No data found. Initializing sample data...', 'info');
+        await initializeSampleData();
+        medicineData = await medicineService.getAllMedicines();
+      }
+      
       setMedicines(medicineData);
       setSearchResults(medicineData.slice(0, 20));
       
