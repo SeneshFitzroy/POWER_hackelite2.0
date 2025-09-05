@@ -553,8 +553,21 @@ const PharmacyPOSComplete = () => {
             {/* Medicine Results */}
             <Box sx={{ flex: 1, overflow: 'auto' }}>
               {loading ? (
-                <Box sx={{ p: 3, textAlign: 'center' }}>
-                  <Typography>Loading medicines...</Typography>
+                <Box sx={{ 
+                  p: 4, 
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: '200px'
+                }}>
+                  <Typography variant="h6" color="primary" gutterBottom>
+                    ⏳ Loading medicines...
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Please wait while we fetch the pharmacy inventory
+                  </Typography>
                 </Box>
               ) : (
                 <List dense>
@@ -606,10 +619,34 @@ const PharmacyPOSComplete = () => {
                       </ListItem>
                     ))
                   ) : (
-                    <Box sx={{ p: 2, textAlign: 'center', minHeight: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Typography variant="body2" color="textSecondary">
-                        {searchTerm ? 'No medicines found for your search' : 'Use the search box above or click a quick category to find medicines'}
+                    <Box sx={{ 
+                      p: 3, 
+                      textAlign: 'center', 
+                      minHeight: '200px', 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      backgroundColor: '#fafafa',
+                      borderRadius: 2,
+                      margin: 2
+                    }}>
+                      <Typography variant="h6" color="textSecondary" gutterBottom>
+                        {searchTerm ? '🔍 No medicines found' : '💊 Ready to search'}
                       </Typography>
+                      <Typography variant="body2" color="textSecondary" sx={{ maxWidth: '300px', lineHeight: 1.6 }}>
+                        {searchTerm 
+                          ? `No results found for "${searchTerm}". Try a different search term or browse categories above.`
+                          : 'Use the search box above or click a quick category to find medicines in our pharmacy inventory.'
+                        }
+                      </Typography>
+                      {!searchTerm && (
+                        <Box sx={{ mt: 2 }}>
+                          <Typography variant="caption" color="primary" sx={{ fontWeight: 600 }}>
+                            💡 Try searching: "Panadol", "Antibiotics", or "Vitamins"
+                          </Typography>
+                        </Box>
+                      )}
                     </Box>
                   )}
                 </List>
