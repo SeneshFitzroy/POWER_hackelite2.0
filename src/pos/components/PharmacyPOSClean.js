@@ -39,6 +39,7 @@ const PharmacyPOSClean = () => {
   const [showCashBalance, setShowCashBalance] = useState(false);
   const [taxRate, setTaxRate] = useState(0.05); // 5% default tax
   const [invoiceNumber, setInvoiceNumber] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Helper functions
   const formatCurrency = (amount) => `LKR ${Number(amount).toFixed(2)}`;
@@ -57,6 +58,14 @@ const PharmacyPOSClean = () => {
   // Load initial data
   useEffect(() => {
     loadInitialData();
+  }, []);
+
+  // Update current time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
   const loadInitialData = async () => {
@@ -410,14 +419,14 @@ const PharmacyPOSClean = () => {
                 />
                 <TextField
                   label="Date"
-                  value={new Date().toLocaleDateString('en-CA')}
+                  value={currentTime.toLocaleDateString('en-CA')}
                   size="small"
                   InputProps={{ readOnly: true }}
                   sx={{ flex: 0.7 }}
                 />
                 <TextField
                   label="Time"
-                  value={new Date().toLocaleTimeString('en-GB', { hour12: false })}
+                  value={currentTime.toLocaleTimeString('en-GB', { hour12: false })}
                   size="small"
                   InputProps={{ readOnly: true }}
                   sx={{ flex: 0.7 }}
