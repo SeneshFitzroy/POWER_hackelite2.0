@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
-  Grid2 as Grid,
+  Grid,
   Paper,
   Typography,
   TextField,
@@ -434,7 +434,7 @@ const PharmacyPOSComplete = () => {
 
       <Grid container sx={{ flex: 1, p: 2, gap: 2 }}>
         {/* Left Panel - Medicine Search & Categories */}
-        <Grid xs={12} md={6}>
+        <Grid item xs={12} md={6}>
           <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Search */}
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
