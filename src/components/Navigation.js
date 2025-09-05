@@ -10,11 +10,13 @@ import {
   MenuItem,
   Avatar
 } from '@mui/material';
-import { AccountCircle, ExitToApp } from '@mui/icons-material';
+import { AccountCircle, ExitToApp, Dashboard, TrendingUp } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Navigation() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenu = (event) => {
