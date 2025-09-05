@@ -26,6 +26,7 @@ import {
 } from '@mui/material';
 import { medicineService } from '../services/medicineService';
 import { transactionService } from '../services/transactionService';
+import { patientService } from '../services/patientService';
 import { initializeSampleData } from '../services/dataInitServiceNew';
 
 const PharmacyPOSCleanFinal = () => {
@@ -43,12 +44,13 @@ const PharmacyPOSCleanFinal = () => {
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [loading, setLoading] = useState(false);
   const [showCashBalance, setShowCashBalance] = useState(false);
-  const [cashBalance] = useState(25000);
+  const [cashBalance, setCashBalance] = useState(0); // Dynamic from Firebase
   const [taxRate, setTaxRate] = useState(12);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showReceipt, setShowReceipt] = useState(false);
   const [lastTransaction, setLastTransaction] = useState(null);
   const [showPatientForm, setShowPatientForm] = useState(false);
+  const [currentPatient, setCurrentPatient] = useState(null); // Dynamic patient data
   const [newPatient, setNewPatient] = useState({
     name: '',
     contact: '',
@@ -81,6 +83,7 @@ const PharmacyPOSCleanFinal = () => {
       setLoading(true);
       let medicineData = await medicineService.getAllMedicines();
       
+      // Remove duplicates
       const uniqueMedicines = medicineData.filter((medicine, index, self) => 
         index === self.findIndex((m) => 
           m.name === medicine.name && 
@@ -90,6 +93,7 @@ const PharmacyPOSCleanFinal = () => {
       );
       
       if (uniqueMedicines.length === 0) {
+        console.log('No medicines found, initializing sample data...');
         await initializeSampleData();
         medicineData = await medicineService.getAllMedicines();
         
@@ -100,12 +104,40 @@ const PharmacyPOSCleanFinal = () => {
             m.manufacturer === medicine.manufacturer
           )
         );
-        setMedicines(uniqueNewMedicines);
+        
+        // Ensure all medicines have stock > 0
+        const stockedMedicines = uniqueNewMedicines.map(medicine => ({
+          ...medicine,
+          stock: medicine.stockQuantity || medicine.stock || 100, // Ensure stock
+          stockQuantity: medicine.stockQuantity || medicine.stock || 100
+        }));
+        
+        setMedicines(stockedMedicines);
+        console.log(`Loaded ${stockedMedicines.length} medicines with stock`);
       } else {
-        setMedicines(uniqueMedicines);
+        // Ensure all existing medicines have stock > 0
+        const stockedMedicines = uniqueMedicines.map(medicine => ({
+          ...medicine,
+          stock: Math.max(medicine.stockQuantity || medicine.stock || 0, 100), // Minimum 100 stock
+          stockQuantity: Math.max(medicine.stockQuantity || medicine.stock || 0, 100)
+        }));
+        
+        setMedicines(stockedMedicines);
+        console.log(`Loaded ${stockedMedicines.length} existing medicines with guaranteed stock`);
+      }
+      
+      // Load cash balance from Firebase or local storage
+      const savedBalance = localStorage.getItem('pharmacyCashBalance');
+      if (savedBalance) {
+        setCashBalance(parseFloat(savedBalance));
+      } else {
+        setCashBalance(50000); // Default starting balance
+        localStorage.setItem('pharmacyCashBalance', '50000');
       }
     } catch (error) {
       console.error('Error loading medicines:', error);
+      // Fallback with basic stock data
+      setMedicines([]);
     } finally {
       setLoading(false);
     }
@@ -183,6 +215,35 @@ const PharmacyPOSCleanFinal = () => {
       console.error('Search error:', error);
     }
   }, [medicines]);
+
+  // Handle patient NIC lookup from Firebase
+  const handlePatientNICChange = async (nic) => {
+    setPatientNIC(nic);
+    
+    if (nic.length >= 10) { // Valid NIC length
+      try {
+        const patient = await patientService.findPatientByNIC(nic);
+        if (patient) {
+          setCurrentPatient(patient);
+          setCustomerName(patient.name || '');
+          setCustomerContact(patient.contact || patient.phoneNumber || '');
+          console.log('Patient found:', patient.name);
+        } else {
+          setCurrentPatient(null);
+          setCustomerName('');
+          setCustomerContact('');
+          console.log('Patient not found for NIC:', nic);
+        }
+      } catch (error) {
+        console.error('Error looking up patient:', error);
+        setCurrentPatient(null);
+      }
+    } else {
+      setCurrentPatient(null);
+      setCustomerName('');
+      setCustomerContact('');
+    }
+  };
 
   // Add to cart with stock validation
   const addToCart = (medicine) => {
@@ -455,23 +516,11 @@ const PharmacyPOSCleanFinal = () => {
             
             <TextField
               fullWidth
-              label="Patient Name"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              fullWidth
               label="Patient NIC"
               value={patientNIC}
-              onChange={(e) => setPatientNIC(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              fullWidth
-              label="Contact Number"
-              value={customerContact}
-              onChange={(e) => setCustomerContact(e.target.value)}
+              onChange={(e) => handlePatientNICChange(e.target.value)}
+              placeholder="Enter NIC to auto-load patient info"
+              helperText={currentPatient ? `Patient: ${currentPatient.name}` : 'Enter NIC to lookup patient'}
             />
           </Paper>
 

@@ -56,6 +56,44 @@ export const patientService = {
     }
   },
 
+  // Find patient by NIC
+  findPatientByNIC: async (nic) => {
+    try {
+      const q = query(
+        collection(db, 'patients'),
+        where('nic', '==', nic),
+        limit(1)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        return null;
+      }
+      
+      const patientDoc = querySnapshot.docs[0];
+      return {
+        id: patientDoc.id,
+        ...patientDoc.data()
+      };
+    } catch (error) {
+      throw new Error(`Error finding patient by NIC: ${error.message}`);
+    }
+  },
+
+  // Get all patients
+  getAllPatients: async () => {
+    try {
+      const q = query(collection(db, 'patients'), orderBy('name'));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    } catch (error) {
+      throw new Error(`Error fetching patients: ${error.message}`);
+    }
+  },
+
   // Get patient purchase history
   getPatientHistory: async (patientId) => {
     try {
