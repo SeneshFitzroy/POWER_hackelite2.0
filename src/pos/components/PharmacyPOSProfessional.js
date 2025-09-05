@@ -296,6 +296,51 @@ const PharmacyPOSProfessional = () => {
     }
   };
 
+  // Save new patient function
+  const saveNewPatient = async () => {
+    try {
+      if (!newPatient.name || !newPatient.contact) {
+        alert('Please fill in required fields (Name and Contact)');
+        return;
+      }
+
+      // Generate patient ID
+      const patientId = `PAT${Date.now()}`;
+      const patientData = {
+        ...newPatient,
+        id: patientId,
+        createdAt: new Date().toISOString(),
+        createdBy: employeeId || 'system'
+      };
+
+      // Here you would typically save to your patient database
+      // For now, we'll just update the current customer info
+      setCustomerName(newPatient.name);
+      setCustomerContact(newPatient.contact);
+      setPatientNIC(newPatient.nic);
+
+      // Reset form and close dialog
+      setNewPatient({
+        name: '',
+        contact: '',
+        nic: '',
+        age: '',
+        address: '',
+        gender: '',
+        bloodGroup: '',
+        medicalNotes: ''
+      });
+      setShowPatientForm(false);
+
+      // Show success message
+      alert('Patient information saved successfully!');
+      
+    } catch (error) {
+      console.error('Error saving patient:', error);
+      alert('Error saving patient information. Please try again.');
+    }
+  };
+
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f8fafc' }}>
       {/* Header */}
@@ -890,6 +935,365 @@ const PharmacyPOSProfessional = () => {
           </Paper>
         </Box>
       </Box>
+
+      {/* Patient Form Dialog */}
+      <Dialog 
+        open={showPatientForm} 
+        onClose={() => setShowPatientForm(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+          }
+        }}
+      >
+        <Box sx={{ 
+          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+          color: 'white',
+          p: 3,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ 
+              backgroundColor: 'rgba(255,255,255,0.2)', 
+              borderRadius: '50%', 
+              p: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              👤
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+              Add New Patient
+            </Typography>
+          </Box>
+          <IconButton 
+            onClick={() => setShowPatientForm(false)}
+            sx={{ color: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' } }}
+          >
+            ✕
+          </IconButton>
+        </Box>
+
+        <Box sx={{ p: 4 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Patient Name"
+                value={newPatient.name}
+                onChange={(e) => setNewPatient({...newPatient, name: e.target.value})}
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Contact Number"
+                value={newPatient.contact}
+                onChange={(e) => setNewPatient({...newPatient, contact: e.target.value})}
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="NIC Number"
+                value={newPatient.nic}
+                onChange={(e) => setNewPatient({...newPatient, nic: e.target.value})}
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Age"
+                type="number"
+                value={newPatient.age}
+                onChange={(e) => setNewPatient({...newPatient, age: e.target.value})}
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Address"
+                multiline
+                rows={2}
+                value={newPatient.address}
+                onChange={(e) => setNewPatient({...newPatient, address: e.target.value})}
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                select
+                label="Gender"
+                value={newPatient.gender}
+                onChange={(e) => setNewPatient({...newPatient, gender: e.target.value})}
+                SelectProps={{ native: true }}
+                sx={{ mb: 2 }}
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Blood Group"
+                value={newPatient.bloodGroup}
+                onChange={(e) => setNewPatient({...newPatient, bloodGroup: e.target.value})}
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Medical Notes"
+                multiline
+                rows={3}
+                value={newPatient.medicalNotes}
+                onChange={(e) => setNewPatient({...newPatient, medicalNotes: e.target.value})}
+                placeholder="Any allergies, chronic conditions, or special notes..."
+              />
+            </Grid>
+          </Grid>
+
+          <Box sx={{ display: 'flex', gap: 2, mt: 4, justifyContent: 'flex-end' }}>
+            <Button 
+              variant="outlined" 
+              onClick={() => setShowPatientForm(false)}
+              sx={{ 
+                borderColor: '#e0e0e0',
+                color: '#666',
+                '&:hover': { borderColor: '#ccc', backgroundColor: '#f9f9f9' }
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="contained" 
+              onClick={saveNewPatient}
+              disabled={!newPatient.name || !newPatient.contact}
+              sx={{ 
+                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                '&:hover': { 
+                  background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                  boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
+                }
+              }}
+            >
+              💾 Save Patient
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
+
+      {/* Receipt Dialog */}
+      <Dialog 
+        open={showReceipt} 
+        onClose={() => setShowReceipt(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+          }
+        }}
+      >
+        <Box sx={{ 
+          background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+          color: 'white',
+          p: 3,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ 
+              backgroundColor: 'rgba(255,255,255,0.2)', 
+              borderRadius: '50%', 
+              p: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              🧾
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+              Digital Receipt
+            </Typography>
+          </Box>
+          <IconButton 
+            onClick={() => setShowReceipt(false)}
+            sx={{ color: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' } }}
+          >
+            ✕
+          </IconButton>
+        </Box>
+
+        {lastTransaction && (
+          <Box sx={{ p: 4, backgroundColor: '#f8fafc' }}>
+            {/* Receipt Header */}
+            <Box sx={{ textAlign: 'center', mb: 4, pb: 3, borderBottom: '2px solid #e2e8f0' }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1e40af', mb: 1 }}>
+                🏥 MediCare Pharmacy
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#64748b' }}>
+                Professional Healthcare Solutions
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#64748b' }}>
+                📍 123 Medical Street, Colombo 07 | 📞 +94 11 234 5678
+              </Typography>
+            </Box>
+
+            {/* Transaction Details */}
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={6}>
+                <Typography variant="body2" sx={{ color: '#64748b' }}>Receipt #:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  {lastTransaction.receiptNumber}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2" sx={{ color: '#64748b' }}>Date & Time:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  {new Date(lastTransaction.timestamp).toLocaleString()}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2" sx={{ color: '#64748b' }}>Customer:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  {lastTransaction.customerName || 'Walk-in Customer'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2" sx={{ color: '#64748b' }}>Cashier:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  {lastTransaction.staffName}
+                </Typography>
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 3 }} />
+
+            {/* Items */}
+            <TableContainer component={Paper} sx={{ mb: 3, boxShadow: 'none', border: '1px solid #e2e8f0' }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#f1f5f9' }}>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Item</TableCell>
+                    <TableCell align="center" sx={{ fontWeight: 'bold' }}>Qty</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>Unit Price</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>Total</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {lastTransaction.items?.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell align="center">{item.quantity}</TableCell>
+                      <TableCell align="right">{formatCurrency(item.sellingPrice)}</TableCell>
+                      <TableCell align="right">{formatCurrency(item.quantity * item.sellingPrice)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            {/* Totals */}
+            <Box sx={{ 
+              backgroundColor: 'white', 
+              p: 3, 
+              borderRadius: 2, 
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+            }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body1">Subtotal:</Typography>
+                <Typography variant="body1">{formatCurrency(lastTransaction.subtotal)}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body1">Discount:</Typography>
+                <Typography variant="body1">-{formatCurrency(lastTransaction.discount || 0)}</Typography>
+              </Box>
+              <Divider sx={{ my: 2 }} />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>TOTAL:</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#059669' }}>
+                  {formatCurrency(lastTransaction.total)}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body1">Payment Method:</Typography>
+                <Typography variant="body1">{lastTransaction.paymentMethod || 'Cash'}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body1">Amount Paid:</Typography>
+                <Typography variant="body1">{formatCurrency(lastTransaction.amountPaid)}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="body1">Change:</Typography>
+                <Typography variant="body1" sx={{ color: '#059669', fontWeight: 'bold' }}>
+                  {formatCurrency(lastTransaction.change)}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Footer */}
+            <Box sx={{ textAlign: 'center', mt: 4, pt: 3, borderTop: '1px solid #e2e8f0' }}>
+              <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
+                Thank you for choosing MediCare Pharmacy!
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#64748b', fontSize: '0.75rem' }}>
+                For any queries, please contact us at info@medicare.lk
+              </Typography>
+            </Box>
+
+            {/* Action Buttons */}
+            <Box sx={{ display: 'flex', gap: 2, mt: 4, justifyContent: 'center' }}>
+              <Button 
+                variant="outlined" 
+                onClick={() => window.print()}
+                startIcon={<span>🖨️</span>}
+                sx={{ 
+                  borderColor: '#3b82f6',
+                  color: '#3b82f6',
+                  '&:hover': { 
+                    borderColor: '#1e40af', 
+                    backgroundColor: 'rgba(59, 130, 246, 0.04)' 
+                  }
+                }}
+              >
+                Print Receipt
+              </Button>
+              <Button 
+                variant="contained" 
+                onClick={() => setShowReceipt(false)}
+                sx={{ 
+                  background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                  '&:hover': { 
+                    background: 'linear-gradient(135deg, #047857 0%, #059669 100%)',
+                    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+                  }
+                }}
+              >
+                ✓ Done
+              </Button>
+            </Box>
+          </Box>
+        )}
+      </Dialog>
     </Box>
   );
 };
