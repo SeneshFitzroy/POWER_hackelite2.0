@@ -30,24 +30,27 @@ const PharmacyPOSClean = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [categories, setCategories] = useState([]);
   const [cart, setCart] = useState([]);
-  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerNIC, setCustomerNIC] = useState('');
   const [employeeId, setEmployeeId] = useState('');
   const [staffType, setStaffType] = useState('employee'); // 'employee' or 'pharmacist'
   const [cashReceived, setCashReceived] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [loading, setLoading] = useState(false);
   const [showCashBalance, setShowCashBalance] = useState(false);
+  const [taxRate, setTaxRate] = useState(0.05); // 5% default tax
+  const [invoiceNumber, setInvoiceNumber] = useState('');
 
   // Helper functions
   const formatCurrency = (amount) => `LKR ${Number(amount).toFixed(2)}`;
   
+  // Generate invoice number
   const generateInvoiceNumber = () => {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     const time = String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0');
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    const random = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
     return `INV-${year}${month}${day}-${time}-${random}`;
   };
 
@@ -161,7 +164,7 @@ const PharmacyPOSClean = () => {
   // Calculate totals
   const calculateTotals = () => {
     const subtotal = cart.reduce((sum, item) => sum + (item.sellingPrice * item.quantity), 0);
-    const tax = 0; // No tax for now
+    const tax = subtotal * taxRate;
     const discount = 0; // No discount for now
     const total = subtotal + tax - discount;
     return { subtotal, tax, discount, total };
@@ -184,7 +187,11 @@ const PharmacyPOSClean = () => {
     }
 
     try {
+      const invoiceNo = generateInvoiceNumber();
+      const currentDateTime = new Date();
+      
       const saleData = {
+        invoiceNumber: invoiceNo,
         items: cart.map(item => ({
           medicineId: item.id,
           name: item.name,
