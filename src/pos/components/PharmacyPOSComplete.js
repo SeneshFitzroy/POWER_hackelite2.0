@@ -434,7 +434,7 @@ const PharmacyPOSComplete = () => {
 
       <Grid container sx={{ flex: 1, p: 2, gap: 2 }}>
         {/* Left Panel - Medicine Search & Categories */}
-        <Grid xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Search */}
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
@@ -550,14 +550,14 @@ const PharmacyPOSComplete = () => {
         </Grid>
 
         {/* Right Panel - Cart & Checkout */}
-        <Grid xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 2 }}>
             
             {/* Customer Info */}
             <Paper sx={{ p: 2 }}>
               <Typography variant="subtitle1" gutterBottom>Customer Information</Typography>
               <Grid container spacing={2}>
-                <Grid xs={8}>
+                <Grid size={8}>
                   <TextField
                     fullWidth
                     size="small"
@@ -569,7 +569,7 @@ const PharmacyPOSComplete = () => {
                     }}
                   />
                 </Grid>
-                <Grid xs={4}>
+                <Grid size={4}>
                   <Button variant="outlined" fullWidth onClick={searchCustomer}>
                     Search
                   </Button>
