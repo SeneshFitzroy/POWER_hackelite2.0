@@ -4,7 +4,7 @@ import { Container, Box } from '@mui/material';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import Navigation from './components/Navigation';
-import PharmacyPOS from './components/pos/PharmacyPOS';
+import PharmacyPOS from './pos/components/PharmacyPOS';
 import SetupComponent from './components/SetupComponent';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
