@@ -462,7 +462,7 @@ const PharmacyPOSComplete = () => {
           <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Floating Search Bar */}
             <Box sx={{ 
-              p: 2, 
+              p: 1.5, 
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               borderRadius: '16px 16px 0 0',
               boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
@@ -472,11 +472,12 @@ const PharmacyPOSComplete = () => {
                 placeholder="🔍 Search medicines by name, generic name, or barcode..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                size="small"
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     backgroundColor: 'rgba(255,255,255,0.95)',
-                    borderRadius: '25px',
-                    fontSize: '16px',
+                    borderRadius: '20px',
+                    fontSize: '14px',
                     boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
                     '& fieldset': {
                       border: 'none'
