@@ -35,11 +35,11 @@ import {
   LocalPharmacy
 } from '@mui/icons-material';
 
-import { medicineService } from '../../services/medicineService';
-import { patientService } from '../../services/patientService';
-import { transactionService } from '../../services/transactionService';
-import { employeeService } from '../../services/employeeService';
-import { prescriptionService } from '../../services/prescriptionService';
+import { medicineService } from '../../pos/services/medicineService';
+import { patientService } from '../../pos/services/patientService';
+import { transactionService } from '../../pos/services/transactionService';
+import { employeeService } from '../../pos/services/employeeService';
+import { prescriptionService } from '../../pos/services/prescriptionService';
 
 import {
   calculateTransactionTotal,
@@ -48,7 +48,7 @@ import {
   validatePrescriptionSale,
   checkBasicInteractions,
   formatCurrency
-} from '../../utils/pharmacyUtils';
+} from '../../pos/utils/pharmacyUtils';
 
 const PharmacyPOS = () => {
   // State management
