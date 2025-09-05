@@ -599,35 +599,56 @@ const PharmacyPOSProfessional = () => {
             height: '100%', 
             display: 'flex', 
             flexDirection: 'column',
-            borderRadius: 3,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            borderRadius: 2,
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
           }}>
             
             {/* Search Results Header */}
             <Box sx={{ 
               flexShrink: 0,
               p: 2, 
-              background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
-              borderRadius: '12px 12px 0 0'
+              background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+              borderRadius: '8px 8px 0 0'
             }}>
-              <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
-                💊 Available Medicines ({searchResults.length})
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
+                  💊 Available Medicines
+                </Typography>
+                <Chip 
+                  label={`${searchResults.length} found`} 
+                  variant="outlined"
+                  sx={{ 
+                    color: 'white', 
+                    borderColor: 'white',
+                    backgroundColor: 'rgba(255,255,255,0.1)'
+                  }}
+                />
+              </Box>
+              {searchTerm && (
+                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', mt: 0.5 }}>
+                  Search: "{searchTerm}"
+                </Typography>
+              )}
             </Box>
 
             {/* Search Results List */}
             <Box sx={{ 
               flex: 1, 
               overflow: 'auto',
+              backgroundColor: '#f8fafc',
               '&::-webkit-scrollbar': {
                 width: '8px',
               },
               '&::-webkit-scrollbar-track': {
-                background: '#f1f1f1',
+                background: '#f1f5f9',
               },
               '&::-webkit-scrollbar-thumb': {
-                background: '#888',
+                background: '#cbd5e1',
                 borderRadius: '4px',
+                '&:hover': {
+                  background: '#94a3b8',
+                }
               },
             }}>
               {searchResults.length > 0 ? (
@@ -637,20 +658,30 @@ const PharmacyPOSProfessional = () => {
                     onClick={() => addToCart(medicine)}
                     sx={{
                       cursor: 'pointer',
-                      borderBottom: '1px solid #f0f0f0',
-                      '&:hover': { backgroundColor: '#f5f5f5' }
+                      backgroundColor: 'white',
+                      mb: 1,
+                      mx: 1,
+                      borderRadius: 2,
+                      border: '1px solid #e2e8f0',
+                      '&:hover': { 
+                        backgroundColor: '#f1f5f9',
+                        borderColor: '#3b82f6',
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      },
+                      transition: 'all 0.2s ease-in-out'
                     }}
                   >
                     <Box sx={{ width: '100%' }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                        <Typography variant="subtitle1" fontWeight="bold">
+                        <Typography variant="subtitle1" fontWeight="bold" color="#1e293b">
                           {medicine.name}
                         </Typography>
-                        <Typography variant="h6" color="primary">
+                        <Typography variant="h6" sx={{ color: '#ef4444', fontWeight: 'bold' }}>
                           {formatCurrency(medicine.sellingPrice)}
                         </Typography>
                       </Box>
-                      <Typography variant="body2" color="textSecondary" gutterBottom>
+                      <Typography variant="body2" color="#64748b" gutterBottom>
                         {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
                       </Typography>
                       <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
@@ -658,18 +689,23 @@ const PharmacyPOSProfessional = () => {
                           label={`Stock: ${medicine.stock || 0}`} 
                           size="small" 
                           color={medicine.stock > 10 ? "success" : medicine.stock > 0 ? "warning" : "error"} 
-                          variant="outlined" 
+                          variant="outlined"
+                          sx={{ fontSize: '0.7rem' }}
                         />
                         <Chip 
                           label={medicine.manufacturer} 
                           size="small" 
-                          variant="outlined" 
+                          variant="outlined"
+                          sx={{ fontSize: '0.7rem', color: '#64748b' }}
                         />
                         <Chip 
                           label={medicine.category} 
                           size="small" 
-                          color="info" 
-                          variant="outlined" 
+                          sx={{ 
+                            fontSize: '0.7rem',
+                            backgroundColor: '#dbeafe',
+                            color: '#1e40af'
+                          }}
                         />
                       </Box>
                     </Box>
