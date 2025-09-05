@@ -65,6 +65,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
   // Cart item unit types for tablets/capsules
   const [cartItemUnits, setCartItemUnits] = useState({}); // { medicineId: 'tablets' | 'cards' }
 
+  // Unit selection modal state
+  const [showUnitSelectionModal, setShowUnitSelectionModal] = useState(false);
+  const [selectedMedicineForUnit, setSelectedMedicineForUnit] = useState(null);
+  const [selectedUnitType, setSelectedUnitType] = useState('tablets');
+
   // Auto-generate invoice number
   const [invoiceNumber] = useState(`INV-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${Math.floor(Math.random() * 900000) + 100000}`);
 
