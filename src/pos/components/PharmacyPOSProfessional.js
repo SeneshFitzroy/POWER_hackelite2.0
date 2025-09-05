@@ -49,6 +49,14 @@ const PharmacyPOSProfessional = () => {
   const [showReceipt, setShowReceipt] = useState(false);
   const [lastTransaction, setLastTransaction] = useState(null);
   const [showPatientForm, setShowPatientForm] = useState(false);
+  const [newPatient, setNewPatient] = useState({
+    nic: '',
+    name: '',
+    phone: '',
+    address: '',
+    age: '',
+    gender: ''
+  });
   const [invoiceNumber] = useState(() => {
     const now = new Date();
     const year = now.getFullYear();
@@ -61,6 +69,47 @@ const PharmacyPOSProfessional = () => {
   // Helper functions
   const formatCurrency = (amount) => `LKR ${Number(amount).toFixed(2)}`;
   const formatWeight = (weight) => `${Number(weight).toFixed(2)}g`;
+
+  // Patient management functions
+  const handleAddNewPatient = async () => {
+    try {
+      // Here you would typically save to a patients collection in Firebase
+      console.log('Adding new patient:', newPatient);
+      
+      // Set the NIC in the main form
+      setPatientNIC(newPatient.nic);
+      
+      // Reset form and close dialog
+      setNewPatient({
+        nic: '',
+        name: '',
+        phone: '',
+        address: '',
+        age: '',
+        gender: ''
+      });
+      setShowPatientForm(false);
+    } catch (error) {
+      console.error('Error adding patient:', error);
+    }
+  };
+
+  // Print receipt function
+  const printReceipt = () => {
+    window.print();
+  };
+
+  // Download PDF function
+  const downloadPDF = () => {
+    // In a real application, you would use a library like jsPDF
+    const printContent = document.getElementById('receipt-content');
+    const originalContent = document.body.innerHTML;
+    
+    document.body.innerHTML = printContent.innerHTML;
+    window.print();
+    document.body.innerHTML = originalContent;
+    window.location.reload();
+  };
 
   // Update current time every second
   useEffect(() => {
@@ -229,6 +278,10 @@ const PharmacyPOSProfessional = () => {
         await medicineService.updateStock(item.id, -item.quantity);
       }
 
+      // Store transaction for receipt and show receipt
+      setLastTransaction(saleData);
+      setShowReceipt(true);
+
       // Reset form
       setCart([]);
       setCashReceived(0);
@@ -244,25 +297,50 @@ const PharmacyPOSProfessional = () => {
   };
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f5f5f5' }}>
+    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f8fafc' }}>
       {/* Header */}
-      <Paper sx={{ p: 2, mb: 2, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+      <Paper sx={{ 
+        p: 2, 
+        mb: 2, 
+        borderRadius: 0,
+        background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
+        boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)'
+      }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h4" fontWeight="bold" sx={{ 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            🏥 PROFESSIONAL PHARMACY POS
-          </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="body1" color="textSecondary">
-              Invoice: {invoiceNumber} | {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}
+            <Typography variant="h4" fontWeight="bold" sx={{ color: 'white' }}>
+              🏥 MEDICARE PHARMACY POS
+            </Typography>
+            <Chip 
+              label={`Invoice: ${invoiceNumber}`} 
+              variant="outlined" 
+              sx={{ 
+                color: 'white', 
+                borderColor: 'white',
+                backgroundColor: 'rgba(255,255,255,0.1)'
+              }} 
+            />
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="body1" sx={{ color: 'white' }}>
+              {currentTime.toLocaleDateString()} • {currentTime.toLocaleTimeString()}
             </Typography>
             <FormControlLabel
-              control={<Switch checked={paymentMethod === 'card'} onChange={(e) => setPaymentMethod(e.target.checked ? 'card' : 'cash')} />}
-              label={paymentMethod === 'cash' ? 'CASH' : 'CARD'}
+              control={
+                <Switch 
+                  checked={paymentMethod === 'card'} 
+                  onChange={(e) => setPaymentMethod(e.target.checked ? 'card' : 'cash')}
+                  sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#ef4444',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#ef4444',
+                    }
+                  }}
+                />
+              }
+              label={<Typography sx={{ color: 'white', fontWeight: 'bold' }}>{paymentMethod.toUpperCase()}</Typography>}
             />
           </Box>
         </Box>
