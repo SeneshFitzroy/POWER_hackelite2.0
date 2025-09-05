@@ -706,7 +706,7 @@ const PharmacyPOSComplete = () => {
 
                 {/* Registration Number (if prescription required) */}
                 {isPrescriptionRequired && (
-                  <Grid xs={6}>
+                  <Grid item xs={6}>
                     <TextField
                       fullWidth
                       size="small"
@@ -721,7 +721,7 @@ const PharmacyPOSComplete = () => {
                 {/* Cash Payment */}
                 {paymentMethod === 'cash' && (
                   <>
-                    <Grid xs={6}>
+                    <Grid item xs={6}>
                       <TextField
                         fullWidth
                         size="small"
@@ -734,7 +734,7 @@ const PharmacyPOSComplete = () => {
                         }}
                       />
                     </Grid>
-                    <Grid xs={6}>
+                    <Grid item xs={6}>
                       <TextField
                         fullWidth
                         size="small"
