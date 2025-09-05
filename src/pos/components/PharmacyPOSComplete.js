@@ -460,22 +460,46 @@ const PharmacyPOSComplete = () => {
         {/* Left Panel - Medicine Search & Categories */}
         <Grid item xs={12} sm={6} md={7} sx={{ pr: 0.5 }}>
           <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* Search */}
-            <Box sx={{ p: 1, borderBottom: 1, borderColor: 'divider' }}>
+            {/* Floating Search Bar */}
+            <Box sx={{ 
+              p: 2, 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              borderRadius: '16px 16px 0 0',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            }}>
               <TextField
                 fullWidth
-                placeholder="Search medicines by name, generic name, or barcode..."
+                placeholder="🔍 Search medicines by name, generic name, or barcode..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'rgba(255,255,255,0.95)',
+                    borderRadius: '25px',
+                    fontSize: '16px',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                    '& fieldset': {
+                      border: 'none'
+                    },
+                    '&:hover': {
+                      backgroundColor: 'white',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.15)'
+                    },
+                    '&.Mui-focused': {
+                      backgroundColor: 'white',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+                    }
+                  }
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Search />
+                      <Search sx={{ color: 'primary.main', fontSize: '24px' }} />
                     </InputAdornment>
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton>
+                      <IconButton sx={{ color: 'primary.main' }}>
                         <QrCodeScanner />
                       </IconButton>
                     </InputAdornment>
@@ -485,17 +509,37 @@ const PharmacyPOSComplete = () => {
             </Box>
 
             {/* Quick Categories */}
-            <Box sx={{ p: 1, borderBottom: 1, borderColor: 'divider' }}>
-              <Typography variant="subtitle2" gutterBottom>Quick Categories:</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            <Box sx={{ 
+              p: 2, 
+              backgroundColor: '#f8f9fa',
+              borderBottom: 1, 
+              borderColor: 'divider' 
+            }}>
+              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
+                🏷️ Quick Categories:
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
                 {categories.length > 0 ? (
                   categories.map((category) => (
                     <Chip
                       key={category}
                       label={category}
-                      size="small"
+                      size="medium"
                       onClick={() => setSearchTerm(category)}
-                      sx={{ cursor: 'pointer' }}
+                      sx={{ 
+                        cursor: 'pointer',
+                        backgroundColor: 'white',
+                        border: '1px solid #e0e0e0',
+                        borderRadius: '20px',
+                        fontWeight: 500,
+                        '&:hover': { 
+                          backgroundColor: 'primary.main',
+                          color: 'white',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                          transform: 'translateY(-2px)',
+                          transition: 'all 0.2s ease-in-out'
+                        }
+                      }}
                     />
                   ))
                 ) : (
