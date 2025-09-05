@@ -553,18 +553,18 @@ const PharmacyPOSComplete = () => {
             </Box>
 
             {/* Medicine Results */}
-            <Box sx={{ flex: 1, overflow: 'auto' }}>
+            <Box sx={{ flex: 1, overflow: 'auto', p: 1 }}>
               {loading ? (
                 <Box sx={{ 
-                  p: 4, 
+                  p: 2, 
                   textAlign: 'center',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  minHeight: '200px'
+                  minHeight: '150px'
                 }}>
-                  <Typography variant="h6" color="primary" gutterBottom>
+                  <Typography variant="body1" color="primary" gutterBottom>
                     ⏳ Loading medicines...
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -572,7 +572,7 @@ const PharmacyPOSComplete = () => {
                   </Typography>
                 </Box>
               ) : (
-                <List dense>
+                <List dense sx={{ pt: 0 }}>
                   {searchResults.length > 0 ? (
                     searchResults.map((medicine) => (
                       <ListItem
@@ -583,38 +583,50 @@ const PharmacyPOSComplete = () => {
                           borderBottom: 1,
                           borderColor: 'divider',
                           cursor: 'pointer',
-                          '&:hover': { bgcolor: 'primary.light', color: 'white' }
+                          borderRadius: 1,
+                          mb: 0.5,
+                          p: 1,
+                          '&:hover': { 
+                            bgcolor: 'primary.light', 
+                            color: 'white',
+                            '& .MuiChip-root': { 
+                              backgroundColor: 'rgba(255,255,255,0.3)',
+                              color: 'white' 
+                            }
+                          }
                         }}
                       >
                         <Box sx={{ width: '100%' }}>
                           {/* Primary Content */}
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                            <Typography variant="subtitle1" fontWeight="bold">
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                            <Typography variant="subtitle2" fontWeight="bold">
                               {medicine.name}
                             </Typography>
-                            <Typography variant="h6" color="primary">
+                            <Typography variant="h6" color="primary" sx={{ fontSize: '16px' }}>
                               {formatCurrency(medicine.sellingPrice)}
                             </Typography>
                           </Box>
                           
                           {/* Secondary Content */}
-                          <Box sx={{ mb: 1 }}>
-                            <Typography variant="body2" color="textSecondary">
+                          <Box sx={{ mb: 0.5 }}>
+                            <Typography variant="caption" color="textSecondary">
                               {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
                             </Typography>
                           </Box>
                           
                           {/* Chips */}
-                          <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Box sx={{ display: 'flex', gap: 0.5 }}>
                             <Chip 
                               label={medicine.type} 
                               size="small" 
                               color={medicine.type === 'Prescription' ? 'error' : 'success'} 
+                              sx={{ fontSize: '10px', height: '20px' }}
                             />
                             <Chip 
                               label={`Stock: ${medicine.stockQuantity}`} 
                               size="small" 
                               color={medicine.stockQuantity < 10 ? 'warning' : 'default'}
+                              sx={{ fontSize: '10px', height: '20px' }}
                             />
                           </Box>
                         </Box>
@@ -622,33 +634,25 @@ const PharmacyPOSComplete = () => {
                     ))
                   ) : (
                     <Box sx={{ 
-                      p: 3, 
+                      p: 2, 
                       textAlign: 'center', 
-                      minHeight: '200px', 
+                      minHeight: '150px', 
                       display: 'flex', 
                       flexDirection: 'column',
                       alignItems: 'center', 
                       justifyContent: 'center',
                       backgroundColor: '#fafafa',
-                      borderRadius: 2,
-                      margin: 2
+                      borderRadius: 2
                     }}>
-                      <Typography variant="h6" color="textSecondary" gutterBottom>
-                        {searchTerm ? '🔍 No medicines found' : '💊 Ready to search'}
+                      <Typography variant="body1" color="textSecondary" gutterBottom>
+                        🔍 No medicines found
                       </Typography>
-                      <Typography variant="body2" color="textSecondary" sx={{ maxWidth: '300px', lineHeight: 1.6 }}>
+                      <Typography variant="body2" color="textSecondary" sx={{ maxWidth: '250px', lineHeight: 1.4 }}>
                         {searchTerm 
-                          ? `No results found for "${searchTerm}". Try a different search term or browse categories above.`
-                          : 'Use the search box above or click a quick category to find medicines in our pharmacy inventory.'
+                          ? `No results for "${searchTerm}". Try a different search term.`
+                          : 'Click "UPDATE MEDICINES" to load the medicine database.'
                         }
                       </Typography>
-                      {!searchTerm && (
-                        <Box sx={{ mt: 2 }}>
-                          <Typography variant="caption" color="primary" sx={{ fontWeight: 600 }}>
-                            💡 Try searching: "Panadol", "Antibiotics", or "Vitamins"
-                          </Typography>
-                        </Box>
-                      )}
                     </Box>
                   )}
                 </List>
