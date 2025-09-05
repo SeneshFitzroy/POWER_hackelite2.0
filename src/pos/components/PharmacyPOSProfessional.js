@@ -361,33 +361,34 @@ const PharmacyPOSProfessional = () => {
             height: '100%', 
             display: 'flex', 
             flexDirection: 'column',
-            borderRadius: 3,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            borderRadius: 2,
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
           }}>
             
             {/* Search Section */}
             <Box sx={{ 
               flexShrink: 0,
               p: 2,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              borderRadius: '12px 12px 0 0'
+              background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+              borderRadius: '8px 8px 0 0'
             }}>
               <Typography variant="h6" sx={{ color: 'white', mb: 1.5, fontWeight: 'bold' }}>
                 🔍 Medicine Search
               </Typography>
               <TextField
                 fullWidth
-                placeholder="Search medicines..."
+                placeholder="Search medicines by name, generic, manufacturer..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 size="small"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'rgba(255,255,255,0.95)',
-                    borderRadius: '30px',
-                    '& fieldset': { border: 'none' },
-                    '&:hover': { backgroundColor: 'white' },
-                    '&.Mui-focused': { backgroundColor: 'white' }
+                    backgroundColor: 'white',
+                    borderRadius: '8px',
+                    '& fieldset': { borderColor: '#e2e8f0' },
+                    '&:hover fieldset': { borderColor: '#3b82f6' },
+                    '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                   }
                 }}
               />
@@ -397,20 +398,42 @@ const PharmacyPOSProfessional = () => {
             <Box sx={{ 
               flexShrink: 0,
               p: 2, 
-              borderBottom: 1, 
-              borderColor: 'divider', 
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' 
+              borderBottom: '1px solid #e2e8f0', 
+              background: '#f8fafc' 
             }}>
-              <Typography variant="h6" fontWeight="bold" color="#495057" sx={{ mb: 1.5 }}>
-                👤 Customer Information
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                <Typography variant="h6" fontWeight="bold" color="#1e293b">
+                  👤 Patient Information
+                </Typography>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => setShowPatientForm(true)}
+                  sx={{ 
+                    backgroundColor: '#ef4444',
+                    '&:hover': { backgroundColor: '#dc2626' },
+                    borderRadius: '20px',
+                    fontSize: '0.75rem',
+                    px: 2
+                  }}
+                >
+                  + NEW PATIENT
+                </Button>
+              </Box>
               <TextField
                 fullWidth
                 label="Patient NIC Number"
                 value={patientNIC}
                 onChange={(e) => setPatientNIC(e.target.value)}
                 size="small"
-                sx={{ mb: 1.5 }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'white',
+                    '& fieldset': { borderColor: '#e2e8f0' },
+                    '&:hover fieldset': { borderColor: '#3b82f6' },
+                    '&.Mui-focused fieldset': { borderColor: '#1e40af' }
+                  }
+                }}
               />
             </Box>
             
@@ -418,11 +441,10 @@ const PharmacyPOSProfessional = () => {
             <Box sx={{ 
               flexShrink: 0,
               p: 2, 
-              borderBottom: 1, 
-              borderColor: 'divider', 
-              background: 'linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%)' 
+              borderBottom: '1px solid #e2e8f0', 
+              background: 'white' 
             }}>
-              <Typography variant="h6" fontWeight="bold" color="#495057" sx={{ mb: 1.5 }}>
+              <Typography variant="h6" fontWeight="bold" color="#1e293b" sx={{ mb: 1.5 }}>
                 👨‍⚕️ Staff Information
               </Typography>
               
@@ -434,13 +456,13 @@ const PharmacyPOSProfessional = () => {
               >
                 <FormControlLabel 
                   value="employee" 
-                  control={<Radio size="small" />} 
+                  control={<Radio size="small" sx={{ color: '#3b82f6', '&.Mui-checked': { color: '#1e40af' } }} />} 
                   label="Employee" 
                   sx={{ mr: 3 }}
                 />
                 <FormControlLabel 
                   value="pharmacist" 
-                  control={<Radio size="small" />} 
+                  control={<Radio size="small" sx={{ color: '#3b82f6', '&.Mui-checked': { color: '#1e40af' } }} />} 
                   label="Pharmacist" 
                 />
               </RadioGroup>
@@ -451,7 +473,13 @@ const PharmacyPOSProfessional = () => {
                 value={employeeId}
                 onChange={(e) => setEmployeeId(e.target.value)}
                 size="small"
-                sx={{ mb: 1.5 }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: '#e2e8f0' },
+                    '&:hover fieldset': { borderColor: '#3b82f6' },
+                    '&.Mui-focused fieldset': { borderColor: '#1e40af' }
+                  }
+                }}
               />
             </Box>
 
@@ -459,37 +487,12 @@ const PharmacyPOSProfessional = () => {
             <Box sx={{ 
               flexShrink: 0,
               p: 2, 
-              borderBottom: 1, 
-              borderColor: 'divider', 
-              background: 'linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%)' 
+              borderBottom: '1px solid #e2e8f0', 
+              background: '#f8fafc' 
             }}>
-              <Typography variant="h6" fontWeight="bold" color="#495057" sx={{ mb: 1.5 }}>
+              <Typography variant="h6" fontWeight="bold" color="#1e293b" sx={{ mb: 1.5 }}>
                 📋 Transaction Details
               </Typography>
-              
-              <TextField
-                fullWidth
-                label="Invoice Number"
-                value={invoiceNumber}
-                size="small"
-                disabled
-                InputProps={{
-                  readOnly: true,
-                }}
-                sx={{ mb: 1.5 }}
-              />
-              
-              <TextField
-                fullWidth
-                label="Date & Time"
-                value={`${currentTime.toLocaleDateString()} ${currentTime.toLocaleTimeString()}`}
-                size="small"
-                disabled
-                InputProps={{
-                  readOnly: true,
-                }}
-                sx={{ mb: 1.5 }}
-              />
               
               <TextField
                 fullWidth
@@ -498,7 +501,14 @@ const PharmacyPOSProfessional = () => {
                 value={taxRate}
                 onChange={(e) => setTaxRate(Number(e.target.value))}
                 size="small"
-                sx={{ mb: 1.5 }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'white',
+                    '& fieldset': { borderColor: '#e2e8f0' },
+                    '&:hover fieldset': { borderColor: '#3b82f6' },
+                    '&.Mui-focused fieldset': { borderColor: '#1e40af' }
+                  }
+                }}
               />
             </Box>
 
@@ -506,13 +516,21 @@ const PharmacyPOSProfessional = () => {
             <Box sx={{ 
               flexShrink: 0,
               p: 2, 
-              background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)' 
+              background: 'white' 
             }}>
               <Button
                 fullWidth
                 variant="outlined"
                 onClick={() => setShowCashBalance(!showCashBalance)}
-                sx={{ mb: 1.5 }}
+                sx={{ 
+                  mb: 1.5,
+                  borderColor: '#3b82f6',
+                  color: '#1e40af',
+                  '&:hover': {
+                    borderColor: '#1e40af',
+                    backgroundColor: '#f1f5f9'
+                  }
+                }}
               >
                 {showCashBalance ? 'Hide Balance' : 'Show Cash Balance'}
               </Button>
@@ -520,12 +538,12 @@ const PharmacyPOSProfessional = () => {
               {showCashBalance && (
                 <Box sx={{ 
                   p: 1.5, 
-                  backgroundColor: 'white', 
+                  backgroundColor: '#dbeafe', 
                   borderRadius: 2, 
                   textAlign: 'center',
-                  border: '2px solid #4caf50'
+                  border: '2px solid #3b82f6'
                 }}>
-                  <Typography variant="h6" color="primary" fontWeight="bold">
+                  <Typography variant="h6" color="#1e40af" fontWeight="bold">
                     Cash Balance: {formatCurrency(cashBalance)}
                   </Typography>
                 </Box>
@@ -536,7 +554,7 @@ const PharmacyPOSProfessional = () => {
             <Box sx={{ 
               flex: 1,
               p: 2, 
-              background: 'linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%)' 
+              background: '#f8fafc' 
             }}>
               {paymentMethod === 'cash' && (
                 <TextField
@@ -546,18 +564,27 @@ const PharmacyPOSProfessional = () => {
                   value={cashReceived}
                   onChange={(e) => setCashReceived(Number(e.target.value))}
                   size="small"
-                  sx={{ mb: 1.5 }}
+                  sx={{ 
+                    mb: 1.5,
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'white',
+                      '& fieldset': { borderColor: '#e2e8f0' },
+                      '&:hover fieldset': { borderColor: '#3b82f6' },
+                      '&.Mui-focused fieldset': { borderColor: '#1e40af' }
+                    }
+                  }}
                 />
               )}
 
               {paymentMethod === 'cash' && cashReceived > 0 && (
                 <Box sx={{ 
                   p: 1.5, 
-                  backgroundColor: '#e8f5e8', 
+                  backgroundColor: '#dcfce7', 
                   borderRadius: 2, 
-                  textAlign: 'center' 
+                  textAlign: 'center',
+                  border: '2px solid #22c55e'
                 }}>
-                  <Typography variant="h6" fontWeight="bold">
+                  <Typography variant="h6" fontWeight="bold" color="#16a34a">
                     Change: {formatCurrency(Math.max(0, cashReceived - totals.total))}
                   </Typography>
                 </Box>
