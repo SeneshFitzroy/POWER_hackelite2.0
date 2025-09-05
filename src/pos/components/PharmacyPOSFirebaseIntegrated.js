@@ -584,7 +584,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
             <Typography variant="h4" fontWeight="bold" sx={{ color: 'white', letterSpacing: '2px' }}>
-              MEDICARE PHARMACY SYSTEM - FIREBASE INTEGRATED
+              MEDICARE PHARMACY SYSTEM
             </Typography>
             <Chip 
               label={`Invoice: ${invoiceNumber}`} 
@@ -626,6 +626,14 @@ const PharmacyPOSFirebaseIntegrated = () => {
           </Box>
         </Box>
       </Paper>
+
+      {/* THIN RED LINE BELOW NAVBAR */}
+      <Box sx={{ 
+        height: '2px', 
+        backgroundColor: '#dc2626', 
+        width: '100%',
+        mb: 2
+      }} />
 
       {/* MAIN CONTENT - CLEAN THREE PANEL LAYOUT */}
       <Box sx={{ 
@@ -866,16 +874,17 @@ const PharmacyPOSFirebaseIntegrated = () => {
                     {/* AVAILABILITY STATUS - ALWAYS AVAILABLE */}
                     <Box sx={{
                       position: 'absolute',
-                      top: 12,
-                      right: 12,
-                      backgroundColor: '#1e40af',
+                      top: 8,
+                      right: 8,
+                      backgroundColor: '#16a34a',
                       color: 'white',
                       px: 1.5,
                       py: 0.5,
-                      borderRadius: 1,
-                      fontSize: '0.7rem',
+                      borderRadius: 1.5,
+                      fontSize: '0.65rem',
                       fontWeight: 'bold',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      boxShadow: '0 2px 6px rgba(22, 163, 74, 0.3)',
+                      zIndex: 1
                     }}>
                       AVAILABLE
                     </Box>
