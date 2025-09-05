@@ -266,10 +266,10 @@ const PharmacyPOSClean = () => {
       }}>
         
         {/* Left Panel - Search */}
-        <Box sx={{ flex: '0 1 60%', maxWidth: '60%', position: 'relative' }}>
+        <Box sx={{ flex: '0 1 55%', maxWidth: '55%', position: 'relative' }}>
           {/* Floating Search Bar */}
           <Paper sx={{ 
-            p: 2,
+            p: 1.5,
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             borderRadius: 3,
             position: 'sticky',
@@ -285,7 +285,7 @@ const PharmacyPOSClean = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               size="small"
               sx={{
-                mb: 1,
+                mb: 0.5,
                 '& .MuiOutlinedInput-root': {
                   backgroundColor: 'rgba(255,255,255,0.95)',
                   borderRadius: '30px',
@@ -312,12 +312,13 @@ const PharmacyPOSClean = () => {
               boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
             }}>
               <Typography variant="h6" sx={{ 
-                p: 2, 
+                p: 1.5, 
                 borderBottom: 1, 
                 borderColor: 'divider',
                 background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                 fontWeight: 'bold',
-                color: '#495057'
+                color: '#495057',
+                fontSize: '1.1rem'
               }}>
                 Search Results for "{searchTerm}"
               </Typography>
@@ -373,7 +374,7 @@ const PharmacyPOSClean = () => {
         </Box>
 
         {/* Right Panel - Cart */}
-        <Box sx={{ flex: '0 1 40%', minWidth: '450px', maxWidth: '40%' }}>
+        <Box sx={{ flex: '0 1 45%', minWidth: '500px', maxWidth: '45%' }}>
           <Paper sx={{ 
             height: '100%', 
             display: 'flex', 
@@ -383,8 +384,8 @@ const PharmacyPOSClean = () => {
           }}>
             
             {/* Customer Info */}
-            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
-              <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057" sx={{ mb: 1 }}>Customer Information</Typography>
+            <Box sx={{ p: 1.5, borderBottom: 1, borderColor: 'divider', background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
+              <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057" sx={{ mb: 1, fontSize: '1.1rem' }}>Customer Information</Typography>
               <TextField
                 fullWidth
                 placeholder="Enter customer phone number"
@@ -407,7 +408,29 @@ const PharmacyPOSClean = () => {
                 Shopping Cart ({cart.length} items)
               </Typography>
               
-              <Box sx={{ flex: 1, overflow: 'auto', maxHeight: 'calc(60vh - 200px)', minHeight: '200px' }}>
+              <Box sx={{ 
+                flex: 1, 
+                overflow: 'auto', 
+                maxHeight: '50vh', 
+                minHeight: '300px',
+                border: '1px solid #e0e0e0',
+                borderRadius: 1,
+                backgroundColor: '#fafafa',
+                '&::-webkit-scrollbar': {
+                  width: '8px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: '#f1f1f1',
+                  borderRadius: '10px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: '#888',
+                  borderRadius: '10px',
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                  background: '#555',
+                },
+              }}>
                 {cart.length > 0 ? (
                   <TableContainer>
                     <Table size="small">
@@ -422,7 +445,10 @@ const PharmacyPOSClean = () => {
                       </TableHead>
                       <TableBody>
                         {cart.map((item) => (
-                          <TableRow key={`${item.id}-cart`}>
+                          <TableRow key={`${item.id}-cart`} sx={{ 
+                            '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' },
+                            '&:hover': { backgroundColor: '#f0f0f0' }
+                          }}>
                             <TableCell sx={{ fontSize: '0.875rem' }}>{item.name}</TableCell>
                             <TableCell>
                               <TextField
@@ -453,9 +479,19 @@ const PharmacyPOSClean = () => {
                     </Table>
                   </TableContainer>
                 ) : (
-                  <Box sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography variant="body1" color="textSecondary">
-                      Cart is empty
+                  <Box sx={{ 
+                    p: 4, 
+                    textAlign: 'center',
+                    backgroundColor: 'white',
+                    border: '2px dashed #ddd',
+                    borderRadius: 2,
+                    m: 2
+                  }}>
+                    <Typography variant="h6" color="textSecondary" sx={{ mb: 1 }}>
+                      🛒 Cart is empty
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Search and add medicines to start shopping
                     </Typography>
                   </Box>
                 )}
