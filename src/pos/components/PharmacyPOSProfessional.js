@@ -217,8 +217,20 @@ const PharmacyPOSProfessional = () => {
 
   // Cart functions
   const addToCart = (medicine) => {
+    // Check if medicine is available
+    if (!medicine.stock || medicine.stock <= 0) {
+      alert('This medicine is currently out of stock and cannot be added to cart.');
+      return;
+    }
+
     const existingItem = cart.find(item => item.id === medicine.id);
     if (existingItem) {
+      // Check if adding one more would exceed available stock
+      if (existingItem.quantity >= medicine.stock) {
+        alert(`Cannot add more. Only ${medicine.stock} units available in stock.`);
+        return;
+      }
+      
       setCart(cart.map(item => 
         item.id === medicine.id 
           ? { ...item, quantity: item.quantity + 1 }
@@ -378,7 +390,7 @@ const PharmacyPOSProfessional = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant="h4" fontWeight="bold" sx={{ color: 'white', letterSpacing: '0.5px' }}>
-              MEDICARE PHARMACY SYSTEM
+              *** TEST CHANGE *** MEDICARE PHARMACY SYSTEM *** NO EMOJIS ***
             </Typography>
             <Chip 
               label={`Invoice: ${invoiceNumber}`} 
@@ -845,7 +857,7 @@ const PharmacyPOSProfessional = () => {
               borderRadius: '12px 12px 0 0'
             }}>
               <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
-                🛒 Shopping Cart ({cart.length} items | {formatWeight(totals.totalWeight)} | {totals.totalUnits} units)
+                SHOPPING CART ({cart.length} items | {formatWeight(totals.totalWeight)} | {totals.totalUnits} units)
               </Typography>
             </Box>
 
@@ -926,7 +938,7 @@ const PharmacyPOSProfessional = () => {
                   m: 2
                 }}>
                   <Typography variant="h6" color="textSecondary" sx={{ mb: 1 }}>
-                    🛒 Cart is empty
+                    CART IS EMPTY
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
                     Search and add medicines to start shopping
