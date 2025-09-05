@@ -492,11 +492,12 @@ const PharmacyPOSComplete = () => {
                     searchResults.map((medicine) => (
                       <ListItem
                         key={medicine.id}
-                        button
+                        component="div"
                         onClick={() => addToCart(medicine)}
                         sx={{
                           borderBottom: 1,
                           borderColor: 'divider',
+                          cursor: 'pointer',
                           '&:hover': { bgcolor: 'primary.light', color: 'white' }
                         }}
                       >
@@ -513,9 +514,9 @@ const PharmacyPOSComplete = () => {
                           }
                           secondary={
                             <Box>
-                              <Typography variant="body2" color="textSecondary">
+                              <Box component="div" sx={{ mb: 0.5 }}>
                                 {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
-                              </Typography>
+                              </Box>
                               <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                                 <Chip 
                                   label={medicine.type} 
@@ -651,28 +652,28 @@ const PharmacyPOSComplete = () => {
               {/* Totals */}
               <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
                 <Grid container spacing={1}>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography>Subtotal:</Typography>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography align="right">{formatCurrency(totals.subtotal)}</Typography>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography>Discount:</Typography>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography align="right" color="error">-{formatCurrency(totals.discount)}</Typography>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography>Tax:</Typography>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography align="right">{formatCurrency(totals.tax)}</Typography>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography variant="h6" fontWeight="bold">Total:</Typography>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography variant="h6" fontWeight="bold" align="right">
                       {formatCurrency(totals.total)}
                     </Typography>
@@ -754,7 +755,7 @@ const PharmacyPOSComplete = () => {
                             </Button>
                           </Grid>
                         ))}
-                        <Grid item>
+                        <Grid>
                           <Button
                             variant="outlined"
                             size="small"
@@ -769,7 +770,7 @@ const PharmacyPOSComplete = () => {
                 )}
 
                 {/* Checkout Button */}
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <Button
                     fullWidth
                     variant="contained"
