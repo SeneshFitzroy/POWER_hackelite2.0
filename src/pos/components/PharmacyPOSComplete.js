@@ -363,7 +363,7 @@ const PharmacyPOSComplete = () => {
       {/* Header */}
       <Paper sx={{ p: 2, bgcolor: '#1976d2', color: 'white' }}>
         <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
+          <Grid>
             <Typography variant="h5" fontWeight="bold">
               <LocalPharmacy sx={{ mr: 1, verticalAlign: 'middle' }} />
               PHARMACY POS SYSTEM
@@ -372,7 +372,7 @@ const PharmacyPOSComplete = () => {
               {new Date().toLocaleDateString()} | {new Date().toLocaleTimeString()}
             </Typography>
           </Grid>
-          <Grid item>
+          <Grid>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box>
                 <Typography variant="h6">
@@ -515,11 +515,11 @@ const PharmacyPOSComplete = () => {
                             </Box>
                           }
                           secondary={
-                            <Box>
-                              <Box component="div" sx={{ mb: 0.5 }}>
+                            <React.Fragment>
+                              <span style={{ display: 'block', marginBottom: '4px' }}>
                                 {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
-                              </Box>
-                              <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                              </span>
+                              <span style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
                                 <Chip 
                                   label={medicine.type} 
                                   size="small" 
@@ -530,8 +530,8 @@ const PharmacyPOSComplete = () => {
                                   size="small" 
                                   color={medicine.stockQuantity < 10 ? 'warning' : 'default'}
                                 />
-                              </Box>
-                            </Box>
+                              </span>
+                            </React.Fragment>
                           }
                         />
                       </ListItem>
