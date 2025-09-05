@@ -17,7 +17,14 @@ import {
   Switch,
   FormControlLabel,
   RadioGroup,
-  Radio
+  Radio,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Divider,
+  Grid,
+  IconButton
 } from '@mui/material';
 import { medicineService } from '../services/medicineService';
 import { transactionService } from '../services/transactionService';
@@ -39,6 +46,9 @@ const PharmacyPOSProfessional = () => {
   const [cashBalance] = useState(25000);
   const [taxRate, setTaxRate] = useState(12); // 12% default tax
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [lastTransaction, setLastTransaction] = useState(null);
+  const [showPatientForm, setShowPatientForm] = useState(false);
   const [invoiceNumber] = useState(() => {
     const now = new Date();
     const year = now.getFullYear();
