@@ -20,7 +20,7 @@ import {
   CheckCircle,
   Error
 } from '@mui/icons-material';
-import { initializeSampleData } from '../../services/dataInitService';
+import { initializeSampleData } from '../pos/services/dataInitService';
 
 const SetupComponent = () => {
   const [loading, setLoading] = useState(false);
