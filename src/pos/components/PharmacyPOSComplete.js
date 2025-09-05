@@ -363,7 +363,7 @@ const PharmacyPOSComplete = () => {
       {/* Header */}
       <Paper sx={{ p: 2, bgcolor: '#1976d2', color: 'white' }}>
         <Grid container alignItems="center" justifyContent="space-between">
-          <Grid>
+          <Grid item>
             <Typography variant="h5" fontWeight="bold">
               <LocalPharmacy sx={{ mr: 1, verticalAlign: 'middle' }} />
               PHARMACY POS SYSTEM
@@ -372,7 +372,7 @@ const PharmacyPOSComplete = () => {
               {new Date().toLocaleDateString()} | {new Date().toLocaleTimeString()}
             </Typography>
           </Grid>
-          <Grid>
+          <Grid item>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box>
                 <Typography variant="h6">
@@ -432,10 +432,10 @@ const PharmacyPOSComplete = () => {
         </Alert>
       )}
 
-      <Grid container sx={{ flex: 1, p: 2, gap: 2 }}>
+      <Grid container spacing={2} sx={{ flex: 1, p: 2, minHeight: 'calc(100vh - 120px)' }}>
         {/* Left Panel - Medicine Search & Categories */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Grid item xs={12} lg={7}>
+          <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: '600px' }}>
             {/* Search */}
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
               <TextField
@@ -551,8 +551,8 @@ const PharmacyPOSComplete = () => {
         </Grid>
 
         {/* Right Panel - Cart & Checkout */}
-        <Grid item xs={12} md={6}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 2 }}>
+        <Grid item xs={12} lg={5}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 2, minHeight: '600px' }}>
             
             {/* Customer Info */}
             <Paper sx={{ p: 2 }}>
@@ -762,7 +762,7 @@ const PharmacyPOSComplete = () => {
                             </Button>
                           </Grid>
                         ))}
-                        <Grid>
+                        <Grid item>
                           <Button
                             variant="outlined"
                             size="small"
