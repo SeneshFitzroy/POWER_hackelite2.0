@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
-  Grid,
+  Grid2 as Grid,
   Paper,
   Typography,
   TextField,
@@ -457,17 +457,150 @@ const PharmacyPOSComplete = () => {
         </Alert>
       )}
 
-      <Grid container sx={{ flex: 1, height: 'calc(100vh - 100px)' }}>
-        {/* Left Panel - Medicine Search & Categories */}
-        <Grid item xs={12} sm={6} md={7} sx={{ pr: 0.5 }}>
-          <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* Floating Search Bar */}
-            <Box sx={{ 
-              p: 1.5, 
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              borderRadius: '16px 16px 0 0',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-            }}>
+      {/* Floating Search Section */}
+      <Paper sx={{ 
+        mx: 2,
+        mt: 1,
+        p: 2,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 3,
+        position: 'relative',
+        zIndex: 1000
+      }}>
+        {/* Search Bar */}
+        <TextField
+          fullWidth
+          placeholder="🔍 Search medicines by name, generic name, or barcode..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          size="small"
+          sx={{
+            mb: 2,
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'rgba(255,255,255,0.95)',
+              borderRadius: '20px',
+              fontSize: '14px',
+              '& fieldset': { border: 'none' },
+              '&:hover': { backgroundColor: 'white' },
+              '&.Mui-focused': { backgroundColor: 'white' }
+            }
+          }}
+        />
+
+        {/* Categories */}
+        <Box>
+          <Typography variant="body2" sx={{ color: 'white', mb: 1, fontWeight: 600 }}>
+            🏷️ Quick Categories:
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {categories.map((category) => (
+              <Chip
+                key={category}
+                label={category}
+                size="small"
+                onClick={() => setSearchTerm(category)}
+                sx={{ 
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  fontSize: '11px',
+                  '&:hover': { 
+                    backgroundColor: 'rgba(255,255,255,0.3)',
+                    transform: 'scale(1.05)'
+                  }
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
+
+        {/* Floating Search Results */}
+        {searchTerm && (
+          <Paper sx={{
+            position: 'absolute',
+            top: '100%',
+            left: 16,
+            right: 16,
+            mt: 1,
+            maxHeight: '400px',
+            overflow: 'auto',
+            zIndex: 1001,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+            borderRadius: 2,
+            border: '1px solid #e0e0e0'
+          }}>
+            {loading ? (
+              <Box sx={{ p: 3, textAlign: 'center' }}>
+                <Typography color="primary">⏳ Searching...</Typography>
+              </Box>
+            ) : searchResults.length > 0 ? (
+              <List dense sx={{ p: 0 }}>
+                {searchResults.map((medicine) => (
+                  <ListItem
+                    key={medicine.id}
+                    onClick={() => {
+                      addToCart(medicine);
+                      setSearchTerm(''); // Clear search after adding
+                    }}
+                    sx={{
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #f0f0f0',
+                      '&:hover': { 
+                        backgroundColor: 'primary.light',
+                        color: 'white',
+                        '& .MuiChip-root': { 
+                          backgroundColor: 'rgba(255,255,255,0.3)',
+                          color: 'white' 
+                        }
+                      },
+                      '&:last-child': { borderBottom: 'none' }
+                    }}
+                  >
+                    <Box sx={{ width: '100%' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                        <Typography variant="subtitle2" fontWeight="bold">
+                          {medicine.name}
+                        </Typography>
+                        <Typography variant="body1" color="primary" fontWeight="bold">
+                          {formatCurrency(medicine.sellingPrice)}
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" color="textSecondary" display="block" sx={{ mb: 0.5 }}>
+                        {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 0.5 }}>
+                        <Chip 
+                          label={medicine.type} 
+                          size="small" 
+                          color={medicine.type === 'Prescription' ? 'error' : 'success'} 
+                          sx={{ fontSize: '9px', height: '18px' }}
+                        />
+                        <Chip 
+                          label={`Stock: ${medicine.stockQuantity}`} 
+                          size="small" 
+                          color={medicine.stockQuantity < 10 ? 'warning' : 'default'}
+                          sx={{ fontSize: '9px', height: '18px' }}
+                        />
+                      </Box>
+                    </Box>
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Box sx={{ p: 3, textAlign: 'center' }}>
+                <Typography color="textSecondary">
+                  🔍 No results for "{searchTerm}"
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  Try a different search term or browse categories above
+                </Typography>
+              </Box>
+            )}
+          </Paper>
+        )}
+      </Paper>
+
+      {/* Main Content Area */}
+      <Grid container sx={{ flex: 1, p: 2 }} spacing={2}>
               <TextField
                 fullWidth
                 placeholder="🔍 Search medicines by name, generic name, or barcode..."
@@ -662,7 +795,7 @@ const PharmacyPOSComplete = () => {
         </Grid>
 
         {/* Right Panel - Cart & Checkout */}
-        <Grid item xs={12} sm={6} md={5} sx={{ pl: 0.5 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 5 }} sx={{ pl: 0.5 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 1 }}>
             
             {/* Customer Info */}
