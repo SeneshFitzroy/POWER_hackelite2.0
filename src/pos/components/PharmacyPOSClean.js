@@ -386,17 +386,26 @@ const PharmacyPOSClean = () => {
             {/* Customer Info */}
             <Box sx={{ p: 1.5, borderBottom: 1, borderColor: 'divider', background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
               <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057" sx={{ mb: 1, fontSize: '1.1rem' }}>Customer Information</Typography>
-              <TextField
-                fullWidth
-                placeholder="Enter customer phone number"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                size="small"
-              />
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <TextField
+                  placeholder="Customer phone number"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  size="small"
+                  sx={{ flex: 1 }}
+                />
+                <TextField
+                  label="Employee ID *"
+                  value={employeeId}
+                  onChange={(e) => setEmployeeId(e.target.value)}
+                  size="small"
+                  sx={{ flex: 1 }}
+                />
+              </Box>
             </Box>
 
             {/* Shopping Cart */}
-            <Box sx={{ flex: 1, overflow: 'hidden' }}>
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
               <Typography variant="h6" sx={{ 
                 p: 3, 
                 borderBottom: 1, 
@@ -410,14 +419,14 @@ const PharmacyPOSClean = () => {
               
               <Box sx={{ 
                 flex: 1, 
-                overflow: 'auto', 
-                maxHeight: '50vh', 
-                minHeight: '300px',
+                overflowY: 'scroll', 
+                maxHeight: 'calc(100vh - 400px)', 
+                minHeight: '250px',
                 border: '1px solid #e0e0e0',
                 borderRadius: 1,
                 backgroundColor: '#fafafa',
                 '&::-webkit-scrollbar': {
-                  width: '8px',
+                  width: '12px',
                 },
                 '&::-webkit-scrollbar-track': {
                   background: '#f1f1f1',
@@ -426,9 +435,9 @@ const PharmacyPOSClean = () => {
                 '&::-webkit-scrollbar-thumb': {
                   background: '#888',
                   borderRadius: '10px',
-                },
-                '&::-webkit-scrollbar-thumb:hover': {
-                  background: '#555',
+                  '&:hover': {
+                    background: '#555',
+                  }
                 },
               }}>
                 {cart.length > 0 ? (
@@ -514,15 +523,6 @@ const PharmacyPOSClean = () => {
                   <Typography variant="h6" fontWeight="bold" color="primary">{formatCurrency(totals.total)}</Typography>
                 </Box>
               </Box>
-
-              <TextField
-                fullWidth
-                label="Employee ID *"
-                value={employeeId}
-                onChange={(e) => setEmployeeId(e.target.value)}
-                size="small"
-                sx={{ mb: 1.5 }}
-              />
 
               {paymentMethod === 'cash' && (
                 <TextField
