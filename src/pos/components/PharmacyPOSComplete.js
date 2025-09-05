@@ -514,12 +514,13 @@ const PharmacyPOSComplete = () => {
                               </Typography>
                             </Box>
                           }
+                          secondaryTypographyProps={{ component: 'div' }}
                           secondary={
-                            <React.Fragment>
-                              <span style={{ display: 'block', marginBottom: '4px' }}>
+                            <Box component="div">
+                              <Typography variant="body2" component="div" sx={{ mb: 0.5 }}>
                                 {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
-                              </span>
-                              <span style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                              </Typography>
+                              <Box component="div" sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                                 <Chip 
                                   label={medicine.type} 
                                   size="small" 
@@ -530,8 +531,8 @@ const PharmacyPOSComplete = () => {
                                   size="small" 
                                   color={medicine.stockQuantity < 10 ? 'warning' : 'default'}
                                 />
-                              </span>
-                            </React.Fragment>
+                              </Box>
+                            </Box>
                           }
                         />
                       </ListItem>
@@ -720,7 +721,7 @@ const PharmacyPOSComplete = () => {
                 {/* Cash Payment */}
                 {paymentMethod === 'cash' && (
                   <>
-                    <Grid xs={6}>
+                    <Grid size={6}>
                       <TextField
                         fullWidth
                         size="small"
@@ -733,7 +734,7 @@ const PharmacyPOSComplete = () => {
                         }}
                       />
                     </Grid>
-                    <Grid xs={6}>
+                    <Grid size={6}>
                       <TextField
                         fullWidth
                         size="small"
@@ -747,7 +748,7 @@ const PharmacyPOSComplete = () => {
                     </Grid>
 
                     {/* Number Pad */}
-                    <Grid xs={12}>
+                    <Grid size={12}>
                       <Typography variant="subtitle2" gutterBottom>Quick Amount:</Typography>
                       <Grid container spacing={1}>
                         {[100, 500, 1000, 2000, 5000].map((amount) => (
@@ -776,7 +777,7 @@ const PharmacyPOSComplete = () => {
                 )}
 
                 {/* Checkout Button */}
-                <Grid xs={12}>
+                <Grid size={12}>
                   <Button
                     fullWidth
                     variant="contained"
