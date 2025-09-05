@@ -72,33 +72,46 @@ const PharmacyPOSComplete = () => {
   const [discountType, setDiscountType] = useState('percentage');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [cashReceived, setCashReceived] = useState(0);
-  const [cashBalance, setCashBalance] = useState(5000); // Starting cash balance
+  const [cashBalance, setCashBalance] = useState(0); // Will be loaded from Firebase
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
   const [receiptDialog, setReceiptDialog] = useState(false);
   const [lastTransaction, setLastTransaction] = useState(null);
   const [isPrescriptionRequired, setIsPrescriptionRequired] = useState(false);
   const [registrationNumber, setRegistrationNumber] = useState('');
+  const [employees, setEmployees] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  // Quick Categories
-  const categories = [
-    'Pain Relief', 'Antibiotics', 'Vitamins', 'Cough & Cold',
-    'Digestive', 'Heart Care', 'Diabetes', 'Blood Pressure',
-    'Skin Care', 'Eye Care', 'First Aid', 'Baby Care'
-  ];
-
-  // Load medicines on component mount
+  // Load initial data on component mount
   useEffect(() => {
-    loadMedicines();
+    loadInitialData();
   }, []);
 
-  const loadMedicines = async () => {
+  const loadInitialData = async () => {
     try {
+      setLoading(true);
+      
+      // Load medicines
       const medicineData = await medicineService.getAllMedicines();
       setMedicines(medicineData);
-      setSearchResults(medicineData.slice(0, 20)); // Show first 20 initially
+      setSearchResults(medicineData.slice(0, 20));
+      
+      // Extract categories from medicines
+      const uniqueCategories = [...new Set(medicineData.map(med => med.category))].filter(Boolean);
+      setCategories(uniqueCategories);
+      
+      // Load employees
+      const employeeData = await employeeService.getAllEmployees();
+      setEmployees(employeeData);
+      
+      // Load cash balance from local storage or set default
+      const savedBalance = localStorage.getItem('pharmacyCashBalance');
+      setCashBalance(savedBalance ? parseFloat(savedBalance) : 0);
+      
     } catch (error) {
-      showAlert('Error loading medicines: ' + error.message, 'error');
+      showAlert('Error loading initial data: ' + error.message, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -287,9 +300,11 @@ const PharmacyPOSComplete = () => {
 
       const result = await transactionService.processSale(transactionData);
       
-      // Update cash balance
+      // Update cash balance and save to localStorage
       if (paymentMethod === 'cash') {
-        setCashBalance(prev => prev + totals.total);
+        const newBalance = cashBalance + totals.total;
+        setCashBalance(newBalance);
+        localStorage.setItem('pharmacyCashBalance', newBalance.toString());
       }
 
       setLastTransaction(result);
