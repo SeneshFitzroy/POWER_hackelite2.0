@@ -95,16 +95,16 @@ const PharmacyPOSComplete = () => {
       // Load medicines
       let medicineData = await medicineService.getAllMedicines();
       
-      // If no medicines found, initialize sample data
+      // If no medicines found, initialize sample data automatically
       if (medicineData.length === 0) {
-        showAlert('No data found. Initializing sample data...', 'info');
+        showAlert('No medicines found. Loading Sri Lankan medicines database...', 'info');
         await initializeSampleData();
         medicineData = await medicineService.getAllMedicines();
       }
       
       setMedicines(medicineData);
-      // Don't auto-load medicines - let users search instead
-      setSearchResults([]);
+      // Show all medicines initially, then filter when user searches
+      setSearchResults(medicineData);
       
       // Extract categories from medicines
       const uniqueCategories = [...new Set(medicineData.map(med => med.category))].filter(Boolean);
@@ -130,7 +130,8 @@ const PharmacyPOSComplete = () => {
   // Search medicines
   const searchMedicines = useCallback(async (term) => {
     if (!term.trim()) {
-      setSearchResults([]);
+      // Show all medicines when no search term
+      setSearchResults(medicines);
       return;
     }
 
@@ -511,21 +512,21 @@ const PharmacyPOSComplete = () => {
 
             {/* Quick Categories */}
             <Box sx={{ 
-              p: 2, 
+              p: 1.5, 
               backgroundColor: '#f8f9fa',
               borderBottom: 1, 
               borderColor: 'divider' 
             }}>
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
+              <Typography variant="body2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
                 🏷️ Quick Categories:
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {categories.length > 0 ? (
                   categories.map((category) => (
                     <Chip
                       key={category}
                       label={category}
-                      size="medium"
+                      size="small"
                       onClick={() => setSearchTerm(category)}
                       sx={{ 
                         cursor: 'pointer',
