@@ -256,14 +256,17 @@ const PharmacyPOSClean = () => {
       <Box sx={{ 
         flex: 1, 
         display: 'flex', 
-        flexDirection: 'column',
         gap: 2, 
         p: 2, 
-        overflow: 'hidden'
+        overflow: 'hidden',
+        '@media (max-width: 1200px)': {
+          flexDirection: 'column',
+          gap: 1,
+        }
       }}>
         
-        {/* Top Section - Search */}
-        <Box sx={{ height: '45%', display: 'flex', flexDirection: 'column' }}>
+        {/* Left Panel - Search */}
+        <Box sx={{ flex: '0 1 60%', maxWidth: '60%', position: 'relative' }}>
           {/* Floating Search Bar */}
           <Paper sx={{ 
             p: 2,
@@ -369,68 +372,30 @@ const PharmacyPOSClean = () => {
           )}
         </Box>
 
-        {/* Bottom Section - Shopping Cart */}
-        <Box sx={{ height: '55%', display: 'flex', gap: 2 }}>
-          
-          {/* Customer Information Panel */}
-          <Box sx={{ width: '300px' }}>
-            <Paper sx={{ 
-              height: '100%', 
-              p: 3,
-              borderRadius: 3,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
-            }}>
-              <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057">Customer Information</Typography>
+        {/* Right Panel - Cart */}
+        <Box sx={{ flex: '0 1 40%', minWidth: '450px', maxWidth: '40%' }}>
+          <Paper sx={{ 
+            height: '100%', 
+            display: 'flex', 
+            flexDirection: 'column',
+            borderRadius: 3,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+          }}>
+            
+            {/* Customer Info */}
+            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
+              <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057" sx={{ mb: 1 }}>Customer Information</Typography>
               <TextField
                 fullWidth
                 placeholder="Enter customer phone number"
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 size="small"
-                sx={{ mb: 3 }}
               />
-              
-              <TextField
-                fullWidth
-                label="Employee ID *"
-                value={employeeId}
-                onChange={(e) => setEmployeeId(e.target.value)}
-                size="small"
-                sx={{ mb: 3 }}
-              />
+            </Box>
 
-              {paymentMethod === 'cash' && (
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Cash Received"
-                  value={cashReceived}
-                  onChange={(e) => setCashReceived(Number(e.target.value))}
-                  size="small"
-                  sx={{ mb: 2 }}
-                />
-              )}
-
-              {paymentMethod === 'cash' && cashReceived > 0 && (
-                <Typography variant="h6" sx={{ mb: 2, color: 'success.main', fontWeight: 'bold' }}>
-                  Change: {formatCurrency(Math.max(0, cashReceived - totals.total))}
-                </Typography>
-              )}
-            </Paper>
-          </Box>
-
-          {/* Shopping Cart Panel */}
-          <Box sx={{ flex: 1 }}>
-            <Paper sx={{ 
-              height: '100%', 
-              display: 'flex', 
-              flexDirection: 'column',
-              borderRadius: 3,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-            }}>
-              
-              {/* Shopping Cart Header */}
+            {/* Shopping Cart */}
+            <Box sx={{ flex: 1, overflow: 'hidden' }}>
               <Typography variant="h6" sx={{ 
                 p: 3, 
                 borderBottom: 1, 
@@ -442,8 +407,7 @@ const PharmacyPOSClean = () => {
                 Shopping Cart ({cart.length} items)
               </Typography>
               
-              {/* Cart Items */}
-              <Box sx={{ flex: 1, overflow: 'auto', maxHeight: '300px', minHeight: '200px' }}>
+              <Box sx={{ flex: 1, overflow: 'auto', maxHeight: 'calc(60vh - 200px)', minHeight: '200px' }}>
                 {cart.length > 0 ? (
                   <TableContainer>
                     <Table size="small">
