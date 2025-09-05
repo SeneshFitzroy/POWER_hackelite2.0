@@ -547,14 +547,14 @@ const PharmacyPOSComplete = () => {
         </Grid>
 
         {/* Right Panel - Cart & Checkout */}
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 2 }}>
             
             {/* Customer Info */}
             <Paper sx={{ p: 2 }}>
               <Typography variant="subtitle1" gutterBottom>Customer Information</Typography>
               <Grid container spacing={2}>
-                <Grid item xs={8}>
+                <Grid xs={8}>
                   <TextField
                     fullWidth
                     size="small"
@@ -566,7 +566,7 @@ const PharmacyPOSComplete = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid xs={4}>
                   <Button variant="outlined" fullWidth onClick={searchCustomer}>
                     Search
                   </Button>
@@ -685,7 +685,7 @@ const PharmacyPOSComplete = () => {
             <Paper sx={{ p: 2 }}>
               <Grid container spacing={2}>
                 {/* Employee ID */}
-                <Grid item xs={6}>
+                <Grid xs={6}>
                   <TextField
                     fullWidth
                     size="small"
@@ -698,7 +698,7 @@ const PharmacyPOSComplete = () => {
 
                 {/* Registration Number (if prescription required) */}
                 {isPrescriptionRequired && (
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <TextField
                       fullWidth
                       size="small"
@@ -713,7 +713,7 @@ const PharmacyPOSComplete = () => {
                 {/* Cash Payment */}
                 {paymentMethod === 'cash' && (
                   <>
-                    <Grid item xs={6}>
+                    <Grid xs={6}>
                       <TextField
                         fullWidth
                         size="small"
@@ -726,7 +726,7 @@ const PharmacyPOSComplete = () => {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid xs={6}>
                       <TextField
                         fullWidth
                         size="small"
