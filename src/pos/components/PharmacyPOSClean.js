@@ -15,7 +15,9 @@ import {
   TableHead,
   TableRow,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  RadioGroup,
+  Radio
 } from '@mui/material';
 import { medicineService } from '../services/medicineService';
 import { transactionService } from '../services/transactionService';
@@ -30,12 +32,24 @@ const PharmacyPOSClean = () => {
   const [cart, setCart] = useState([]);
   const [customerPhone, setCustomerPhone] = useState('');
   const [employeeId, setEmployeeId] = useState('');
+  const [staffType, setStaffType] = useState('employee'); // 'employee' or 'pharmacist'
   const [cashReceived, setCashReceived] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [loading, setLoading] = useState(false);
+  const [showCashBalance, setShowCashBalance] = useState(false);
 
   // Helper functions
   const formatCurrency = (amount) => `LKR ${Number(amount).toFixed(2)}`;
+  
+  const generateInvoiceNumber = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const time = String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0');
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `INV-${year}${month}${day}-${time}-${random}`;
+  };
 
   // Load initial data
   useEffect(() => {
@@ -187,6 +201,7 @@ const PharmacyPOSClean = () => {
         change: paymentMethod === 'cash' ? Math.max(0, cashReceived - totals.total) : 0,
         customerPhone: customerPhone || null,
         employeeId,
+        staffType,
         timestamp: new Date()
       };
 
@@ -202,9 +217,10 @@ const PharmacyPOSClean = () => {
       setCashReceived(0);
       setCustomerPhone('');
       setEmployeeId('');
+      setStaffType('employee');
       
     } catch (error) {
-      showAlert('Error processing sale: ' + error.message, 'error');
+      console.error('Error processing sale:', error);
     }
   };
 
@@ -230,13 +246,6 @@ const PharmacyPOSClean = () => {
           </Box>
         </Box>
       </Paper>
-
-      {/* Alert */}
-      {alert.show && (
-        <Alert severity={alert.severity} sx={{ m: 2 }}>
-          {alert.message}
-        </Alert>
-      )}
 
       {/* Main Content */}
       <Box sx={{ 
@@ -369,30 +378,64 @@ const PharmacyPOSClean = () => {
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
           }}>
             
-            {/* Customer Info */}
-            <Box sx={{ p: 1.5, borderBottom: 1, borderColor: 'divider', background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
+            {/* Customer Info - Fixed Top */}
+            <Box sx={{ 
+              flexShrink: 0,
+              p: 1.5, 
+              borderBottom: 1, 
+              borderColor: 'divider', 
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' 
+            }}>
               <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057" sx={{ mb: 1, fontSize: '1.1rem' }}>Customer Information</Typography>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <TextField
-                  placeholder="Customer phone number"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  size="small"
-                  sx={{ flex: 1 }}
+              
+              {/* Customer Phone */}
+              <TextField
+                fullWidth
+                placeholder="Customer phone number"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                size="small"
+                sx={{ mb: 1.5 }}
+              />
+              
+              {/* Staff Information */}
+              <Typography variant="subtitle2" fontWeight="bold" color="#495057" sx={{ mb: 1 }}>Staff Information</Typography>
+              
+              {/* Staff Type Selection */}
+              <RadioGroup
+                row
+                value={staffType}
+                onChange={(e) => setStaffType(e.target.value)}
+                sx={{ mb: 1 }}
+              >
+                <FormControlLabel 
+                  value="employee" 
+                  control={<Radio size="small" />} 
+                  label="Employee" 
+                  sx={{ mr: 3 }}
                 />
-                <TextField
-                  label="Employee ID *"
-                  value={employeeId}
-                  onChange={(e) => setEmployeeId(e.target.value)}
-                  size="small"
-                  sx={{ flex: 1 }}
+                <FormControlLabel 
+                  value="pharmacist" 
+                  control={<Radio size="small" />} 
+                  label="Pharmacist" 
                 />
-              </Box>
+              </RadioGroup>
+              
+              {/* Staff ID Input */}
+              <TextField
+                fullWidth
+                label={`${staffType === 'pharmacist' ? 'Pharmacist' : 'Employee'} ID *`}
+                value={employeeId}
+                onChange={(e) => setEmployeeId(e.target.value)}
+                size="small"
+                placeholder={`Enter ${staffType === 'pharmacist' ? 'pharmacist' : 'employee'} ID number`}
+              />
             </Box>
 
-            {/* Shopping Cart */}
-            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            {/* Shopping Cart - Scrollable Middle */}
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <Typography variant="h6" sx={{ 
+                flexShrink: 0,
                 p: 3, 
                 borderBottom: 1, 
                 borderColor: 'divider',
@@ -405,9 +448,7 @@ const PharmacyPOSClean = () => {
               
               <Box sx={{ 
                 flex: 1, 
-                overflowY: 'scroll', 
-                maxHeight: 'calc(100vh - 400px)', 
-                minHeight: '250px',
+                overflowY: 'auto', 
                 border: '1px solid #e0e0e0',
                 borderRadius: 1,
                 backgroundColor: '#fafafa',
@@ -493,8 +534,14 @@ const PharmacyPOSClean = () => {
               </Box>
             </Box>
 
-            {/* Totals & Checkout */}
-            <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', background: '#fafafa' }}>
+            {/* Totals & Checkout - Fixed Bottom */}
+            <Box sx={{ 
+              flexShrink: 0,
+              p: 2, 
+              borderTop: 1, 
+              borderColor: 'divider', 
+              background: '#fafafa' 
+            }}>
               <Box sx={{ mb: 2, p: 1.5, borderRadius: 2, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography fontWeight="500">Subtotal:</Typography>
