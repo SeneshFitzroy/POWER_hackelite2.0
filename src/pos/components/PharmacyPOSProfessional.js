@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { medicineService } from '../services/medicineService';
 import { transactionService } from '../services/transactionService';
-import { initializeSampleData } from '../services/sampleDataService';
+import { initializeSampleData } from '../services/dataInitServiceNew';
 
 const PharmacyPOSProfessional = () => {
   // State variables
