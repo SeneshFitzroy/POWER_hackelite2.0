@@ -258,7 +258,9 @@ const PharmacyPOSClean = () => {
             🏥 PHARMACY POS SYSTEM
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h6">Cash Balance: LKR 1,000.00</Typography>
+            <Typography variant="body1" color="textSecondary">
+              Invoice: {invoiceNumber} | {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}
+            </Typography>
             <FormControlLabel
               control={<Switch checked={paymentMethod === 'card'} onChange={(e) => setPaymentMethod(e.target.checked ? 'card' : 'cash')} />}
               label={paymentMethod === 'cash' ? 'CASH' : 'CARD'}
