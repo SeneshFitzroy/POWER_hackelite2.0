@@ -52,6 +52,7 @@ import { medicineService } from '../services/medicineService';
 import { patientService } from '../services/patientService';
 import { transactionService } from '../services/transactionService';
 import { employeeService } from '../services/employeeService';
+import { initializeSampleData } from '../services/dataInitService';
 import {
   calculateTransactionTotal,
   generateTransactionId,
@@ -435,52 +436,66 @@ const PharmacyPOSComplete = () => {
 
             {/* Medicine Results */}
             <Box sx={{ flex: 1, overflow: 'auto' }}>
-              <List dense>
-                {searchResults.map((medicine) => (
-                  <ListItem
-                    key={medicine.id}
-                    button
-                    onClick={() => addToCart(medicine)}
-                    sx={{
-                      borderBottom: 1,
-                      borderColor: 'divider',
-                      '&:hover': { bgcolor: 'primary.light', color: 'white' }
-                    }}
-                  >
-                    <ListItemText
-                      primary={
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography variant="subtitle1" fontWeight="bold">
-                            {medicine.name}
-                          </Typography>
-                          <Typography variant="h6" color="primary">
-                            {formatCurrency(medicine.sellingPrice)}
-                          </Typography>
-                        </Box>
-                      }
-                      secondary={
-                        <Box>
-                          <Typography variant="body2" color="textSecondary">
-                            {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
-                          </Typography>
-                          <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                            <Chip 
-                              label={medicine.type} 
-                              size="small" 
-                              color={medicine.type === 'Prescription' ? 'error' : 'success'} 
-                            />
-                            <Chip 
-                              label={`Stock: ${medicine.stockQuantity}`} 
-                              size="small" 
-                              color={medicine.stockQuantity < 10 ? 'warning' : 'default'}
-                            />
-                          </Box>
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
+              {loading ? (
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography>Loading medicines...</Typography>
+                </Box>
+              ) : (
+                <List dense>
+                  {searchResults.length > 0 ? (
+                    searchResults.map((medicine) => (
+                      <ListItem
+                        key={medicine.id}
+                        button
+                        onClick={() => addToCart(medicine)}
+                        sx={{
+                          borderBottom: 1,
+                          borderColor: 'divider',
+                          '&:hover': { bgcolor: 'primary.light', color: 'white' }
+                        }}
+                      >
+                        <ListItemText
+                          primary={
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <Typography variant="subtitle1" fontWeight="bold">
+                                {medicine.name}
+                              </Typography>
+                              <Typography variant="h6" color="primary">
+                                {formatCurrency(medicine.sellingPrice)}
+                              </Typography>
+                            </Box>
+                          }
+                          secondary={
+                            <Box>
+                              <Typography variant="body2" color="textSecondary">
+                                {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
+                              </Typography>
+                              <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                                <Chip 
+                                  label={medicine.type} 
+                                  size="small" 
+                                  color={medicine.type === 'Prescription' ? 'error' : 'success'} 
+                                />
+                                <Chip 
+                                  label={`Stock: ${medicine.stockQuantity}`} 
+                                  size="small" 
+                                  color={medicine.stockQuantity < 10 ? 'warning' : 'default'}
+                                />
+                              </Box>
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                    ))
+                  ) : (
+                    <Box sx={{ p: 3, textAlign: 'center' }}>
+                      <Typography color="textSecondary">
+                        {searchTerm ? 'No medicines found for your search' : 'No medicines available'}
+                      </Typography>
+                    </Box>
+                  )}
+                </List>
+              )}
             </Box>
           </Paper>
         </Grid>
