@@ -7,7 +7,6 @@ import {
   Button,
   List,
   ListItem,
-  Alert,
   Chip,
   Table,
   TableBody,
@@ -34,15 +33,9 @@ const PharmacyPOSClean = () => {
   const [cashReceived, setCashReceived] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({ show: false, message: '', severity: 'info' });
 
   // Helper functions
   const formatCurrency = (amount) => `LKR ${Number(amount).toFixed(2)}`;
-  
-  const showAlert = (message, severity = 'info') => {
-    setAlert({ show: true, message, severity });
-    setTimeout(() => setAlert({ show: false, message: '', severity: 'info' }), 5000);
-  };
 
   // Load initial data
   useEffect(() => {
@@ -66,7 +59,6 @@ const PharmacyPOSClean = () => {
       );
       
       if (uniqueMedicines.length === 0) {
-        showAlert('Loading medicines database...', 'info');
         await initializeSampleData();
         medicineData = await medicineService.getAllMedicines();
         
@@ -88,7 +80,7 @@ const PharmacyPOSClean = () => {
       setCategories(uniqueCategories);
       
     } catch (error) {
-      showAlert('Error loading data: ' + error.message, 'error');
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
@@ -113,7 +105,7 @@ const PharmacyPOSClean = () => {
       );
       setSearchResults(uniqueResults);
     } catch (error) {
-      showAlert('Search error: ' + error.message, 'error');
+      console.error('Search error:', error);
     }
   }, []);
 
@@ -136,7 +128,6 @@ const PharmacyPOSClean = () => {
     } else {
       setCart([...cart, { ...medicine, quantity: 1 }]);
     }
-    showAlert(`${medicine.name} added to cart`, 'success');
   };
 
   const removeFromCart = (medicineId) => {
@@ -167,17 +158,14 @@ const PharmacyPOSClean = () => {
   // Process sale
   const processSale = async () => {
     if (cart.length === 0) {
-      showAlert('Cart is empty', 'warning');
       return;
     }
 
     if (!employeeId.trim()) {
-      showAlert('Employee ID is required', 'warning');
       return;
     }
 
     if (paymentMethod === 'cash' && cashReceived < totals.total) {
-      showAlert('Insufficient cash received', 'warning');
       return;
     }
 
