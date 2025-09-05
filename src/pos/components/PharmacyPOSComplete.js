@@ -740,11 +740,11 @@ const PharmacyPOSComplete = () => {
                     </Grid>
 
                     {/* Number Pad */}
-                    <Grid item xs={12}>
+                    <Grid xs={12}>
                       <Typography variant="subtitle2" gutterBottom>Quick Amount:</Typography>
                       <Grid container spacing={1}>
                         {[100, 500, 1000, 2000, 5000].map((amount) => (
-                          <Grid item key={amount}>
+                          <Grid key={amount}>
                             <Button
                               variant="outlined"
                               size="small"
