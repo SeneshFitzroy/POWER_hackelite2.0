@@ -253,33 +253,50 @@ const PharmacyPOSClean = () => {
       )}
 
       {/* Main Content */}
-      <Box sx={{ flex: 1, display: 'flex', gap: 2, p: 2, overflow: 'hidden' }}>
+      <Box sx={{ 
+        flex: 1, 
+        display: 'flex', 
+        gap: 2, 
+        p: 2, 
+        overflow: 'hidden',
+        '@media (max-width: 1200px)': {
+          flexDirection: 'column',
+          gap: 1,
+        }
+      }}>
         
         {/* Left Panel - Search */}
-        <Box sx={{ flex: 1, position: 'relative' }}>
+        <Box sx={{ flex: '0 1 65%', maxWidth: '65%', position: 'relative' }}>
           {/* Floating Search Bar */}
           <Paper sx={{ 
-            p: 2,
+            p: 3,
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: 3,
+            borderRadius: 4,
             position: 'sticky',
             top: 0,
             zIndex: 1000,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            mb: 1
           }}>
             <TextField
               fullWidth
               placeholder="🔍 Search medicines..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              size="small"
+              size="medium"
               sx={{
-                mb: 1.5,
+                mb: 2,
                 '& .MuiOutlinedInput-root': {
                   backgroundColor: 'rgba(255,255,255,0.95)',
-                  borderRadius: '25px',
+                  borderRadius: '30px',
                   fontSize: '16px',
-                  '& fieldset': { border: 'none' }
+                  padding: '4px 16px',
+                  '& fieldset': { border: 'none' },
+                  '&:hover': { backgroundColor: 'white' },
+                  '&.Mui-focused': { 
+                    backgroundColor: 'white',
+                    boxShadow: '0 0 0 3px rgba(255,255,255,0.3)'
+                  }
                 }
               }}
             />
@@ -306,11 +323,19 @@ const PharmacyPOSClean = () => {
           {searchTerm && (
             <Paper sx={{ 
               mt: 2,
-              maxHeight: '60vh',
+              maxHeight: '65vh',
               overflow: 'auto',
-              borderRadius: 2
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
             }}>
-              <Typography variant="h6" sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+              <Typography variant="h6" sx={{ 
+                p: 2, 
+                borderBottom: 1, 
+                borderColor: 'divider',
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                fontWeight: 'bold',
+                color: '#495057'
+              }}>
                 Search Results for "{searchTerm}"
               </Typography>
               {searchResults.length > 0 ? (
@@ -362,32 +387,21 @@ const PharmacyPOSClean = () => {
               )}
             </Paper>
           )}
-
-          {!searchTerm && (
-            <Box sx={{ 
-              mt: 4,
-              p: 4,
-              textAlign: 'center',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              borderRadius: 3,
-              color: 'white'
-            }}>
-              <Typography variant="h4" gutterBottom>💊 Search Medicines</Typography>
-              <Typography variant="h6">Use the search bar above to find medicines</Typography>
-              <Typography variant="body1" sx={{ mt: 1, opacity: 0.8 }}>
-                Try: "Panadol", "Antibiotics", or click a category
-              </Typography>
-            </Box>
-          )}
         </Box>
 
         {/* Right Panel - Cart */}
-        <Box sx={{ width: '400px' }}>
-          <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flex: '0 1 35%', minWidth: '420px', maxWidth: '35%' }}>
+          <Paper sx={{ 
+            height: '100%', 
+            display: 'flex', 
+            flexDirection: 'column',
+            borderRadius: 3,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+          }}>
             
             {/* Customer Info */}
-            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-              <Typography variant="h6" gutterBottom>Customer Information</Typography>
+            <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider', background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
+              <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057">Customer Information</Typography>
               <TextField
                 fullWidth
                 placeholder="Enter customer phone number"
@@ -399,7 +413,14 @@ const PharmacyPOSClean = () => {
 
             {/* Shopping Cart */}
             <Box sx={{ flex: 1, overflow: 'hidden' }}>
-              <Typography variant="h6" sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+              <Typography variant="h6" sx={{ 
+                p: 3, 
+                borderBottom: 1, 
+                borderColor: 'divider',
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                fontWeight: 'bold',
+                color: '#495057'
+              }}>
                 Shopping Cart ({cart.length} items)
               </Typography>
               
@@ -409,29 +430,29 @@ const PharmacyPOSClean = () => {
                     <Table size="small">
                       <TableHead>
                         <TableRow>
-                          <TableCell>Medicine</TableCell>
-                          <TableCell>Qty</TableCell>
-                          <TableCell>Price</TableCell>
-                          <TableCell>Total</TableCell>
-                          <TableCell>Action</TableCell>
+                          <TableCell sx={{ width: '35%' }}>Medicine</TableCell>
+                          <TableCell sx={{ width: '15%' }}>Qty</TableCell>
+                          <TableCell sx={{ width: '20%' }}>Price</TableCell>
+                          <TableCell sx={{ width: '20%' }}>Total</TableCell>
+                          <TableCell sx={{ width: '10%' }}>Action</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {cart.map((item) => (
                           <TableRow key={`${item.id}-cart`}>
-                            <TableCell>{item.name}</TableCell>
+                            <TableCell sx={{ fontSize: '0.875rem' }}>{item.name}</TableCell>
                             <TableCell>
                               <TextField
                                 type="number"
                                 value={item.quantity}
                                 onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
                                 size="small"
-                                sx={{ width: '60px' }}
+                                sx={{ width: '50px' }}
                                 inputProps={{ min: 0 }}
                               />
                             </TableCell>
-                            <TableCell>{formatCurrency(item.sellingPrice)}</TableCell>
-                            <TableCell>{formatCurrency(item.sellingPrice * item.quantity)}</TableCell>
+                            <TableCell sx={{ fontSize: '0.875rem' }}>{formatCurrency(item.sellingPrice)}</TableCell>
+                            <TableCell sx={{ fontSize: '0.875rem', fontWeight: 'bold' }}>{formatCurrency(item.sellingPrice * item.quantity)}</TableCell>
                             <TableCell>
                               <Button 
                                 color="error" 
@@ -457,19 +478,19 @@ const PharmacyPOSClean = () => {
             </Box>
 
             {/* Totals & Checkout */}
-            <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
-              <Box sx={{ mb: 2 }}>
+            <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider', background: '#fafafa' }}>
+              <Box sx={{ mb: 3, p: 2, borderRadius: 2, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography>Subtotal:</Typography>
-                  <Typography>{formatCurrency(totals.subtotal)}</Typography>
+                  <Typography fontWeight="500">Subtotal:</Typography>
+                  <Typography fontWeight="500">{formatCurrency(totals.subtotal)}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography>Tax:</Typography>
-                  <Typography>{formatCurrency(totals.tax)}</Typography>
+                  <Typography fontWeight="500">Tax:</Typography>
+                  <Typography fontWeight="500">{formatCurrency(totals.tax)}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="h6">Total:</Typography>
-                  <Typography variant="h6">{formatCurrency(totals.total)}</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 1, borderTop: 1, borderColor: 'divider' }}>
+                  <Typography variant="h6" fontWeight="bold" color="primary">Total:</Typography>
+                  <Typography variant="h6" fontWeight="bold" color="primary">{formatCurrency(totals.total)}</Typography>
                 </Box>
               </Box>
 
@@ -507,11 +528,24 @@ const PharmacyPOSClean = () => {
                 onClick={processSale}
                 disabled={cart.length === 0 || loading}
                 sx={{ 
-                  bgcolor: 'primary.main',
-                  '&:hover': { bgcolor: 'primary.dark' }
+                  py: 1.5,
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+                  '&:hover': { 
+                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                    boxShadow: '0 6px 20px rgba(102, 126, 234, 0.4)',
+                    transform: 'translateY(-1px)'
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e'
+                  }
                 }}
               >
-                {loading ? 'Processing...' : 'Complete Sale'}
+                {loading ? '💫 Processing...' : '🛒 COMPLETE SALE'}
               </Button>
             </Box>
           </Paper>
