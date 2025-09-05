@@ -103,7 +103,8 @@ const PharmacyPOSComplete = () => {
       }
       
       setMedicines(medicineData);
-      setSearchResults(medicineData.slice(0, 20));
+      // Don't auto-load medicines - let users search instead
+      setSearchResults([]);
       
       // Extract categories from medicines
       const uniqueCategories = [...new Set(medicineData.map(med => med.category))].filter(Boolean);
@@ -129,7 +130,7 @@ const PharmacyPOSComplete = () => {
   // Search medicines
   const searchMedicines = useCallback(async (term) => {
     if (!term.trim()) {
-      setSearchResults(medicines.slice(0, 20));
+      setSearchResults([]);
       return;
     }
 
@@ -434,7 +435,7 @@ const PharmacyPOSComplete = () => {
 
       <Grid container spacing={2} sx={{ flex: 1, p: 2, minHeight: 'calc(100vh - 120px)' }}>
         {/* Left Panel - Medicine Search & Categories */}
-        <Grid item xs={12} lg={7}>
+        <Grid item xs={12} md={7}>
           <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: '600px' }}>
             {/* Search */}
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
@@ -540,7 +541,7 @@ const PharmacyPOSComplete = () => {
                   ) : (
                     <Box sx={{ p: 3, textAlign: 'center' }}>
                       <Typography color="textSecondary">
-                        {searchTerm ? 'No medicines found for your search' : 'No medicines available'}
+                        {searchTerm ? 'No medicines found for your search' : 'Use the search box above or click a quick category to find medicines'}
                       </Typography>
                     </Box>
                   )}
@@ -551,7 +552,7 @@ const PharmacyPOSComplete = () => {
         </Grid>
 
         {/* Right Panel - Cart & Checkout */}
-        <Grid item xs={12} lg={5}>
+        <Grid item xs={12} md={5}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 2, minHeight: '600px' }}>
             
             {/* Customer Info */}
