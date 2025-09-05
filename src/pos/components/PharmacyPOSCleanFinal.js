@@ -441,27 +441,6 @@ const PharmacyPOSCleanFinal = () => {
       setLoading(false);
     }
   };
-      }
-
-      setLastTransaction(saleData);
-      setShowReceipt(true);
-
-      // Reset form
-      setCart([]);
-      setCashReceived(0);
-      setPatientNIC('');
-      setEmployeeId('');
-      setStaffType('employee');
-      setCustomerName('');
-      setCustomerContact('');
-      
-    } catch (error) {
-      console.error('Error processing sale:', error);
-      alert('Error processing sale. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Save new patient
   const saveNewPatient = async () => {
