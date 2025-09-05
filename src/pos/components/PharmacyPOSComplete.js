@@ -503,38 +503,38 @@ const PharmacyPOSComplete = () => {
                           '&:hover': { bgcolor: 'primary.light', color: 'white' }
                         }}
                       >
-                        <ListItemText
-                          primary={
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <Typography variant="subtitle1" fontWeight="bold">
-                                {medicine.name}
-                              </Typography>
-                              <Typography variant="h6" color="primary">
-                                {formatCurrency(medicine.sellingPrice)}
-                              </Typography>
-                            </Box>
-                          }
-                          secondaryTypographyProps={{ component: 'div' }}
-                          secondary={
-                            <Box component="div">
-                              <Typography variant="body2" component="div" sx={{ mb: 0.5 }}>
-                                {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
-                              </Typography>
-                              <Box component="div" sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                                <Chip 
-                                  label={medicine.type} 
-                                  size="small" 
-                                  color={medicine.type === 'Prescription' ? 'error' : 'success'} 
-                                />
-                                <Chip 
-                                  label={`Stock: ${medicine.stockQuantity}`} 
-                                  size="small" 
-                                  color={medicine.stockQuantity < 10 ? 'warning' : 'default'}
-                                />
-                              </Box>
-                            </Box>
-                          }
-                        />
+                        <Box sx={{ width: '100%' }}>
+                          {/* Primary Content */}
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                            <Typography variant="subtitle1" fontWeight="bold">
+                              {medicine.name}
+                            </Typography>
+                            <Typography variant="h6" color="primary">
+                              {formatCurrency(medicine.sellingPrice)}
+                            </Typography>
+                          </Box>
+                          
+                          {/* Secondary Content */}
+                          <Box sx={{ mb: 1 }}>
+                            <Typography variant="body2" color="textSecondary">
+                              {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
+                            </Typography>
+                          </Box>
+                          
+                          {/* Chips */}
+                          <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Chip 
+                              label={medicine.type} 
+                              size="small" 
+                              color={medicine.type === 'Prescription' ? 'error' : 'success'} 
+                            />
+                            <Chip 
+                              label={`Stock: ${medicine.stockQuantity}`} 
+                              size="small" 
+                              color={medicine.stockQuantity < 10 ? 'warning' : 'default'}
+                            />
+                          </Box>
+                        </Box>
                       </ListItem>
                     ))
                   ) : (
@@ -748,7 +748,7 @@ const PharmacyPOSComplete = () => {
                     </Grid>
 
                     {/* Number Pad */}
-                    <Grid size={12}>
+                    <Grid xs={12}>
                       <Typography variant="subtitle2" gutterBottom>Quick Amount:</Typography>
                       <Grid container spacing={1}>
                         {[100, 500, 1000, 2000, 5000].map((amount) => (
@@ -777,7 +777,7 @@ const PharmacyPOSComplete = () => {
                 )}
 
                 {/* Checkout Button */}
-                <Grid size={12}>
+                <Grid xs={12}>
                   <Button
                     fullWidth
                     variant="contained"
