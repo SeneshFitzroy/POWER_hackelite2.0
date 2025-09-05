@@ -201,15 +201,18 @@ const PharmacyPOSClean = () => {
         })),
         subtotal: totals.subtotal,
         tax: totals.tax,
+        taxRate: taxRate,
         discount: totals.discount,
         total: totals.total,
         paymentMethod,
         cashReceived: paymentMethod === 'cash' ? cashReceived : totals.total,
         change: paymentMethod === 'cash' ? Math.max(0, cashReceived - totals.total) : 0,
-        customerPhone: customerPhone || null,
+        customerNIC: customerNIC || null,
         employeeId,
         staffType,
-        timestamp: new Date()
+        date: currentDateTime.toLocaleDateString('en-CA'), // YYYY-MM-DD format
+        time: currentDateTime.toLocaleTimeString('en-GB', { hour12: false }), // HH:MM:SS format
+        timestamp: currentDateTime
       };
 
       await transactionService.addTransaction(saleData);
@@ -222,9 +225,10 @@ const PharmacyPOSClean = () => {
       // Reset form
       setCart([]);
       setCashReceived(0);
-      setCustomerPhone('');
+      setCustomerNIC('');
       setEmployeeId('');
       setStaffType('employee');
+      setInvoiceNumber('');
       
     } catch (error) {
       console.error('Error processing sale:', error);
