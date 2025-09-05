@@ -397,17 +397,80 @@ const PharmacyPOSClean = () => {
               borderColor: 'divider', 
               background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' 
             }}>
-              <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057" sx={{ mb: 1, fontSize: '1.1rem' }}>Customer Information</Typography>
+              <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057" sx={{ mb: 1, fontSize: '1.1rem' }}>Customer & Transaction Details</Typography>
               
-              {/* Customer Phone */}
+              {/* Invoice Number Display */}
+              <Box sx={{ display: 'flex', gap: 1, mb: 1.5 }}>
+                <TextField
+                  label="Invoice Number"
+                  value={invoiceNumber || generateInvoiceNumber()}
+                  onChange={(e) => setInvoiceNumber(e.target.value)}
+                  size="small"
+                  sx={{ flex: 1 }}
+                />
+                <TextField
+                  label="Date"
+                  value={new Date().toLocaleDateString('en-CA')}
+                  size="small"
+                  InputProps={{ readOnly: true }}
+                  sx={{ flex: 0.7 }}
+                />
+                <TextField
+                  label="Time"
+                  value={new Date().toLocaleTimeString('en-GB', { hour12: false })}
+                  size="small"
+                  InputProps={{ readOnly: true }}
+                  sx={{ flex: 0.7 }}
+                />
+              </Box>
+              
+              {/* Customer NIC */}
               <TextField
                 fullWidth
-                placeholder="Customer phone number"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
+                label="Patient NIC Number"
+                placeholder="Enter patient NIC number"
+                value={customerNIC}
+                onChange={(e) => setCustomerNIC(e.target.value)}
                 size="small"
                 sx={{ mb: 1.5 }}
               />
+              
+              {/* Tax Configuration */}
+              <Box sx={{ display: 'flex', gap: 1, mb: 1.5 }}>
+                <TextField
+                  label="Tax Rate (%)"
+                  type="number"
+                  value={taxRate * 100}
+                  onChange={(e) => setTaxRate(Number(e.target.value) / 100)}
+                  size="small"
+                  inputProps={{ min: 0, max: 100, step: 0.1 }}
+                  sx={{ flex: 1 }}
+                />
+                <Button
+                  variant={showCashBalance ? "contained" : "outlined"}
+                  size="small"
+                  onClick={() => setShowCashBalance(!showCashBalance)}
+                  sx={{ minWidth: '140px' }}
+                >
+                  {showCashBalance ? 'Hide Balance' : 'Show Cash Balance'}
+                </Button>
+              </Box>
+              
+              {/* Cash Balance Display */}
+              {showCashBalance && (
+                <Box sx={{ 
+                  p: 1.5, 
+                  mb: 1.5, 
+                  backgroundColor: 'white', 
+                  borderRadius: 2, 
+                  border: '1px solid #e0e0e0',
+                  textAlign: 'center'
+                }}>
+                  <Typography variant="h6" color="primary" fontWeight="bold">
+                    Cash Balance: {formatCurrency(cashReceived > 0 ? cashReceived - totals.total : 0)}
+                  </Typography>
+                </Box>
+              )}
               
               {/* Staff Information */}
               <Typography variant="subtitle2" fontWeight="bold" color="#495057" sx={{ mb: 1 }}>Staff Information</Typography>
