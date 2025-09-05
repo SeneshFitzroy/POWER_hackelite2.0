@@ -415,15 +415,21 @@ const PharmacyPOSComplete = () => {
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
               <Typography variant="subtitle2" gutterBottom>Quick Categories:</Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {categories.map((category) => (
-                  <Chip
-                    key={category}
-                    label={category}
-                    size="small"
-                    onClick={() => setSearchTerm(category)}
-                    sx={{ cursor: 'pointer' }}
-                  />
-                ))}
+                {categories.length > 0 ? (
+                  categories.map((category) => (
+                    <Chip
+                      key={category}
+                      label={category}
+                      size="small"
+                      onClick={() => setSearchTerm(category)}
+                      sx={{ cursor: 'pointer' }}
+                    />
+                  ))
+                ) : (
+                  <Typography variant="body2" color="textSecondary">
+                    Loading categories...
+                  </Typography>
+                )}
               </Box>
             </Box>
 
