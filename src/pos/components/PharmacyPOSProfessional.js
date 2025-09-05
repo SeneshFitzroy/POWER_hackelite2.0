@@ -483,7 +483,7 @@ const PharmacyPOSProfessional = () => {
             }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
                 <Typography variant="h6" fontWeight="bold" color="#1e293b">
-                  👤 Patient Information
+                  PATIENT INFORMATION
                 </Typography>
                 <Button
                   variant="contained"
@@ -737,46 +737,67 @@ const PharmacyPOSProfessional = () => {
                     key={medicine.id}
                     onClick={() => addToCart(medicine)}
                     sx={{
-                      cursor: 'pointer',
-                      backgroundColor: 'white',
+                      cursor: medicine.stock > 0 ? 'pointer' : 'not-allowed',
+                      backgroundColor: medicine.stock > 0 ? 'white' : '#f8f9fa',
                       mb: 1,
                       mx: 1,
                       borderRadius: 2,
-                      border: '1px solid #e2e8f0',
-                      '&:hover': { 
-                        backgroundColor: '#f1f5f9',
-                        borderColor: '#3b82f6',
+                      border: medicine.stock > 0 ? '2px solid #10b981' : '1px solid #e2e8f0',
+                      opacity: medicine.stock > 0 ? 1 : 0.6,
+                      '&:hover': medicine.stock > 0 ? { 
+                        backgroundColor: '#f0fdf4',
+                        borderColor: '#059669',
                         transform: 'translateY(-1px)',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                      },
-                      transition: 'all 0.2s ease-in-out'
+                        boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.1)'
+                      } : {},
+                      transition: 'all 0.2s ease-in-out',
+                      position: 'relative'
                     }}
                   >
-                    <Box sx={{ width: '100%' }}>
+                    {/* Availability Badge */}
+                    <Box sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      backgroundColor: medicine.stock > 0 ? '#10b981' : '#ef4444',
+                      color: 'white',
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: 1,
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold'
+                    }}>
+                      {medicine.stock > 0 ? 'AVAILABLE' : 'OUT OF STOCK'}
+                    </Box>
+
+                    <Box sx={{ width: '100%', pr: 8 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                         <Typography variant="subtitle1" fontWeight="bold" color="#1e293b">
                           {medicine.name}
                         </Typography>
-                        <Typography variant="h6" sx={{ color: '#ef4444', fontWeight: 'bold' }}>
+                        <Typography variant="h6" sx={{ color: '#1e40af', fontWeight: 'bold' }}>
                           {formatCurrency(medicine.sellingPrice)}
                         </Typography>
                       </Box>
                       <Typography variant="body2" color="#64748b" gutterBottom>
-                        {medicine.genericName} | {medicine.strength} | {medicine.dosageForm}
+                        {medicine.genericName} • {medicine.strength} • {medicine.dosageForm}
                       </Typography>
                       <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
                         <Chip 
-                          label={`Stock: ${medicine.stock || 0}`} 
+                          label={`Stock: ${medicine.stock || 0} units`} 
                           size="small" 
-                          color={medicine.stock > 10 ? "success" : medicine.stock > 0 ? "warning" : "error"} 
-                          variant="outlined"
-                          sx={{ fontSize: '0.7rem' }}
+                          sx={{
+                            backgroundColor: medicine.stock > 10 ? '#dcfce7' : medicine.stock > 0 ? '#fef3c7' : '#fee2e2',
+                            color: medicine.stock > 10 ? '#166534' : medicine.stock > 0 ? '#92400e' : '#991b1b',
+                            fontSize: '0.7rem',
+                            fontWeight: 'bold'
+                          }}
                         />
                         <Chip 
                           label={medicine.manufacturer} 
                           size="small" 
                           variant="outlined"
-                          sx={{ fontSize: '0.7rem', color: '#64748b' }}
+                          sx={{ fontSize: '0.7rem', color: '#64748b', borderColor: '#cbd5e1' }}
                         />
                         <Chip 
                           label={medicine.category} 
@@ -784,7 +805,8 @@ const PharmacyPOSProfessional = () => {
                           sx={{ 
                             fontSize: '0.7rem',
                             backgroundColor: '#dbeafe',
-                            color: '#1e40af'
+                            color: '#1e40af',
+                            fontWeight: 'bold'
                           }}
                         />
                       </Box>
@@ -964,7 +986,7 @@ const PharmacyPOSProfessional = () => {
                   }
                 }}
               >
-                {loading ? '💫 Processing...' : '🛒 COMPLETE SALE'}
+                {loading ? 'PROCESSING TRANSACTION...' : 'COMPLETE SALE'}
               </Button>
             </Box>
           </Paper>
@@ -999,12 +1021,14 @@ const PharmacyPOSProfessional = () => {
               p: 1,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              width: 40,
+              height: 40
             }}>
-              👤
+              <Typography sx={{ color: 'white', fontWeight: 'bold' }}>P</Typography>
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-              Add New Patient
+              ADD NEW PATIENT
             </Typography>
           </Box>
           <IconButton 
@@ -1161,12 +1185,14 @@ const PharmacyPOSProfessional = () => {
               p: 1,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              width: 40,
+              height: 40
             }}>
-              🧾
+              <Typography sx={{ color: 'white', fontWeight: 'bold' }}>R</Typography>
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-              Digital Receipt
+              DIGITAL RECEIPT
             </Typography>
           </Box>
           <IconButton 
@@ -1182,13 +1208,13 @@ const PharmacyPOSProfessional = () => {
             {/* Receipt Header */}
             <Box sx={{ textAlign: 'center', mb: 4, pb: 3, borderBottom: '2px solid #e2e8f0' }}>
               <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1e40af', mb: 1 }}>
-                🏥 MediCare Pharmacy
+                MEDICARE PHARMACY
               </Typography>
               <Typography variant="body2" sx={{ color: '#64748b' }}>
                 Professional Healthcare Solutions
               </Typography>
               <Typography variant="body2" sx={{ color: '#64748b' }}>
-                📍 123 Medical Street, Colombo 07 | 📞 +94 11 234 5678
+                123 Medical Street, Colombo 07 | +94 11 234 5678
               </Typography>
             </Box>
 
@@ -1288,7 +1314,7 @@ const PharmacyPOSProfessional = () => {
             {/* Footer */}
             <Box sx={{ textAlign: 'center', mt: 4, pt: 3, borderTop: '1px solid #e2e8f0' }}>
               <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
-                Thank you for choosing MediCare Pharmacy!
+                Thank you for choosing Medicare Pharmacy!
               </Typography>
               <Typography variant="body2" sx={{ color: '#64748b', fontSize: '0.75rem' }}>
                 For any queries, please contact us at info@medicare.lk
