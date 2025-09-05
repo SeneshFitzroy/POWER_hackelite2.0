@@ -174,12 +174,36 @@ const PharmacyPOSProfessional = () => {
         medicine.category.toLowerCase().includes(term.toLowerCase())
       );
 
-      setSearchResults(localResults.slice(0, 50));
+      // Sort results: Available medicines (stock > 0) first, then out of stock
+      const sortedResults = localResults.sort((a, b) => {
+        const aAvailable = a.stock > 0;
+        const bAvailable = b.stock > 0;
+        
+        if (aAvailable && !bAvailable) return -1;
+        if (!aAvailable && bAvailable) return 1;
+        
+        // If both have same availability, sort by name
+        return a.name.localeCompare(b.name);
+      });
+
+      setSearchResults(sortedResults.slice(0, 50));
 
       if (localResults.length === 0) {
         console.log('Searching Firebase for medicines...');
         const fbMedicines = await medicineService.searchMedicines(term);
-        setSearchResults(fbMedicines.slice(0, 50));
+        
+        // Sort Firebase results the same way
+        const sortedFbResults = fbMedicines.sort((a, b) => {
+          const aAvailable = a.stock > 0;
+          const bAvailable = b.stock > 0;
+          
+          if (aAvailable && !bAvailable) return -1;
+          if (!aAvailable && bAvailable) return 1;
+          
+          return a.name.localeCompare(b.name);
+        });
+        
+        setSearchResults(sortedFbResults.slice(0, 50));
       }
     } catch (error) {
       console.error('Search error:', error);
