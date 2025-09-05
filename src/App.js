@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box } from '@mui/material';
-import PharmacyPOSCleanFinal from './pos/components/PharmacyPOSCleanFinal';
+import PharmacyPOSFirebaseIntegrated from './pos/components/PharmacyPOSFirebaseIntegrated';
 import './App.css';
 
 function App() {
