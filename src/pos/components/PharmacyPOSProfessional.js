@@ -174,32 +174,12 @@ const PharmacyPOSProfessional = () => {
         medicine.category.toLowerCase().includes(term.toLowerCase())
       );
 
-      // Sort results: Available medicines (stock > 0) first, then out of stock
-      const sortedResults = localResults.sort((a, b) => {
-        const aInStock = (a.stock || 0) > 0;
-        const bInStock = (b.stock || 0) > 0;
-        
-        if (aInStock && !bInStock) return -1;
-        if (!aInStock && bInStock) return 1;
-        
-        // If both have same stock status, sort by name
-        return a.name.localeCompare(b.name);
-      });
-
-      setSearchResults(sortedResults.slice(0, 50));
+      setSearchResults(localResults.slice(0, 50));
 
       if (localResults.length === 0) {
         console.log('Searching Firebase for medicines...');
         const fbMedicines = await medicineService.searchMedicines(term);
-        const sortedFbResults = fbMedicines.sort((a, b) => {
-          const aInStock = (a.stock || 0) > 0;
-          const bInStock = (b.stock || 0) > 0;
-          
-          if (aInStock && !bInStock) return -1;
-          if (!aInStock && bInStock) return 1;
-          return a.name.localeCompare(b.name);
-        });
-        setSearchResults(sortedFbResults.slice(0, 50));
+        setSearchResults(fbMedicines.slice(0, 50));
       }
     } catch (error) {
       console.error('Search error:', error);
@@ -373,8 +353,8 @@ const PharmacyPOSProfessional = () => {
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h4" fontWeight="bold" sx={{ color: 'white' }}>
-              🏥 MEDICARE PHARMACY POS
+            <Typography variant="h4" fontWeight="bold" sx={{ color: 'white', letterSpacing: '0.5px' }}>
+              MEDICARE PHARMACY SYSTEM
             </Typography>
             <Chip 
               label={`Invoice: ${invoiceNumber}`} 
@@ -382,14 +362,25 @@ const PharmacyPOSProfessional = () => {
               sx={{ 
                 color: 'white', 
                 borderColor: 'white',
-                backgroundColor: 'rgba(255,255,255,0.1)'
+                backgroundColor: 'rgba(255,255,255,0.15)',
+                fontWeight: 'bold'
               }} 
             />
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="body1" sx={{ color: 'white' }}>
-              {currentTime.toLocaleDateString()} • {currentTime.toLocaleTimeString()}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+              <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
+                TIME & DATE
+              </Typography>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="body1" sx={{ color: 'white', fontWeight: 'bold' }}>
+                  {currentTime.toLocaleDateString()}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+                  {currentTime.toLocaleTimeString()}
+                </Typography>
+              </Box>
+            </Box>
             <FormControlLabel
               control={
                 <Switch 
