@@ -50,36 +50,38 @@ export const medicineService = {
   // Search medicines by name or barcode
   searchMedicines: async (searchTerm) => {
     try {
-      const q = query(
-        collection(db, 'medicines'),
-        where('name', '>=', searchTerm.toLowerCase()),
-        where('name', '<=', searchTerm.toLowerCase() + '\uf8ff'),
-        limit(20)
-      );
+      // Get all medicines first, then filter client-side for better search
+      const q = query(collection(db, 'medicines'), orderBy('name'));
       const querySnapshot = await getDocs(q);
-      const nameResults = querySnapshot.docs.map(doc => ({
+      const allMedicines = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
 
-      // Also search by barcode
-      const barcodeQuery = query(
-        collection(db, 'medicines'),
-        where('barcode', '==', searchTerm)
-      );
-      const barcodeSnapshot = await getDocs(barcodeQuery);
-      const barcodeResults = barcodeSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      // Filter medicines based on search term (case-insensitive)
+      const searchLower = searchTerm.toLowerCase();
+      const filteredMedicines = allMedicines.filter(medicine => {
+        return (
+          medicine.name?.toLowerCase().includes(searchLower) ||
+          medicine.genericName?.toLowerCase().includes(searchLower) ||
+          medicine.manufacturer?.toLowerCase().includes(searchLower) ||
+          medicine.category?.toLowerCase().includes(searchLower) ||
+          medicine.activeIngredient?.toLowerCase().includes(searchLower) ||
+          medicine.barcode === searchTerm
+        );
+      });
 
-      // Combine and deduplicate results
-      const allResults = [...nameResults, ...barcodeResults];
-      const uniqueResults = allResults.filter((medicine, index, self) => 
-        index === self.findIndex(m => m.id === medicine.id)
-      );
+      // Sort by relevance (exact name matches first)
+      filteredMedicines.sort((a, b) => {
+        const aNameMatch = a.name?.toLowerCase().startsWith(searchLower);
+        const bNameMatch = b.name?.toLowerCase().startsWith(searchLower);
+        
+        if (aNameMatch && !bNameMatch) return -1;
+        if (!aNameMatch && bNameMatch) return 1;
+        return a.name?.localeCompare(b.name) || 0;
+      });
 
-      return uniqueResults;
+      return filteredMedicines.slice(0, 20); // Limit to 20 results
     } catch (error) {
       throw new Error(`Error searching medicines: ${error.message}`);
     }
