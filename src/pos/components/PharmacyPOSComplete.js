@@ -414,6 +414,29 @@ const PharmacyPOSComplete = () => {
                   >
                     Remove Cash
                   </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    sx={{ color: 'white', borderColor: 'white' }}
+                    onClick={async () => {
+                      if (window.confirm('This will replace all medicines with real Sri Lankan medicines. Continue?')) {
+                        try {
+                          setLoading(true);
+                          await initializeSampleData();
+                          const newMedicines = await medicineService.getAllMedicines();
+                          setMedicines(newMedicines);
+                          setSearchResults([]);
+                          showAlert('Medicines database updated with real Sri Lankan medicines!', 'success');
+                        } catch (error) {
+                          showAlert('Error updating medicines: ' + error.message, 'error');
+                        } finally {
+                          setLoading(false);
+                        }
+                      }
+                    }}
+                  >
+                    Update Medicines
+                  </Button>
                 </Box>
               </Box>
               <FormControlLabel
@@ -433,12 +456,12 @@ const PharmacyPOSComplete = () => {
         </Alert>
       )}
 
-      <Grid container spacing={2} sx={{ flex: 1, p: 2, minHeight: 'calc(100vh - 120px)' }}>
+      <Grid container spacing={1} sx={{ flex: 1, p: 1, minHeight: 'calc(100vh - 120px)' }}>
         {/* Left Panel - Medicine Search & Categories */}
-        <Grid item xs={12} md={7}>
-          <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: '600px' }}>
+        <Grid item xs={6} md={7}>
+          <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: '400px' }}>
             {/* Search */}
-            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+            <Box sx={{ p: 1.5, borderBottom: 1, borderColor: 'divider' }}>
               <TextField
                 fullWidth
                 placeholder="Search medicines by name, generic name, or barcode..."
@@ -462,7 +485,7 @@ const PharmacyPOSComplete = () => {
             </Box>
 
             {/* Quick Categories */}
-            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+            <Box sx={{ p: 1.5, borderBottom: 1, borderColor: 'divider' }}>
               <Typography variant="subtitle2" gutterBottom>Quick Categories:</Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {categories.length > 0 ? (
@@ -539,8 +562,8 @@ const PharmacyPOSComplete = () => {
                       </ListItem>
                     ))
                   ) : (
-                    <Box sx={{ p: 3, textAlign: 'center' }}>
-                      <Typography color="textSecondary">
+                    <Box sx={{ p: 1, textAlign: 'center', minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Typography variant="body2" color="textSecondary">
                         {searchTerm ? 'No medicines found for your search' : 'Use the search box above or click a quick category to find medicines'}
                       </Typography>
                     </Box>
@@ -552,11 +575,11 @@ const PharmacyPOSComplete = () => {
         </Grid>
 
         {/* Right Panel - Cart & Checkout */}
-        <Grid item xs={12} md={5}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 2, minHeight: '600px' }}>
+        <Grid item xs={6} md={5}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 1, minHeight: '400px' }}>
             
             {/* Customer Info */}
-            <Paper sx={{ p: 2 }}>
+            <Paper sx={{ p: 1.5 }}>
               <Typography variant="subtitle1" gutterBottom>Customer Information</Typography>
               <Grid container spacing={2}>
                 <Grid item xs={8}>
