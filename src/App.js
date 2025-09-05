@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Container, Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
 import PharmacyPOS from './pos/components/PharmacyPOS';
 import SetupComponent from './components/SetupComponent';
+import TestComponent from './components/TestComponent';
 import './App.css';
 
 // Simple Navigation Component
@@ -65,6 +66,7 @@ function App() {
           <Route path="/" element={<SimpleDashboard />} />
           <Route path="/setup" element={<SetupComponent />} />
           <Route path="/pos" element={<PharmacyPOS />} />
+          <Route path="/test" element={<TestComponent />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Container>
