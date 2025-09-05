@@ -8,8 +8,8 @@ function App() {
   return (
     <Box sx={{ height: '100vh', overflow: 'hidden' }}>
       <Routes>
-        <Route path="/" element={<PharmacyPOSCleanFinal />} />
-        <Route path="/pos" element={<PharmacyPOSCleanFinal />} />
+        <Route path="/" element={<PharmacyPOSFirebaseIntegrated />} />
+        <Route path="/pos" element={<PharmacyPOSFirebaseIntegrated />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Box>
