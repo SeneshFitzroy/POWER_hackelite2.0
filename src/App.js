@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Container, Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
-import PharmacyPOS from './pos/components/PharmacyPOS';
+import PharmacyPOSComplete from './pos/components/PharmacyPOSComplete';
 import SetupComponent from './components/SetupComponent';
 import TestComponent from './components/TestComponent';
 import './App.css';
@@ -65,7 +65,7 @@ function App() {
         <Routes>
           <Route path="/" element={<SimpleDashboard />} />
           <Route path="/setup" element={<SetupComponent />} />
-          <Route path="/pos" element={<PharmacyPOS />} />
+          <Route path="/pos" element={<PharmacyPOSComplete />} />
           <Route path="/test" element={<TestComponent />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
