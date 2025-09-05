@@ -429,31 +429,6 @@ const PharmacyPOSCleanFinal = () => {
         {/* LEFT PANEL - INPUT SECTIONS (30%) */}
         <Box sx={{ width: '30%', display: 'flex', flexDirection: 'column', gap: 2 }}>
           
-          {/* MEDICINE SEARCH */}
-          <Paper sx={{ p: 3, borderRadius: 2, border: '1px solid #e5e7eb' }}>
-            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 2 }}>
-              MEDICINE SEARCH
-            </Typography>
-            <TextField
-              fullWidth
-              placeholder="Search medicines by name, generic, manufacturer..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{ 
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 1,
-                  backgroundColor: '#f9fafb',
-                  '&:hover': {
-                    backgroundColor: '#f3f4f6'
-                  },
-                  '&.Mui-focused': {
-                    backgroundColor: 'white'
-                  }
-                }
-              }}
-            />
-          </Paper>
-
           {/* PATIENT INFORMATION */}
           <Paper sx={{ p: 3, borderRadius: 2, border: '1px solid #e5e7eb' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -576,6 +551,32 @@ const PharmacyPOSCleanFinal = () => {
 
         {/* MIDDLE PANEL - AVAILABLE MEDICINES (40%) */}
         <Box sx={{ width: '40%', display: 'flex', flexDirection: 'column' }}>
+          
+          {/* MEDICINE SEARCH - MOVED TO TOP OF AVAILABLE MEDICINES */}
+          <Paper sx={{ p: 3, borderRadius: 2, border: '1px solid #e5e7eb', mb: 2 }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 2 }}>
+              MEDICINE SEARCH
+            </Typography>
+            <TextField
+              fullWidth
+              placeholder="Search medicines by name, generic, manufacturer..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{ 
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 1,
+                  backgroundColor: '#f9fafb',
+                  '&:hover': {
+                    backgroundColor: '#f3f4f6'
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'white'
+                  }
+                }
+              }}
+            />
+          </Paper>
+          
           <Paper sx={{ 
             flex: 1, 
             display: 'flex', 
