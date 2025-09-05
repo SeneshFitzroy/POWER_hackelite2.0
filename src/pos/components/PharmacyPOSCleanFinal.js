@@ -62,6 +62,11 @@ const PharmacyPOSCleanFinal = () => {
     medicalNotes: ''
   });
 
+  // Helper function to get medicine stock consistently
+  const getMedicineStock = (medicine) => {
+    return medicine.stockQuantity || medicine.stock || 0;
+  };
+
   // Auto-generate invoice number
   const [invoiceNumber] = useState(`INV-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${Math.floor(Math.random() * 900000) + 100000}`);
 
@@ -247,15 +252,17 @@ const PharmacyPOSCleanFinal = () => {
 
   // Add to cart with stock validation
   const addToCart = (medicine) => {
-    if (!medicine.stock || medicine.stock <= 0) {
+    const currentStock = getMedicineStock(medicine);
+    
+    if (!currentStock || currentStock <= 0) {
       alert('This medicine is currently out of stock.');
       return;
     }
 
     const existingItem = cart.find(item => item.id === medicine.id);
     if (existingItem) {
-      if (existingItem.quantity >= medicine.stock) {
-        alert(`Only ${medicine.stock} units available.`);
+      if (existingItem.quantity >= currentStock) {
+        alert(`Only ${currentStock} units available.`);
         return;
       }
       
@@ -324,7 +331,7 @@ const PharmacyPOSCleanFinal = () => {
     return `${weight.toFixed(0)}g`;
   };
 
-  // Process sale
+  // Process sale - FULL FIREBASE INTEGRATION
   const processSale = async () => {
     if (cart.length === 0) {
       alert('Cart is empty. Please add medicines before completing the sale.');
@@ -344,9 +351,43 @@ const PharmacyPOSCleanFinal = () => {
     try {
       setLoading(true);
       
+      // Handle patient data if exists
+      let patientId = null;
+      if (currentPatient) {
+        patientId = currentPatient.id;
+        // Update patient's last visit and purchase amount
+        await patientService.updatePurchaseHistory(patientId, total);
+      } else if (patientNIC.trim()) {
+        // Try to create new patient if NIC provided but no existing patient
+        try {
+          const newPatient = await patientService.addPatient({
+            nic: patientNIC,
+            name: customerName || 'Walk-in Customer',
+            contact: customerContact || '',
+            address: '',
+            age: '',
+            gender: '',
+            bloodGroup: '',
+            medicalNotes: 'Auto-created during sale'
+          });
+          patientId = newPatient.id;
+          setCurrentPatient(newPatient);
+        } catch (error) {
+          console.error('Error creating patient:', error);
+        }
+      }
+      
       const saleData = {
         receiptNumber: `RCP-${invoiceNumber}`,
-        items: cart,
+        items: cart.map(item => ({
+          medicineId: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.sellingPrice,
+          totalPrice: item.quantity * item.sellingPrice,
+          batchNumber: item.batchNumber,
+          expiryDate: item.expiryDate
+        })),
         subtotal: totals.subtotal,
         tax: tax,
         total: total,
@@ -356,18 +397,50 @@ const PharmacyPOSCleanFinal = () => {
         customerName: customerName || 'Walk-in Customer',
         customerContact: customerContact,
         patientNIC: patientNIC,
+        patientId: patientId,
         staffName: `${staffType.toUpperCase()}: ${employeeId}`,
         staffType: staffType,
         employeeId: employeeId,
-        timestamp: new Date().toISOString(),
-        invoiceNumber: invoiceNumber
+        invoiceNumber: invoiceNumber,
+        branchId: 'MAIN-BRANCH',
+        location: 'Main Pharmacy'
       };
 
-      await transactionService.createTransaction(saleData);
+      // Process the sale transaction with stock updates
+      const transaction = await transactionService.processSale(saleData);
       
-      // Update stock for each item
-      for (const item of cart) {
-        await medicineService.updateStock(item.id, -item.quantity);
+      // Update local cash balance for cash payments
+      if (paymentMethod === 'cash') {
+        const newBalance = cashBalance + total;
+        setCashBalance(newBalance);
+        localStorage.setItem('pharmacyCashBalance', newBalance.toString());
+      }
+      
+      // Reload medicines to reflect updated stock
+      await loadInitialData();
+      
+      setLastTransaction(transaction);
+      setShowReceipt(true);
+      
+      // Clear cart and reset form
+      setCart([]);
+      setCashReceived(0);
+      setSearchTerm('');
+      setSearchResults([]);
+      if (!currentPatient) {
+        setPatientNIC('');
+        setCustomerName('');
+        setCustomerContact('');
+      }
+      
+      console.log('Sale completed successfully:', transaction.id);
+    } catch (error) {
+      console.error('Error processing sale:', error);
+      alert('Error processing sale. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
       }
 
       setLastTransaction(saleData);
