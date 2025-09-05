@@ -8,7 +8,7 @@ import {
   limit, 
   serverTimestamp 
 } from 'firebase/firestore';
-import { db } from '../../firebase/firebaseConfig';
+import { db } from '../../firebase/config';
 
 export const addCustomer = async (customerData) => {
   try {
