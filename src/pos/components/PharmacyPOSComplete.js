@@ -551,14 +551,14 @@ const PharmacyPOSComplete = () => {
         </Grid>
 
         {/* Right Panel - Cart & Checkout */}
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid xs={12} md={6}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 2 }}>
             
             {/* Customer Info */}
             <Paper sx={{ p: 2 }}>
               <Typography variant="subtitle1" gutterBottom>Customer Information</Typography>
               <Grid container spacing={2}>
-                <Grid size={8}>
+                <Grid xs={8}>
                   <TextField
                     fullWidth
                     size="small"
@@ -570,7 +570,7 @@ const PharmacyPOSComplete = () => {
                     }}
                   />
                 </Grid>
-                <Grid size={4}>
+                <Grid xs={4}>
                   <Button variant="outlined" fullWidth onClick={searchCustomer}>
                     Search
                   </Button>
@@ -659,28 +659,28 @@ const PharmacyPOSComplete = () => {
               {/* Totals */}
               <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
                 <Grid container spacing={1}>
-                  <Grid size={6}>
+                  <Grid xs={6}>
                     <Typography>Subtotal:</Typography>
                   </Grid>
-                  <Grid size={6}>
+                  <Grid xs={6}>
                     <Typography align="right">{formatCurrency(totals.subtotal)}</Typography>
                   </Grid>
-                  <Grid size={6}>
+                  <Grid xs={6}>
                     <Typography>Discount:</Typography>
                   </Grid>
-                  <Grid size={6}>
+                  <Grid xs={6}>
                     <Typography align="right" color="error">-{formatCurrency(totals.discount)}</Typography>
                   </Grid>
-                  <Grid size={6}>
+                  <Grid xs={6}>
                     <Typography>Tax:</Typography>
                   </Grid>
-                  <Grid size={6}>
+                  <Grid xs={6}>
                     <Typography align="right">{formatCurrency(totals.tax)}</Typography>
                   </Grid>
-                  <Grid size={6}>
+                  <Grid xs={6}>
                     <Typography variant="h6" fontWeight="bold">Total:</Typography>
                   </Grid>
-                  <Grid size={6}>
+                  <Grid xs={6}>
                     <Typography variant="h6" fontWeight="bold" align="right">
                       {formatCurrency(totals.total)}
                     </Typography>
@@ -693,7 +693,7 @@ const PharmacyPOSComplete = () => {
             <Paper sx={{ p: 2 }}>
               <Grid container spacing={2}>
                 {/* Employee ID */}
-                <Grid size={6}>
+                <Grid xs={6}>
                   <TextField
                     fullWidth
                     size="small"
@@ -706,7 +706,7 @@ const PharmacyPOSComplete = () => {
 
                 {/* Registration Number (if prescription required) */}
                 {isPrescriptionRequired && (
-                  <Grid size={6}>
+                  <Grid xs={6}>
                     <TextField
                       fullWidth
                       size="small"
@@ -721,7 +721,7 @@ const PharmacyPOSComplete = () => {
                 {/* Cash Payment */}
                 {paymentMethod === 'cash' && (
                   <>
-                    <Grid size={6}>
+                    <Grid xs={6}>
                       <TextField
                         fullWidth
                         size="small"
@@ -734,7 +734,7 @@ const PharmacyPOSComplete = () => {
                         }}
                       />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid xs={6}>
                       <TextField
                         fullWidth
                         size="small"
