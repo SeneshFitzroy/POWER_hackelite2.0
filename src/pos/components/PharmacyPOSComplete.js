@@ -372,9 +372,47 @@ const PharmacyPOSComplete = () => {
           </Grid>
           <Grid item>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h6">
-                Cash Balance: {formatCurrency(cashBalance)}
-              </Typography>
+              <Box>
+                <Typography variant="h6">
+                  Cash Balance: {formatCurrency(cashBalance)}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    sx={{ color: 'white', borderColor: 'white' }}
+                    onClick={() => {
+                      const amount = prompt('Add cash amount:');
+                      if (amount && !isNaN(amount)) {
+                        const newBalance = cashBalance + parseFloat(amount);
+                        setCashBalance(newBalance);
+                        localStorage.setItem('pharmacyCashBalance', newBalance.toString());
+                        showAlert(`Added ${formatCurrency(parseFloat(amount))} to cash balance`, 'success');
+                      }
+                    }}
+                  >
+                    Add Cash
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    sx={{ color: 'white', borderColor: 'white' }}
+                    onClick={() => {
+                      const amount = prompt('Remove cash amount:');
+                      if (amount && !isNaN(amount) && parseFloat(amount) <= cashBalance) {
+                        const newBalance = cashBalance - parseFloat(amount);
+                        setCashBalance(newBalance);
+                        localStorage.setItem('pharmacyCashBalance', newBalance.toString());
+                        showAlert(`Removed ${formatCurrency(parseFloat(amount))} from cash balance`, 'info');
+                      } else if (parseFloat(amount) > cashBalance) {
+                        showAlert('Insufficient cash balance', 'error');
+                      }
+                    }}
+                  >
+                    Remove Cash
+                  </Button>
+                </Box>
+              </Box>
               <FormControlLabel
                 control={<Switch checked={paymentMethod === 'card'} onChange={(e) => setPaymentMethod(e.target.checked ? 'card' : 'cash')} />}
                 label={paymentMethod === 'cash' ? 'CASH' : 'CARD'}
