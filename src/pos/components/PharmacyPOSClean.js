@@ -256,22 +256,19 @@ const PharmacyPOSClean = () => {
       <Box sx={{ 
         flex: 1, 
         display: 'flex', 
+        flexDirection: 'column',
         gap: 2, 
         p: 2, 
-        overflow: 'hidden',
-        '@media (max-width: 1200px)': {
-          flexDirection: 'column',
-          gap: 1,
-        }
+        overflow: 'hidden'
       }}>
         
-        {/* Left Panel - Search */}
-        <Box sx={{ flex: '0 1 65%', maxWidth: '65%', position: 'relative' }}>
+        {/* Top Section - Search */}
+        <Box sx={{ height: '45%', display: 'flex', flexDirection: 'column' }}>
           {/* Floating Search Bar */}
           <Paper sx={{ 
-            p: 3,
+            p: 2,
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: 4,
+            borderRadius: 3,
             position: 'sticky',
             top: 0,
             zIndex: 1000,
@@ -283,9 +280,9 @@ const PharmacyPOSClean = () => {
               placeholder="🔍 Search medicines..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              size="medium"
+              size="small"
               sx={{
-                mb: 2,
+                mb: 1,
                 '& .MuiOutlinedInput-root': {
                   backgroundColor: 'rgba(255,255,255,0.95)',
                   borderRadius: '30px',
@@ -300,23 +297,6 @@ const PharmacyPOSClean = () => {
                 }
               }}
             />
-
-            {/* Categories */}
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {categories.map((category) => (
-                <Chip
-                  key={category}
-                  label={category}
-                  size="small"
-                  onClick={() => setSearchTerm(category)}
-                  sx={{ 
-                    fontSize: '12px',
-                    backgroundColor: 'rgba(255,255,255,0.9)',
-                    '&:hover': { backgroundColor: 'white', transform: 'scale(1.05)' }
-                  }}
-                />
-              ))}
-            </Box>
           </Paper>
 
           {/* Search Results */}
@@ -389,18 +369,18 @@ const PharmacyPOSClean = () => {
           )}
         </Box>
 
-        {/* Right Panel - Cart */}
-        <Box sx={{ flex: '0 1 35%', minWidth: '420px', maxWidth: '35%' }}>
-          <Paper sx={{ 
-            height: '100%', 
-            display: 'flex', 
-            flexDirection: 'column',
-            borderRadius: 3,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-          }}>
-            
-            {/* Customer Info */}
-            <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider', background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
+        {/* Bottom Section - Shopping Cart */}
+        <Box sx={{ height: '55%', display: 'flex', gap: 2 }}>
+          
+          {/* Customer Information Panel */}
+          <Box sx={{ width: '300px' }}>
+            <Paper sx={{ 
+              height: '100%', 
+              p: 3,
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
+            }}>
               <Typography variant="h6" gutterBottom fontWeight="bold" color="#495057">Customer Information</Typography>
               <TextField
                 fullWidth
@@ -408,11 +388,49 @@ const PharmacyPOSClean = () => {
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 size="small"
+                sx={{ mb: 3 }}
               />
-            </Box>
+              
+              <TextField
+                fullWidth
+                label="Employee ID *"
+                value={employeeId}
+                onChange={(e) => setEmployeeId(e.target.value)}
+                size="small"
+                sx={{ mb: 3 }}
+              />
 
-            {/* Shopping Cart */}
-            <Box sx={{ flex: 1, overflow: 'hidden' }}>
+              {paymentMethod === 'cash' && (
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Cash Received"
+                  value={cashReceived}
+                  onChange={(e) => setCashReceived(Number(e.target.value))}
+                  size="small"
+                  sx={{ mb: 2 }}
+                />
+              )}
+
+              {paymentMethod === 'cash' && cashReceived > 0 && (
+                <Typography variant="h6" sx={{ mb: 2, color: 'success.main', fontWeight: 'bold' }}>
+                  Change: {formatCurrency(Math.max(0, cashReceived - totals.total))}
+                </Typography>
+              )}
+            </Paper>
+          </Box>
+
+          {/* Shopping Cart Panel */}
+          <Box sx={{ flex: 1 }}>
+            <Paper sx={{ 
+              height: '100%', 
+              display: 'flex', 
+              flexDirection: 'column',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            }}>
+              
+              {/* Shopping Cart Header */}
               <Typography variant="h6" sx={{ 
                 p: 3, 
                 borderBottom: 1, 
@@ -424,17 +442,18 @@ const PharmacyPOSClean = () => {
                 Shopping Cart ({cart.length} items)
               </Typography>
               
-              <Box sx={{ flex: 1, overflow: 'auto', maxHeight: '300px' }}>
+              {/* Cart Items */}
+              <Box sx={{ flex: 1, overflow: 'auto', maxHeight: '300px', minHeight: '200px' }}>
                 {cart.length > 0 ? (
                   <TableContainer>
                     <Table size="small">
                       <TableHead>
                         <TableRow>
-                          <TableCell sx={{ width: '35%' }}>Medicine</TableCell>
-                          <TableCell sx={{ width: '15%' }}>Qty</TableCell>
-                          <TableCell sx={{ width: '20%' }}>Price</TableCell>
-                          <TableCell sx={{ width: '20%' }}>Total</TableCell>
-                          <TableCell sx={{ width: '10%' }}>Action</TableCell>
+                          <TableCell sx={{ width: '40%', fontSize: '0.875rem', fontWeight: 'bold' }}>Medicine</TableCell>
+                          <TableCell sx={{ width: '12%', fontSize: '0.875rem', fontWeight: 'bold' }}>Qty</TableCell>
+                          <TableCell sx={{ width: '22%', fontSize: '0.875rem', fontWeight: 'bold' }}>Price</TableCell>
+                          <TableCell sx={{ width: '22%', fontSize: '0.875rem', fontWeight: 'bold' }}>Total</TableCell>
+                          <TableCell sx={{ width: '4%', fontSize: '0.875rem', fontWeight: 'bold' }}></TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -447,8 +466,8 @@ const PharmacyPOSClean = () => {
                                 value={item.quantity}
                                 onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
                                 size="small"
-                                sx={{ width: '50px' }}
-                                inputProps={{ min: 0 }}
+                                sx={{ width: '45px' }}
+                                inputProps={{ min: 0, style: { textAlign: 'center', fontSize: '0.875rem' } }}
                               />
                             </TableCell>
                             <TableCell sx={{ fontSize: '0.875rem' }}>{formatCurrency(item.sellingPrice)}</TableCell>
@@ -457,9 +476,11 @@ const PharmacyPOSClean = () => {
                               <Button 
                                 color="error" 
                                 size="small"
+                                variant="text"
                                 onClick={() => removeFromCart(item.id)}
+                                sx={{ minWidth: 'auto', px: 1, fontSize: '0.75rem' }}
                               >
-                                Remove
+                                ❌
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -478,8 +499,8 @@ const PharmacyPOSClean = () => {
             </Box>
 
             {/* Totals & Checkout */}
-            <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider', background: '#fafafa' }}>
-              <Box sx={{ mb: 3, p: 2, borderRadius: 2, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', background: '#fafafa' }}>
+              <Box sx={{ mb: 2, p: 1.5, borderRadius: 2, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography fontWeight="500">Subtotal:</Typography>
                   <Typography fontWeight="500">{formatCurrency(totals.subtotal)}</Typography>
@@ -500,7 +521,7 @@ const PharmacyPOSClean = () => {
                 value={employeeId}
                 onChange={(e) => setEmployeeId(e.target.value)}
                 size="small"
-                sx={{ mb: 2 }}
+                sx={{ mb: 1.5 }}
               />
 
               {paymentMethod === 'cash' && (
