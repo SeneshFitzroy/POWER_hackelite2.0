@@ -4,6 +4,7 @@ import { Container, Box, Typography, Paper, Grid } from '@mui/material';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import Navigation from './components/Navigation';
+import SalesModule from './components/sales/SalesModule';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
 
@@ -21,6 +22,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/sales" element={<SalesModule />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Container>
