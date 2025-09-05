@@ -83,16 +83,14 @@ export const employeeService = {
   // Get all employees
   getAllEmployees: async () => {
     try {
-      const q = query(
-        collection(db, 'employees'),
-        where('status', '==', 'active'),
-        orderBy('name')
-      );
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const querySnapshot = await getDocs(collection(db, 'employees'));
+      return querySnapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        .filter(employee => employee.status === 'active')
+        .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     } catch (error) {
       throw new Error(`Error fetching employees: ${error.message}`);
     }

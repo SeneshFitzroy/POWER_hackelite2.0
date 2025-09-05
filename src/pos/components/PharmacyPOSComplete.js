@@ -107,7 +107,9 @@ const PharmacyPOSComplete = () => {
       
       // Extract categories from medicines
       const uniqueCategories = [...new Set(medicineData.map(med => med.category))].filter(Boolean);
-      setCategories(uniqueCategories);
+      setCategories(uniqueCategories.length > 0 ? uniqueCategories : [
+        'Analgesics', 'Antibiotics', 'Antacids', 'Vitamins', 'Cough Medicines'
+      ]);
       
       // Load employees
       const employeeData = await employeeService.getAllEmployees();
@@ -604,12 +606,16 @@ const PharmacyPOSComplete = () => {
                     {cart.map((item) => (
                       <TableRow key={item.medicineId}>
                         <TableCell>
-                          <Typography variant="body2" fontWeight="bold">
-                            {item.medicineName}
-                          </Typography>
-                          {item.prescriptionRequired && (
-                            <Chip label="Prescription" size="small" color="error" />
-                          )}
+                          <Box>
+                            <Typography variant="body2" fontWeight="bold">
+                              {item.medicineName}
+                            </Typography>
+                            {item.prescriptionRequired && (
+                              <Box sx={{ mt: 0.5 }}>
+                                <Chip label="Prescription" size="small" color="error" />
+                              </Box>
+                            )}
+                          </Box>
                         </TableCell>
                         <TableCell align="center">
                           <ButtonGroup size="small">
