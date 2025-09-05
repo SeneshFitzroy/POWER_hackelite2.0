@@ -525,7 +525,7 @@ const PharmacyPOSProfessional = () => {
               background: 'white' 
             }}>
               <Typography variant="h6" fontWeight="bold" color="#1e293b" sx={{ mb: 1.5 }}>
-                👨‍⚕️ Staff Information
+                STAFF INFORMATION
               </Typography>
               
               <RadioGroup
@@ -1151,7 +1151,7 @@ const PharmacyPOSProfessional = () => {
                 }
               }}
             >
-              💾 Save Patient
+              SAVE PATIENT
             </Button>
           </Box>
         </Box>
@@ -1326,7 +1326,6 @@ const PharmacyPOSProfessional = () => {
               <Button 
                 variant="outlined" 
                 onClick={() => window.print()}
-                startIcon={<span>🖨️</span>}
                 sx={{ 
                   borderColor: '#3b82f6',
                   color: '#3b82f6',
@@ -1336,7 +1335,7 @@ const PharmacyPOSProfessional = () => {
                   }
                 }}
               >
-                Print Receipt
+                PRINT RECEIPT
               </Button>
               <Button 
                 variant="contained" 
@@ -1349,7 +1348,7 @@ const PharmacyPOSProfessional = () => {
                   }
                 }}
               >
-                ✓ Done
+                DONE
               </Button>
             </Box>
           </Box>
