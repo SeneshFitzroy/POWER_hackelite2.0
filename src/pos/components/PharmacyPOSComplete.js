@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
-  Grid,
+  Grid2 as Grid,
   Paper,
   Typography,
   TextField,
