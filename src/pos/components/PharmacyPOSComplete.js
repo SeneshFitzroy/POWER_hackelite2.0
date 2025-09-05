@@ -658,28 +658,28 @@ const PharmacyPOSComplete = () => {
               {/* Totals */}
               <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
                 <Grid container spacing={1}>
-                  <Grid xs={6}>
+                  <Grid size={6}>
                     <Typography>Subtotal:</Typography>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={6}>
                     <Typography align="right">{formatCurrency(totals.subtotal)}</Typography>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={6}>
                     <Typography>Discount:</Typography>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={6}>
                     <Typography align="right" color="error">-{formatCurrency(totals.discount)}</Typography>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={6}>
                     <Typography>Tax:</Typography>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={6}>
                     <Typography align="right">{formatCurrency(totals.tax)}</Typography>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={6}>
                     <Typography variant="h6" fontWeight="bold">Total:</Typography>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={6}>
                     <Typography variant="h6" fontWeight="bold" align="right">
                       {formatCurrency(totals.total)}
                     </Typography>
@@ -692,7 +692,7 @@ const PharmacyPOSComplete = () => {
             <Paper sx={{ p: 2 }}>
               <Grid container spacing={2}>
                 {/* Employee ID */}
-                <Grid xs={6}>
+                <Grid size={6}>
                   <TextField
                     fullWidth
                     size="small"
@@ -705,7 +705,7 @@ const PharmacyPOSComplete = () => {
 
                 {/* Registration Number (if prescription required) */}
                 {isPrescriptionRequired && (
-                  <Grid xs={6}>
+                  <Grid size={6}>
                     <TextField
                       fullWidth
                       size="small"
