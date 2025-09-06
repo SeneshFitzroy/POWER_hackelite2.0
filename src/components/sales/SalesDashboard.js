@@ -212,18 +212,59 @@ export default function SalesDashboard({ dateFilter }) {
 
       setPaymentRecords(payments.slice(0, 10)); // Latest 10 payments
 
-      // Mock top customers and products (replace with real data)
-      setTopCustomers([
-        { name: 'John Doe', total: 15000, orders: 12 },
-        { name: 'Jane Smith', total: 12000, orders: 8 },
-        { name: 'Mike Johnson', total: 9500, orders: 6 }
-      ]);
+      // Load real top customers from Firebase
+      try {
+        const customersQuery = query(
+          collection(db, 'customers'),
+          orderBy('totalSpent', 'desc')
+        );
+        
+        const customersSnapshot = await getDocs(customersQuery);
+        const topCustomersData = customersSnapshot.docs.slice(0, 5).map(doc => {
+          const customer = doc.data();
+          return {
+            name: customer.name,
+            total: customer.totalSpent || 0,
+            orders: customer.totalOrders || 0
+          };
+        });
+        
+        setTopCustomers(topCustomersData);
+      } catch (error) {
+        console.error('Error loading top customers:', error);
+        setTopCustomers([]);
+      }
 
-      setTopProducts([
-        { name: 'Paracetamol', sold: 150, revenue: 7500 },
-        { name: 'Aspirin', sold: 120, revenue: 6000 },
-        { name: 'Vitamin C', sold: 90, revenue: 4500 }
-      ]);
+      // Load real top products from sales data
+      try {
+        const productStats = {};
+        
+        sales.forEach(sale => {
+          if (sale.items && Array.isArray(sale.items)) {
+            sale.items.forEach(item => {
+              if (productStats[item.name]) {
+                productStats[item.name].sold += item.quantity;
+                productStats[item.name].revenue += item.quantity * item.price;
+              } else {
+                productStats[item.name] = {
+                  name: item.name,
+                  sold: item.quantity,
+                  revenue: item.quantity * item.price
+                };
+              }
+            });
+          }
+        });
+
+        const topProductsData = Object.values(productStats)
+          .sort((a, b) => b.revenue - a.revenue)
+          .slice(0, 5);
+          
+        setTopProducts(topProductsData);
+      } catch (error) {
+        console.error('Error calculating top products:', error);
+        setTopProducts([]);
+      }
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
