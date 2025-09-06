@@ -69,7 +69,7 @@ const StatsCard = ({ title, value, icon, color = '#2563eb', trend }) => (
     backgroundColor: color,
     color: '#ffffff',
     borderRadius: '8px',
-    border: 'none',
+    border: `2px solid ${color === '#ffffff' ? '#000000' : color}`,
     transition: 'all 0.2s ease',
     '&:hover': {
       transform: 'translateY(-2px)',
@@ -265,7 +265,7 @@ export default function SalesDashboard({ dateFilter }) {
             title="Revenue"
             value={formatCurrency(salesData.totalRevenue)}
             icon={<AttachMoney sx={{ color: '#ffffff', fontSize: 24 }} />}
-            color="#059669"
+            color="#000000"
             trend="+8% from last period"
           />
         </Grid>
@@ -274,7 +274,7 @@ export default function SalesDashboard({ dateFilter }) {
             title="Customers"
             value={salesData.totalCustomers}
             icon={<People sx={{ color: '#ffffff', fontSize: 24 }} />}
-            color="#7c3aed"
+            color="#2563eb"
             trend="+15% from last period"
           />
         </Grid>
@@ -283,7 +283,7 @@ export default function SalesDashboard({ dateFilter }) {
             title="Orders"
             value={salesData.totalOrders}
             icon={<ShoppingCart sx={{ color: '#ffffff', fontSize: 24 }} />}
-            color="#dc2626"
+            color="#64748b"
             trend="+5% from last period"
           />
         </Grid>
@@ -293,8 +293,14 @@ export default function SalesDashboard({ dateFilter }) {
       <Grid container spacing={2}>
         {/* Sales Chart */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 2, height: 280 }}>
-            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#1f2937' }}>
+          <Paper sx={{ 
+            p: 2, 
+            height: 280,
+            backgroundColor: '#ffffff',
+            border: '2px solid #000000',
+            borderRadius: 2 
+          }}>
+            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#000000' }}>
               Sales Report - {dateFilter.toUpperCase()}
             </Typography>
             <SimpleChart data={[]} title="Sales Trends" type="line" />
@@ -303,8 +309,14 @@ export default function SalesDashboard({ dateFilter }) {
 
         {/* Payment Methods */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, height: 280 }}>
-            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#1f2937' }}>
+          <Paper sx={{ 
+            p: 2, 
+            height: 280,
+            backgroundColor: '#ffffff',
+            border: '2px solid #000000',
+            borderRadius: 2 
+          }}>
+            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#000000' }}>
               Payment Methods
             </Typography>
             <SimpleChart data={[]} title="Payment Distribution" type="pie" />
@@ -313,23 +325,23 @@ export default function SalesDashboard({ dateFilter }) {
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <MonetizationOn sx={{ color: '#2563eb', mr: 1, fontSize: 18 }} />
-                  <Typography variant="body2" color="#1f2937" fontWeight="500">Cash</Typography>
+                  <Typography variant="body2" color="#000000" fontWeight="500">Cash</Typography>
                 </Box>
                 <Typography variant="body2" fontWeight="600" color="#2563eb">60%</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <CreditCard sx={{ color: '#059669', mr: 1, fontSize: 18 }} />
-                  <Typography variant="body2" color="#1f2937" fontWeight="500">Card</Typography>
+                  <CreditCard sx={{ color: '#000000', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#000000" fontWeight="500">Card</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="600" color="#059669">30%</Typography>
+                <Typography variant="body2" fontWeight="600" color="#000000">30%</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <AccountBalance sx={{ color: '#7c3aed', mr: 1, fontSize: 18 }} />
-                  <Typography variant="body2" color="#1f2937" fontWeight="500">Bank</Typography>
+                  <AccountBalance sx={{ color: '#64748b', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#000000" fontWeight="500">Bank</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="600" color="#7c3aed">10%</Typography>
+                <Typography variant="body2" fontWeight="600" color="#64748b">10%</Typography>
               </Box>
             </Box>
           </Paper>
@@ -337,9 +349,14 @@ export default function SalesDashboard({ dateFilter }) {
 
         {/* Recent Payments */}
         <Grid item xs={12} md={7}>
-          <Paper sx={{ p: 2 }}>
+          <Paper sx={{ 
+            p: 2, 
+            backgroundColor: '#ffffff',
+            border: '2px solid #000000',
+            borderRadius: 2 
+          }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" fontWeight="600" color="#1f2937">
+              <Typography variant="h6" fontWeight="600" color="#000000">
                 Recent Payments
               </Typography>
               <Button
@@ -347,39 +364,28 @@ export default function SalesDashboard({ dateFilter }) {
                 startIcon={<Add />}
                 onClick={() => setShowPaymentDialog(true)}
                 size="small"
-                sx={{ textTransform: 'none' }}
-              >
-                Record Payment
-              </Button>
-            </Box>
-                sx={{
-                  background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+                sx={{ 
+                  textTransform: 'none',
+                  backgroundColor: '#2563eb',
                   color: '#ffffff',
                   fontWeight: 'bold',
-                  borderRadius: '8px',
-                  textTransform: 'none',
-                  px: 3,
-                  py: 1,
-                  boxShadow: '0 4px 15px rgba(255, 152, 0, 0.3)',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)',
-                    boxShadow: '0 6px 20px rgba(255, 152, 0, 0.4)',
-                    transform: 'translateY(-1px)'
+                    backgroundColor: '#1d4ed8'
                   }
                 }}
               >
-                💰 RECORD PAYMENT
+                Record Payment
               </Button>
             </Box>
             
             <TableContainer>
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>👤 Customer</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>💰 Amount</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>💳 Method</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>📅 Date</TableCell>
+                  <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Customer</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Amount</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Method</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -389,15 +395,15 @@ export default function SalesDashboard({ dateFilter }) {
                       '&:hover': { backgroundColor: '#e2e8f0' },
                       transition: 'background-color 0.2s ease'
                     }}>
-                      <TableCell sx={{ color: '#1e293b', py: 2 }}>{payment.customerName}</TableCell>
-                      <TableCell sx={{ color: '#1e40af', fontWeight: 'bold', py: 2 }}>{formatCurrency(payment.amount)}</TableCell>
+                      <TableCell sx={{ color: '#000000', py: 2 }}>{payment.customerName}</TableCell>
+                      <TableCell sx={{ color: '#2563eb', fontWeight: 'bold', py: 2 }}>{formatCurrency(payment.amount)}</TableCell>
                       <TableCell sx={{ py: 2 }}>
                         <Chip 
                           label={payment.method} 
                           size="small"
                           sx={{
-                            backgroundColor: payment.method === 'cash' ? '#1e40af' : 
-                                           payment.method === 'card' ? '#3b82f6' : '#60a5fa',
+                            backgroundColor: payment.method === 'cash' ? '#2563eb' : 
+                                           payment.method === 'card' ? '#000000' : '#64748b',
                             color: '#ffffff',
                             fontWeight: 'bold',
                             borderRadius: '12px'
@@ -414,9 +420,9 @@ export default function SalesDashboard({ dateFilter }) {
         </Grid>
 
         {/* Top Customers */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={5}>
           <Paper sx={{ 
-            p: 3, 
+            p: 2, 
             borderRadius: 2, 
             backgroundColor: '#ffffff',
             border: '2px solid #000000',
@@ -440,7 +446,7 @@ export default function SalesDashboard({ dateFilter }) {
                   {topCustomers.map((customer, index) => (
                     <TableRow key={index}>
                       <TableCell sx={{ color: '#000000' }}>{customer.name}</TableCell>
-                      <TableCell sx={{ color: '#000000', fontWeight: 'bold' }}>{formatCurrency(customer.total)}</TableCell>
+                      <TableCell sx={{ color: '#2563eb', fontWeight: 'bold' }}>{formatCurrency(customer.total)}</TableCell>
                       <TableCell sx={{ color: '#000000' }}>{customer.orders}</TableCell>
                     </TableRow>
                   ))}
@@ -453,7 +459,7 @@ export default function SalesDashboard({ dateFilter }) {
         {/* Top Products */}
         <Grid item xs={12}>
           <Paper sx={{ 
-            p: 3, 
+            p: 2, 
             borderRadius: 2, 
             backgroundColor: '#ffffff',
             border: '2px solid #000000',
@@ -484,7 +490,7 @@ export default function SalesDashboard({ dateFilter }) {
                         <Chip 
                           label="Excellent" 
                           sx={{
-                            backgroundColor: '#000000',
+                            backgroundColor: '#2563eb',
                             color: '#ffffff',
                             fontWeight: 'bold'
                           }}
