@@ -141,7 +141,7 @@ export default function SalesModule() {
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    backgroundColor: '#2563eb',
+                    backgroundColor: '#1e40af',
                     border: '1px solid rgba(255,255,255,0.2)',
                     '& .MuiMenuItem-root': {
                       color: '#ffffff',
