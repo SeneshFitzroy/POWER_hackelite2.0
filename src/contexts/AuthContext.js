@@ -22,43 +22,107 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [demoMode, setDemoMode] = useState(false);
+
+  // Check if Firebase is properly configured
+  const isFirebaseConfigured = () => {
+    return process.env.REACT_APP_FIREBASE_API_KEY && 
+           process.env.REACT_APP_FIREBASE_API_KEY !== 'your_api_key_here';
+  };
+
+  // Demo login function for when Firebase is not configured
+  const demoLogin = (email, password) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (email === 'demo@coreerp.com' && password === 'demo123') {
+          const demoUser = {
+            uid: 'demo-user',
+            email: 'demo@coreerp.com',
+            displayName: 'Demo User'
+          };
+          setUser(demoUser);
+          resolve({ user: demoUser });
+        } else {
+          reject(new Error('Demo credentials: demo@coreerp.com / demo123'));
+        }
+      }, 1000);
+    });
+  };
 
   // Sign up function
   const signup = async (email, password, displayName) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    if (displayName) {
-      await updateProfile(userCredential.user, { displayName });
+    if (demoMode) {
+      throw new Error('Sign up not available in demo mode');
     }
-    return userCredential;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      if (displayName) {
+        await updateProfile(userCredential.user, { displayName });
+      }
+      return userCredential;
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error;
+    }
   };
 
   // Sign in function
   const login = (email, password) => {
+    if (demoMode) {
+      return demoLogin(email, password);
+    }
     return signInWithEmailAndPassword(auth, email, password);
   };
 
   // Sign out function
   const logout = () => {
+    if (demoMode) {
+      return new Promise((resolve) => {
+        setUser(null);
+        resolve();
+      });
+    }
     return signOut(auth);
   };
 
   // Reset password function
   const resetPassword = (email) => {
+    if (demoMode) {
+      throw new Error('Password reset not available in demo mode');
+    }
     return sendPasswordResetEmail(auth, email);
   };
 
   // Update user profile
   const updateUserProfile = (updates) => {
+    if (demoMode) {
+      throw new Error('Profile update not available in demo mode');
+    }
     return updateProfile(auth.currentUser, updates);
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    if (!isFirebaseConfigured()) {
+      console.warn('Firebase not configured, using demo mode');
+      setDemoMode(true);
       setLoading(false);
-    });
+      return;
+    }
 
-    return unsubscribe;
+    try {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        setLoading(false);
+      });
+
+      return unsubscribe;
+    } catch (error) {
+      console.error('Auth state change error:', error);
+      setError(error);
+      setDemoMode(true);
+      setLoading(false);
+    }
   }, []);
 
   const value = {
@@ -68,12 +132,14 @@ export function AuthProvider({ children }) {
     logout,
     resetPassword,
     updateUserProfile,
-    loading
+    loading,
+    error,
+    demoMode
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }

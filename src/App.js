@@ -9,7 +9,37 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
 
 function AppContent() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5'
+        }}
+      >
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            padding: 4, 
+            textAlign: 'center',
+            maxWidth: 400 
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Loading CoreERP...
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            Initializing application...
+          </Typography>
+        </Paper>
+      </Box>
+    );
+  }
 
   if (!user) {
     return <Login />;

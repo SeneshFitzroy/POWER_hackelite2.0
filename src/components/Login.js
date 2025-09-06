@@ -35,7 +35,7 @@ export default function Login() {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, signup } = useAuth();
+  const { login, signup, demoMode } = useAuth();
 
   const handleTabChange = (event, newValue) => {
     setTab(newValue);
@@ -84,6 +84,21 @@ export default function Login() {
           <Typography variant="subtitle1" align="center" color="textSecondary" gutterBottom>
             Smart ERP System for SMBs
           </Typography>
+
+          {demoMode && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                Demo Mode Active
+              </Typography>
+              <Typography variant="body2">
+                Firebase not configured. Use demo credentials:
+                <br />
+                <strong>Email:</strong> demo@coreerp.com
+                <br />
+                <strong>Password:</strong> demo123
+              </Typography>
+            </Alert>
+          )}
 
           <Tabs value={tab} onChange={handleTabChange} centered sx={{ mb: 2 }}>
             <Tab label="Sign In" />
