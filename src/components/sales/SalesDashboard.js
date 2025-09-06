@@ -415,25 +415,33 @@ export default function SalesDashboard({ dateFilter }) {
 
         {/* Top Customers */}
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: 2, 
+            backgroundColor: '#ffffff',
+            border: '2px solid #000000',
+            '&:hover': {
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            }
+          }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#000000' }}>
               Top Customers
             </Typography>
             <TableContainer>
               <Table size="small">
                 <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Customer</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Total Spent</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Orders</TableCell>
+                  <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Customer</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Total Spent</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Orders</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {topCustomers.map((customer, index) => (
                     <TableRow key={index}>
-                      <TableCell>{customer.name}</TableCell>
-                      <TableCell>{formatCurrency(customer.total)}</TableCell>
-                      <TableCell>{customer.orders}</TableCell>
+                      <TableCell sx={{ color: '#000000' }}>{customer.name}</TableCell>
+                      <TableCell sx={{ color: '#000000', fontWeight: 'bold' }}>{formatCurrency(customer.total)}</TableCell>
+                      <TableCell sx={{ color: '#000000' }}>{customer.orders}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -444,30 +452,42 @@ export default function SalesDashboard({ dateFilter }) {
 
         {/* Top Products */}
         <Grid item xs={12}>
-          <Paper sx={{ p: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: 2, 
+            backgroundColor: '#ffffff',
+            border: '2px solid #000000',
+            '&:hover': {
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            }
+          }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#000000' }}>
               Top Selling Products
             </Typography>
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Product</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Units Sold</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Revenue</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Performance</TableCell>
+                  <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Product</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Units Sold</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Revenue</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Performance</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {topProducts.map((product, index) => (
                     <TableRow key={index}>
-                      <TableCell>{product.name}</TableCell>
-                      <TableCell>{product.sold}</TableCell>
-                      <TableCell>{formatCurrency(product.revenue)}</TableCell>
+                      <TableCell sx={{ color: '#000000' }}>{product.name}</TableCell>
+                      <TableCell sx={{ color: '#000000' }}>{product.sold}</TableCell>
+                      <TableCell sx={{ color: '#000000', fontWeight: 'bold' }}>{formatCurrency(product.revenue)}</TableCell>
                       <TableCell>
                         <Chip 
                           label="Excellent" 
-                          color="success" 
+                          sx={{
+                            backgroundColor: '#000000',
+                            color: '#ffffff',
+                            fontWeight: 'bold'
+                          }}
                           size="small"
                         />
                       </TableCell>
