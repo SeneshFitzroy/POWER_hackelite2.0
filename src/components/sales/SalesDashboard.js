@@ -48,7 +48,14 @@ const SimpleChart = ({ data, title, type = 'bar' }) => (
     justifyContent: 'center',
     backgroundColor: '#f8f9fa',
     borderRadius: 2,
-    border: '2px dashed #dee2e6'
+    border: '2px dashed #000000',
+    color: '#000000'
+  }}>
+    <Typography variant="h6" color="#000000" fontWeight="bold">
+      {title}
+    </Typography>
+  </Box>
+);
   }}>
     <Typography color="textSecondary" variant="h6">
       {title} Chart ({type.toUpperCase()})
@@ -59,28 +66,39 @@ const SimpleChart = ({ data, title, type = 'bar' }) => (
 const StatsCard = ({ title, value, icon, color = '#000000', trend }) => (
   <Card sx={{ 
     height: '100%',
-    background: `linear-gradient(135deg, ${color} 0%, ${color}CC 100%)`,
-    color: 'white',
-    transition: 'transform 0.2s ease-in-out',
+    backgroundColor: '#000000',
+    color: '#ffffff',
+    border: '2px solid #333333',
+    borderRadius: '8px',
+    transition: 'all 0.3s ease',
     '&:hover': {
-      transform: 'translateY(-4px)',
-      boxShadow: '0 8px 25px rgba(0,0,0,0.2)'
+      transform: 'translateY(-2px)',
+      boxShadow: '0 8px 25px rgba(0,0,0,0.4)',
+      borderColor: '#555555'
     }
   }}>
-    <CardContent>
+    <CardContent sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <Box sx={{ p: 1.5, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 2, mr: 2 }}>
+        <Box sx={{ 
+          p: 1.5, 
+          backgroundColor: '#333333', 
+          borderRadius: '50%', 
+          mr: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
           {icon}
         </Box>
-        <Box>
-          <Typography variant="h4" fontWeight="bold">
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="h4" fontWeight="bold" color="#ffffff">
             {value}
           </Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+          <Typography variant="body2" color="#cccccc" sx={{ mt: 0.5 }}>
             {title}
           </Typography>
           {trend && (
-            <Typography variant="caption" sx={{ opacity: 0.8 }}>
+            <Typography variant="caption" color="#888888" sx={{ mt: 0.5, display: 'block' }}>
               {trend}
             </Typography>
           )}
@@ -276,43 +294,59 @@ export default function SalesDashboard({ dateFilter }) {
       <Grid container spacing={3}>
         {/* Sales Chart */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: 2, 
+            backgroundColor: '#ffffff',
+            border: '2px solid #000000',
+            '&:hover': {
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            }
+          }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#000000' }}>
               Sales Report - {dateFilter.toUpperCase()}
             </Typography>
-            <SimpleChart data={[]} title="Sales Trends" type="line" />
+            <SimpleChart data={[]} title="Sales Trends Chart (LINE)" type="line" />
           </Paper>
         </Grid>
 
         {/* Payment Methods Pie Chart */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: 2, 
+            backgroundColor: '#ffffff',
+            border: '2px solid #000000',
+            '&:hover': {
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            }
+          }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#000000' }}>
               Payment Methods
             </Typography>
-            <SimpleChart data={[]} title="Payment Distribution" type="pie" />
+            <SimpleChart data={[]} title="Payment Distribution Chart (PIE)" type="pie" />
             
             <Box sx={{ mt: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <MonetizationOn sx={{ color: '#4CAF50', mr: 1 }} />
-                  <Typography variant="body2">Cash</Typography>
+                  <MonetizationOn sx={{ color: '#000000', mr: 1 }} />
+                  <Typography variant="body2" color="#000000">Cash</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="bold">60%</Typography>
+                <Typography variant="body2" fontWeight="bold" color="#000000">60%</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <CreditCard sx={{ color: '#2196F3', mr: 1 }} />
-                  <Typography variant="body2">Card</Typography>
+                  <CreditCard sx={{ color: '#000000', mr: 1 }} />
+                  <Typography variant="body2" color="#000000">Card</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="bold">30%</Typography>
+                <Typography variant="body2" fontWeight="bold" color="#000000">30%</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <AccountBalance sx={{ color: '#FF9800', mr: 1 }} />
-                  <Typography variant="body2">Bank</Typography>
+                  <AccountBalance sx={{ color: '#000000', mr: 1 }} />
+                  <Typography variant="body2" color="#000000">Bank</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="bold">10%</Typography>
+                <Typography variant="body2" fontWeight="bold" color="#000000">10%</Typography>
               </Box>
             </Box>
           </Paper>
