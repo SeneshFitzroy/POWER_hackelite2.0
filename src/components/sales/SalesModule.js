@@ -156,8 +156,9 @@ export default function SalesModule() {
       {/* Tab Navigation */}
       <Box
         sx={{
-          backgroundColor: '#f8f9fa',
-          borderBottom: '1px solid #e0e0e0'
+          backgroundColor: '#ffffff',
+          borderBottom: '2px solid #e2e8f0',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
         }}
       >
         <Container maxWidth="xl">
@@ -166,47 +167,52 @@ export default function SalesModule() {
             onChange={handleTabChange}
             sx={{
               '& .MuiTabs-indicator': {
-                backgroundColor: '#000000',
-                height: 3
+                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                height: 4,
+                borderRadius: '2px'
               },
               '& .MuiTab-root': {
                 textTransform: 'none',
-                fontSize: '14px',
-                fontWeight: 600,
-                color: '#666666',
-                minHeight: 60,
+                fontSize: '15px',
+                fontWeight: 700,
+                letterSpacing: '0.5px',
+                color: '#64748b',
+                minHeight: 72,
+                py: 2,
                 '&.Mui-selected': {
-                  color: '#000000'
+                  color: '#1e40af',
+                  background: 'linear-gradient(135deg, rgba(30, 64, 175, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)'
                 },
                 '&:hover': {
-                  color: '#333333'
+                  color: '#1e40af',
+                  backgroundColor: 'rgba(30, 64, 175, 0.05)'
                 }
               }
             }}
           >
             <Tab
-              icon={<Assessment />}
-              label="Sales Dashboard"
+              icon={<Assessment sx={{ color: 'inherit' }} />}
+              label="📊 SALES DASHBOARD"
               iconPosition="start"
-              sx={{ px: 3 }}
+              sx={{ px: 4 }}
             />
             <Tab
-              icon={<People />}
-              label="Customer Management"
+              icon={<People sx={{ color: 'inherit' }} />}
+              label="👥 CUSTOMER MANAGEMENT"
               iconPosition="start"
-              sx={{ px: 3 }}
+              sx={{ px: 4 }}
             />
             <Tab
-              icon={<ShoppingCart />}
-              label="Sales Orders"
+              icon={<ShoppingCart sx={{ color: 'inherit' }} />}
+              label="🛒 SALES ORDERS"
               iconPosition="start"
-              sx={{ px: 3 }}
+              sx={{ px: 4 }}
             />
             <Tab
-              icon={<Receipt />}
-              label="Invoicing"
+              icon={<Receipt sx={{ color: 'inherit' }} />}
+              label="🧾 INVOICING"
               iconPosition="start"
-              sx={{ px: 3 }}
+              sx={{ px: 4 }}
             />
           </Tabs>
         </Container>
