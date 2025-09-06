@@ -272,15 +272,7 @@ export default function SalesDashboard({ dateFilter }) {
       backgroundColor: '#f8fafc',
       minHeight: '100vh'
     }}>
-      {/* Header Section */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight="bold" color="#1f2937" sx={{ mb: 1 }}>
-          Sales Dashboard
-        </Typography>
-        <Typography variant="body1" color="#6b7280">
-          Sales Summary
-        </Typography>
-      </Box>
+      {/* Header Section - Removed */}
 
       {/* Stats Cards Row - Matching the design */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -503,7 +495,7 @@ export default function SalesDashboard({ dateFilter }) {
         fullWidth
       >
         <DialogTitle sx={{ 
-          backgroundColor: '#2563eb', 
+          backgroundColor: '#1e3a8a', 
           color: 'white', 
           fontWeight: 600,
           py: 2
