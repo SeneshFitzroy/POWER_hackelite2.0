@@ -38,7 +38,7 @@ import { db } from '../../firebase/config';
 import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
 
 // Professional Stats Card - Clean Design
-const StatsCard = ({ title, value, icon, color = '#2563eb', trend }) => (
+const StatsCard = ({ title, value, icon, color = '#1e3a8a', trend }) => (
   <Card sx={{ 
     height: '120px',
     backgroundColor: color,
@@ -310,10 +310,10 @@ export default function SalesDashboard({ dateFilter }) {
             <Box sx={{ mt: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <MonetizationOn sx={{ color: '#2563eb', mr: 1, fontSize: 18 }} />
+                  <MonetizationOn sx={{ color: '#1e3a8a', mr: 1, fontSize: 18 }} />
                   <Typography variant="body2" color="#1f2937" fontWeight="500">Cash</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="600" color="#2563eb">60%</Typography>
+                <Typography variant="body2" fontWeight="600" color="#1e3a8a">60%</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -368,13 +368,13 @@ export default function SalesDashboard({ dateFilter }) {
                       '&:hover': { backgroundColor: '#f3f4f6' }
                     }}>
                       <TableCell sx={{ color: '#1f2937', py: 1 }}>{payment.customerName}</TableCell>
-                      <TableCell sx={{ color: '#2563eb', fontWeight: 600, py: 1 }}>{formatCurrency(payment.amount)}</TableCell>
+                      <TableCell sx={{ color: '#1e3a8a', fontWeight: 600, py: 1 }}>{formatCurrency(payment.amount)}</TableCell>
                       <TableCell sx={{ py: 1 }}>
                         <Chip 
                           label={payment.method} 
                           size="small"
                           sx={{
-                            backgroundColor: payment.method === 'cash' ? '#2563eb' : 
+                            backgroundColor: payment.method === 'cash' ? '#1e3a8a' : 
                                            payment.method === 'card' ? '#059669' : '#7c3aed',
                             color: '#ffffff',
                             fontWeight: 500,
@@ -410,7 +410,7 @@ export default function SalesDashboard({ dateFilter }) {
                   {topCustomers.map((customer, index) => (
                     <TableRow key={index}>
                       <TableCell sx={{ color: '#1f2937', py: 1 }}>{customer.name}</TableCell>
-                      <TableCell sx={{ color: '#2563eb', fontWeight: 600, py: 1 }}>{formatCurrency(customer.total)}</TableCell>
+                      <TableCell sx={{ color: '#1e3a8a', fontWeight: 600, py: 1 }}>{formatCurrency(customer.total)}</TableCell>
                       <TableCell sx={{ color: '#6b7280', py: 1 }}>{customer.orders}</TableCell>
                     </TableRow>
                   ))}
@@ -441,7 +441,7 @@ export default function SalesDashboard({ dateFilter }) {
                     <TableRow key={index}>
                       <TableCell sx={{ color: '#1f2937', py: 1 }}>{product.name}</TableCell>
                       <TableCell sx={{ color: '#6b7280', py: 1 }}>{product.sold}</TableCell>
-                      <TableCell sx={{ color: '#2563eb', fontWeight: 600, py: 1 }}>{formatCurrency(product.revenue)}</TableCell>
+                      <TableCell sx={{ color: '#1e3a8a', fontWeight: 600, py: 1 }}>{formatCurrency(product.revenue)}</TableCell>
                       <TableCell sx={{ py: 1 }}>
                         <Chip 
                           label="Excellent" 

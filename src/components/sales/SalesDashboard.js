@@ -212,18 +212,46 @@ export default function SalesDashboard({ dateFilter }) {
 
       setPaymentRecords(payments.slice(0, 10)); // Latest 10 payments
 
-      // Mock top customers and products (replace with real data)
-      setTopCustomers([
-        { name: 'John Doe', total: 15000, orders: 12 },
-        { name: 'Jane Smith', total: 12000, orders: 8 },
-        { name: 'Mike Johnson', total: 9500, orders: 6 }
-      ]);
+      // Calculate top customers from real sales data
+      const customerTotals = {};
+      sales.forEach(sale => {
+        if (sale.customerId && sale.customerName) {
+          customerTotals[sale.customerId] = customerTotals[sale.customerId] || {
+            name: sale.customerName,
+            total: 0,
+            orders: 0
+          };
+          customerTotals[sale.customerId].total += sale.total || 0;
+          customerTotals[sale.customerId].orders += 1;
+        }
+      });
+      
+      const topCustomersData = Object.values(customerTotals)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 5);
 
-      setTopProducts([
-        { name: 'Paracetamol', sold: 150, revenue: 7500 },
-        { name: 'Aspirin', sold: 120, revenue: 6000 },
-        { name: 'Vitamin C', sold: 90, revenue: 4500 }
-      ]);
+      // Calculate top products from real sales data  
+      const productTotals = {};
+      sales.forEach(sale => {
+        if (sale.items) {
+          sale.items.forEach(item => {
+            const productId = item.id || item.productId;
+            if (productId) {
+              productTotals[productId] = productTotals[productId] || {
+                name: item.name,
+                sold: 0,
+                revenue: 0
+              };
+              productTotals[productId].sold += item.quantity || 1;
+              productTotals[productId].revenue += (item.quantity || 1) * (item.price || 0);
+            }
+          });
+        }
+      });
+      
+      const topProductsData = Object.values(productTotals)
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 5);
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
