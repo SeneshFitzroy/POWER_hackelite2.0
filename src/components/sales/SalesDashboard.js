@@ -395,16 +395,21 @@ export default function SalesDashboard({ dateFilter }) {
                 <TableBody>
                   {paymentRecords.map((payment, index) => (
                     <TableRow key={payment.id || index}>
-                      <TableCell>{payment.customerName}</TableCell>
-                      <TableCell>{formatCurrency(payment.amount)}</TableCell>
+                      <TableCell sx={{ color: '#000000' }}>{payment.customerName}</TableCell>
+                      <TableCell sx={{ color: '#000000', fontWeight: 'bold' }}>{formatCurrency(payment.amount)}</TableCell>
                       <TableCell>
                         <Chip 
                           label={payment.method} 
                           size="small"
-                          color={payment.method === 'cash' ? 'success' : payment.method === 'card' ? 'primary' : 'warning'}
+                          sx={{
+                            backgroundColor: payment.method === 'cash' ? '#000000' : 
+                                           payment.method === 'card' ? '#333333' : '#666666',
+                            color: '#ffffff',
+                            fontWeight: 'bold'
+                          }}
                         />
                       </TableCell>
-                      <TableCell>{new Date(payment.date).toLocaleDateString()}</TableCell>
+                      <TableCell sx={{ color: '#000000' }}>{new Date(payment.date).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
