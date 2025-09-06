@@ -85,6 +85,57 @@ const CleanChart = ({ data, title, type = 'bar', height = 200 }) => (
   </Box>
 );
 
+// Simple Pie Chart Component for Payment Methods
+const PaymentPieChart = ({ paymentStats }) => {
+  const total = paymentStats.cash + paymentStats.card + paymentStats.bank;
+  
+  if (total === 0) {
+    return (
+      <Box sx={{ 
+        height: 200, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        color: '#6b7280'
+      }}>
+        <Typography variant="body2">No payment data available</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ 
+        width: 120, 
+        height: 120, 
+        borderRadius: '50%',
+        background: `conic-gradient(
+          #1e3a8a 0deg ${(paymentStats.cash / total) * 360}deg,
+          #059669 ${(paymentStats.cash / total) * 360}deg ${((paymentStats.cash + paymentStats.card) / total) * 360}deg,
+          #7c3aed ${((paymentStats.cash + paymentStats.card) / total) * 360}deg 360deg
+        )`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <Box sx={{ 
+          width: 60, 
+          height: 60, 
+          borderRadius: '50%', 
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Typography variant="h6" fontWeight="bold" color="#1f2937">
+            {total}
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
 // Professional Stats Card matching the design
 const ProfessionalStatsCard = ({ title, value, icon, bgColor, iconColor }) => (
   <Paper sx={{ 
@@ -136,6 +187,7 @@ export default function SalesDashboard({ dateFilter }) {
   const [topCustomers, setTopCustomers] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
   const [recentSales, setRecentSales] = useState([]);
+  const [paymentStats, setPaymentStats] = useState({ cash: 0, card: 0, bank: 0 });
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [newPayment, setNewPayment] = useState({
@@ -252,10 +304,26 @@ export default function SalesDashboard({ dateFilter }) {
         .sort((a, b) => b.revenue - a.revenue)
         .slice(0, 5);
 
+      // Calculate payment method statistics
+      const paymentMethodStats = { cash: 0, card: 0, bank: 0, total: 0 };
+      payments.forEach(payment => {
+        if (payment.method) {
+          paymentMethodStats[payment.method] = (paymentMethodStats[payment.method] || 0) + 1;
+          paymentMethodStats.total++;
+        }
+      });
+
+      const paymentPercentages = {
+        cash: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.cash / paymentMethodStats.total) * 100) : 0,
+        card: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.card / paymentMethodStats.total) * 100) : 0,
+        bank: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.bank / paymentMethodStats.total) * 100) : 0
+      };
+
       setPaymentRecords(payments.slice(0, 10)); // Latest 10 payments
       setTopCustomers(topCustomersData);
       setTopProducts(topProductsData);
       setRecentSales(sales.slice(0, 5)); // Latest 5 sales
+      setPaymentStats(paymentPercentages);
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -378,7 +446,7 @@ export default function SalesDashboard({ dateFilter }) {
           </Paper>
         </Grid>
 
-        {/* Customer Satisfaction */}
+        {/* Payment Recording (Pie Chart) */}
         <Grid item xs={12} md={4}>
           <Paper sx={{ 
             p: 3, 
@@ -388,23 +456,36 @@ export default function SalesDashboard({ dateFilter }) {
             border: '1px solid #e5e7eb'
           }}>
             <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
-              Customer Satisfaction
+              Payment Methods
             </Typography>
-            <CleanChart title="Satisfaction" type="line" height={200} />
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="caption" color="#6b7280">Last Month</Typography>
-                <Typography variant="h6" fontWeight="bold" color="#1e3a8a">$2,004</Typography>
+            <PaymentPieChart paymentStats={paymentStats} />
+            <Box sx={{ mt: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <MonetizationOn sx={{ color: '#1e3a8a', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#1f2937" fontWeight="500">Cash</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="600" color="#1e3a8a">{paymentStats.cash}%</Typography>
               </Box>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="caption" color="#6b7280">This Month</Typography>
-                <Typography variant="h6" fontWeight="bold" color="#10b981">$4,024</Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <CreditCard sx={{ color: '#059669', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#1f2937" fontWeight="500">Card</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="600" color="#059669">{paymentStats.card}%</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <AccountBalance sx={{ color: '#7c3aed', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#1f2937" fontWeight="500">Bank</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="600" color="#7c3aed">{paymentStats.bank}%</Typography>
               </Box>
             </Box>
           </Paper>
         </Grid>
 
-        {/* Target vs Reality */}
+        {/* Sales Reports */}
         <Grid item xs={12} md={4}>
           <Paper sx={{ 
             p: 3, 
@@ -414,17 +495,17 @@ export default function SalesDashboard({ dateFilter }) {
             border: '1px solid #e5e7eb'
           }}>
             <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
-              Target vs Reality
+              Sales Reports
             </Typography>
-            <CleanChart title="Target" type="bar" height={200} />
+            <CleanChart title="Sales" type="bar" height={200} />
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="caption" color="#6b7280">Reality Sales</Typography>
-                <Typography variant="h6" fontWeight="bold" color="#1e3a8a">8,823</Typography>
+                <Typography variant="caption" color="#6b7280">Daily Sales</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#1e3a8a">{salesData.totalSales}</Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="caption" color="#6b7280">Target Sales</Typography>
-                <Typography variant="h6" fontWeight="bold" color="#f59e0b">9,122</Typography>
+                <Typography variant="caption" color="#6b7280">Revenue</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#10b981">{formatCurrency(salesData.totalRevenue)}</Typography>
               </Box>
             </Box>
           </Paper>

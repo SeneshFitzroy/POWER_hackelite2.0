@@ -104,6 +104,57 @@ const SimpleChart = ({ data, title, type = 'bar' }) => (
   </Box>
 );
 
+// Simple Pie Chart Component for Payment Methods
+const PaymentPieChart = ({ paymentPercentages }) => {
+  const total = paymentPercentages.cash + paymentPercentages.card + paymentPercentages.bank;
+  
+  if (total === 0) {
+    return (
+      <Box sx={{ 
+        height: 200, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        color: '#6b7280'
+      }}>
+        <Typography variant="body2">No payment data available</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ 
+        width: 120, 
+        height: 120, 
+        borderRadius: '50%',
+        background: `conic-gradient(
+          #1e3a8a 0deg ${(paymentPercentages.cash / 100) * 360}deg,
+          #059669 ${(paymentPercentages.cash / 100) * 360}deg ${((paymentPercentages.cash + paymentPercentages.card) / 100) * 360}deg,
+          #7c3aed ${((paymentPercentages.cash + paymentPercentages.card) / 100) * 360}deg 360deg
+        )`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <Box sx={{ 
+          width: 60, 
+          height: 60, 
+          borderRadius: '50%', 
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Typography variant="h6" fontWeight="bold" color="#1f2937">
+            100%
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
 export default function SalesDashboard({ dateFilter }) {
   const [salesData, setSalesData] = useState({
     totalSales: 0,
@@ -344,9 +395,19 @@ export default function SalesDashboard({ dateFilter }) {
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 2, height: 280 }}>
             <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#1f2937' }}>
-              Sales Report - {dateFilter.toUpperCase()}
+              Sales Reports - {dateFilter.toUpperCase()}
             </Typography>
             <SimpleChart data={[]} title="Sales Trends" type="line" />
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">Daily Sales</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#1e3a8a">{salesData.totalSales}</Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">Revenue</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#10b981">{formatCurrency(salesData.totalRevenue)}</Typography>
+              </Box>
+            </Box>
           </Paper>
         </Grid>
 
@@ -356,7 +417,7 @@ export default function SalesDashboard({ dateFilter }) {
             <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#1f2937' }}>
               Payment Methods
             </Typography>
-            <SimpleChart data={[]} title="Payment Distribution" type="pie" />
+            <PaymentPieChart paymentPercentages={paymentPercentages} />
             
             <Box sx={{ mt: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
