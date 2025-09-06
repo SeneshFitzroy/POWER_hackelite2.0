@@ -73,7 +73,7 @@ class ErrorBoundary extends React.Component {
 }
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, loading, error, demoMode } = useAuth();
 
   if (loading) {
     return (
@@ -83,7 +83,7 @@ function AppContent() {
           justifyContent: 'center', 
           alignItems: 'center', 
           minHeight: '100vh',
-          backgroundColor: '#f5f5f5'
+          backgroundColor: '#ffffff'
         }}
       >
         <Paper 
@@ -91,14 +91,66 @@ function AppContent() {
           sx={{ 
             padding: 4, 
             textAlign: 'center',
-            maxWidth: 400 
+            maxWidth: 400,
+            backgroundColor: '#000000',
+            color: '#ffffff'
           }}
         >
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" gutterBottom sx={{ color: '#ffffff' }}>
             Loading CoreERP...
           </Typography>
-          <Typography variant="body2" color="textSecondary">
-            Initializing application...
+          <Typography variant="body2" sx={{ color: '#cccccc' }}>
+            Initializing Sales Management System...
+          </Typography>
+          {demoMode && (
+            <Typography variant="caption" sx={{ color: '#888888', mt: 2, display: 'block' }}>
+              Demo Mode: Firebase not configured
+            </Typography>
+          )}
+        </Paper>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '100vh',
+          backgroundColor: '#ffffff'
+        }}
+      >
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            padding: 4, 
+            textAlign: 'center',
+            maxWidth: 500,
+            backgroundColor: '#000000',
+            color: '#ffffff'
+          }}
+        >
+          <Typography variant="h6" gutterBottom sx={{ color: '#ffffff' }}>
+            CoreERP - Configuration Error
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#cccccc', mb: 2 }}>
+            Please check your Firebase configuration in the .env file.
+          </Typography>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              color: '#888888',
+              fontFamily: 'monospace',
+              backgroundColor: '#333333',
+              p: 2,
+              borderRadius: 1,
+              display: 'block'
+            }}
+          >
+            {error.message}
           </Typography>
         </Paper>
       </Box>
