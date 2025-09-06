@@ -7,21 +7,15 @@ import {
   FormControl,
   Select,
   MenuItem,
-  Container,
-  IconButton,
-  Menu,
-  Avatar
+  Container
 } from '@mui/material';
 import {
   Assessment,
   People,
   ShoppingCart,
   Receipt,
-  CalendarToday,
-  AccountCircle,
-  ExitToApp
+  CalendarToday
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
 import SalesDashboard from './SalesDashboard';
 import CustomerManagement from './CustomerManagement';
 import SalesOrders from './SalesOrders';
