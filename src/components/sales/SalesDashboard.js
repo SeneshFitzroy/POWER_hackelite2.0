@@ -248,43 +248,43 @@ export default function SalesDashboard({ dateFilter }) {
   };
 
   return (
-    <Box>
-      {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+    <Box sx={{ p: 0 }}>
+      {/* Stats Cards Row */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Total Sales"
             value={salesData.totalSales}
-            icon={<TrendingUp sx={{ color: '#ffffff', fontSize: 30 }} />}
-            color="#1e40af"
-            trend="📈 +12% from last period"
+            icon={<TrendingUp sx={{ color: '#ffffff', fontSize: 24 }} />}
+            color="#2563eb"
+            trend="+12% from last period"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Revenue"
             value={formatCurrency(salesData.totalRevenue)}
-            icon={<AttachMoney sx={{ color: '#ffffff', fontSize: 30 }} />}
-            color="#3b82f6"
-            trend="💰 +8% from last period"
+            icon={<AttachMoney sx={{ color: '#ffffff', fontSize: 24 }} />}
+            color="#059669"
+            trend="+8% from last period"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Customers"
             value={salesData.totalCustomers}
-            icon={<People sx={{ color: '#ffffff', fontSize: 30 }} />}
-            color="#60a5fa"
-            trend="👥 +15% from last period"
+            icon={<People sx={{ color: '#ffffff', fontSize: 24 }} />}
+            color="#7c3aed"
+            trend="+15% from last period"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Orders"
             value={salesData.totalOrders}
-            icon={<ShoppingCart sx={{ color: '#ffffff', fontSize: 30 }} />}
-            color="#93c5fd"
-            trend="🛒 +5% from last period"
+            icon={<ShoppingCart sx={{ color: '#ffffff', fontSize: 24 }} />}
+            color="#dc2626"
+            trend="+5% from last period"
           />
         </Grid>
       </Grid>
