@@ -32,7 +32,8 @@ import {
   Person,
   Phone,
   Email,
-  Badge
+  Badge,
+  Receipt
 } from '@mui/icons-material';
 import { db } from '../../firebase/config';
 import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, Timestamp } from 'firebase/firestore';
@@ -169,6 +170,30 @@ export default function CustomerManagement({ dateFilter }) {
     alert(`Viewing order history for ${customer.name} (Feature: Navigate to Invoicing page)`);
   };
 
+  const handleCreateInvoice = (customer) => {
+    // Navigate to invoicing page to create new invoice for this customer
+    console.log('Create invoice for customer:', customer);
+    
+    // Store customer data for invoice creation
+    const invoiceCustomer = {
+      id: customer.id,
+      name: customer.name,
+      phoneNumber: customer.phoneNumber,
+      email: customer.email,
+      nic: customer.nic
+    };
+    
+    // This would typically navigate to the invoicing tab with pre-filled customer data
+    // For now, we'll show a confirmation message
+    alert(`🧾 Creating new invoice for:\n\nCustomer: ${customer.name}\nPhone: ${customer.phoneNumber}\n\n✅ Ready to proceed to invoice creation!`);
+    
+    // In a real application, this would:
+    // 1. Navigate to the invoicing tab
+    // 2. Pre-fill customer information
+    // 3. Focus on product selection
+    // Example: navigate('/sales/invoicing', { state: { customer: invoiceCustomer } });
+  };
+
   const validateNIC = (nic) => {
     // Basic NIC validation for Sri Lanka
     if (!nic) return true; // Allow empty for children
@@ -290,6 +315,22 @@ export default function CustomerManagement({ dateFilter }) {
                       title="Edit Customer"
                     >
                       <Edit />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleCreateInvoice(customer)}
+                      sx={{ 
+                        color: '#1e3a8a', 
+                        mr: 1,
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(30, 58, 138, 0.2)',
+                          transform: 'scale(1.1)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                      title="Create Invoice"
+                    >
+                      <Receipt />
                     </IconButton>
                     <IconButton
                       onClick={() => handleViewHistory(customer)}
