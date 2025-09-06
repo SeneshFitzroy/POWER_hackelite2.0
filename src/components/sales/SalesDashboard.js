@@ -374,16 +374,19 @@ export default function SalesDashboard({ dateFilter }) {
         <Grid item xs={12} md={6}>
           <Paper sx={{ 
             p: 3, 
-            borderRadius: 2, 
+            borderRadius: 3, 
             backgroundColor: '#ffffff',
-            border: '2px solid #000000',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
             '&:hover': {
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+              boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+              transform: 'translateY(-2px)',
+              transition: 'all 0.3s ease'
             }
           }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" fontWeight="bold" color="#000000">
-                Recent Payments
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6" fontWeight="bold" color="#1e293b">
+                💳 Recent Payments
               </Typography>
               <Button
                 variant="contained"
@@ -412,31 +415,36 @@ export default function SalesDashboard({ dateFilter }) {
             <TableContainer>
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Customer</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Amount</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Method</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Date</TableCell>
+                  <TableRow sx={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>👤 Customer</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>💰 Amount</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>💳 Method</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>📅 Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {paymentRecords.map((payment, index) => (
-                    <TableRow key={payment.id || index}>
-                      <TableCell sx={{ color: '#000000' }}>{payment.customerName}</TableCell>
-                      <TableCell sx={{ color: '#000000', fontWeight: 'bold' }}>{formatCurrency(payment.amount)}</TableCell>
-                      <TableCell>
+                    <TableRow key={payment.id || index} sx={{
+                      '&:nth-of-type(odd)': { backgroundColor: '#f8fafc' },
+                      '&:hover': { backgroundColor: '#e2e8f0' },
+                      transition: 'background-color 0.2s ease'
+                    }}>
+                      <TableCell sx={{ color: '#1e293b', py: 2 }}>{payment.customerName}</TableCell>
+                      <TableCell sx={{ color: '#1e40af', fontWeight: 'bold', py: 2 }}>{formatCurrency(payment.amount)}</TableCell>
+                      <TableCell sx={{ py: 2 }}>
                         <Chip 
                           label={payment.method} 
                           size="small"
                           sx={{
-                            backgroundColor: payment.method === 'cash' ? '#000000' : 
-                                           payment.method === 'card' ? '#333333' : '#666666',
+                            backgroundColor: payment.method === 'cash' ? '#1e40af' : 
+                                           payment.method === 'card' ? '#3b82f6' : '#60a5fa',
                             color: '#ffffff',
-                            fontWeight: 'bold'
+                            fontWeight: 'bold',
+                            borderRadius: '12px'
                           }}
                         />
                       </TableCell>
-                      <TableCell sx={{ color: '#000000' }}>{new Date(payment.date).toLocaleDateString()}</TableCell>
+                      <TableCell sx={{ color: '#64748b', py: 2 }}>{new Date(payment.date).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -539,8 +547,14 @@ export default function SalesDashboard({ dateFilter }) {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle sx={{ backgroundColor: '#000000', color: 'white', fontWeight: 'bold' }}>
-          Record New Payment
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)', 
+          color: 'white', 
+          fontWeight: 'bold',
+          py: 3,
+          borderRadius: '12px 12px 0 0'
+        }}>
+          💰 Record New Payment
         </DialogTitle>
         <DialogContent sx={{ p: 3, backgroundColor: '#ffffff' }}>
           <Grid container spacing={3} sx={{ mt: 1 }}>
