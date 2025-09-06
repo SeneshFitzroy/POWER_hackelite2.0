@@ -190,18 +190,6 @@ export default function SalesDashboard({ dateFilter }) {
         totalRevenue
       });
 
-      // Calculate statistics
-      const totalSales = sales.length;
-      const totalRevenue = sales.reduce((sum, sale) => sum + (sale.total || 0), 0);
-      const uniqueCustomers = new Set(sales.map(sale => sale.customerId)).size;
-      
-      setSalesData({
-        totalSales,
-        totalOrders: totalSales,
-        totalCustomers: uniqueCustomers,
-        totalRevenue
-      });
-
       // Calculate top customers from real sales data
       const customerTotals = {};
       sales.forEach(sale => {
