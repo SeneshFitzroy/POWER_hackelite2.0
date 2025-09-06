@@ -269,36 +269,36 @@ export default function SalesDashboard({ dateFilter }) {
           <StatsCard
             title="Total Sales"
             value={salesData.totalSales}
-            icon={<TrendingUp />}
-            color="#000000"
-            trend="+12% from last period"
+            icon={<TrendingUp sx={{ color: '#ffffff', fontSize: 30 }} />}
+            color="#1e40af"
+            trend="📈 +12% from last period"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Revenue"
             value={formatCurrency(salesData.totalRevenue)}
-            icon={<AttachMoney />}
-            color="#1a1a1a"
-            trend="+8% from last period"
+            icon={<AttachMoney sx={{ color: '#ffffff', fontSize: 30 }} />}
+            color="#3b82f6"
+            trend="💰 +8% from last period"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Customers"
             value={salesData.totalCustomers}
-            icon={<People />}
-            color="#333333"
-            trend="+15% from last period"
+            icon={<People sx={{ color: '#ffffff', fontSize: 30 }} />}
+            color="#60a5fa"
+            trend="👥 +15% from last period"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Orders"
             value={salesData.totalOrders}
-            icon={<ShoppingCart />}
-            color="#4a4a4a"
-            trend="+5% from last period"
+            icon={<ShoppingCart sx={{ color: '#ffffff', fontSize: 30 }} />}
+            color="#93c5fd"
+            trend="🛒 +5% from last period"
           />
         </Grid>
       </Grid>
@@ -308,15 +308,18 @@ export default function SalesDashboard({ dateFilter }) {
         <Grid item xs={12} md={8}>
           <Paper sx={{ 
             p: 3, 
-            borderRadius: 2, 
+            borderRadius: 3, 
             backgroundColor: '#ffffff',
-            border: '2px solid #000000',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
             '&:hover': {
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+              boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+              transform: 'translateY(-2px)',
+              transition: 'all 0.3s ease'
             }
           }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#000000' }}>
-              Sales Report - {dateFilter.toUpperCase()}
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#1e293b' }}>
+              📊 Sales Report - {dateFilter.toUpperCase()}
             </Typography>
             <SimpleChart data={[]} title="Sales Trends Chart (LINE)" type="line" />
           </Paper>
@@ -326,39 +329,42 @@ export default function SalesDashboard({ dateFilter }) {
         <Grid item xs={12} md={4}>
           <Paper sx={{ 
             p: 3, 
-            borderRadius: 2, 
+            borderRadius: 3, 
             backgroundColor: '#ffffff',
-            border: '2px solid #000000',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
             '&:hover': {
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+              boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+              transform: 'translateY(-2px)',
+              transition: 'all 0.3s ease'
             }
           }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#000000' }}>
-              Payment Methods
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#1e293b' }}>
+              💳 Payment Methods
             </Typography>
             <SimpleChart data={[]} title="Payment Distribution Chart (PIE)" type="pie" />
             
-            <Box sx={{ mt: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+            <Box sx={{ mt: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, p: 2, backgroundColor: '#f8fafc', borderRadius: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <MonetizationOn sx={{ color: '#000000', mr: 1 }} />
-                  <Typography variant="body2" color="#000000">Cash</Typography>
+                  <MonetizationOn sx={{ color: '#1e40af', mr: 1 }} />
+                  <Typography variant="body2" color="#1e293b" fontWeight="bold">Cash</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="bold" color="#000000">60%</Typography>
+                <Typography variant="body2" fontWeight="bold" color="#1e40af">60%</Typography>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, p: 2, backgroundColor: '#f8fafc', borderRadius: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <CreditCard sx={{ color: '#000000', mr: 1 }} />
-                  <Typography variant="body2" color="#000000">Card</Typography>
+                  <CreditCard sx={{ color: '#3b82f6', mr: 1 }} />
+                  <Typography variant="body2" color="#1e293b" fontWeight="bold">Card</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="bold" color="#000000">30%</Typography>
+                <Typography variant="body2" fontWeight="bold" color="#3b82f6">30%</Typography>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 2, backgroundColor: '#f8fafc', borderRadius: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <AccountBalance sx={{ color: '#000000', mr: 1 }} />
-                  <Typography variant="body2" color="#000000">Bank</Typography>
+                  <AccountBalance sx={{ color: '#60a5fa', mr: 1 }} />
+                  <Typography variant="body2" color="#1e293b" fontWeight="bold">Bank</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="bold" color="#000000">10%</Typography>
+                <Typography variant="body2" fontWeight="bold" color="#60a5fa">10%</Typography>
               </Box>
             </Box>
           </Paper>
@@ -384,19 +390,22 @@ export default function SalesDashboard({ dateFilter }) {
                 startIcon={<Add />}
                 onClick={() => setShowPaymentDialog(true)}
                 sx={{
-                  backgroundColor: '#000000',
+                  background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
                   color: '#ffffff',
                   fontWeight: 'bold',
-                  border: '2px solid #000000',
-                  borderRadius: '6px',
+                  borderRadius: '8px',
                   textTransform: 'none',
+                  px: 3,
+                  py: 1,
+                  boxShadow: '0 4px 15px rgba(255, 152, 0, 0.3)',
                   '&:hover': {
-                    backgroundColor: '#333333',
-                    borderColor: '#333333'
+                    background: 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)',
+                    boxShadow: '0 6px 20px rgba(255, 152, 0, 0.4)',
+                    transform: 'translateY(-1px)'
                   }
                 }}
               >
-                + RECORD PAYMENT
+                💰 RECORD PAYMENT
               </Button>
             </Box>
             
