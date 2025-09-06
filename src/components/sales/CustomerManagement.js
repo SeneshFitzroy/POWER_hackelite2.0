@@ -184,10 +184,92 @@ export default function CustomerManagement({ dateFilter }) {
 
   return (
     <Box>
+      {/* Customer Count Indicator */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
+              color: 'white',
+              borderRadius: 2,
+              boxShadow: '0 8px 32px rgba(30, 64, 175, 0.2)'
+            }}
+          >
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              {customers.length}
+            </Typography>
+            <Typography variant="h6">Total Customers</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+              color: 'white',
+              borderRadius: 2,
+              boxShadow: '0 8px 32px rgba(5, 150, 105, 0.2)'
+            }}
+          >
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              {customers.filter(c => !c.isChild).length}
+            </Typography>
+            <Typography variant="h6">Adult Customers</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
+              color: 'white',
+              borderRadius: 2,
+              boxShadow: '0 8px 32px rgba(220, 38, 38, 0.2)'
+            }}
+          >
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              {customers.filter(c => c.isChild).length}
+            </Typography>
+            <Typography variant="h6">Child Customers</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
+              color: 'white',
+              borderRadius: 2,
+              boxShadow: '0 8px 32px rgba(124, 58, 237, 0.2)'
+            }}
+          >
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              {filteredCustomers.length}
+            </Typography>
+            <Typography variant="h6">Search Results</Typography>
+          </Paper>
+        </Grid>
+      </Grid>
+
       {/* Header with Search and Add Button */}
-      <Paper sx={{ p: 3, mb: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+      <Paper 
+        sx={{ 
+          p: 3, 
+          mb: 3, 
+          borderRadius: 2, 
+          background: 'rgba(255,255,255,0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(30,64,175,0.1)',
+          boxShadow: '0 8px 32px rgba(30, 64, 175, 0.1)'
+        }}
+      >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h5" fontWeight="bold" color="#000000">
+          <Typography variant="h5" fontWeight="bold" color="#1e40af">
             Customer Management
           </Typography>
           <Button
@@ -195,11 +277,17 @@ export default function CustomerManagement({ dateFilter }) {
             startIcon={<Add />}
             onClick={() => setShowCustomerDialog(true)}
             sx={{
-              backgroundColor: '#000000',
+              background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
               color: 'white',
               fontWeight: 'bold',
+              borderRadius: 2,
+              px: 3,
+              py: 1,
+              boxShadow: '0 4px 16px rgba(30, 64, 175, 0.3)',
               '&:hover': {
-                backgroundColor: '#333333'
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 6px 20px rgba(30, 64, 175, 0.4)'
               }
             }}
           >
@@ -228,10 +316,19 @@ export default function CustomerManagement({ dateFilter }) {
       </Paper>
 
       {/* Customers Table */}
-      <Paper sx={{ borderRadius: 2, border: '1px solid #e0e0e0', overflow: 'hidden' }}>
+      <Paper 
+        sx={{ 
+          borderRadius: 2, 
+          background: 'rgba(255,255,255,0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(30,64,175,0.1)',
+          boxShadow: '0 8px 32px rgba(30, 64, 175, 0.1)',
+          overflow: 'hidden' 
+        }}
+      >
         <TableContainer>
           <Table>
-            <TableHead sx={{ backgroundColor: '#000000' }}>
+            <TableHead sx={{ background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)' }}>
               <TableRow>
                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>
                   <Person sx={{ mr: 1, verticalAlign: 'middle' }} />
@@ -286,14 +383,14 @@ export default function CustomerManagement({ dateFilter }) {
                   <TableCell sx={{ textAlign: 'center' }}>
                     <IconButton
                       onClick={() => handleEditCustomer(customer)}
-                      sx={{ color: '#000000', mr: 1 }}
+                      sx={{ color: '#1e40af', mr: 1 }}
                       title="Edit Customer"
                     >
                       <Edit />
                     </IconButton>
                     <IconButton
                       onClick={() => handleViewHistory(customer)}
-                      sx={{ color: '#000000' }}
+                      sx={{ color: '#1e40af' }}
                       title="View Order History"
                     >
                       <History />
@@ -322,7 +419,7 @@ export default function CustomerManagement({ dateFilter }) {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle sx={{ backgroundColor: '#000000', color: 'white', fontWeight: 'bold' }}>
+        <DialogTitle sx={{ background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)', color: 'white', fontWeight: 'bold' }}>
           {editingCustomer ? 'Edit Customer' : 'Add New Customer'}
         </DialogTitle>
         <DialogContent sx={{ p: 3 }}>
@@ -445,11 +542,13 @@ export default function CustomerManagement({ dateFilter }) {
               !validateNIC(newCustomer.nic)
             }
             sx={{
-              backgroundColor: '#000000',
+              background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
               color: 'white',
               fontWeight: 'bold',
+              borderRadius: 2,
+              px: 3,
               '&:hover': {
-                backgroundColor: '#333333'
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)'
               }
             }}
           >
