@@ -1,10 +1,74 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Box, Typography, Paper } from '@mui/material';
-import Login from './components/Login';
+import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/material';
 import SalesModule from './components/sales/SalesModule';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
+
+// Custom Black/White Theme
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#000000',
+      contrastText: '#ffffff'
+    },
+    secondary: {
+      main: '#ffffff',
+      contrastText: '#000000'
+    },
+    background: {
+      default: '#ffffff',
+      paper: '#ffffff'
+    },
+    text: {
+      primary: '#000000',
+      secondary: '#666666'
+    },
+    divider: '#e5e7eb'
+  },
+  typography: {
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
+    h1: { color: '#000000', fontWeight: 700 },
+    h2: { color: '#000000', fontWeight: 700 },
+    h3: { color: '#000000', fontWeight: 700 },
+    h4: { color: '#000000', fontWeight: 700 },
+    h5: { color: '#000000', fontWeight: 700 },
+    h6: { color: '#000000', fontWeight: 700 }
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600
+        },
+        contained: {
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          '&:hover': {
+            backgroundColor: '#333333'
+          }
+        },
+        outlined: {
+          borderColor: '#000000',
+          color: '#000000',
+          '&:hover': {
+            backgroundColor: '#000000',
+            color: '#ffffff'
+          }
+        }
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffffff',
+          border: '1px solid #e5e7eb'
+        }
+      }
+    }
+  }
+});
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -41,7 +105,8 @@ class ErrorBoundary extends React.Component {
               textAlign: 'center',
               maxWidth: 500,
               backgroundColor: '#000000',
-              color: '#ffffff'
+              color: '#ffffff',
+              border: '2px solid #000000'
             }}
           >
             <Typography variant="h5" gutterBottom sx={{ color: '#ffffff' }}>
@@ -72,118 +137,24 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-function AppContent() {
-  const { user, loading, error, demoMode } = useAuth();
-
-  if (loading) {
-    return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '100vh',
-          backgroundColor: '#ffffff'
-        }}
-      >
-        <Paper 
-          elevation={3} 
-          sx={{ 
-            padding: 4, 
-            textAlign: 'center',
-            maxWidth: 400,
-            backgroundColor: '#000000',
-            color: '#ffffff'
-          }}
-        >
-          <Typography variant="h6" gutterBottom sx={{ color: '#ffffff' }}>
-            Loading CoreERP...
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#cccccc' }}>
-            Initializing Sales Management System...
-          </Typography>
-          {demoMode && (
-            <Typography variant="caption" sx={{ color: '#888888', mt: 2, display: 'block' }}>
-              Demo Mode: Firebase not configured
-            </Typography>
-          )}
-        </Paper>
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '100vh',
-          backgroundColor: '#ffffff'
-        }}
-      >
-        <Paper 
-          elevation={3} 
-          sx={{ 
-            padding: 4, 
-            textAlign: 'center',
-            maxWidth: 500,
-            backgroundColor: '#000000',
-            color: '#ffffff'
-          }}
-        >
-          <Typography variant="h6" gutterBottom sx={{ color: '#ffffff' }}>
-            CoreERP - Configuration Error
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#cccccc', mb: 2 }}>
-            Please check your Firebase configuration in the .env file.
-          </Typography>
-          <Typography 
-            variant="caption" 
-            sx={{ 
-              color: '#888888',
-              fontFamily: 'monospace',
-              backgroundColor: '#333333',
-              p: 2,
-              borderRadius: 1,
-              display: 'block'
-            }}
-          >
-            {error.message}
-          </Typography>
-        </Paper>
-      </Box>
-    );
-  }
-
-  if (!user) {
-    return <Login />;
-  }
-
-  return (
-    <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      minHeight: '100vh',
-      backgroundColor: '#ffffff'
-    }}>
-      <Routes>
-        <Route path="/" element={<Navigate to="/sales" replace />} />
-        <Route path="/sales" element={<SalesModule />} />
-        <Route path="*" element={<Navigate to="/sales" replace />} />
-      </Routes>
-    </Box>
-  );
-}
-
 function App() {
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </ErrorBoundary>
+    <ThemeProvider theme={theme}>
+      <ErrorBoundary>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          minHeight: '100vh',
+          backgroundColor: '#ffffff'
+        }}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/sales" replace />} />
+            <Route path="/sales" element={<SalesModule />} />
+            <Route path="*" element={<Navigate to="/sales" replace />} />
+          </Routes>
+        </Box>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 
