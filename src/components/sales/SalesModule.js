@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Tabs,
@@ -43,6 +43,16 @@ function TabPanel({ children, value, index, ...other }) {
 export default function SalesModule() {
   const [activeTab, setActiveTab] = useState(0);
   const [dateFilter, setDateFilter] = useState('daily');
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -94,15 +104,20 @@ export default function SalesModule() {
         {/* Time & Date + Filter */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
-              TIME & DATE
-            </Typography>
             <Box sx={{ textAlign: 'right' }}>
-              <Typography variant="body1" sx={{ color: 'white', fontWeight: 'bold' }}>
-                {new Date().toLocaleDateString()}
+              <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
+                {currentTime.toLocaleDateString('en-US', { 
+                  month: 'numeric', 
+                  day: 'numeric', 
+                  year: 'numeric' 
+                })}
               </Typography>
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                {new Date().toLocaleTimeString()}
+                {currentTime.toLocaleTimeString('en-US', { 
+                  hour12: true,
+                  hour: 'numeric',
+                  minute: '2-digit'
+                })}
               </Typography>
             </Box>
           </Box>
