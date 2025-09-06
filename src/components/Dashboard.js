@@ -68,28 +68,81 @@ const DashboardCard = ({ title, value, icon, color = 'primary' }) => (
 );
 
 const QuickActions = () => (
-  <Paper sx={{ p: 2 }}>
-    <Typography variant="h6" gutterBottom>
+  <Paper sx={{ 
+    p: 3,
+    backgroundColor: '#ffffff',
+    border: '2px solid #000000',
+    borderRadius: 2
+  }}>
+    <Typography variant="h6" gutterBottom sx={{ color: '#000000', fontWeight: 'bold' }}>
       Quick Actions
     </Typography>
     <Grid container spacing={2}>
       <Grid item xs={6}>
-        <Button variant="outlined" fullWidth startIcon={<People />}>
+        <Button 
+          variant="outlined" 
+          fullWidth 
+          startIcon={<People />}
+          sx={{
+            color: '#000000',
+            borderColor: '#000000',
+            '&:hover': {
+              backgroundColor: '#000000',
+              color: '#ffffff'
+            }
+          }}
+        >
           Add Customer
         </Button>
       </Grid>
       <Grid item xs={6}>
-        <Button variant="outlined" fullWidth startIcon={<ShoppingCart />}>
+        <Button 
+          variant="outlined" 
+          fullWidth 
+          startIcon={<ShoppingCart />}
+          sx={{
+            color: '#000000',
+            borderColor: '#000000',
+            '&:hover': {
+              backgroundColor: '#000000',
+              color: '#ffffff'
+            }
+          }}
+        >
           New Order
         </Button>
       </Grid>
       <Grid item xs={6}>
-        <Button variant="outlined" fullWidth startIcon={<Inventory />}>
+        <Button 
+          variant="outlined" 
+          fullWidth 
+          startIcon={<Inventory />}
+          sx={{
+            color: '#000000',
+            borderColor: '#000000',
+            '&:hover': {
+              backgroundColor: '#000000',
+              color: '#ffffff'
+            }
+          }}
+        >
           Add Product
         </Button>
       </Grid>
       <Grid item xs={6}>
-        <Button variant="outlined" fullWidth startIcon={<Assessment />}>
+        <Button 
+          variant="outlined" 
+          fullWidth 
+          startIcon={<Assessment />}
+          sx={{
+            color: '#000000',
+            borderColor: '#000000',
+            '&:hover': {
+              backgroundColor: '#000000',
+              color: '#ffffff'
+            }
+          }}
+        >
           View Reports
         </Button>
       </Grid>
@@ -98,38 +151,43 @@ const QuickActions = () => (
 );
 
 const RecentActivity = () => (
-  <Paper sx={{ p: 2 }}>
-    <Typography variant="h6" gutterBottom>
+  <Paper sx={{ 
+    p: 3,
+    backgroundColor: '#ffffff',
+    border: '2px solid #000000',
+    borderRadius: 2
+  }}>
+    <Typography variant="h6" gutterBottom sx={{ color: '#000000', fontWeight: 'bold' }}>
       Recent Activity
     </Typography>
     <List>
       <ListItem>
         <ListItemIcon>
-          <ShoppingCart />
+          <ShoppingCart sx={{ color: '#000000' }} />
         </ListItemIcon>
         <ListItemText
-          primary="New order #1234"
-          secondary="2 minutes ago"
+          primary={<Typography sx={{ color: '#000000', fontWeight: 'bold' }}>New order #1234</Typography>}
+          secondary={<Typography sx={{ color: '#666666' }}>2 minutes ago</Typography>}
         />
       </ListItem>
-      <Divider />
+      <Divider sx={{ borderColor: '#e0e0e0' }} />
       <ListItem>
         <ListItemIcon>
-          <People />
+          <People sx={{ color: '#000000' }} />
         </ListItemIcon>
         <ListItemText
-          primary="Customer John Doe registered"
-          secondary="15 minutes ago"
+          primary={<Typography sx={{ color: '#000000', fontWeight: 'bold' }}>Customer John Doe registered</Typography>}
+          secondary={<Typography sx={{ color: '#666666' }}>15 minutes ago</Typography>}
         />
       </ListItem>
-      <Divider />
+      <Divider sx={{ borderColor: '#e0e0e0' }} />
       <ListItem>
         <ListItemIcon>
-          <Inventory />
+          <Inventory sx={{ color: '#000000' }} />
         </ListItemIcon>
         <ListItemText
-          primary="Low stock alert: Product ABC"
-          secondary="1 hour ago"
+          primary={<Typography sx={{ color: '#000000', fontWeight: 'bold' }}>Low stock alert: Product ABC</Typography>}
+          secondary={<Typography sx={{ color: '#666666' }}>1 hour ago</Typography>}
         />
       </ListItem>
     </List>
