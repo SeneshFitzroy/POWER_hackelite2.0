@@ -39,21 +39,38 @@ import {
 import { db } from '../../firebase/config';
 import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
 
-// Mock Chart Component (you can replace with recharts or chart.js)
+// Professional Chart Component (matches POS theme)
 const SimpleChart = ({ data, title, type = 'bar' }) => (
   <Box sx={{ 
-    height: 250, 
+    height: 280, 
     display: 'flex', 
     alignItems: 'center', 
     justifyContent: 'center',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 2,
-    border: '2px dashed #000000',
-    color: '#000000'
+    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+    borderRadius: 3,
+    border: '2px dashed #1e40af',
+    color: '#1e40af',
+    position: 'relative',
+    overflow: 'hidden'
   }}>
-    <Typography variant="h6" color="#000000" fontWeight="bold">
-      {title}
-    </Typography>
+    <Box sx={{ textAlign: 'center', zIndex: 1 }}>
+      <Typography variant="h5" color="#1e40af" fontWeight="bold" sx={{ mb: 1 }}>
+        📊 {title}
+      </Typography>
+      <Typography variant="body2" color="#64748b" sx={{ fontStyle: 'italic' }}>
+        Chart implementation area - Connect to your preferred charting library
+      </Typography>
+    </Box>
+    <Box sx={{ 
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      width: '100px',
+      height: '100px',
+      background: 'linear-gradient(135deg, rgba(30, 64, 175, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+      borderRadius: '50%',
+      transform: 'translate(30px, -30px)'
+    }} />
   </Box>
 );
 
