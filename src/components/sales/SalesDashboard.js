@@ -354,7 +354,15 @@ export default function SalesDashboard({ dateFilter }) {
 
         {/* Payment Recording */}
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: 2, 
+            backgroundColor: '#ffffff',
+            border: '2px solid #000000',
+            '&:hover': {
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            }
+          }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h6" fontWeight="bold" color="#000000">
                 Recent Payments
@@ -365,25 +373,29 @@ export default function SalesDashboard({ dateFilter }) {
                 onClick={() => setShowPaymentDialog(true)}
                 sx={{
                   backgroundColor: '#000000',
-                  color: 'white',
+                  color: '#ffffff',
                   fontWeight: 'bold',
+                  border: '2px solid #000000',
+                  borderRadius: '6px',
+                  textTransform: 'none',
                   '&:hover': {
-                    backgroundColor: '#333333'
+                    backgroundColor: '#333333',
+                    borderColor: '#333333'
                   }
                 }}
               >
-                Record Payment
+                + RECORD PAYMENT
               </Button>
             </Box>
             
             <TableContainer>
               <Table size="small">
                 <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Customer</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Amount</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Method</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Date</TableCell>
+                  <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Customer</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Amount</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Method</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

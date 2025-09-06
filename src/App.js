@@ -46,16 +46,21 @@ function AppContent() {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      backgroundColor: '#ffffff'
+    }}>
       <Navigation />
-      <Container maxWidth="xl" sx={{ flexGrow: 1, py: 3 }}>
+      <Box sx={{ flexGrow: 1, backgroundColor: '#ffffff' }}>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/sales" element={<SalesModule />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
-      </Container>
+      </Box>
     </Box>
   );
 }

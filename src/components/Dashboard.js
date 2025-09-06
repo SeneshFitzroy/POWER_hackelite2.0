@@ -25,25 +25,40 @@ import {
 } from '@mui/icons-material';
 
 const DashboardCard = ({ title, value, icon, color = 'primary' }) => (
-  <Card sx={{ height: '100%' }}>
-    <CardContent>
+  <Card sx={{ 
+    height: '100%',
+    backgroundColor: '#000000',
+    color: '#ffffff',
+    border: '2px solid #333333',
+    borderRadius: '8px',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 8px 25px rgba(0,0,0,0.4)',
+      borderColor: '#555555'
+    }
+  }}>
+    <CardContent sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <Box
           sx={{
-            p: 1,
-            borderRadius: 1,
-            backgroundColor: `${color}.light`,
-            color: `${color}.contrastText`,
-            mr: 2
+            p: 1.5,
+            borderRadius: '50%',
+            backgroundColor: '#333333',
+            color: '#ffffff',
+            mr: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
           {icon}
         </Box>
         <Box>
-          <Typography color="textSecondary" gutterBottom variant="h6">
+          <Typography color="#cccccc" gutterBottom variant="body2" sx={{ mb: 1 }}>
             {title}
           </Typography>
-          <Typography variant="h4" component="div">
+          <Typography variant="h4" component="div" fontWeight="bold" color="#ffffff">
             {value}
           </Typography>
         </Box>
@@ -123,8 +138,8 @@ const RecentActivity = () => (
 
 export default function Dashboard() {
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ backgroundColor: '#ffffff', minHeight: '100vh', p: 4 }}>
+      <Typography variant="h4" gutterBottom sx={{ color: '#000000', fontWeight: 'bold', mb: 4 }}>
         Dashboard
       </Typography>
       
@@ -167,8 +182,14 @@ export default function Dashboard() {
       {/* Main Content */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 2, mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper sx={{ 
+            p: 3, 
+            mb: 3, 
+            backgroundColor: '#ffffff',
+            border: '2px solid #000000',
+            borderRadius: 2
+          }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#000000', fontWeight: 'bold' }}>
               Sales Overview
             </Typography>
             <Box
@@ -177,11 +198,12 @@ export default function Dashboard() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: 'grey.100',
-                borderRadius: 1
+                backgroundColor: '#f8f9fa',
+                borderRadius: 1,
+                border: '2px dashed #000000'
               }}
             >
-              <Typography color="textSecondary">
+              <Typography color="#000000" fontWeight="bold">
                 Chart Component Placeholder
               </Typography>
             </Box>
