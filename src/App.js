@@ -4,57 +4,68 @@ import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/materia
 import SalesModule from './components/sales/SalesModule';
 import './App.css';
 
-// Custom Black/White Theme
+// Professional White-Blue-Black Theme (Matching POS System)
 const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#000000',
+      main: '#1e40af', // Deep blue matching POS
+      dark: '#1e3a8a',
+      light: '#3b82f6',
       contrastText: '#ffffff'
     },
     secondary: {
-      main: '#ffffff',
-      contrastText: '#000000'
+      main: '#ff9800', // Orange accent matching POS cart
+      dark: '#f57c00',
+      light: '#ffb74d',
+      contrastText: '#ffffff'
     },
     background: {
-      default: '#ffffff',
+      default: '#f8fafc', // Light blue-gray background
       paper: '#ffffff'
     },
     text: {
-      primary: '#000000',
-      secondary: '#666666'
+      primary: '#1e293b', // Dark gray-blue
+      secondary: '#64748b'
     },
-    divider: '#e5e7eb'
+    divider: '#e2e8f0'
   },
   typography: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
-    h1: { color: '#000000', fontWeight: 700 },
-    h2: { color: '#000000', fontWeight: 700 },
-    h3: { color: '#000000', fontWeight: 700 },
-    h4: { color: '#000000', fontWeight: 700 },
-    h5: { color: '#000000', fontWeight: 700 },
-    h6: { color: '#000000', fontWeight: 700 }
+    fontFamily: '"Inter", "Roboto", "Helvetica Neue", Arial, sans-serif',
+    h1: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
+    h2: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
+    h3: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
+    h4: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
+    h5: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
+    h6: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' }
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          fontWeight: 600
+          fontWeight: 700,
+          borderRadius: '8px',
+          letterSpacing: '0.5px'
         },
         contained: {
-          backgroundColor: '#000000',
+          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
           color: '#ffffff',
+          boxShadow: '0 4px 15px rgba(30, 64, 175, 0.3)',
           '&:hover': {
-            backgroundColor: '#333333'
+            background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+            boxShadow: '0 6px 20px rgba(30, 64, 175, 0.4)',
+            transform: 'translateY(-1px)'
           }
         },
         outlined: {
-          borderColor: '#000000',
-          color: '#000000',
+          borderColor: '#1e40af',
+          color: '#1e40af',
+          borderWidth: '2px',
           '&:hover': {
-            backgroundColor: '#000000',
-            color: '#ffffff'
+            backgroundColor: '#1e40af',
+            color: '#ffffff',
+            borderWidth: '2px'
           }
         }
       }
@@ -63,7 +74,18 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#ffffff',
-          border: '1px solid #e5e7eb'
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+        }
+      }
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
         }
       }
     }
@@ -94,7 +116,7 @@ class ErrorBoundary extends React.Component {
             justifyContent: 'center', 
             alignItems: 'center', 
             minHeight: '100vh',
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f8fafc',
             p: 3
           }}
         >
@@ -104,26 +126,27 @@ class ErrorBoundary extends React.Component {
               padding: 4, 
               textAlign: 'center',
               maxWidth: 500,
-              backgroundColor: '#000000',
+              background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
               color: '#ffffff',
-              border: '2px solid #000000'
+              border: '1px solid #1e40af'
             }}
           >
-            <Typography variant="h5" gutterBottom sx={{ color: '#ffffff' }}>
+            <Typography variant="h5" gutterBottom sx={{ color: '#ffffff', fontWeight: 'bold' }}>
               CoreERP - System Error
             </Typography>
-            <Typography variant="body1" sx={{ mb: 2, color: '#cccccc' }}>
+            <Typography variant="body1" sx={{ mb: 2, color: 'rgba(255,255,255,0.9)' }}>
               Something went wrong. Please refresh the page.
             </Typography>
             <Typography 
               variant="body2" 
               sx={{ 
-                color: '#888888',
+                color: 'rgba(255,255,255,0.8)',
                 fontFamily: 'monospace',
-                backgroundColor: '#333333',
+                backgroundColor: 'rgba(255,255,255,0.1)',
                 p: 2,
-                borderRadius: 1,
-                mt: 2
+                borderRadius: 2,
+                mt: 2,
+                border: '1px solid rgba(255,255,255,0.2)'
               }}
             >
               {this.state.error?.message || 'Unknown error'}
@@ -145,7 +168,7 @@ function App() {
           display: 'flex', 
           flexDirection: 'column', 
           minHeight: '100vh',
-          backgroundColor: '#ffffff'
+          backgroundColor: '#f8fafc'
         }}>
           <Routes>
             <Route path="/" element={<Navigate to="/sales" replace />} />

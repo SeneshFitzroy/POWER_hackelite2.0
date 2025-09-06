@@ -53,46 +53,49 @@ export default function SalesModule() {
 
   return (
     <Box sx={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
-      {/* Main Black Navigation Bar */}
+      {/* Main Professional Blue Navigation Bar */}
       <Box
         sx={{
-          backgroundColor: '#000000',
+          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
           color: '#ffffff',
           py: 3,
           px: 4,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderBottom: '2px solid #333333'
+          boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
+          borderRadius: '0 0 16px 16px'
         }}
       >
         <Typography
           variant="h4"
           sx={{
             fontWeight: 700,
-            letterSpacing: '1px',
+            letterSpacing: '0.5px',
             textTransform: 'uppercase',
             color: '#ffffff'
           }}
         >
-          CoreERP - Sales Management System
+          🏢 CoreERP - Sales Management System
         </Typography>
 
         {/* Date Filter */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CalendarToday sx={{ color: '#cccccc' }} />
-          <Typography variant="body2" sx={{ color: '#cccccc', mr: 1 }}>
-            Time Period
+          <CalendarToday sx={{ color: 'rgba(255,255,255,0.9)' }} />
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', mr: 1, fontWeight: 'bold' }}>
+            TIME PERIOD
           </Typography>
           <FormControl size="small">
             <Select
               value={dateFilter}
               onChange={handleDateFilterChange}
               sx={{
-                backgroundColor: '#333333',
+                backgroundColor: 'rgba(255,255,255,0.15)',
                 color: '#ffffff',
                 border: 'none',
-                minWidth: 120,
+                minWidth: 140,
+                borderRadius: '8px',
+                fontWeight: 'bold',
                 '& .MuiOutlinedInput-notchedOutline': {
                   border: 'none'
                 },
@@ -103,42 +106,49 @@ export default function SalesModule() {
                   border: 'none'
                 },
                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  border: '1px solid #555555'
+                  border: '1px solid rgba(255,255,255,0.5)'
                 }
               }}
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    backgroundColor: '#000000',
-                    border: '1px solid #333333',
+                    backgroundColor: '#1e40af',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '8px',
                     '& .MuiMenuItem-root': {
                       color: '#ffffff',
+                      fontWeight: 'bold',
                       '&:hover': {
-                        backgroundColor: '#333333'
+                        backgroundColor: 'rgba(255,255,255,0.1)'
                       },
                       '&.Mui-selected': {
-                        backgroundColor: '#555555'
+                        backgroundColor: 'rgba(255,255,255,0.2)'
                       }
                     }
                   }
                 }
               }}
             >
-              <MenuItem value="daily">Daily</MenuItem>
-              <MenuItem value="weekly">Weekly</MenuItem>
-              <MenuItem value="monthly">Monthly</MenuItem>
+              <MenuItem value="daily">📅 Daily</MenuItem>
+              <MenuItem value="weekly">📊 Weekly</MenuItem>
+              <MenuItem value="monthly">📈 Monthly</MenuItem>
             </Select>
           </FormControl>
           <Typography
             variant="caption"
             sx={{
-              color: '#888888',
+              color: 'rgba(255,255,255,0.8)',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
-              ml: 2
+              ml: 2,
+              fontWeight: 'bold',
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              px: 2,
+              py: 0.5,
+              borderRadius: '12px'
             }}
           >
-            Current: {dateFilter.toUpperCase()}
+            CURRENT: {dateFilter.toUpperCase()}
           </Typography>
         </Box>
       </Box>
