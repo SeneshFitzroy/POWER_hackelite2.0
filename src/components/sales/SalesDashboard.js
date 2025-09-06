@@ -56,12 +56,6 @@ const SimpleChart = ({ data, title, type = 'bar' }) => (
     </Typography>
   </Box>
 );
-  }}>
-    <Typography color="textSecondary" variant="h6">
-      {title} Chart ({type.toUpperCase()})
-    </Typography>
-  </Box>
-);
 
 const StatsCard = ({ title, value, icon, color = '#000000', trend }) => (
   <Card sx={{ 
