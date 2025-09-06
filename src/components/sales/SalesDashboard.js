@@ -277,11 +277,6 @@ export default function SalesDashboard({ dateFilter }) {
         <Typography variant="h4" fontWeight="bold" color="#1f2937" sx={{ mb: 1 }}>
           Sales Dashboard
         </Typography>
-        <Typography variant="body1" color="#6b7280">
-          Sales Summary
-        </Typography>
-      </Box>
-
       {/* Stats Cards Row - Matching the design */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
