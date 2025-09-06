@@ -42,7 +42,7 @@ import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from 'f
 // Clean Chart Component
 const SimpleChart = ({ data, title, type = 'bar' }) => (
   <Box sx={{ 
-    height: 200, 
+    height: 170, 
     display: 'flex', 
     alignItems: 'center', 
     justifyContent: 'center',
@@ -310,18 +310,18 @@ export default function SalesDashboard({ dateFilter }) {
         {/* Payment Methods */}
         <Grid item xs={12} md={4}>
           <Paper sx={{ 
-            p: 2, 
-            height: 280,
+            p: 1.5, 
+            height: 260,
             backgroundColor: '#ffffff',
             border: '2px solid #000000',
             borderRadius: 2 
           }}>
-            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#000000' }}>
+            <Typography variant="h6" fontWeight="600" sx={{ mb: 1.5, color: '#000000' }}>
               Payment Methods
             </Typography>
             <SimpleChart data={[]} title="Payment Distribution" type="pie" />
             
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 1.5 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <MonetizationOn sx={{ color: '#2563eb', mr: 1, fontSize: 18 }} />
@@ -350,12 +350,12 @@ export default function SalesDashboard({ dateFilter }) {
         {/* Recent Payments */}
         <Grid item xs={12} md={7}>
           <Paper sx={{ 
-            p: 2, 
+            p: 1.5, 
             backgroundColor: '#ffffff',
             border: '2px solid #000000',
             borderRadius: 2 
           }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
               <Typography variant="h6" fontWeight="600" color="#000000">
                 Recent Payments
               </Typography>
@@ -382,10 +382,10 @@ export default function SalesDashboard({ dateFilter }) {
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Customer</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Amount</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Method</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Date</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1.5 }}>Customer</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1.5 }}>Amount</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1.5 }}>Method</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1.5 }}>Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -395,9 +395,9 @@ export default function SalesDashboard({ dateFilter }) {
                       '&:hover': { backgroundColor: '#e2e8f0' },
                       transition: 'background-color 0.2s ease'
                     }}>
-                      <TableCell sx={{ color: '#000000', py: 2 }}>{payment.customerName}</TableCell>
-                      <TableCell sx={{ color: '#2563eb', fontWeight: 'bold', py: 2 }}>{formatCurrency(payment.amount)}</TableCell>
-                      <TableCell sx={{ py: 2 }}>
+                      <TableCell sx={{ color: '#000000', py: 1.5 }}>{payment.customerName}</TableCell>
+                      <TableCell sx={{ color: '#2563eb', fontWeight: 'bold', py: 1.5 }}>{formatCurrency(payment.amount)}</TableCell>
+                      <TableCell sx={{ py: 1.5 }}>
                         <Chip 
                           label={payment.method} 
                           size="small"
@@ -410,7 +410,7 @@ export default function SalesDashboard({ dateFilter }) {
                           }}
                         />
                       </TableCell>
-                      <TableCell sx={{ color: '#64748b', py: 2 }}>{new Date(payment.date).toLocaleDateString()}</TableCell>
+                      <TableCell sx={{ color: '#64748b', py: 1.5 }}>{new Date(payment.date).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -422,7 +422,7 @@ export default function SalesDashboard({ dateFilter }) {
         {/* Top Customers */}
         <Grid item xs={12} md={5}>
           <Paper sx={{ 
-            p: 2, 
+            p: 1.5, 
             borderRadius: 2, 
             backgroundColor: '#ffffff',
             border: '2px solid #000000',
@@ -430,24 +430,24 @@ export default function SalesDashboard({ dateFilter }) {
               boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
             }
           }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#000000' }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 1.5, color: '#000000' }}>
               Top Customers
             </Typography>
             <TableContainer>
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Customer</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Total Spent</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Orders</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1 }}>Customer</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1 }}>Total Spent</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1 }}>Orders</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {topCustomers.map((customer, index) => (
                     <TableRow key={index}>
-                      <TableCell sx={{ color: '#000000' }}>{customer.name}</TableCell>
-                      <TableCell sx={{ color: '#2563eb', fontWeight: 'bold' }}>{formatCurrency(customer.total)}</TableCell>
-                      <TableCell sx={{ color: '#000000' }}>{customer.orders}</TableCell>
+                      <TableCell sx={{ color: '#000000', py: 1 }}>{customer.name}</TableCell>
+                      <TableCell sx={{ color: '#2563eb', fontWeight: 'bold', py: 1 }}>{formatCurrency(customer.total)}</TableCell>
+                      <TableCell sx={{ color: '#000000', py: 1 }}>{customer.orders}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -459,7 +459,7 @@ export default function SalesDashboard({ dateFilter }) {
         {/* Top Products */}
         <Grid item xs={12}>
           <Paper sx={{ 
-            p: 2, 
+            p: 1.5, 
             borderRadius: 2, 
             backgroundColor: '#ffffff',
             border: '2px solid #000000',
@@ -467,26 +467,26 @@ export default function SalesDashboard({ dateFilter }) {
               boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
             }
           }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#000000' }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 1.5, color: '#000000' }}>
               Top Selling Products
             </Typography>
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Product</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Units Sold</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Revenue</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#000000' }}>Performance</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1 }}>Product</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1 }}>Units Sold</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1 }}>Revenue</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 1 }}>Performance</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {topProducts.map((product, index) => (
                     <TableRow key={index}>
-                      <TableCell sx={{ color: '#000000' }}>{product.name}</TableCell>
-                      <TableCell sx={{ color: '#000000' }}>{product.sold}</TableCell>
-                      <TableCell sx={{ color: '#000000', fontWeight: 'bold' }}>{formatCurrency(product.revenue)}</TableCell>
-                      <TableCell>
+                      <TableCell sx={{ color: '#000000', py: 1 }}>{product.name}</TableCell>
+                      <TableCell sx={{ color: '#000000', py: 1 }}>{product.sold}</TableCell>
+                      <TableCell sx={{ color: '#000000', fontWeight: 'bold', py: 1 }}>{formatCurrency(product.revenue)}</TableCell>
+                      <TableCell sx={{ py: 1 }}>
                         <Chip 
                           label="Excellent" 
                           sx={{
