@@ -441,19 +441,14 @@ export default function SalesDashboard({ dateFilter }) {
               Top Products
             </Typography>
             <Box sx={{ space: 2 }}>
-              {[
-                { name: 'Product A', sales: '$12,534', percentage: 85 },
-                { name: 'Product B', sales: '$8,742', percentage: 65 },
-                { name: 'Product C', sales: '$6,235', percentage: 45 },
-                { name: 'Product D', sales: '$4,890', percentage: 35 }
-              ].map((product, index) => (
+              {topProducts.map((product, index) => (
                 <Box key={index} sx={{ mb: 2, p: 2, backgroundColor: '#f9fafb', borderRadius: '8px' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                     <Typography variant="body2" fontWeight="medium" color="#1f2937">
                       {product.name}
                     </Typography>
                     <Typography variant="body2" fontWeight="bold" color="#1e3a8a">
-                      {product.sales}
+                      {formatCurrency(product.revenue)}
                     </Typography>
                   </Box>
                   <Box sx={{ backgroundColor: '#e5e7eb', height: 4, borderRadius: 2, overflow: 'hidden' }}>
@@ -461,7 +456,7 @@ export default function SalesDashboard({ dateFilter }) {
                       sx={{ 
                         backgroundColor: '#1e3a8a', 
                         height: '100%', 
-                        width: `${product.percentage}%`,
+                        width: `${Math.min((product.revenue / (topProducts[0]?.revenue || 1)) * 100, 100)}%`,
                         borderRadius: 2 
                       }} 
                     />
@@ -485,13 +480,7 @@ export default function SalesDashboard({ dateFilter }) {
               Recent Activity
             </Typography>
             <Box>
-              {[
-                { action: 'New order placed', customer: 'John Doe', amount: '$234', time: '2 min ago' },
-                { action: 'Payment received', customer: 'Jane Smith', amount: '$456', time: '5 min ago' },
-                { action: 'Product updated', customer: 'System', amount: '', time: '12 min ago' },
-                { action: 'Customer registered', customer: 'Mike Johnson', amount: '', time: '23 min ago' },
-                { action: 'Order delivered', customer: 'Sarah Wilson', amount: '$123', time: '1 hour ago' }
-              ].map((activity, index) => (
+              {sales.slice(0, 5).map((sale, index) => (
                 <Box key={index} sx={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
@@ -501,17 +490,24 @@ export default function SalesDashboard({ dateFilter }) {
                 }}>
                   <Box>
                     <Typography variant="body2" fontWeight="medium" color="#1f2937">
-                      {activity.action}
+                      New order placed
                     </Typography>
                     <Typography variant="caption" color="#6b7280">
-                      {activity.customer} {activity.amount && `• ${activity.amount}`}
+                      {sale.customerName || 'Unknown Customer'} • {formatCurrency(sale.total || 0)}
                     </Typography>
                   </Box>
                   <Typography variant="caption" color="#9ca3af">
-                    {activity.time}
+                    {sale.createdAt ? new Date(sale.createdAt.toDate()).toLocaleTimeString() : 'Unknown time'}
                   </Typography>
                 </Box>
               ))}
+              {sales.length === 0 && (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <Typography variant="body2" color="#6b7280">
+                    No recent activity
+                  </Typography>
+                </Box>
+              )}
             </Box>
           </Paper>
         </Grid>

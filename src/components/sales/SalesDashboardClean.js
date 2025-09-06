@@ -114,6 +114,7 @@ export default function SalesDashboard({ dateFilter }) {
   const [paymentRecords, setPaymentRecords] = useState([]);
   const [topCustomers, setTopCustomers] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
+  const [paymentPercentages, setPaymentPercentages] = useState({ cash: 0, card: 0, bank: 0 });
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [newPayment, setNewPayment] = useState({
@@ -189,20 +190,82 @@ export default function SalesDashboard({ dateFilter }) {
         totalRevenue
       });
 
+      // Calculate statistics
+      const totalSales = sales.length;
+      const totalRevenue = sales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+      const uniqueCustomers = new Set(sales.map(sale => sale.customerId)).size;
+      
+      setSalesData({
+        totalSales,
+        totalOrders: totalSales,
+        totalCustomers: uniqueCustomers,
+        totalRevenue
+      });
+
+      // Calculate top customers from real sales data
+      const customerTotals = {};
+      sales.forEach(sale => {
+        if (sale.customerId && sale.customerName) {
+          customerTotals[sale.customerId] = customerTotals[sale.customerId] || {
+            name: sale.customerName,
+            total: 0,
+            orders: 0
+          };
+          customerTotals[sale.customerId].total += sale.total || 0;
+          customerTotals[sale.customerId].orders += 1;
+        }
+      });
+      
+      const topCustomersData = Object.values(customerTotals)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 5);
+
+      // Calculate top products from real sales data  
+      const productTotals = {};
+      sales.forEach(sale => {
+        if (sale.items) {
+          sale.items.forEach(item => {
+            const productId = item.id || item.productId;
+            if (productId) {
+              productTotals[productId] = productTotals[productId] || {
+                name: item.name,
+                sold: 0,
+                revenue: 0
+              };
+              productTotals[productId].sold += item.quantity || 1;
+              productTotals[productId].revenue += (item.quantity || 1) * (item.price || 0);
+            }
+          });
+        }
+      });
+      
+      const topProductsData = Object.values(productTotals)
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 5);
+
+      // Calculate payment method statistics
+      const paymentMethodStats = {
+        cash: 0,
+        card: 0,
+        bank: 0,
+        total: 0
+      };
+      
+      payments.forEach(payment => {
+        if (payment.method) {
+          paymentMethodStats[payment.method] = (paymentMethodStats[payment.method] || 0) + 1;
+          paymentMethodStats.total++;
+        }
+      });
+
       setPaymentRecords(payments.slice(0, 10)); // Latest 10 payments
-
-      // Mock top customers and products (replace with real data)
-      setTopCustomers([
-        { name: 'John Doe', total: 15000, orders: 12 },
-        { name: 'Jane Smith', total: 12000, orders: 8 },
-        { name: 'Mike Johnson', total: 9500, orders: 6 }
-      ]);
-
-      setTopProducts([
-        { name: 'Product A', sold: 150, revenue: 7500 },
-        { name: 'Product B', sold: 120, revenue: 6000 },
-        { name: 'Product C', sold: 90, revenue: 4500 }
-      ]);
+      setTopCustomers(topCustomersData);
+      setTopProducts(topProductsData);
+      setPaymentPercentages({
+        cash: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.cash / paymentMethodStats.total) * 100) : 0,
+        card: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.card / paymentMethodStats.total) * 100) : 0,
+        bank: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.bank / paymentMethodStats.total) * 100) : 0
+      });
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -313,21 +376,21 @@ export default function SalesDashboard({ dateFilter }) {
                   <MonetizationOn sx={{ color: '#1e3a8a', mr: 1, fontSize: 18 }} />
                   <Typography variant="body2" color="#1f2937" fontWeight="500">Cash</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="600" color="#1e3a8a">60%</Typography>
+                <Typography variant="body2" fontWeight="600" color="#1e3a8a">{paymentPercentages.cash}%</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <CreditCard sx={{ color: '#059669', mr: 1, fontSize: 18 }} />
                   <Typography variant="body2" color="#1f2937" fontWeight="500">Card</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="600" color="#059669">30%</Typography>
+                <Typography variant="body2" fontWeight="600" color="#059669">{paymentPercentages.card}%</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <AccountBalance sx={{ color: '#7c3aed', mr: 1, fontSize: 18 }} />
                   <Typography variant="body2" color="#1f2937" fontWeight="500">Bank</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight="600" color="#7c3aed">10%</Typography>
+                <Typography variant="body2" fontWeight="600" color="#7c3aed">{paymentPercentages.bank}%</Typography>
               </Box>
             </Box>
           </Paper>
