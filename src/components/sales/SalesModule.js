@@ -219,7 +219,7 @@ export default function SalesModule() {
       </Box>
 
       {/* Tab Content */}
-      <Container maxWidth="xl" sx={{ py: 3 }}>
+      <Container maxWidth="xl" sx={{ py: 4, backgroundColor: '#f8fafc', minHeight: 'calc(100vh - 200px)' }}>
         <TabPanel value={activeTab} index={0}>
           <SalesDashboard dateFilter={dateFilter} />
         </TabPanel>

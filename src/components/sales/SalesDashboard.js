@@ -57,42 +57,43 @@ const SimpleChart = ({ data, title, type = 'bar' }) => (
   </Box>
 );
 
-const StatsCard = ({ title, value, icon, color = '#000000', trend }) => (
+const StatsCard = ({ title, value, icon, color = '#1e40af', trend }) => (
   <Card sx={{ 
     height: '100%',
-    backgroundColor: '#000000',
+    background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
     color: '#ffffff',
-    border: '2px solid #333333',
-    borderRadius: '8px',
+    borderRadius: '16px',
+    border: '1px solid #e2e8f0',
     transition: 'all 0.3s ease',
     '&:hover': {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 8px 25px rgba(0,0,0,0.4)',
-      borderColor: '#555555'
+      transform: 'translateY(-4px)',
+      boxShadow: '0 12px 40px rgba(30, 64, 175, 0.3)',
+      background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)'
     }
   }}>
     <CardContent sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <Box sx={{ 
-          p: 1.5, 
-          backgroundColor: '#333333', 
+          p: 2, 
+          backgroundColor: 'rgba(255,255,255,0.15)', 
           borderRadius: '50%', 
           mr: 2,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          border: '2px solid rgba(255,255,255,0.2)'
         }}>
           {icon}
         </Box>
         <Box sx={{ flex: 1 }}>
-          <Typography variant="h4" fontWeight="bold" color="#ffffff">
+          <Typography variant="h4" fontWeight="bold" color="#ffffff" sx={{ letterSpacing: '0.5px' }}>
             {value}
           </Typography>
-          <Typography variant="body2" color="#cccccc" sx={{ mt: 0.5 }}>
+          <Typography variant="body2" color="rgba(255,255,255,0.9)" sx={{ mt: 0.5, fontWeight: 'bold' }}>
             {title}
           </Typography>
           {trend && (
-            <Typography variant="caption" color="#888888" sx={{ mt: 0.5, display: 'block' }}>
+            <Typography variant="caption" color="rgba(255,255,255,0.8)" sx={{ mt: 0.5, display: 'block' }}>
               {trend}
             </Typography>
           )}
