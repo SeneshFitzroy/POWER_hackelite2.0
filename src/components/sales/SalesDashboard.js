@@ -135,6 +135,7 @@ export default function SalesDashboard({ dateFilter }) {
   const [paymentRecords, setPaymentRecords] = useState([]);
   const [topCustomers, setTopCustomers] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
+  const [recentSales, setRecentSales] = useState([]);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [newPayment, setNewPayment] = useState({
@@ -210,10 +211,6 @@ export default function SalesDashboard({ dateFilter }) {
         totalRevenue
       });
 
-      setPaymentRecords(payments.slice(0, 10)); // Latest 10 payments
-      setTopCustomers(topCustomersData);
-      setTopProducts(topProductsData);
-
       // Calculate top customers from real sales data
       const customerTotals = {};
       sales.forEach(sale => {
@@ -254,6 +251,11 @@ export default function SalesDashboard({ dateFilter }) {
       const topProductsData = Object.values(productTotals)
         .sort((a, b) => b.revenue - a.revenue)
         .slice(0, 5);
+
+      setPaymentRecords(payments.slice(0, 10)); // Latest 10 payments
+      setTopCustomers(topCustomersData);
+      setTopProducts(topProductsData);
+      setRecentSales(sales.slice(0, 5)); // Latest 5 sales
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -480,7 +482,7 @@ export default function SalesDashboard({ dateFilter }) {
               Recent Activity
             </Typography>
             <Box>
-              {sales.slice(0, 5).map((sale, index) => (
+              {recentSales.map((sale, index) => (
                 <Box key={index} sx={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
@@ -501,7 +503,7 @@ export default function SalesDashboard({ dateFilter }) {
                   </Typography>
                 </Box>
               ))}
-              {sales.length === 0 && (
+              {recentSales.length === 0 && (
                 <Box sx={{ textAlign: 'center', py: 4 }}>
                   <Typography variant="body2" color="#6b7280">
                     No recent activity
