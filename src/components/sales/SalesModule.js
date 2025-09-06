@@ -18,7 +18,7 @@ import {
   CalendarToday
 } from '@mui/icons-material';
 import SalesDashboard from './SalesDashboard';
-import CustomerManagement from './CustomerManagement';
+import CustomerManagement from '../CustomerManagement';
 import SalesOrders from './SalesOrders';
 import Invoicing from './Invoicing';
 
@@ -67,7 +67,7 @@ export default function SalesModule() {
       {/* Professional Header - Matching POS Design */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+          background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
           color: '#ffffff',
           py: 2,
           px: 3,
