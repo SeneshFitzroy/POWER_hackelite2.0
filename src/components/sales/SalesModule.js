@@ -178,15 +178,53 @@ export default function SalesModule() {
 
         {/* Time and Date Display */}
         <Box sx={{ p: 3, mt: 'auto' }}>
-          <Box sx={{ textAlign: 'center', mb: 2 }}>
-            <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5 }}>
+          <Box 
+            sx={{ 
+              textAlign: 'center', 
+              mb: 3,
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              borderRadius: '12px',
+              py: 2,
+              px: 2,
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}
+          >
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: 'rgba(255,255,255,0.7)', 
+                fontSize: '11px',
+                fontWeight: 'medium',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                mb: 0.5
+              }}
+            >
+              Current Date & Time
+            </Typography>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                color: 'white', 
+                fontWeight: 'bold', 
+                fontSize: '15px',
+                mb: 0.3
+              }}
+            >
               {currentTime.toLocaleDateString('en-US', { 
                 month: 'short', 
                 day: 'numeric', 
                 year: 'numeric' 
               })}
             </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                color: 'rgba(255,255,255,0.9)',
+                fontSize: '14px',
+                fontWeight: 'medium'
+              }}
+            >
               {currentTime.toLocaleTimeString('en-US', { 
                 hour12: true,
                 hour: 'numeric',
@@ -195,41 +233,70 @@ export default function SalesModule() {
             </Typography>
           </Box>
           
-          <FormControl fullWidth size="small">
-            <Select
-              value={dateFilter}
-              onChange={handleDateFilterChange}
-              sx={{
-                backgroundColor: 'rgba(255,255,255,0.15)',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 'bold',
-                '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-                '& .MuiSvgIcon-root': { color: '#ffffff' },
-                '&:hover .MuiOutlinedInput-notchedOutline': { border: 'none' },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '1px solid rgba(255,255,255,0.5)' }
-              }}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    backgroundColor: '#1e3a8a',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    '& .MuiMenuItem-root': {
-                      color: '#ffffff',
-                      fontWeight: 'bold',
-                      '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' },
-                      '&.Mui-selected': { backgroundColor: 'rgba(255,255,255,0.2)' }
-                    }
-                  }
-                }
+          <Box sx={{ mb: 1 }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: 'rgba(255,255,255,0.7)', 
+                fontSize: '11px',
+                fontWeight: 'medium',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                mb: 1
               }}
             >
-              <MenuItem value="daily">Daily</MenuItem>
-              <MenuItem value="weekly">Weekly</MenuItem>
-              <MenuItem value="monthly">Monthly</MenuItem>
-            </Select>
-          </FormControl>
+              Date Filter
+            </Typography>
+            <FormControl fullWidth size="small">
+              <Select
+                value={dateFilter}
+                onChange={handleDateFilterChange}
+                sx={{
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '10px',
+                  fontWeight: 'medium',
+                  fontSize: '13px',
+                  '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                  '& .MuiSvgIcon-root': { color: '#ffffff' },
+                  '&:hover': { 
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    border: '1px solid rgba(255,255,255,0.3)'
+                  },
+                  '&.Mui-focused': { 
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    border: '1px solid rgba(255,255,255,0.5)'
+                  }
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      backgroundColor: '#1e3a8a',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '8px',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                      '& .MuiMenuItem-root': {
+                        color: '#ffffff',
+                        fontWeight: 'medium',
+                        fontSize: '13px',
+                        py: 1,
+                        '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' },
+                        '&.Mui-selected': { 
+                          backgroundColor: 'rgba(255,255,255,0.2)',
+                          fontWeight: 'bold'
+                        }
+                      }
+                    }
+                  }
+                }}
+              >
+                <MenuItem value="daily">Daily</MenuItem>
+                <MenuItem value="weekly">Weekly</MenuItem>
+                <MenuItem value="monthly">Monthly</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Box>
       </Drawer>
 
