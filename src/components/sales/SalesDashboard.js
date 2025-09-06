@@ -39,83 +39,69 @@ import {
 import { db } from '../../firebase/config';
 import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
 
-// Professional Chart Component (matches POS theme)
+// Clean Chart Component
 const SimpleChart = ({ data, title, type = 'bar' }) => (
   <Box sx={{ 
-    height: 280, 
+    height: 200, 
     display: 'flex', 
     alignItems: 'center', 
     justifyContent: 'center',
-    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-    borderRadius: 3,
-    border: '2px dashed #1e40af',
-    color: '#1e40af',
-    position: 'relative',
-    overflow: 'hidden'
+    backgroundColor: '#f9fafb',
+    borderRadius: '6px',
+    border: '2px dashed #d1d5db',
+    color: '#6b7280'
   }}>
-    <Box sx={{ textAlign: 'center', zIndex: 1 }}>
-      <Typography variant="h5" color="#1e40af" fontWeight="bold" sx={{ mb: 1 }}>
-        📊 {title}
+    <Box sx={{ textAlign: 'center' }}>
+      <Typography variant="h6" color="#6b7280" fontWeight="600">
+        {title}
       </Typography>
-      <Typography variant="body2" color="#64748b" sx={{ fontStyle: 'italic' }}>
-        Chart implementation area - Connect to your preferred charting library
+      <Typography variant="body2" color="#9ca3af" sx={{ mt: 1 }}>
+        Chart placeholder
       </Typography>
     </Box>
-    <Box sx={{ 
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      width: '100px',
-      height: '100px',
-      background: 'linear-gradient(135deg, rgba(30, 64, 175, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
-      borderRadius: '50%',
-      transform: 'translate(30px, -30px)'
-    }} />
   </Box>
 );
 
-const StatsCard = ({ title, value, icon, color = '#1e40af', trend }) => (
+// Professional Stats Card - Clean Design
+const StatsCard = ({ title, value, icon, color = '#2563eb', trend }) => (
   <Card sx={{ 
-    height: '100%',
-    background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+    height: '120px',
+    backgroundColor: color,
     color: '#ffffff',
-    borderRadius: '16px',
-    border: '1px solid #e2e8f0',
-    transition: 'all 0.3s ease',
+    borderRadius: '8px',
+    border: 'none',
+    transition: 'all 0.2s ease',
     '&:hover': {
-      transform: 'translateY(-4px)',
-      boxShadow: '0 12px 40px rgba(30, 64, 175, 0.3)',
-      background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)'
+      transform: 'translateY(-2px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
     }
   }}>
-    <CardContent sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+    <CardContent sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Box>
+          <Typography variant="h4" fontWeight="bold" color="#ffffff">
+            {value}
+          </Typography>
+          <Typography variant="body2" color="rgba(255,255,255,0.9)" sx={{ fontWeight: 'bold' }}>
+            {title}
+          </Typography>
+        </Box>
         <Box sx={{ 
-          p: 2, 
-          backgroundColor: 'rgba(255,255,255,0.15)', 
-          borderRadius: '50%', 
-          mr: 2,
+          p: 1, 
+          backgroundColor: 'rgba(255,255,255,0.2)', 
+          borderRadius: '6px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          border: '2px solid rgba(255,255,255,0.2)'
+          justifyContent: 'center'
         }}>
           {icon}
         </Box>
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="h4" fontWeight="bold" color="#ffffff" sx={{ letterSpacing: '0.5px' }}>
-            {value}
-          </Typography>
-          <Typography variant="body2" color="rgba(255,255,255,0.9)" sx={{ mt: 0.5, fontWeight: 'bold' }}>
-            {title}
-          </Typography>
-          {trend && (
-            <Typography variant="caption" color="rgba(255,255,255,0.8)" sx={{ mt: 0.5, display: 'block' }}>
-              {trend}
-            </Typography>
-          )}
-        </Box>
       </Box>
+      {trend && (
+        <Typography variant="caption" color="rgba(255,255,255,0.8)" sx={{ fontSize: '11px' }}>
+          {trend}
+        </Typography>
+      )}
     </CardContent>
   </Card>
 );

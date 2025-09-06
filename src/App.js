@@ -4,68 +4,74 @@ import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/materia
 import SalesModule from './components/sales/SalesModule';
 import './App.css';
 
-// Professional White-Blue-Black Theme (Matching POS System)
+// Professional Blue Theme (Matching POS System)
 const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1e40af', // Deep blue matching POS
-      dark: '#1e3a8a',
+      main: '#2563eb', // Bright blue from POS
+      dark: '#1d4ed8',
       light: '#3b82f6',
       contrastText: '#ffffff'
     },
     secondary: {
-      main: '#ff9800', // Orange accent matching POS cart
-      dark: '#f57c00',
-      light: '#ffb74d',
+      main: '#1e40af', // Deep blue from POS
+      dark: '#1e3a8a',
+      light: '#3b82f6',
       contrastText: '#ffffff'
     },
+    success: {
+      main: '#10b981',
+      light: '#34d399',
+      dark: '#059669'
+    },
+    warning: {
+      main: '#f59e0b',
+      light: '#fbbf24',
+      dark: '#d97706'
+    },
     background: {
-      default: '#f8fafc', // Light blue-gray background
+      default: '#f8fafc', // Light gray background
       paper: '#ffffff'
     },
     text: {
-      primary: '#1e293b', // Dark gray-blue
-      secondary: '#64748b'
+      primary: '#1f2937', // Dark gray
+      secondary: '#6b7280'
     },
-    divider: '#e2e8f0'
+    divider: '#e5e7eb'
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica Neue", Arial, sans-serif',
-    h1: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
-    h2: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
-    h3: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
-    h4: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
-    h5: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' },
-    h6: { color: '#1e293b', fontWeight: 700, letterSpacing: '0.5px' }
+    h1: { color: '#1f2937', fontWeight: 700 },
+    h2: { color: '#1f2937', fontWeight: 700 },
+    h3: { color: '#1f2937', fontWeight: 700 },
+    h4: { color: '#1f2937', fontWeight: 700 },
+    h5: { color: '#1f2937', fontWeight: 700 },
+    h6: { color: '#1f2937', fontWeight: 700 }
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          fontWeight: 700,
-          borderRadius: '8px',
-          letterSpacing: '0.5px'
+          fontWeight: 600,
+          borderRadius: '6px'
         },
         contained: {
-          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+          backgroundColor: '#2563eb',
           color: '#ffffff',
-          boxShadow: '0 4px 15px rgba(30, 64, 175, 0.3)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
           '&:hover': {
-            background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
-            boxShadow: '0 6px 20px rgba(30, 64, 175, 0.4)',
-            transform: 'translateY(-1px)'
+            backgroundColor: '#1d4ed8',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
           }
         },
         outlined: {
-          borderColor: '#1e40af',
-          color: '#1e40af',
-          borderWidth: '2px',
+          borderColor: '#2563eb',
+          color: '#2563eb',
           '&:hover': {
-            backgroundColor: '#1e40af',
-            color: '#ffffff',
-            borderWidth: '2px'
+            backgroundColor: '#eff6ff',
+            borderColor: '#1d4ed8'
           }
         }
       }
@@ -74,18 +80,18 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#ffffff',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
         }
       }
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
         }
       }
     }

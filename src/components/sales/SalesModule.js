@@ -7,7 +7,8 @@ import {
   FormControl,
   Select,
   MenuItem,
-  Container
+  Container,
+  Chip
 } from '@mui/material';
 import {
   Assessment,
@@ -53,38 +54,59 @@ export default function SalesModule() {
 
   return (
     <Box sx={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
-      {/* Main Professional Blue Navigation Bar */}
+      {/* Professional Header - Matching POS Design */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
+          background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
           color: '#ffffff',
-          py: 3,
-          px: 4,
+          py: 2,
+          px: 3,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
-          borderRadius: '0 0 16px 16px'
+          borderRadius: 0
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: 700,
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase',
-            color: '#ffffff'
-          }}
-        >
-          🏢 CoreERP - Sales Management System
-        </Typography>
-
-        {/* Date Filter */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CalendarToday sx={{ color: 'rgba(255,255,255,0.9)' }} />
-          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', mr: 1, fontWeight: 'bold' }}>
-            TIME PERIOD
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 'bold',
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase',
+              color: '#ffffff'
+            }}
+          >
+            COREERP SALES SYSTEM
           </Typography>
+          <Chip 
+            label="SALES MODULE" 
+            variant="outlined" 
+            sx={{ 
+              color: 'white', 
+              borderColor: 'white',
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              fontWeight: 'bold'
+            }} 
+          />
+        </Box>
+
+        {/* Time & Date + Filter */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
+              TIME & DATE
+            </Typography>
+            <Box sx={{ textAlign: 'right' }}>
+              <Typography variant="body1" sx={{ color: 'white', fontWeight: 'bold' }}>
+                {new Date().toLocaleDateString()}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+                {new Date().toLocaleTimeString()}
+              </Typography>
+            </Box>
+          </Box>
+          
           <FormControl size="small">
             <Select
               value={dateFilter}
@@ -93,72 +115,42 @@ export default function SalesModule() {
                 backgroundColor: 'rgba(255,255,255,0.15)',
                 color: '#ffffff',
                 border: 'none',
-                minWidth: 140,
-                borderRadius: '8px',
+                minWidth: 120,
+                borderRadius: '6px',
                 fontWeight: 'bold',
-                '& .MuiOutlinedInput-notchedOutline': {
-                  border: 'none'
-                },
-                '& .MuiSvgIcon-root': {
-                  color: '#ffffff'
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  border: 'none'
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  border: '1px solid rgba(255,255,255,0.5)'
-                }
+                '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                '& .MuiSvgIcon-root': { color: '#ffffff' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '1px solid rgba(255,255,255,0.5)' }
               }}
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    backgroundColor: '#1e40af',
+                    backgroundColor: '#2563eb',
                     border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: '8px',
                     '& .MuiMenuItem-root': {
                       color: '#ffffff',
                       fontWeight: 'bold',
-                      '&:hover': {
-                        backgroundColor: 'rgba(255,255,255,0.1)'
-                      },
-                      '&.Mui-selected': {
-                        backgroundColor: 'rgba(255,255,255,0.2)'
-                      }
+                      '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' },
+                      '&.Mui-selected': { backgroundColor: 'rgba(255,255,255,0.2)' }
                     }
                   }
                 }
               }}
             >
-              <MenuItem value="daily">📅 Daily</MenuItem>
-              <MenuItem value="weekly">📊 Weekly</MenuItem>
-              <MenuItem value="monthly">📈 Monthly</MenuItem>
+              <MenuItem value="daily">Daily</MenuItem>
+              <MenuItem value="weekly">Weekly</MenuItem>
+              <MenuItem value="monthly">Monthly</MenuItem>
             </Select>
           </FormControl>
-          <Typography
-            variant="caption"
-            sx={{
-              color: 'rgba(255,255,255,0.8)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              ml: 2,
-              fontWeight: 'bold',
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              px: 2,
-              py: 0.5,
-              borderRadius: '12px'
-            }}
-          >
-            CURRENT: {dateFilter.toUpperCase()}
-          </Typography>
         </Box>
       </Box>
 
-      {/* Tab Navigation */}
+      {/* Clean Professional Tab Navigation */}
       <Box
         sx={{
           backgroundColor: '#ffffff',
-          borderBottom: '2px solid #e2e8f0',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+          borderBottom: '1px solid #e5e7eb'
         }}
       >
         <Container maxWidth="xl">
@@ -167,59 +159,51 @@ export default function SalesModule() {
             onChange={handleTabChange}
             sx={{
               '& .MuiTabs-indicator': {
-                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-                height: 4,
-                borderRadius: '2px'
+                backgroundColor: '#2563eb',
+                height: 3
               },
               '& .MuiTab-root': {
                 textTransform: 'none',
-                fontSize: '15px',
-                fontWeight: 700,
-                letterSpacing: '0.5px',
-                color: '#64748b',
-                minHeight: 72,
-                py: 2,
+                fontSize: '14px',
+                fontWeight: 600,
+                color: '#6b7280',
+                minHeight: 56,
+                px: 3,
                 '&.Mui-selected': {
-                  color: '#1e40af',
-                  background: 'linear-gradient(135deg, rgba(30, 64, 175, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)'
+                  color: '#2563eb'
                 },
                 '&:hover': {
-                  color: '#1e40af',
-                  backgroundColor: 'rgba(30, 64, 175, 0.05)'
+                  color: '#2563eb'
                 }
               }
             }}
           >
             <Tab
-              icon={<Assessment sx={{ color: 'inherit' }} />}
-              label="📊 SALES DASHBOARD"
+              icon={<Assessment />}
+              label="Sales Dashboard"
               iconPosition="start"
-              sx={{ px: 4 }}
             />
             <Tab
-              icon={<People sx={{ color: 'inherit' }} />}
-              label="👥 CUSTOMER MANAGEMENT"
+              icon={<People />}
+              label="Customer Management"
               iconPosition="start"
-              sx={{ px: 4 }}
             />
             <Tab
-              icon={<ShoppingCart sx={{ color: 'inherit' }} />}
-              label="🛒 SALES ORDERS"
+              icon={<ShoppingCart />}
+              label="Sales Orders"
               iconPosition="start"
-              sx={{ px: 4 }}
             />
             <Tab
-              icon={<Receipt sx={{ color: 'inherit' }} />}
-              label="🧾 INVOICING"
+              icon={<Receipt />}
+              label="Invoicing"
               iconPosition="start"
-              sx={{ px: 4 }}
             />
           </Tabs>
         </Container>
       </Box>
 
-      {/* Tab Content */}
-      <Container maxWidth="xl" sx={{ py: 4, backgroundColor: '#f8fafc', minHeight: 'calc(100vh - 200px)' }}>
+      {/* Main Content Area */}
+      <Container maxWidth="xl" sx={{ py: 3, minHeight: 'calc(100vh - 160px)' }}>
         <TabPanel value={activeTab} index={0}>
           <SalesDashboard dateFilter={dateFilter} />
         </TabPanel>
