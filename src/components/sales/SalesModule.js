@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Tabs,
-  Tab,
   Typography,
   FormControl,
   Select,
   MenuItem,
   Container,
-  Chip
+  Chip,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemButton,
+  Drawer,
+  Divider
 } from '@mui/material';
 import {
   Assessment,
@@ -45,6 +50,15 @@ export default function SalesModule() {
   const [dateFilter, setDateFilter] = useState('daily');
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  const sidebarWidth = 280;
+
+  const navigationItems = [
+    { label: 'Sales Dashboard', icon: <Assessment />, index: 0 },
+    { label: 'Customer Management', icon: <People />, index: 1 },
+    { label: 'Sales Orders', icon: <ShoppingCart />, index: 2 },
+    { label: 'Invoicing', icon: <Receipt />, index: 3 }
+  ];
+
   // Update time every second
   useEffect(() => {
     const timer = setInterval(() => {
@@ -54,8 +68,8 @@ export default function SalesModule() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+  const handleNavClick = (index) => {
+    setActiveTab(index);
   };
 
   const handleDateFilterChange = (event) => {
