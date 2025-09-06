@@ -211,6 +211,8 @@ export default function SalesDashboard({ dateFilter }) {
       });
 
       setPaymentRecords(payments.slice(0, 10)); // Latest 10 payments
+      setTopCustomers(topCustomersData);
+      setTopProducts(topProductsData);
 
       // Calculate top customers from real sales data
       const customerTotals = {};
@@ -307,7 +309,7 @@ export default function SalesDashboard({ dateFilter }) {
         <Grid item xs={12} sm={6} md={3}>
           <ProfessionalStatsCard
             title="Total Sales"
-            value="$1k"
+            value={salesData.totalSales}
             icon={<TrendingUp sx={{ color: '#ffffff', fontSize: 24 }} />}
             bgColor="#fef2f2"
             iconColor="#ef4444"
@@ -316,7 +318,7 @@ export default function SalesDashboard({ dateFilter }) {
         <Grid item xs={12} sm={6} md={3}>
           <ProfessionalStatsCard
             title="Total Order"
-            value="300"
+            value={salesData.totalOrders}
             icon={<ShoppingCart sx={{ color: '#ffffff', fontSize: 24 }} />}
             bgColor="#fff7ed"
             iconColor="#f97316"
@@ -324,8 +326,8 @@ export default function SalesDashboard({ dateFilter }) {
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <ProfessionalStatsCard
-            title="Product Sold"
-            value="5"
+            title="Revenue"
+            value={formatCurrency(salesData.totalRevenue)}
             icon={<AttachMoney sx={{ color: '#ffffff', fontSize: 24 }} />}
             bgColor="#f0fdf4"
             iconColor="#22c55e"
@@ -333,8 +335,8 @@ export default function SalesDashboard({ dateFilter }) {
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <ProfessionalStatsCard
-            title="New Customers"
-            value="8"
+            title="Customers"
+            value={salesData.totalCustomers}
             icon={<People sx={{ color: '#ffffff', fontSize: 24 }} />}
             bgColor="#f0f9ff"
             iconColor="#3b82f6"
