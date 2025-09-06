@@ -42,8 +42,6 @@ function TabPanel({ children, value, index, ...other }) {
 export default function SalesModule() {
   const [activeTab, setActiveTab] = useState(0);
   const [dateFilter, setDateFilter] = useState('daily');
-  const [anchorEl, setAnchorEl] = useState(null);
-  const { user, logout } = useAuth();
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -51,23 +49,6 @@ export default function SalesModule() {
 
   const handleDateFilterChange = (event) => {
     setDateFilter(event.target.value);
-  };
-
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = async () => {
-    handleClose();
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Failed to log out:', error);
-    }
   };
 
   return (
