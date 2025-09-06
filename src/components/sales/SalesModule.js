@@ -7,15 +7,21 @@ import {
   FormControl,
   Select,
   MenuItem,
-  Container
+  Container,
+  IconButton,
+  Menu,
+  Avatar
 } from '@mui/material';
 import {
   Assessment,
   People,
   ShoppingCart,
   Receipt,
-  CalendarToday
+  CalendarToday,
+  AccountCircle,
+  ExitToApp
 } from '@mui/icons-material';
+import { useAuth } from '../../contexts/AuthContext';
 import SalesDashboard from './SalesDashboard';
 import CustomerManagement from './CustomerManagement';
 import SalesOrders from './SalesOrders';
@@ -42,6 +48,8 @@ function TabPanel({ children, value, index, ...other }) {
 export default function SalesModule() {
   const [activeTab, setActiveTab] = useState(0);
   const [dateFilter, setDateFilter] = useState('daily');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const { user, logout } = useAuth();
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -49,6 +57,23 @@ export default function SalesModule() {
 
   const handleDateFilterChange = (event) => {
     setDateFilter(event.target.value);
+  };
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    handleClose();
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Failed to log out:', error);
+    }
   };
 
   return (
@@ -77,68 +102,153 @@ export default function SalesModule() {
           CoreERP - Sales Management
         </Typography>
 
-        {/* Date Filter */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CalendarToday sx={{ color: '#cccccc' }} />
-          <Typography variant="body2" sx={{ color: '#cccccc', mr: 1 }}>
-            Time Period
-          </Typography>
-          <FormControl size="small">
-            <Select
-              value={dateFilter}
-              onChange={handleDateFilterChange}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          {/* Date Filter */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <CalendarToday sx={{ color: '#cccccc' }} />
+            <Typography variant="body2" sx={{ color: '#cccccc', mr: 1 }}>
+              Time Period
+            </Typography>
+            <FormControl size="small">
+              <Select
+                value={dateFilter}
+                onChange={handleDateFilterChange}
+                sx={{
+                  backgroundColor: '#333333',
+                  color: '#ffffff',
+                  border: 'none',
+                  minWidth: 120,
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    border: 'none'
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: '#ffffff'
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    border: 'none'
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    border: '1px solid #555555'
+                  }
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      backgroundColor: '#000000',
+                      border: '1px solid #333333',
+                      '& .MuiMenuItem-root': {
+                        color: '#ffffff',
+                        '&:hover': {
+                          backgroundColor: '#333333'
+                        },
+                        '&.Mui-selected': {
+                          backgroundColor: '#555555'
+                        }
+                      }
+                    }
+                  }
+                }}
+              >
+                <MenuItem value="daily">Daily</MenuItem>
+                <MenuItem value="weekly">Weekly</MenuItem>
+                <MenuItem value="monthly">Monthly</MenuItem>
+              </Select>
+            </FormControl>
+            <Typography
+              variant="caption"
               sx={{
-                backgroundColor: '#333333',
+                color: '#888888',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                ml: 2
+              }}
+            >
+              Current: {dateFilter.toUpperCase()}
+            </Typography>
+          </Box>
+
+          {/* User Menu */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#cccccc',
+                fontSize: '13px'
+              }}
+            >
+              {user?.displayName || user?.email}
+            </Typography>
+            
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              sx={{ 
                 color: '#ffffff',
-                border: 'none',
-                minWidth: 120,
-                '& .MuiOutlinedInput-notchedOutline': {
-                  border: 'none'
-                },
-                '& .MuiSvgIcon-root': {
-                  color: '#ffffff'
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  border: 'none'
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  border: '1px solid #555555'
+                '&:hover': {
+                  backgroundColor: '#333333'
                 }
               }}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    backgroundColor: '#000000',
-                    border: '1px solid #333333',
-                    '& .MuiMenuItem-root': {
-                      color: '#ffffff',
-                      '&:hover': {
-                        backgroundColor: '#333333'
-                      },
-                      '&.Mui-selected': {
-                        backgroundColor: '#555555'
-                      }
+            >
+              {user?.photoURL ? (
+                <Avatar src={user.photoURL} sx={{ width: 32, height: 32 }} />
+              ) : (
+                <AccountCircle />
+              )}
+            </IconButton>
+            
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              PaperProps={{
+                sx: {
+                  backgroundColor: '#000000',
+                  border: '1px solid #333333',
+                  '& .MuiMenuItem-root': {
+                    color: '#ffffff',
+                    '&:hover': {
+                      backgroundColor: '#333333'
                     }
                   }
                 }
               }}
             >
-              <MenuItem value="daily">Daily</MenuItem>
-              <MenuItem value="weekly">Weekly</MenuItem>
-              <MenuItem value="monthly">Monthly</MenuItem>
-            </Select>
-          </FormControl>
-          <Typography
-            variant="caption"
-            sx={{
-              color: '#888888',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              ml: 2
-            }}
-          >
-            Current: {dateFilter.toUpperCase()}
-          </Typography>
+              <Box sx={{ px: 2, py: 1, borderBottom: '1px solid #333333' }}>
+                <Typography variant="body2" color="#cccccc">
+                  Profile Settings
+                </Typography>
+              </Box>
+              <Box 
+                sx={{ 
+                  px: 2, 
+                  py: 1, 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  '&:hover': {
+                    backgroundColor: '#333333'
+                  }
+                }}
+                onClick={handleLogout}
+              >
+                <ExitToApp sx={{ mr: 1 }} />
+                <Typography variant="body2">Logout</Typography>
+              </Box>
+            </Menu>
+          </Box>
         </Box>
       </Box>
 

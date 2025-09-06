@@ -1,9 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Container, Box, Typography, Paper, Grid } from '@mui/material';
-import Dashboard from './components/Dashboard';
+import { Box } from '@mui/material';
 import Login from './components/Login';
-import Navigation from './components/Navigation';
 import SalesModule from './components/sales/SalesModule';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
@@ -52,15 +50,11 @@ function AppContent() {
       minHeight: '100vh',
       backgroundColor: '#ffffff'
     }}>
-      <Navigation />
-      <Box sx={{ flexGrow: 1, backgroundColor: '#ffffff' }}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/sales" element={<SalesModule />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Box>
+      <Routes>
+        <Route path="/" element={<Navigate to="/sales" replace />} />
+        <Route path="/sales" element={<SalesModule />} />
+        <Route path="*" element={<Navigate to="/sales" replace />} />
+      </Routes>
     </Box>
   );
 }
