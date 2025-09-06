@@ -4,20 +4,20 @@ import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/materia
 import SalesModule from './components/sales/SalesModule';
 import './App.css';
 
-// Professional Dark Blue Theme 
+// Professional Blue Theme (Matching POS System)
 const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1e40af', // Darker blue
-      dark: '#1e3a8a',
-      light: '#2563eb',
+      main: '#2563eb', // Bright blue from POS
+      dark: '#1d4ed8',
+      light: '#3b82f6',
       contrastText: '#ffffff'
     },
     secondary: {
-      main: '#1e3a8a', // Even darker blue
-      dark: '#1e1b4b',
-      light: '#1e40af',
+      main: '#1e40af', // Deep blue from POS
+      dark: '#1e3a8a',
+      light: '#3b82f6',
       contrastText: '#ffffff'
     },
     success: {
