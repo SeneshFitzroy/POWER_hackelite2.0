@@ -77,66 +77,125 @@ export default function SalesModule() {
   };
 
   return (
-    <Box sx={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
-      {/* Professional Header - Matching POS Design */}
-      <Box
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      {/* Left Sidebar Navigation */}
+      <Drawer
+        variant="permanent"
         sx={{
-          background: 'linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%)',
-          color: '#ffffff',
-          py: 2,
-          px: 3,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderRadius: 0
+          width: sidebarWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: sidebarWidth,
+            boxSizing: 'border-box',
+            background: 'linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%)',
+            color: '#ffffff',
+            borderRight: 'none',
+            boxShadow: '4px 0 12px rgba(0,0,0,0.15)'
+          },
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        {/* Sidebar Header */}
+        <Box
+          sx={{
+            p: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            borderBottom: '1px solid rgba(255,255,255,0.15)'
+          }}
+        >
           <Typography
-            variant="h4"
+            variant="h5"
             sx={{
               fontWeight: 'bold',
               letterSpacing: '0.5px',
-              textTransform: 'uppercase',
-              color: '#ffffff'
+              color: '#ffffff',
+              mb: 1
             }}
           >
-            COREERP SALES SYSTEM
+            COREERP
           </Typography>
           <Chip 
             label="SALES MODULE" 
             variant="outlined" 
+            size="small"
             sx={{ 
               color: 'white', 
-              borderColor: 'white',
-              backgroundColor: 'rgba(255,255,255,0.15)',
-              fontWeight: 'bold'
+              borderColor: 'rgba(255,255,255,0.5)',
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              fontWeight: 'bold',
+              fontSize: '10px'
             }} 
           />
         </Box>
 
-        {/* Time & Date + Filter */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ textAlign: 'right' }}>
-              <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
-                {currentTime.toLocaleDateString('en-US', { 
-                  month: 'numeric', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                {currentTime.toLocaleTimeString('en-US', { 
-                  hour12: true,
-                  hour: 'numeric',
-                  minute: '2-digit'
-                })}
-              </Typography>
-            </Box>
+        {/* Navigation Menu */}
+        <List sx={{ px: 2, py: 2 }}>
+          {navigationItems.map((item) => (
+            <ListItem key={item.index} disablePadding sx={{ mb: 1 }}>
+              <ListItemButton
+                onClick={() => handleNavClick(item.index)}
+                sx={{
+                  borderRadius: '12px',
+                  py: 1.5,
+                  px: 2,
+                  backgroundColor: activeTab === item.index ? 'rgba(255,255,255,0.2)' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                  boxShadow: activeTab === item.index ? '0 4px 12px rgba(0,0,0,0.2)' : 'none',
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    color: '#ffffff',
+                    minWidth: 40,
+                    '& .MuiSvgIcon-root': {
+                      fontSize: '22px'
+                    }
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  sx={{
+                    '& .MuiListItemText-primary': {
+                      fontSize: '14px',
+                      fontWeight: activeTab === item.index ? 'bold' : 'medium',
+                      color: '#ffffff'
+                    }
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+
+        <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.15)', mx: 2 }} />
+
+        {/* Time and Date Display */}
+        <Box sx={{ p: 3, mt: 'auto' }}>
+          <Box sx={{ textAlign: 'center', mb: 2 }}>
+            <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5 }}>
+              {currentTime.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+              })}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+              {currentTime.toLocaleTimeString('en-US', { 
+                hour12: true,
+                hour: 'numeric',
+                minute: '2-digit'
+              })}
+            </Typography>
           </Box>
           
-          <FormControl size="small">
+          <FormControl fullWidth size="small">
             <Select
               value={dateFilter}
               onChange={handleDateFilterChange}
@@ -144,8 +203,7 @@ export default function SalesModule() {
                 backgroundColor: 'rgba(255,255,255,0.15)',
                 color: '#ffffff',
                 border: 'none',
-                minWidth: 120,
-                borderRadius: '6px',
+                borderRadius: '8px',
                 fontWeight: 'bold',
                 '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                 '& .MuiSvgIcon-root': { color: '#ffffff' },
@@ -173,79 +231,34 @@ export default function SalesModule() {
             </Select>
           </FormControl>
         </Box>
-      </Box>
-
-      {/* Clean Professional Tab Navigation */}
-      <Box
-        sx={{
-          backgroundColor: '#ffffff',
-          borderBottom: '1px solid #e5e7eb'
-        }}
-      >
-        <Container maxWidth="xl">
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            sx={{
-              '& .MuiTabs-indicator': {
-                backgroundColor: '#1e3a8a',
-                height: 3
-              },
-              '& .MuiTab-root': {
-                textTransform: 'none',
-                fontSize: '14px',
-                fontWeight: 600,
-                color: '#6b7280',
-                minHeight: 56,
-                px: 3,
-                '&.Mui-selected': {
-                  color: '#1e3a8a'
-                },
-                '&:hover': {
-                  color: '#1e3a8a'
-                }
-              }
-            }}
-          >
-            <Tab
-              icon={<Assessment />}
-              label="Sales Dashboard"
-              iconPosition="start"
-            />
-            <Tab
-              icon={<People />}
-              label="Customer Management"
-              iconPosition="start"
-            />
-            <Tab
-              icon={<ShoppingCart />}
-              label="Sales Orders"
-              iconPosition="start"
-            />
-            <Tab
-              icon={<Receipt />}
-              label="Invoicing"
-              iconPosition="start"
-            />
-          </Tabs>
-        </Container>
-      </Box>
+      </Drawer>
 
       {/* Main Content Area */}
-      <Container maxWidth="xl" sx={{ py: 1.5, minHeight: 'calc(100vh - 160px)' }}>
-        <TabPanel value={activeTab} index={0}>
-          <SalesDashboard dateFilter={dateFilter} />
-        </TabPanel>
-        <TabPanel value={activeTab} index={1}>
-          <CustomerManagement dateFilter={dateFilter} />
-        </TabPanel>
-        <TabPanel value={activeTab} index={2}>
-          <SalesOrders dateFilter={dateFilter} />
-        </TabPanel>
-        <TabPanel value={activeTab} index={3}>
-          <Invoicing dateFilter={dateFilter} />
-        </TabPanel>
-      </Container>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          backgroundColor: '#ffffff',
+          minHeight: '100vh',
+          ml: 0
+        }}
+      >
+        {/* Content Container */}
+        <Container maxWidth="xl" sx={{ py: 3, minHeight: '100vh' }}>
+          <TabPanel value={activeTab} index={0}>
+            <SalesDashboard dateFilter={dateFilter} />
+          </TabPanel>
+          <TabPanel value={activeTab} index={1}>
+            <CustomerManagement dateFilter={dateFilter} />
+          </TabPanel>
+          <TabPanel value={activeTab} index={2}>
+            <SalesOrders dateFilter={dateFilter} />
+          </TabPanel>
+          <TabPanel value={activeTab} index={3}>
+            <Invoicing dateFilter={dateFilter} />
+          </TabPanel>
+        </Container>
+      </Box>
     </Box>
   );
 }
