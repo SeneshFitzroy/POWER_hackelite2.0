@@ -254,7 +254,7 @@ export default function SalesDashboard({ dateFilter }) {
             title="Total Sales"
             value={salesData.totalSales}
             icon={<TrendingUp sx={{ color: '#ffffff', fontSize: 24 }} />}
-            color="#2563eb"
+            color="#1e3a8a"
             trend="+12% from last period"
           />
         </Grid>
@@ -471,7 +471,7 @@ export default function SalesDashboard({ dateFilter }) {
         fullWidth
       >
         <DialogTitle sx={{ 
-          backgroundColor: '#2563eb', 
+          backgroundColor: '#1e3a8a', 
           color: 'white', 
           fontWeight: 600,
           py: 2

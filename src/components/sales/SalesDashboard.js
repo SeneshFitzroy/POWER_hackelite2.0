@@ -332,7 +332,7 @@ export default function SalesDashboard({ dateFilter }) {
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
               <Box sx={{ textAlign: 'center' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
-                  <Box sx={{ width: 12, height: 12, backgroundColor: '#3b82f6', borderRadius: '50%', mr: 1 }} />
+                  <Box sx={{ width: 12, height: 12, backgroundColor: '#1e3a8a', borderRadius: '50%', mr: 1 }} />
                   <Typography variant="caption" color="#6b7280">Online Sales</Typography>
                 </Box>
               </Box>
@@ -422,14 +422,14 @@ export default function SalesDashboard({ dateFilter }) {
                     <Typography variant="body2" fontWeight="medium" color="#1f2937">
                       {product.name}
                     </Typography>
-                    <Typography variant="body2" fontWeight="bold" color="#3b82f6">
+                    <Typography variant="body2" fontWeight="bold" color="#1e3a8a">
                       {product.sales}
                     </Typography>
                   </Box>
                   <Box sx={{ backgroundColor: '#e5e7eb', height: 4, borderRadius: 2, overflow: 'hidden' }}>
                     <Box 
                       sx={{ 
-                        backgroundColor: '#3b82f6', 
+                        backgroundColor: '#1e3a8a', 
                         height: '100%', 
                         width: `${product.percentage}%`,
                         borderRadius: 2 
