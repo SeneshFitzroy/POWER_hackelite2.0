@@ -515,7 +515,7 @@ export default function SalesDashboard({ dateFilter }) {
         <DialogTitle sx={{ backgroundColor: '#000000', color: 'white', fontWeight: 'bold' }}>
           Record New Payment
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ p: 3, backgroundColor: '#ffffff' }}>
           <Grid container spacing={3} sx={{ mt: 1 }}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -523,6 +523,25 @@ export default function SalesDashboard({ dateFilter }) {
                 label="Customer Name"
                 value={newPayment.customerName}
                 onChange={(e) => setNewPayment({ ...newPayment, customerName: e.target.value })}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#000000',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#333333',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#000000',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#000000',
+                    '&.Mui-focused': {
+                      color: '#000000',
+                    },
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -532,14 +551,69 @@ export default function SalesDashboard({ dateFilter }) {
                 type="number"
                 value={newPayment.amount}
                 onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#000000',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#333333',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#000000',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#000000',
+                    '&.Mui-focused': {
+                      color: '#000000',
+                    },
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
+              <FormControl fullWidth sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#000000',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#333333',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#000000',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: '#000000',
+                  '&.Mui-focused': {
+                    color: '#000000',
+                  },
+                },
+              }}>
                 <InputLabel>Payment Method</InputLabel>
                 <Select
                   value={newPayment.method}
                   onChange={(e) => setNewPayment({ ...newPayment, method: e.target.value })}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #000000',
+                        '& .MuiMenuItem-root': {
+                          color: '#000000',
+                          '&:hover': {
+                            backgroundColor: '#f5f5f5'
+                          },
+                          '&.Mui-selected': {
+                            backgroundColor: '#000000',
+                            color: '#ffffff'
+                          }
+                        }
+                      }
+                    }
+                  }}
                 >
                   <MenuItem value="cash">Cash</MenuItem>
                   <MenuItem value="card">Credit/Debit Card</MenuItem>
@@ -557,6 +631,25 @@ export default function SalesDashboard({ dateFilter }) {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#000000',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#333333',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#000000',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#000000',
+                    '&.Mui-focused': {
+                      color: '#000000',
+                    },
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -567,14 +660,40 @@ export default function SalesDashboard({ dateFilter }) {
                 rows={3}
                 value={newPayment.description}
                 onChange={(e) => setNewPayment({ ...newPayment, description: e.target.value })}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#000000',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#333333',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#000000',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#000000',
+                    '&.Mui-focused': {
+                      color: '#000000',
+                    },
+                  },
+                }}
               />
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
+        <DialogActions sx={{ p: 3, backgroundColor: '#ffffff' }}>
           <Button 
             onClick={() => setShowPaymentDialog(false)}
-            sx={{ color: '#666666' }}
+            sx={{ 
+              color: '#666666',
+              border: '1px solid #cccccc',
+              '&:hover': {
+                backgroundColor: '#f5f5f5',
+                borderColor: '#999999'
+              }
+            }}
           >
             Cancel
           </Button>
@@ -584,10 +703,17 @@ export default function SalesDashboard({ dateFilter }) {
             disabled={loading || !newPayment.amount || !newPayment.customerName}
             sx={{
               backgroundColor: '#000000',
-              color: 'white',
+              color: '#ffffff',
               fontWeight: 'bold',
+              border: '2px solid #000000',
               '&:hover': {
-                backgroundColor: '#333333'
+                backgroundColor: '#333333',
+                borderColor: '#333333'
+              },
+              '&:disabled': {
+                backgroundColor: '#cccccc',
+                color: '#666666',
+                borderColor: '#cccccc'
               }
             }}
           >
