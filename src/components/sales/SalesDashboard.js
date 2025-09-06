@@ -248,9 +248,9 @@ export default function SalesDashboard({ dateFilter }) {
   };
 
   return (
-    <Box sx={{ p: 0 }}>
+    <Box sx={{ p: 0, backgroundColor: '#f8f9fa' }}>
       {/* Stats Cards Row */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={1.5} sx={{ mb: 2 }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Total Sales"
@@ -290,17 +290,17 @@ export default function SalesDashboard({ dateFilter }) {
       </Grid>
 
       {/* Main Content Grid */}
-      <Grid container spacing={2}>
+      <Grid container spacing={1.5}>
         {/* Sales Chart */}
         <Grid item xs={12} md={8}>
           <Paper sx={{ 
-            p: 2, 
-            height: 280,
+            p: 1.5, 
+            height: 260,
             backgroundColor: '#ffffff',
             border: '2px solid #000000',
             borderRadius: 2 
           }}>
-            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#000000' }}>
+            <Typography variant="h6" fontWeight="600" sx={{ mb: 1.5, color: '#000000' }}>
               Sales Report - {dateFilter.toUpperCase()}
             </Typography>
             <SimpleChart data={[]} title="Sales Trends" type="line" />
