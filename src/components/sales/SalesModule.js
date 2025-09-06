@@ -67,7 +67,7 @@ export default function SalesModule() {
       {/* Professional Header - Matching POS Design */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+          background: 'linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%)',
           color: '#ffffff',
           py: 2,
           px: 3,
@@ -141,7 +141,7 @@ export default function SalesModule() {
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    backgroundColor: '#2563eb',
+                    backgroundColor: '#1e3a8a',
                     border: '1px solid rgba(255,255,255,0.2)',
                     '& .MuiMenuItem-root': {
                       color: '#ffffff',
@@ -174,7 +174,7 @@ export default function SalesModule() {
             onChange={handleTabChange}
             sx={{
               '& .MuiTabs-indicator': {
-                backgroundColor: '#2563eb',
+                backgroundColor: '#1e3a8a',
                 height: 3
               },
               '& .MuiTab-root': {
@@ -185,10 +185,10 @@ export default function SalesModule() {
                 minHeight: 56,
                 px: 3,
                 '&.Mui-selected': {
-                  color: '#2563eb'
+                  color: '#1e3a8a'
                 },
                 '&:hover': {
-                  color: '#2563eb'
+                  color: '#1e3a8a'
                 }
               }
             }}

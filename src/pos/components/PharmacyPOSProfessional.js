@@ -384,7 +384,7 @@ const PharmacyPOSProfessional = () => {
         p: 2, 
         mb: 2, 
         borderRadius: 0,
-        background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
+        background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #60a5fa 100%)',
         boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -462,7 +462,7 @@ const PharmacyPOSProfessional = () => {
             <Box sx={{ 
               flexShrink: 0,
               p: 2,
-              background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+              background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
               borderRadius: '8px 8px 0 0'
             }}>
               <Typography variant="h6" sx={{ color: 'white', mb: 1.5, fontWeight: 'bold' }}>
@@ -479,7 +479,7 @@ const PharmacyPOSProfessional = () => {
                     backgroundColor: 'white',
                     borderRadius: '8px',
                     '& fieldset': { borderColor: '#e2e8f0' },
-                    '&:hover fieldset': { borderColor: '#3b82f6' },
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
                     '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                   }
                 }}
@@ -522,7 +522,7 @@ const PharmacyPOSProfessional = () => {
                   '& .MuiOutlinedInput-root': {
                     backgroundColor: 'white',
                     '& fieldset': { borderColor: '#e2e8f0' },
-                    '&:hover fieldset': { borderColor: '#3b82f6' },
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
                     '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                   }
                 }}
@@ -548,13 +548,13 @@ const PharmacyPOSProfessional = () => {
               >
                 <FormControlLabel 
                   value="employee" 
-                  control={<Radio size="small" sx={{ color: '#3b82f6', '&.Mui-checked': { color: '#1e40af' } }} />} 
+                  control={<Radio size="small" sx={{ color: '#1e3a8a', '&.Mui-checked': { color: '#1e40af' } }} />} 
                   label="Employee" 
                   sx={{ mr: 3 }}
                 />
                 <FormControlLabel 
                   value="pharmacist" 
-                  control={<Radio size="small" sx={{ color: '#3b82f6', '&.Mui-checked': { color: '#1e40af' } }} />} 
+                  control={<Radio size="small" sx={{ color: '#1e3a8a', '&.Mui-checked': { color: '#1e40af' } }} />} 
                   label="Pharmacist" 
                 />
               </RadioGroup>
@@ -568,7 +568,7 @@ const PharmacyPOSProfessional = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     '& fieldset': { borderColor: '#e2e8f0' },
-                    '&:hover fieldset': { borderColor: '#3b82f6' },
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
                     '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                   }
                 }}
@@ -597,7 +597,7 @@ const PharmacyPOSProfessional = () => {
                   '& .MuiOutlinedInput-root': {
                     backgroundColor: 'white',
                     '& fieldset': { borderColor: '#e2e8f0' },
-                    '&:hover fieldset': { borderColor: '#3b82f6' },
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
                     '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                   }
                 }}
@@ -616,7 +616,7 @@ const PharmacyPOSProfessional = () => {
                 onClick={() => setShowCashBalance(!showCashBalance)}
                 sx={{ 
                   mb: 1.5,
-                  borderColor: '#3b82f6',
+                  borderColor: '#1e3a8a',
                   color: '#1e40af',
                   '&:hover': {
                     borderColor: '#1e40af',
@@ -633,7 +633,7 @@ const PharmacyPOSProfessional = () => {
                   backgroundColor: '#dbeafe', 
                   borderRadius: 2, 
                   textAlign: 'center',
-                  border: '2px solid #3b82f6'
+                  border: '2px solid #1e3a8a'
                 }}>
                   <Typography variant="h6" color="#1e40af" fontWeight="bold">
                     Cash Balance: {formatCurrency(cashBalance)}
@@ -661,7 +661,7 @@ const PharmacyPOSProfessional = () => {
                     '& .MuiOutlinedInput-root': {
                       backgroundColor: 'white',
                       '& fieldset': { borderColor: '#e2e8f0' },
-                      '&:hover fieldset': { borderColor: '#3b82f6' },
+                      '&:hover fieldset': { borderColor: '#1e3a8a' },
                       '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                     }
                   }}
@@ -1019,7 +1019,7 @@ const PharmacyPOSProfessional = () => {
         }}
       >
         <Box sx={{ 
-          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+          background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
           color: 'white',
           p: 3,
           display: 'flex',
@@ -1156,9 +1156,9 @@ const PharmacyPOSProfessional = () => {
               onClick={saveNewPatient}
               disabled={!newPatient.name || !newPatient.contact}
               sx={{ 
-                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
                 '&:hover': { 
-                  background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                  background: 'linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%)',
                   boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
                 }
               }}
@@ -1339,8 +1339,8 @@ const PharmacyPOSProfessional = () => {
                 variant="outlined" 
                 onClick={() => window.print()}
                 sx={{ 
-                  borderColor: '#3b82f6',
-                  color: '#3b82f6',
+                  borderColor: '#1e3a8a',
+                  color: '#1e3a8a',
                   '&:hover': { 
                     borderColor: '#1e40af', 
                     backgroundColor: 'rgba(59, 130, 246, 0.04)' 

@@ -578,7 +578,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         p: 3, 
         mb: 2, 
         borderRadius: 0,
-        background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+        background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
         boxShadow: '0 2px 8px rgba(30, 64, 175, 0.2)'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1192,13 +1192,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 onClick={processSale}
                 disabled={cart.length === 0 || loading || !employeeId.trim() || (paymentMethod === 'cash' && cashReceived < total)}
                 sx={{
-                  background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                  background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
                   color: 'white',
                   fontWeight: 'bold',
                   fontSize: '1.1rem',
                   py: 1.5,
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)'
+                    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%)'
                   },
                   '&:disabled': {
                     background: '#9ca3af',

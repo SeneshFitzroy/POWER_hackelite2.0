@@ -381,7 +381,7 @@ const PharmacyPOSFinal = () => {
         p: 3, 
         mb: 2, 
         borderRadius: 0,
-        background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
+        background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #60a5fa 100%)',
         boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -453,7 +453,7 @@ const PharmacyPOSFinal = () => {
                 width: 12, 
                 height: 12, 
                 borderRadius: '50%', 
-                backgroundColor: '#3b82f6' 
+                backgroundColor: '#1e3a8a' 
               }} />
               <Typography variant="h6" fontWeight="bold" color="#1e293b">
                 MEDICINE SEARCH
@@ -587,8 +587,8 @@ const PharmacyPOSFinal = () => {
               onClick={() => setShowCashBalance(!showCashBalance)}
               sx={{ 
                 mb: 2,
-                borderColor: '#3b82f6',
-                color: '#3b82f6',
+                borderColor: '#1e3a8a',
+                color: '#1e3a8a',
                 '&:hover': {
                   borderColor: '#1e40af',
                   backgroundColor: 'rgba(59, 130, 246, 0.04)'
@@ -910,10 +910,10 @@ const PharmacyPOSFinal = () => {
                   fontSize: '16px',
                   fontWeight: 'bold',
                   borderRadius: 3,
-                  background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                  background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
                   boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
                   '&:hover': { 
-                    background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%)',
                     boxShadow: '0 6px 20px rgba(59, 130, 246, 0.4)',
                     transform: 'translateY(-1px)'
                   },
@@ -944,7 +944,7 @@ const PharmacyPOSFinal = () => {
         }}
       >
         <Box sx={{ 
-          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+          background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
           color: 'white',
           p: 3,
           display: 'flex',
@@ -1081,9 +1081,9 @@ const PharmacyPOSFinal = () => {
               onClick={saveNewPatient}
               disabled={!newPatient.name || !newPatient.contact}
               sx={{ 
-                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
                 '&:hover': { 
-                  background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                  background: 'linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%)',
                   boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
                 }
               }}
@@ -1264,8 +1264,8 @@ const PharmacyPOSFinal = () => {
                 variant="outlined" 
                 onClick={() => window.print()}
                 sx={{ 
-                  borderColor: '#3b82f6',
-                  color: '#3b82f6',
+                  borderColor: '#1e3a8a',
+                  color: '#1e3a8a',
                   '&:hover': { 
                     borderColor: '#1e40af', 
                     backgroundColor: 'rgba(59, 130, 246, 0.04)' 

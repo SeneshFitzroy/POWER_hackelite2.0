@@ -9,15 +9,15 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#2563eb', // Bright blue from POS
+      main: '#1e3a8a', // Bright blue from POS
       dark: '#1d4ed8',
-      light: '#3b82f6',
+      light: '#1e3a8a',
       contrastText: '#ffffff'
     },
     secondary: {
       main: '#1e40af', // Deep blue from POS
       dark: '#1e3a8a',
-      light: '#3b82f6',
+      light: '#1e3a8a',
       contrastText: '#ffffff'
     },
     success: {
@@ -58,7 +58,7 @@ const theme = createTheme({
           borderRadius: '6px'
         },
         contained: {
-          backgroundColor: '#2563eb',
+          backgroundColor: '#1e3a8a',
           color: '#ffffff',
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
           '&:hover': {
@@ -67,8 +67,8 @@ const theme = createTheme({
           }
         },
         outlined: {
-          borderColor: '#2563eb',
-          color: '#2563eb',
+          borderColor: '#1e3a8a',
+          color: '#1e3a8a',
           '&:hover': {
             backgroundColor: '#eff6ff',
             borderColor: '#1d4ed8'
@@ -132,7 +132,7 @@ class ErrorBoundary extends React.Component {
               padding: 4, 
               textAlign: 'center',
               maxWidth: 500,
-              background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+              background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
               color: '#ffffff',
               border: '1px solid #1e40af'
             }}

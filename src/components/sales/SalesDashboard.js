@@ -339,7 +339,7 @@ export default function SalesDashboard({ dateFilter }) {
             value={salesData.totalCustomers}
             icon={<People sx={{ color: '#ffffff', fontSize: 24 }} />}
             bgColor="#f0f9ff"
-            iconColor="#3b82f6"
+            iconColor="#1e3a8a"
           />
         </Grid>
       </Grid>
@@ -392,7 +392,7 @@ export default function SalesDashboard({ dateFilter }) {
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="caption" color="#6b7280">Last Month</Typography>
-                <Typography variant="h6" fontWeight="bold" color="#3b82f6">$2,004</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#1e3a8a">$2,004</Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="caption" color="#6b7280">This Month</Typography>
@@ -418,7 +418,7 @@ export default function SalesDashboard({ dateFilter }) {
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="caption" color="#6b7280">Reality Sales</Typography>
-                <Typography variant="h6" fontWeight="bold" color="#3b82f6">8,823</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#1e3a8a">8,823</Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="caption" color="#6b7280">Target Sales</Typography>
