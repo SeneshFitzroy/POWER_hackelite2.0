@@ -62,106 +62,67 @@ if (typeof document !== 'undefined') {
   document.head.appendChild(styleSheet);
 }
 
-// Beautiful Chart Component with gradient background
-const BeautifulChart = ({ data, title, type = 'bar' }) => (
+// Clean Professional Chart Component
+const CleanChart = ({ data, title, type = 'bar', height = 200 }) => (
   <Box sx={{ 
-    height: 280, 
+    height: height, 
     display: 'flex', 
     alignItems: 'center', 
     justifyContent: 'center',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: '16px',
-    color: '#ffffff',
-    position: 'relative',
-    overflow: 'hidden',
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(255,255,255,0.1)',
-      backdropFilter: 'blur(10px)'
-    }
+    backgroundColor: '#ffffff',
+    borderRadius: '12px',
+    border: '1px solid #e5e7eb',
+    color: '#6b7280'
   }}>
-    <Box sx={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-      <Typography variant="h4" color="#ffffff" fontWeight="700" sx={{ mb: 2 }}>
-        {title}
+    <Box sx={{ textAlign: 'center' }}>
+      <Typography variant="body1" color="#6b7280" fontWeight="500">
+        {title} Chart
       </Typography>
-      <Typography variant="h6" color="rgba(255,255,255,0.8)" sx={{ fontWeight: '300' }}>
-        Interactive Chart Visualization
+      <Typography variant="body2" color="#9ca3af" sx={{ mt: 1 }}>
+        Data visualization
       </Typography>
-      <Box sx={{ 
-        mt: 3,
-        width: 60,
-        height: 4,
-        backgroundColor: 'rgba(255,255,255,0.5)',
-        borderRadius: 2,
-        mx: 'auto'
-      }} />
     </Box>
   </Box>
 );
 
-// Stunning Stats Card with glass morphism effect
-const StunningStatsCard = ({ title, value, icon, gradient, trend }) => (
-  <Card sx={{ 
-    height: '140px',
-    background: gradient,
-    color: '#ffffff',
-    borderRadius: '20px',
+// Professional Stats Card matching the design
+const ProfessionalStatsCard = ({ title, value, icon, bgColor, iconColor }) => (
+  <Paper sx={{ 
+    p: 2.5,
+    borderRadius: '16px',
+    backgroundColor: bgColor,
     border: 'none',
-    position: 'relative',
-    overflow: 'hidden',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+    transition: 'all 0.2s ease',
     '&:hover': {
-      transform: 'translateY(-8px) scale(1.02)',
-      boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
-    },
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(255,255,255,0.1)',
-      backdropFilter: 'blur(10px)'
+      transform: 'translateY(-2px)',
+      boxShadow: '0 4px 16px rgba(0,0,0,0.12)'
     }
   }}>
-    <CardContent sx={{ p: 3, height: '100%', position: 'relative', zIndex: 1 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-        <Box sx={{ 
-          p: 1.5, 
-          backgroundColor: 'rgba(255,255,255,0.2)', 
-          borderRadius: '12px',
-          backdropFilter: 'blur(10px)'
-        }}>
-          {icon}
-        </Box>
-        {trend && (
-          <Chip 
-            label={trend} 
-            size="small"
-            sx={{
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              color: '#ffffff',
-              fontWeight: 'bold',
-              fontSize: '10px',
-              backdropFilter: 'blur(10px)'
-            }}
-          />
-        )}
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box>
+        <Typography variant="h4" fontWeight="bold" color="#1f2937" sx={{ mb: 0.5 }}>
+          {value}
+        </Typography>
+        <Typography variant="body2" color="#6b7280" fontWeight="500">
+          {title}
+        </Typography>
+        <Typography variant="caption" color="#10b981" fontWeight="600" sx={{ mt: 0.5, display: 'block' }}>
+          +12% from yesterday
+        </Typography>
       </Box>
-      <Typography variant="h3" fontWeight="800" color="#ffffff" sx={{ mb: 1, lineHeight: 1 }}>
-        {value}
-      </Typography>
-      <Typography variant="body1" color="rgba(255,255,255,0.9)" sx={{ fontWeight: '500' }}>
-        {title}
-      </Typography>
-    </CardContent>
-  </Card>
+      <Box sx={{ 
+        p: 1.5, 
+        backgroundColor: iconColor, 
+        borderRadius: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {icon}
+      </Box>
+    </Box>
+  </Paper>
 );
 
 export default function SalesDashboard({ dateFilter }) {
@@ -307,430 +268,230 @@ export default function SalesDashboard({ dateFilter }) {
 
   return (
     <Box sx={{ 
-      p: 0, 
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+      p: 3, 
+      backgroundColor: '#f8fafc',
       minHeight: '100vh'
     }}>
-      {/* Beautiful Stats Overview */}
+      {/* Header Section */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" fontWeight="bold" color="#1f2937" sx={{ mb: 1 }}>
+          Sales Dashboard
+        </Typography>
+        <Typography variant="body1" color="#6b7280">
+          Sales Summary
+        </Typography>
+      </Box>
+
+      {/* Stats Cards Row - Matching the design */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <StunningStatsCard
+          <ProfessionalStatsCard
             title="Total Sales"
-            value={salesData.totalSales}
-            icon={<TrendingUp sx={{ color: '#ffffff', fontSize: 28 }} />}
-            gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-            trend="+12%"
+            value="$1k"
+            icon={<TrendingUp sx={{ color: '#ffffff', fontSize: 24 }} />}
+            bgColor="#fef2f2"
+            iconColor="#ef4444"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StunningStatsCard
-            title="Revenue"
-            value={formatCurrency(salesData.totalRevenue)}
-            icon={<AttachMoney sx={{ color: '#ffffff', fontSize: 28 }} />}
-            gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
-            trend="+8%"
+          <ProfessionalStatsCard
+            title="Total Order"
+            value="300"
+            icon={<ShoppingCart sx={{ color: '#ffffff', fontSize: 24 }} />}
+            bgColor="#fff7ed"
+            iconColor="#f97316"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StunningStatsCard
-            title="Customers"
-            value={salesData.totalCustomers}
-            icon={<People sx={{ color: '#ffffff', fontSize: 28 }} />}
-            gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
-            trend="+15%"
+          <ProfessionalStatsCard
+            title="Product Sold"
+            value="5"
+            icon={<AttachMoney sx={{ color: '#ffffff', fontSize: 24 }} />}
+            bgColor="#f0fdf4"
+            iconColor="#22c55e"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StunningStatsCard
-            title="Orders"
-            value={salesData.totalOrders}
-            icon={<ShoppingCart sx={{ color: '#ffffff', fontSize: 28 }} />}
-            gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
-            trend="+5%"
+          <ProfessionalStatsCard
+            title="New Customers"
+            value="8"
+            icon={<People sx={{ color: '#ffffff', fontSize: 24 }} />}
+            bgColor="#f0f9ff"
+            iconColor="#3b82f6"
           />
         </Grid>
       </Grid>
 
-      {/* Stunning Dashboard Layout */}
+      {/* Main Dashboard Content */}
       <Grid container spacing={3}>
-        {/* Primary Analytics Chart */}
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ 
-            p: 3, 
-            height: 420,
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '24px',
-            border: '1px solid rgba(255,255,255,0.2)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-          }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Box>
-                <Typography variant="h4" fontWeight="bold" sx={{ 
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  mb: 1
-                }}>
-                  Sales Analytics
-                </Typography>
-                <Typography variant="body1" color="#64748b" fontWeight="500">
-                  {dateFilter.toUpperCase()} Performance Overview
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Chip 
-                  label="Live" 
-                  size="small" 
-                  sx={{ 
-                    background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                    color: '#ffffff',
-                    fontWeight: 'bold',
-                    animation: 'pulse 2s infinite'
-                  }} 
-                />
-                <Chip 
-                  label="Real-time" 
-                  size="small" 
-                  sx={{ 
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: '#ffffff',
-                    fontWeight: 'bold'
-                  }} 
-                />
-              </Box>
-            </Box>
-            <BeautifulChart data={[]} title="Performance Trends" type="line" />
-          </Paper>
-        </Grid>
-
-        {/* Revenue Insights */}
+        {/* Total Revenue Chart */}
         <Grid item xs={12} md={4}>
           <Paper sx={{ 
             p: 3, 
-            height: 420,
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '24px',
-            border: '1px solid rgba(255,255,255,0.2)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
           }}>
-            <Typography variant="h5" fontWeight="bold" sx={{ 
-              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mb: 3
-            }}>
-              Revenue Insights
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Total Revenue
             </Typography>
-            <BeautifulChart data={[]} title="Distribution" type="pie" />
-          </Paper>
-        </Grid>
-
-        {/* Performance Analytics Row */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ 
-            p: 3, 
-            height: 360,
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '24px',
-            border: '1px solid rgba(255,255,255,0.2)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-          }}>
-            <Typography variant="h5" fontWeight="bold" sx={{ 
-              background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mb: 3
-            }}>
-              Monthly Trends
-            </Typography>
-            <BeautifulChart data={[]} title="Growth Analysis" type="bar" />
-          </Paper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ 
-            p: 3, 
-            height: 360,
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '24px',
-            border: '1px solid rgba(255,255,255,0.2)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-          }}>
-            <Typography variant="h5" fontWeight="bold" sx={{ 
-              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mb: 3
-            }}>
-              Payment Flow
-            </Typography>
-            <BeautifulChart data={[]} title="Transaction Methods" type="doughnut" />
-          </Paper>
-        </Grid>
-
-        {/* Beautiful Data Section */}
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ 
-            p: 3, 
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '24px',
-            border: '1px solid rgba(255,255,255,0.3)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-          }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h5" fontWeight="bold" sx={{ 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}>
-                Recent Transactions
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => setShowPaymentDialog(true)}
-                sx={{ 
-                  textTransform: 'none',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: '#ffffff',
-                  fontWeight: 'bold',
-                  borderRadius: '12px',
-                  px: 3,
-                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)'
-                  }
-                }}
-              >
-                Add Payment
-              </Button>
+            <CleanChart title="Revenue" type="bar" height={250} />
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+                  <Box sx={{ width: 12, height: 12, backgroundColor: '#3b82f6', borderRadius: '50%', mr: 1 }} />
+                  <Typography variant="caption" color="#6b7280">Online Sales</Typography>
+                </Box>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+                  <Box sx={{ width: 12, height: 12, backgroundColor: '#10b981', borderRadius: '50%', mr: 1 }} />
+                  <Typography variant="caption" color="#6b7280">Offline Sales</Typography>
+                </Box>
+              </Box>
             </Box>
-            
-            <TableContainer sx={{ 
-              maxHeight: 320,
-              borderRadius: '16px',
-              background: 'rgba(255,255,255,0.7)',
-              backdropFilter: 'blur(10px)'
-            }}>
-              <Table size="small" stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ 
-                      fontWeight: 'bold', 
-                      color: '#1e293b', 
-                      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                      borderBottom: 'none'
-                    }}>Customer</TableCell>
-                    <TableCell sx={{ 
-                      fontWeight: 'bold', 
-                      color: '#1e293b', 
-                      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                      borderBottom: 'none'
-                    }}>Amount</TableCell>
-                    <TableCell sx={{ 
-                      fontWeight: 'bold', 
-                      color: '#1e293b', 
-                      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                      borderBottom: 'none'
-                    }}>Method</TableCell>
-                    <TableCell sx={{ 
-                      fontWeight: 'bold', 
-                      color: '#1e293b', 
-                      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                      borderBottom: 'none'
-                    }}>Status</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {/* Sample beautiful data */}
-                  {Array.from({ length: 5 }, (_, index) => (
-                    <TableRow key={index} sx={{ 
-                      '&:hover': { 
-                        background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
-                        transform: 'scale(1.01)'
-                      },
-                      transition: 'all 0.2s ease'
-                    }}>
-                      <TableCell sx={{ color: '#1e293b', fontWeight: '600', borderBottom: 'none' }}>
-                        Customer {index + 1}
-                      </TableCell>
-                      <TableCell sx={{ borderBottom: 'none' }}>
-                        <Typography variant="body2" fontWeight="bold" sx={{
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          backgroundClip: 'text',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent'
-                        }}>
-                          {formatCurrency(Math.floor(Math.random() * 10000))}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ borderBottom: 'none' }}>
-                        <Chip 
-                          label={['Cash', 'Card', 'Bank'][index % 3]} 
-                          size="small"
-                          sx={{
-                            background: index % 3 === 0 ? 
-                              'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 
-                              index % 3 === 1 ? 
-                              'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 
-                              'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                            color: '#ffffff',
-                            fontWeight: 'bold',
-                            borderRadius: '8px'
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell sx={{ borderBottom: 'none' }}>
-                        <Chip 
-                          label="Completed" 
-                          size="small"
-                          sx={{
-                            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                            color: '#ffffff',
-                            fontWeight: 'bold',
-                            borderRadius: '8px'
-                          }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
           </Paper>
         </Grid>
 
-        {/* Beautiful Sidebar Stats */}
+        {/* Customer Satisfaction */}
         <Grid item xs={12} md={4}>
-          <Grid container spacing={3}>
-            {/* Top Customers */}
-            <Grid item xs={12}>
-              <Paper sx={{ 
-                p: 3, 
-                background: 'rgba(255,255,255,0.95)',
-                backdropFilter: 'blur(20px)',
-                borderRadius: '24px',
-                border: '1px solid rgba(255,255,255,0.3)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-              }}>
-                <Typography variant="h6" fontWeight="bold" sx={{ 
-                  background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  mb: 3
-                }}>
-                  Top Customers
-                </Typography>
-                <Box>
-                  {topCustomers.map((customer, index) => (
-                    <Box key={index} sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      p: 2,
-                      mb: 2,
-                      background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
-                      borderRadius: '16px',
-                      border: '1px solid rgba(255,255,255,0.3)',
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.2)'
-                      }
-                    }}>
-                      <Box>
-                        <Typography variant="body1" fontWeight="bold" color="#1e293b">
-                          {customer.name}
-                        </Typography>
-                        <Typography variant="caption" color="#64748b">
-                          {customer.orders} orders
-                        </Typography>
-                      </Box>
-                      <Typography variant="body1" fontWeight="bold" sx={{
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
-                      }}>
-                        {formatCurrency(customer.total)}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-              </Paper>
-            </Grid>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Customer Satisfaction
+            </Typography>
+            <CleanChart title="Satisfaction" type="line" height={200} />
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">Last Month</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#3b82f6">$2,004</Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">This Month</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#10b981">$4,024</Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
 
-            {/* Top Products */}
-            <Grid item xs={12}>
-              <Paper sx={{ 
-                p: 3, 
-                background: 'rgba(255,255,255,0.95)',
-                backdropFilter: 'blur(20px)',
-                borderRadius: '24px',
-                border: '1px solid rgba(255,255,255,0.3)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-              }}>
-                <Typography variant="h6" fontWeight="bold" sx={{ 
-                  background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  mb: 3
-                }}>
-                  Top Products
-                </Typography>
-                <Box>
-                  {topProducts.map((product, index) => (
-                    <Box key={index} sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      p: 2,
-                      mb: 2,
-                      background: 'linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(56, 249, 215, 0.1) 100%)',
-                      borderRadius: '16px',
-                      border: '1px solid rgba(255,255,255,0.3)',
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 15px rgba(67, 233, 123, 0.2)'
-                      }
-                    }}>
-                      <Box>
-                        <Typography variant="body1" fontWeight="bold" color="#1e293b">
-                          {product.name}
-                        </Typography>
-                        <Typography variant="caption" color="#64748b">
-                          {product.sold} units sold
-                        </Typography>
-                      </Box>
-                      <Typography variant="body1" fontWeight="bold" sx={{
-                        background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
-                      }}>
-                        {formatCurrency(product.revenue)}
-                      </Typography>
-                    </Box>
-                  ))}
+        {/* Target vs Reality */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Target vs Reality
+            </Typography>
+            <CleanChart title="Target" type="bar" height={200} />
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">Reality Sales</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#3b82f6">8,823</Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">Target Sales</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#f59e0b">9,122</Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Top Products */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Top Products
+            </Typography>
+            <Box sx={{ space: 2 }}>
+              {[
+                { name: 'Product A', sales: '$12,534', percentage: 85 },
+                { name: 'Product B', sales: '$8,742', percentage: 65 },
+                { name: 'Product C', sales: '$6,235', percentage: 45 },
+                { name: 'Product D', sales: '$4,890', percentage: 35 }
+              ].map((product, index) => (
+                <Box key={index} sx={{ mb: 2, p: 2, backgroundColor: '#f9fafb', borderRadius: '8px' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="body2" fontWeight="medium" color="#1f2937">
+                      {product.name}
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold" color="#3b82f6">
+                      {product.sales}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ backgroundColor: '#e5e7eb', height: 4, borderRadius: 2, overflow: 'hidden' }}>
+                    <Box 
+                      sx={{ 
+                        backgroundColor: '#3b82f6', 
+                        height: '100%', 
+                        width: `${product.percentage}%`,
+                        borderRadius: 2 
+                      }} 
+                    />
+                  </Box>
                 </Box>
-              </Paper>
-            </Grid>
-          </Grid>
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Recent Activity */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Recent Activity
+            </Typography>
+            <Box>
+              {[
+                { action: 'New order placed', customer: 'John Doe', amount: '$234', time: '2 min ago' },
+                { action: 'Payment received', customer: 'Jane Smith', amount: '$456', time: '5 min ago' },
+                { action: 'Product updated', customer: 'System', amount: '', time: '12 min ago' },
+                { action: 'Customer registered', customer: 'Mike Johnson', amount: '', time: '23 min ago' },
+                { action: 'Order delivered', customer: 'Sarah Wilson', amount: '$123', time: '1 hour ago' }
+              ].map((activity, index) => (
+                <Box key={index} sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  py: 2,
+                  borderBottom: index < 4 ? '1px solid #f3f4f6' : 'none'
+                }}>
+                  <Box>
+                    <Typography variant="body2" fontWeight="medium" color="#1f2937">
+                      {activity.action}
+                    </Typography>
+                    <Typography variant="caption" color="#6b7280">
+                      {activity.customer} {activity.amount && `• ${activity.amount}`}
+                    </Typography>
+                  </Box>
+                  <Typography variant="caption" color="#9ca3af">
+                    {activity.time}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </Paper>
         </Grid>
       </Grid>
 
