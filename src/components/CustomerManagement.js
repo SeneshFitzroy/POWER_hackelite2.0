@@ -40,7 +40,7 @@ import {
   FilterList as FilterIcon
 } from '@mui/icons-material';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../firebase/config';
 
 const CustomerManagement = () => {
   const [customers, setCustomers] = useState([]);
