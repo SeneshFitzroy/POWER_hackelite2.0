@@ -1,8 +1,522 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, query, where, orderBy } from 'firebase/firestore';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Paper,
+  Button,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+  Chip,
+  Avatar,
+  CircularProgress,
+  Container,
+  InputAdornment,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
+import {
+  AttachMoney as MoneyIcon,
+  Download as DownloadIcon,
+  CalendarMonth as CalendarIcon,
+  Search as SearchIcon,
+  Payment as PaymentIcon,
+  AccountBalance as BankIcon,
+  Receipt as ReceiptIcon,
+  TrendingUp as TrendingIcon
+} from '@mui/icons-material';
 import { db } from '../../../firebase/config';
-import { DollarSign, Download, Calendar, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+const PayrollList = () => {
+  const [payrolls, setPayrolls] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [searchTerm, setSearchTerm] = useState('');
+  const [processDialogOpen, setProcessDialogOpen] = useState(false);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch employees
+      const employeesSnapshot = await getDocs(collection(db, 'employees'));
+      const employeeData = employeesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEmployees(employeeData);
+
+      // Fetch payrolls
+      const payrollsSnapshot = await getDocs(
+        query(collection(db, 'payrolls'), orderBy('createdAt', 'desc'))
+      );
+      const payrollData = payrollsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setPayrolls(payrollData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast.error('Failed to fetch payroll data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const processPayroll = async () => {
+    if (!selectedMonth) {
+      toast.error('Please select a month');
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      // Process payroll for each employee
+      for (const employee of employees) {
+        if (employee.status === 'active') {
+          const payrollData = {
+            employeeId: employee.id,
+            employeeName: `${employee.firstName} ${employee.lastName}`,
+            month: selectedMonth,
+            baseSalary: employee.salary || 50000,
+            allowances: 5000,
+            deductions: 2000,
+            netSalary: (employee.salary || 50000) + 5000 - 2000,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            processedBy: 'current_user'
+          };
+
+          await addDoc(collection(db, 'payrolls'), payrollData);
+        }
+      }
+
+      toast.success('Payroll processed successfully');
+      fetchData();
+      setProcessDialogOpen(false);
+    } catch (error) {
+      console.error('Error processing payroll:', error);
+      toast.error('Failed to process payroll');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const filteredPayrolls = payrolls.filter(payroll =>
+    payroll.employeeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    payroll.month?.includes(searchTerm)
+  );
+
+  const monthlyPayrolls = payrolls.filter(p => p.month === selectedMonth);
+  const totalPayroll = monthlyPayrolls.reduce((sum, p) => sum + (p.netSalary || 0), 0);
+  const pendingPayrolls = monthlyPayrolls.filter(p => p.status === 'pending').length;
+  const processedPayrolls = monthlyPayrolls.filter(p => p.status === 'processed').length;
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'processed': return 'success';
+      case 'pending': return 'warning';
+      case 'failed': return 'error';
+      default: return 'default';
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '400px' 
+        }}
+      >
+        <CircularProgress size={60} sx={{ color: '#1e3a8a' }} />
+      </Box>
+    );
+  }
+
+  return (
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      {/* Header Section */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <MoneyIcon sx={{ fontSize: 32, color: '#1e3a8a', mr: 2 }} />
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontWeight: 'bold', 
+              color: '#1e3a8a',
+              letterSpacing: '0.5px'
+            }}
+          >
+            Payroll Management
+          </Typography>
+        </Box>
+        
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            color: '#6b7280', 
+            mb: 3,
+            fontSize: '1.1rem'
+          }}
+        >
+          Process and manage employee payroll and salary disbursements
+        </Typography>
+
+        {/* Stats Cards */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(30, 58, 138, 0.2)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <BankIcon sx={{ mr: 1 }} />
+                  <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                    ₹{totalPayroll.toLocaleString()}
+                  </Typography>
+                </Box>
+                <Typography variant="body2">Total Payroll</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(245, 158, 11, 0.2)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <PaymentIcon sx={{ mr: 1 }} />
+                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                    {pendingPayrolls}
+                  </Typography>
+                </Box>
+                <Typography variant="body2">Pending Payments</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(16, 185, 129, 0.2)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <ReceiptIcon sx={{ mr: 1 }} />
+                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                    {processedPayrolls}
+                  </Typography>
+                </Box>
+                <Typography variant="body2">Processed</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(139, 92, 246, 0.2)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <TrendingIcon sx={{ mr: 1 }} />
+                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                    {employees.filter(e => e.status === 'active').length}
+                  </Typography>
+                </Box>
+                <Typography variant="body2">Active Employees</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Controls Section */}
+      <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Search payrolls..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: '#6b7280' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': {
+                    borderColor: '#1e3a8a',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1e3a8a',
+                  }
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <TextField
+              fullWidth
+              type="month"
+              label="Select Month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': {
+                    borderColor: '#1e3a8a',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1e3a8a',
+                  }
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              fullWidth
+              sx={{
+                py: 1.5,
+                borderRadius: 2,
+                fontWeight: 'bold',
+                borderColor: '#1e3a8a',
+                color: '#1e3a8a',
+                '&:hover': {
+                  backgroundColor: '#eff6ff',
+                  borderColor: '#1e40af'
+                }
+              }}
+            >
+              Export Report
+            </Button>
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <Button
+              variant="contained"
+              startIcon={<PaymentIcon />}
+              fullWidth
+              onClick={() => setProcessDialogOpen(true)}
+              sx={{
+                py: 1.5,
+                borderRadius: 2,
+                fontWeight: 'bold',
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
+                }
+              }}
+            >
+              Process Payroll
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Payroll Table */}
+      <Paper sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+        <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+            Payroll Records ({filteredPayrolls.length} records)
+          </Typography>
+        </Box>
+        
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#f8fafc' }}>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Employee</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Month</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Base Salary</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Allowances</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Deductions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Net Salary</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredPayrolls.map((payroll) => (
+                <TableRow 
+                  key={payroll.id}
+                  sx={{ 
+                    '&:hover': { backgroundColor: '#f9fafb' },
+                    transition: 'background-color 0.2s'
+                  }}
+                >
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar 
+                        sx={{ 
+                          mr: 2, 
+                          bgcolor: '#1e3a8a',
+                          width: 40,
+                          height: 40
+                        }}
+                      >
+                        {payroll.employeeName?.split(' ').map(n => n[0]).join('')}
+                      </Avatar>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        {payroll.employeeName}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {new Date(payroll.month + '-01').toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long' 
+                      })}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      ₹{payroll.baseSalary?.toLocaleString()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ color: '#10b981' }}>
+                      +₹{payroll.allowances?.toLocaleString()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ color: '#dc2626' }}>
+                      -₹{payroll.deductions?.toLocaleString()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                      ₹{payroll.netSalary?.toLocaleString()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={payroll.status}
+                      color={getStatusColor(payroll.status)}
+                      variant="filled"
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" spacing={1}>
+                      <IconButton 
+                        size="small"
+                        sx={{ 
+                          color: '#1e3a8a',
+                          '&:hover': { backgroundColor: '#eff6ff' }
+                        }}
+                      >
+                        <DownloadIcon fontSize="small" />
+                      </IconButton>
+                      {payroll.status === 'pending' && (
+                        <Button 
+                          size="small" 
+                          variant="contained" 
+                          color="success"
+                          sx={{ minWidth: 80 }}
+                        >
+                          Process
+                        </Button>
+                      )}
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {filteredPayrolls.length === 0 && (
+          <Box sx={{ p: 6, textAlign: 'center' }}>
+            <MoneyIcon sx={{ fontSize: 64, color: '#d1d5db', mb: 2 }} />
+            <Typography variant="h6" sx={{ color: '#6b7280', mb: 1 }}>
+              No payroll records found
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+              Process payroll for the selected month to see records
+            </Typography>
+          </Box>
+        )}
+      </Paper>
+
+      {/* Process Payroll Dialog */}
+      <Dialog open={processDialogOpen} onClose={() => setProcessDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Process Payroll</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2, color: '#6b7280' }}>
+            Process payroll for all active employees for {new Date(selectedMonth + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#dc2626' }}>
+            This will create payroll records for {employees.filter(e => e.status === 'active').length} active employees.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setProcessDialogOpen(false)}>Cancel</Button>
+          <Button 
+            onClick={processPayroll} 
+            variant="contained"
+            disabled={processing}
+            sx={{
+              background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
+              }
+            }}
+          >
+            {processing ? 'Processing...' : 'Process Payroll'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  );
+};
+
+export default PayrollList;
 
 const PayrollList = () => {
   const [payrolls, setPayrolls] = useState([]);
