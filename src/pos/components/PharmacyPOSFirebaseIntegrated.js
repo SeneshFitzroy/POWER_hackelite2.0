@@ -685,7 +685,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               placeholder="Enter NIC to auto-load patient info"
               size="small"
               sx={{
-                mb: 2,
+                mb: 1.5,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 1,
                   '&:hover fieldset': { borderColor: '#1976d2' },
@@ -714,13 +714,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
           {/* STAFF INFORMATION - COMPACT */}
           <Paper sx={{ 
-            p: 2, 
+            p: 1.5, 
             borderRadius: 2,
             backgroundColor: 'white',
             border: '1px solid #e5e7eb',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2', mb: 2 }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2', mb: 1.5 }}>
               STAFF INFORMATION
             </Typography>
             
