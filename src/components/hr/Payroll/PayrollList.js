@@ -149,54 +149,170 @@ const PayrollList = () => {
     return acc;
   }, {});
 
+  const MetricCard = ({ title, value, icon, color }) => (
+    <Card 
+      sx={{ 
+        height: '100%',
+        background: `linear-gradient(135deg, ${color}15 0%, ${color}08 100%)`,
+        border: `1px solid ${color}30`,
+        borderRadius: 3,
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: `0 8px 25px ${color}25`
+        }
+      }}
+    >
+      <CardContent sx={{ textAlign: 'center', py: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: '50%',
+              backgroundColor: `${color}20`,
+              color: color,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {icon}
+          </Box>
+        </Box>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontWeight: 'bold',
+            color: color,
+            mb: 1 
+          }}
+        >
+          {value}
+        </Typography>
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            color: 'text.secondary',
+            fontWeight: 'medium'
+          }}
+        >
+          {title}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
-      </div>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <div className="space-y-8 ml-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Payroll Management</h1>
-        <div className="flex items-center space-x-3">
-          <input
-            type="month"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="input"
-          />
-          <button
-            onClick={processPayroll}
-            disabled={processing}
-            className="btn-primary flex items-center"
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontWeight: 'bold',
+              color: '#1e3a8a'
+            }}
           >
-            <DollarSign className="h-4 w-4 mr-2" />
-            {processing ? 'Processing...' : 'Process Payroll'}
-          </button>
-        </div>
-      </div>
+            Payroll Management
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <TextField
+              type="month"
+              size="small"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              sx={{ 
+                '& .MuiOutlinedInput-root': { 
+                  borderRadius: 2 
+                }
+              }}
+            />
+            <Button
+              variant="contained"
+              startIcon={processing ? <PlayArrow /> : <AttachMoney />}
+              onClick={processPayroll}
+              disabled={processing}
+              sx={{
+                backgroundColor: '#1e3a8a',
+                borderRadius: 2,
+                px: 3,
+                '&:hover': {
+                  backgroundColor: '#1d4ed8'
+                }
+              }}
+            >
+              {processing ? 'Processing...' : 'Process Payroll'}
+            </Button>
+          </Box>
+        </Box>
 
-      {/* Search */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <input
-            type="text"
+        {/* Search */}
+        <Paper sx={{ p: 2, borderRadius: 3, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+          <TextField
+            fullWidth
+            size="small"
             placeholder="Search by employee name or month..."
-            className="input pl-10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                '& fieldset': { border: 'none' }
+              }
+            }}
           />
-        </div>
-      </div>
+        </Paper>
+      </Box>
 
       {/* Payroll Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Employees"
+            value={payrollStats.totalEmployees}
+            icon={<AttachMoney sx={{ fontSize: 28 }} />}
+            color="#1e3a8a"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="This Month Processed"
+            value={payrollStats.thisMonthProcessed}
+            icon={<CalendarToday sx={{ fontSize: 28 }} />}
+            color="#10b981"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Payout"
+            value={`LKR ${payrollStats.totalPayout.toLocaleString()}`}
+            icon={<AttachMoney sx={{ fontSize: 28 }} />}
+            color="#f59e0b"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Months Processed"
+            value={payrollStats.monthsProcessed}
+            icon={<CalendarToday sx={{ fontSize: 28 }} />}
+            color="#ef4444"
+          />
+        </Grid>
+      </Grid>
             <div className="p-2 bg-blue-100 rounded-lg">
               <DollarSign className="h-6 w-6 text-blue-600" />
             </div>
