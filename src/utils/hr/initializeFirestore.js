@@ -1,5 +1,5 @@
 import { collection, addDoc, getDocs } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { db } from '../../firebase/config';
 
 // Sample data for initializing collections
 const sampleEmployees = [
