@@ -138,43 +138,51 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 ml-8">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">HR Dashboard</h1>
-        <div className="flex items-center space-x-2 text-sm text-gray-500">
-          <Calendar className="h-4 w-4" />
-          <span>{new Date().toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })}</span>
+        <h1 className="text-3xl font-bold text-gray-900">HR Dashboard</h1>
+        <div className="flex items-center space-x-4">
+          <button className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center">
+            <Users className="h-4 w-4 mr-2" />
+            Add New Employee
+          </button>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
+          const colorMap = {
+            'bg-blue-500': { bg: 'bg-blue-100', text: 'text-blue-600' },
+            'bg-green-500': { bg: 'bg-green-100', text: 'text-green-600' },
+            'bg-yellow-500': { bg: 'bg-yellow-100', text: 'text-yellow-600' },
+            'bg-red-500': { bg: 'bg-red-100', text: 'text-red-600' },
+            'bg-purple-500': { bg: 'bg-purple-100', text: 'text-purple-600' },
+            'bg-indigo-500': { bg: 'bg-indigo-100', text: 'text-indigo-600' }
+          };
+          const colors = colorMap[stat.color] || { bg: 'bg-gray-100', text: 'text-gray-600' };
+          
           return (
             <Link
               key={index}
               to={stat.link}
-              className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow"
+              className="bg-white overflow-hidden shadow-lg rounded-xl border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-200 hover:-translate-y-1"
             >
-              <div className="p-5">
+              <div className="p-6">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <div className={`${stat.color} rounded-md p-3`}>
-                      <Icon className="h-6 w-6 text-white" />
+                    <div className={`${colors.bg} rounded-xl p-3`}>
+                      <Icon className={`h-8 w-8 ${colors.text}`} />
                     </div>
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
+                      <dt className="text-sm font-medium text-gray-600 truncate">
                         {stat.title}
                       </dt>
-                      <dd className="text-lg font-medium text-gray-900">
+                      <dd className="text-3xl font-bold text-gray-900">
                         {stat.value}
                       </dd>
                     </dl>
@@ -187,9 +195,9 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+      <div className="bg-white shadow-lg rounded-xl border border-gray-200 mt-8">
+        <div className="px-6 py-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">
             Quick Actions
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -199,10 +207,10 @@ const Dashboard = () => {
                 <Link
                   key={index}
                   to={action.link}
-                  className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center p-4 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group"
                 >
-                  <Icon className="h-5 w-5 text-gray-400 mr-3" />
-                  <span className="text-sm font-medium text-gray-900">
+                  <Icon className="h-6 w-6 text-gray-400 group-hover:text-blue-600 mr-4" />
+                  <span className="text-sm font-medium text-gray-900 group-hover:text-blue-900">
                     {action.title}
                   </span>
                 </Link>
@@ -218,26 +226,26 @@ const Dashboard = () => {
       )}
 
       {/* Recent Activity */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+      <div className="bg-white shadow-lg rounded-xl border border-gray-200 mt-8">
+        <div className="px-6 py-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">
             Recent Activity
           </h3>
-          <div className="space-y-3">
-            <div className="flex items-center text-sm">
-              <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-              <span className="text-gray-600">New employee John Doe added to system</span>
-              <span className="ml-auto text-gray-400">2 hours ago</span>
+          <div className="space-y-4">
+            <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
+              <div className="w-3 h-3 bg-green-400 rounded-full mr-4"></div>
+              <span className="text-gray-700 flex-1">New employee John Doe added to system</span>
+              <span className="text-gray-400 text-xs">2 hours ago</span>
             </div>
-            <div className="flex items-center text-sm">
-              <div className="w-2 h-2 bg-yellow-400 rounded-full mr-3"></div>
-              <span className="text-gray-600">Pharmacist license for Jane Smith expires in 15 days</span>
-              <span className="ml-auto text-gray-400">1 day ago</span>
+            <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
+              <div className="w-3 h-3 bg-yellow-400 rounded-full mr-4"></div>
+              <span className="text-gray-700 flex-1">Pharmacist license for Jane Smith expires in 15 days</span>
+              <span className="text-gray-400 text-xs">1 day ago</span>
             </div>
-            <div className="flex items-center text-sm">
-              <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
-              <span className="text-gray-600">Monthly payroll processed for 25 employees</span>
-              <span className="ml-auto text-gray-400">3 days ago</span>
+            <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
+              <div className="w-3 h-3 bg-blue-400 rounded-full mr-4"></div>
+              <span className="text-gray-700 flex-1">Monthly payroll processed for 25 employees</span>
+              <span className="text-gray-400 text-xs">3 days ago</span>
             </div>
           </div>
         </div>

@@ -10,7 +10,8 @@ import {
   Menu, 
   X,
   LogOut,
-  Home
+  Home,
+  User
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -31,19 +32,23 @@ const Layout = ({ children }) => {
   };
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: Home },
-    { name: 'Employees', href: '/employees', icon: Users },
+    { name: 'HR Dashboard', href: '/', icon: Home },
+    { name: 'Employee Management', href: '/employees', icon: Users },
     { name: 'Payroll', href: '/payroll', icon: DollarSign },
     { name: 'Attendance', href: '/attendance', icon: Clock },
     { name: 'Licenses', href: '/licenses', icon: Award },
   ];
+
+  const currentDate = new Date();
+  const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+  const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
         <div className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setSidebarOpen(false)} />
-        <div className={`relative flex-1 flex flex-col max-w-xs w-full bg-white transform transition ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className={`relative flex-1 flex flex-col max-w-xs w-full bg-blue-900 transform transition ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
               type="button"
@@ -55,7 +60,12 @@ const Layout = ({ children }) => {
           </div>
           <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
             <div className="flex-shrink-0 flex items-center px-4">
-              <h1 className="text-xl font-bold text-gray-900">Pharmacy HR</h1>
+              <h1 className="text-xl font-bold text-white">COREERP</h1>
+            </div>
+            <div className="px-4 mt-2">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-600 text-white">
+                HR MODULE
+              </span>
             </div>
             <nav className="mt-5 px-2 space-y-1">
               {navigation.map((item) => {
@@ -64,24 +74,24 @@ const Layout = ({ children }) => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
+                    className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg ${
                       location.pathname === item.href
-                        ? 'bg-blue-100 text-blue-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-blue-100 hover:bg-blue-700 hover:text-white'
                     }`}
                     onClick={() => setSidebarOpen(false)}
                   >
-                    <Icon className="mr-4 h-6 w-6" />
+                    <Icon className="mr-3 h-5 w-5" />
                     {item.name}
                   </Link>
                 );
               })}
             </nav>
           </div>
-          <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
+          <div className="flex-shrink-0 flex border-t border-blue-700 p-4">
             <button
               onClick={handleLogout}
-              className="flex items-center text-gray-600 hover:text-gray-900"
+              className="flex items-center text-blue-100 hover:text-white"
             >
               <LogOut className="mr-3 h-5 w-5" />
               Logout
@@ -91,23 +101,29 @@ const Layout = ({ children }) => {
       </div>
 
       {/* Static sidebar for desktop */}
-      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-        <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
-          <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-            <div className="flex items-center flex-shrink-0 px-4">
-              <h1 className="text-xl font-bold text-gray-900">Pharmacy HR</h1>
-            </div>
-            <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
+      <div className="hidden md:flex md:w-70 md:flex-col md:fixed md:inset-y-0">
+        <div className="flex-1 flex flex-col min-h-0 bg-blue-900">
+          {/* Header */}
+          <div className="p-6 pb-4">
+            <h1 className="text-2xl font-bold text-white mb-2">COREERP</h1>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-600 text-white">
+              HR MODULE
+            </span>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex-1 px-4">
+            <nav className="space-y-1">
               {navigation.map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                    className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${
                       location.pathname === item.href
-                        ? 'bg-blue-100 text-blue-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-blue-100 hover:bg-blue-700 hover:text-white'
                     }`}
                   >
                     <Icon className="mr-3 h-5 w-5" />
@@ -117,20 +133,50 @@ const Layout = ({ children }) => {
               })}
             </nav>
           </div>
-          <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-            <button
-              onClick={handleLogout}
-              className="flex items-center text-gray-600 hover:text-gray-900"
-            >
-              <LogOut className="mr-3 h-5 w-5" />
-              Logout
-            </button>
+
+          <div className="border-t border-blue-700 mx-4"></div>
+
+          {/* Current Date & Time */}
+          <div className="p-4 m-4 bg-blue-600 rounded-lg">
+            <div className="text-xs text-blue-100 mb-1">CURRENT DATE & TIME</div>
+            <div className="text-lg font-bold text-white">
+              {currentDate.toLocaleDateString('en-US', dateOptions)}
+            </div>
+            <div className="text-sm text-blue-100">
+              {currentDate.toLocaleTimeString('en-US', timeOptions)}
+            </div>
+          </div>
+
+          {/* Date Filter */}
+          <div className="px-4 pb-4">
+            <div className="text-xs text-blue-100 mb-2">DATE FILTER</div>
+            <div className="bg-blue-600 rounded-lg p-2 flex items-center justify-between cursor-pointer">
+              <span className="text-sm text-white">Daily</span>
+              <span className="text-sm text-white">▼</span>
+            </div>
+          </div>
+
+          {/* User Info & Logout */}
+          <div className="border-t border-blue-700 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <User className="h-5 w-5 text-blue-100 mr-2" />
+                <span className="text-sm text-blue-100">HR User</span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="text-blue-100 hover:text-white p-1 rounded"
+                title="Logout"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="md:pl-64 flex flex-col flex-1">
+      <div className="md:pl-70 flex flex-col flex-1">
         <div className="sticky top-0 z-10 md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-gray-50">
           <button
             type="button"
@@ -140,9 +186,9 @@ const Layout = ({ children }) => {
             <Menu className="h-6 w-6" />
           </button>
         </div>
-        <main className="flex-1">
-          <div className="py-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <main className="flex-1 bg-gray-50">
+          <div className="py-8">
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-10">
               {children}
             </div>
           </div>

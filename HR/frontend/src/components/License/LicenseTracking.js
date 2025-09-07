@@ -186,7 +186,7 @@ const LicenseTracking = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 ml-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">License Tracking</h1>
         <button

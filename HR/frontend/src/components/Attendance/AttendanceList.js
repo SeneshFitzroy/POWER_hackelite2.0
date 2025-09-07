@@ -131,7 +131,7 @@ const AttendanceList = () => {
     const stats = getDailyStats();
     
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 ml-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow">
@@ -301,7 +301,7 @@ const AttendanceList = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 ml-2">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Attendance Management</h1>
         <div className="flex items-center space-x-3">

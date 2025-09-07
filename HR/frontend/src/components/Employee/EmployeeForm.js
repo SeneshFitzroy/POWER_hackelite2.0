@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../firebase/config';
+import { db } from '../../firebase/config';
+import { uploadEmployeeImage, uploadDocument } from '../../utils/fileUpload';
 import { useForm } from 'react-hook-form';
 import { ArrowLeft, Upload, X } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -77,11 +77,17 @@ const EmployeeForm = () => {
     
     setUploading(true);
     try {
-      const imageRef = ref(storage, `employees/${Date.now()}_${file.name}`);
-      await uploadBytes(imageRef, file);
-      const downloadURL = await getDownloadURL(imageRef);
-      setProfileImage(downloadURL);
-      return downloadURL;
+      const result = await uploadEmployeeImage(file, (progress) => {
+        console.log(`Upload progress: ${progress}%`);
+      });
+      
+      if (result.success) {
+        setProfileImage(result.base64);
+        return result.base64;
+      } else {
+        toast.error(result.error);
+        return null;
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
       toast.error('Failed to upload image');
@@ -96,20 +102,25 @@ const EmployeeForm = () => {
     
     setUploading(true);
     try {
-      const docRef = ref(storage, `documents/${Date.now()}_${file.name}`);
-      await uploadBytes(docRef, file);
-      const downloadURL = await getDownloadURL(docRef);
+      const result = await uploadDocument(file, (progress) => {
+        console.log(`Upload progress: ${progress}%`);
+      });
       
-      const newDoc = {
-        id: Date.now(),
-        name: file.name,
-        type,
-        url: downloadURL,
-        uploadDate: new Date().toISOString()
-      };
-      
-      setDocuments(prev => [...prev, newDoc]);
-      toast.success('Document uploaded successfully');
+      if (result.success) {
+        const newDoc = {
+          id: Date.now(),
+          name: file.name,
+          type,
+          base64: result.base64,
+          metadata: result.metadata,
+          uploadDate: new Date().toISOString()
+        };
+        
+        setDocuments(prev => [...prev, newDoc]);
+        toast.success('Document uploaded successfully');
+      } else {
+        toast.error(result.error);
+      }
     } catch (error) {
       console.error('Error uploading document:', error);
       toast.error('Failed to upload document');
@@ -151,7 +162,7 @@ const EmployeeForm = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 ml-8">
       <div className="flex items-center">
         <button
           onClick={() => navigate('/employees')}
