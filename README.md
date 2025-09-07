@@ -10,11 +10,16 @@ This is a modern React application built with Firebase backend, featuring authen
 
 - 🔐 Firebase Authentication (Email/Password)
 - 📊 Modern Dashboard with Material-UI
+- 💰 **Comprehensive Finance Module** with P&L, Balance Sheet, Cash Flow
+- 📋 **Bills & Payment Management** with supplier tracking and reminders
+- 👥 **Payroll Management** with employee records and salary processing
+- 💹 **Financial Analytics** with interactive charts and KPIs
 - 🏗️ Modular Architecture
 - 📱 Responsive Design
 - 🔥 Firebase Backend Integration
 - ⚛️ React 19 with Hooks
 - 🎨 Material-UI Components
+- 📈 Recharts Integration for Data Visualization
 
 ## Getting Started
 
@@ -71,6 +76,17 @@ The application will open at `http://localhost:3000`.
 ```
 src/
 ├── components/          # React components
+│   ├── sales/          # Sales module components
+│   │   ├── SalesModule.js      # Main sales dashboard with navigation
+│   │   ├── CustomerManagement.js  # Customer database management
+│   │   ├── SalesOrders.js      # Sales order processing
+│   │   └── SalesDashboard.js   # Sales analytics & metrics
+│   ├── finance/        # Finance module components
+│   │   ├── FinanceModule.js    # Main finance dashboard with navigation
+│   │   ├── FinanceDashboard.js # Financial KPIs & charts
+│   │   ├── FinancialReports.js # P&L, Balance Sheet, Cash Flow
+│   │   ├── BillsManagement.js  # Supplier bills & payment reminders
+│   │   └── PayrollManagement.js # Employee payroll processing
 │   ├── Dashboard.js     # Main dashboard
 │   ├── Login.js         # Authentication component
 │   └── Navigation.js    # Navigation bar
