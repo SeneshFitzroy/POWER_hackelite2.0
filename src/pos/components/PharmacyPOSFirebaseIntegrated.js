@@ -581,23 +581,21 @@ const PharmacyPOSFirebaseIntegrated = () => {
       height: '100vh', 
       display: 'flex', 
       flexDirection: 'column', 
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      minHeight: '100vh'
+      backgroundColor: '#ffffff'
     }}>
-      {/* PROFESSIONAL HEADER - ENHANCED DESIGN */}
+      {/* PROFESSIONAL HEADER - BLUE AND WHITE ONLY */}
       <Paper sx={{ 
-        p: 3, 
+        p: 2, 
         mb: 2, 
         borderRadius: 0,
         background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-        boxShadow: '0 8px 32px rgba(30, 64, 175, 0.3)'
+        boxShadow: '0 4px 12px rgba(30, 64, 175, 0.2)'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            <Typography variant="h3" fontWeight="bold" sx={{ 
+            <Typography variant="h4" fontWeight="bold" sx={{ 
               color: 'white', 
-              letterSpacing: '2px',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+              letterSpacing: '1px'
             }}>
               MEDICARE PHARMACY SYSTEM
             </Typography>
@@ -608,17 +606,16 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 color: 'white', 
                 borderColor: 'white',
                 backgroundColor: 'rgba(255,255,255,0.1)',
-                fontWeight: 'bold',
-                fontSize: '1rem'
+                fontWeight: 'bold'
               }} 
             />
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <Box sx={{ textAlign: 'right' }}>
-              <Typography variant="h5" sx={{ color: 'white', fontWeight: 'bold' }}>
+              <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
                 {currentTime.toLocaleDateString()}
               </Typography>
-              <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
                 {currentTime.toLocaleTimeString()}
               </Typography>
             </Box>
@@ -628,37 +625,37 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 backgroundColor: paymentMethod === 'cash' ? '#16a34a' : '#3b82f6',
                 color: 'white',
                 fontWeight: 'bold',
-                fontSize: '1.2rem',
+                fontSize: '1rem',
                 px: 2,
-                py: 1
+                py: 0.5
               }}
             />
           </Box>
         </Box>
       </Paper>
 
-      {/* MAIN CONTENT - ENHANCED THREE PANEL LAYOUT */}
+      {/* MAIN CONTENT - CLEAN WHITE LAYOUT */}
       <Box sx={{ 
         flex: 1, 
         display: 'flex', 
-        gap: 3, 
-        px: 3, 
-        overflow: 'hidden' 
+        gap: 2, 
+        px: 2, 
+        overflow: 'hidden',
+        backgroundColor: '#ffffff'
       }}>
         
         {/* LEFT PANEL - INPUT SECTIONS (30%) */}
-        <Box sx={{ width: '30%', display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Box sx={{ width: '30%', display: 'flex', flexDirection: 'column', gap: 2 }}>
           
-          {/* PATIENT INFORMATION - ENHANCED */}
+          {/* PATIENT INFORMATION - COMPACT */}
           <Paper sx={{ 
-            p: 3, 
-            borderRadius: 3, 
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)'
+            p: 2, 
+            borderRadius: 2, 
+            backgroundColor: 'white',
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2' }}>
                 PATIENT INFORMATION
               </Typography>
@@ -667,20 +664,16 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 variant="contained"
                 size="small"
                 sx={{
-                  background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                  backgroundColor: '#1976d2',
                   color: 'white',
                   fontWeight: 'bold',
                   fontSize: '0.75rem',
                   px: 2,
-                  py: 1,
-                  borderRadius: 2,
-                  boxShadow: '0 4px 20px rgba(33, 150, 243, 0.3)',
+                  py: 0.5,
+                  borderRadius: 1,
                   '&:hover': {
-                    background: 'linear-gradient(45deg, #1976d2 30%, #1e88e5 90%)',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 6px 25px rgba(33, 150, 243, 0.4)'
-                  },
-                  transition: 'all 0.3s ease'
+                    backgroundColor: '#1565c0'
+                  }
                 }}
               >
                 NEW PATIENT
@@ -693,34 +686,28 @@ const PharmacyPOSFirebaseIntegrated = () => {
               value={patientNIC}
               onChange={(e) => handlePatientNICChange(e.target.value)}
               placeholder="Enter NIC to auto-load patient info"
-              helperText={currentPatient ? `✓ Patient: ${currentPatient.name}` : 'Enter NIC to lookup patient from Firebase'}
+              size="small"
               sx={{
                 mb: 2,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  background: 'white',
+                  borderRadius: 1,
                   '&:hover fieldset': { borderColor: '#1976d2' },
                   '&.Mui-focused fieldset': { borderColor: '#1976d2' }
-                },
-                '& .MuiFormHelperText-root': {
-                  color: currentPatient ? '#4caf50' : '#666',
-                  fontWeight: currentPatient ? 'bold' : 'normal'
                 }
               }}
             />
 
-            {/* SLMC REG NUMBER - NEW FIELD */}
+            {/* SLMC REG NUMBER - COMPACT */}
             <TextField
               fullWidth
               label="SLMC REG NUMBER (6 digits)"
               value={slmcRegNumber}
               onChange={(e) => setSlmcRegNumber(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="Enter 6-digit SLMC registration number"
-              helperText="Required for prescription medicines"
+              placeholder="Enter 6-digit SLMC number"
+              size="small"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  background: 'white',
+                  borderRadius: 1,
                   '&:hover fieldset': { borderColor: '#1976d2' },
                   '&.Mui-focused fieldset': { borderColor: '#1976d2' }
                 }
@@ -728,16 +715,15 @@ const PharmacyPOSFirebaseIntegrated = () => {
             />
           </Paper>
 
-          {/* STAFF INFORMATION - ENHANCED */}
+          {/* STAFF INFORMATION - COMPACT */}
           <Paper sx={{ 
-            p: 3, 
-            borderRadius: 3,
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)'
+            p: 2, 
+            borderRadius: 2,
+            backgroundColor: 'white',
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2', mb: 3 }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2', mb: 2 }}>
               STAFF INFORMATION
             </Typography>
             
@@ -745,7 +731,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               value={staffType}
               onChange={(e) => setStaffType(e.target.value)}
               row
-              sx={{ mb: 3 }}
+              sx={{ mb: 2 }}
             >
               <FormControlLabel 
                 value="employee" 
@@ -766,11 +752,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
               onChange={(e) => setEmployeeId(e.target.value)}
               required
               error={!employeeId.trim()}
+              size="small"
               sx={{ 
-                mb: 3,
+                mb: 2,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  background: 'white',
+                  borderRadius: 1,
                   '&:hover fieldset': { borderColor: '#1976d2' },
                   '&.Mui-focused fieldset': { borderColor: '#1976d2' }
                 }
@@ -783,34 +769,35 @@ const PharmacyPOSFirebaseIntegrated = () => {
               type="number"
               value={discountRate}
               onChange={(e) => setDiscountRate(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
+              size="small"
               sx={{ 
-                mb: 3,
+                mb: 2,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  background: 'white',
+                  borderRadius: 1,
                   '&:hover fieldset': { borderColor: '#1976d2' },
                   '&.Mui-focused fieldset': { borderColor: '#1976d2' }
                 }
               }}
             />
 
-            {/* Payment Method Selection */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body1" fontWeight="bold" sx={{ mb: 2, color: '#1976d2' }}>
+            {/* Payment Method Selection - COMPACT */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="body2" fontWeight="bold" sx={{ mb: 1, color: '#1976d2' }}>
                 Payment Method:
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button
                   variant={paymentMethod === 'cash' ? 'contained' : 'outlined'}
                   onClick={() => setPaymentMethod('cash')}
+                  size="small"
                   sx={{
                     flex: 1,
-                    borderRadius: 2,
-                    background: paymentMethod === 'cash' ? 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)' : 'transparent',
+                    borderRadius: 1,
+                    backgroundColor: paymentMethod === 'cash' ? '#4caf50' : 'transparent',
                     borderColor: '#4caf50',
                     color: paymentMethod === 'cash' ? 'white' : '#4caf50',
                     '&:hover': {
-                      background: paymentMethod === 'cash' ? 'linear-gradient(45deg, #388e3c 30%, #4caf50 90%)' : '#e8f5e8'
+                      backgroundColor: paymentMethod === 'cash' ? '#388e3c' : '#e8f5e8'
                     }
                   }}
                 >
@@ -819,14 +806,15 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 <Button
                   variant={paymentMethod === 'card' ? 'contained' : 'outlined'}
                   onClick={() => setPaymentMethod('card')}
+                  size="small"
                   sx={{
                     flex: 1,
-                    borderRadius: 2,
-                    background: paymentMethod === 'card' ? 'linear-gradient(45deg, #2196f3 30%, #64b5f6 90%)' : 'transparent',
+                    borderRadius: 1,
+                    backgroundColor: paymentMethod === 'card' ? '#2196f3' : 'transparent',
                     borderColor: '#2196f3',
                     color: paymentMethod === 'card' ? 'white' : '#2196f3',
                     '&:hover': {
-                      background: paymentMethod === 'card' ? 'linear-gradient(45deg, #1976d2 30%, #2196f3 90%)' : '#e3f2fd'
+                      backgroundColor: paymentMethod === 'card' ? '#1976d2' : '#e3f2fd'
                     }
                   }}
                 >
@@ -836,35 +824,30 @@ const PharmacyPOSFirebaseIntegrated = () => {
             </Box>
 
             <Button
-              variant="contained"
+              variant="outlined"
               fullWidth
+              size="small"
               onClick={() => setShowCashBalance(!showCashBalance)}
               sx={{ 
                 mb: 2,
-                borderRadius: 2,
-                background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
-                boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)',
-                '&:hover': {
-                  background: 'linear-gradient(45deg, #388e3c 30%, #4caf50 90%)',
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0 6px 25px rgba(76, 175, 80, 0.4)'
-                },
-                transition: 'all 0.3s ease'
+                borderRadius: 1,
+                borderColor: '#1976d2',
+                color: '#1976d2'
               }}
             >
               SHOW CASH BALANCE
             </Button>
 
             {showCashBalance && (
-              <Typography variant="h5" sx={{ 
+              <Typography variant="h6" sx={{ 
                 textAlign: 'center', 
                 mb: 2,
                 color: '#4caf50',
                 fontWeight: 'bold',
-                p: 2,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
-                border: '2px solid #4caf50'
+                p: 1,
+                borderRadius: 1,
+                backgroundColor: '#f1f8e9',
+                border: '1px solid #4caf50'
               }}>
                 {formatCurrency(cashBalance)}
               </Typography>
@@ -877,10 +860,10 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 type="number"
                 value={cashReceived}
                 onChange={(e) => setCashReceived(parseFloat(e.target.value) || 0)}
+                size="small"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    background: 'white',
+                    borderRadius: 1,
                     '&:hover fieldset': { borderColor: '#1976d2' },
                     '&.Mui-focused fieldset': { borderColor: '#1976d2' }
                   }
@@ -893,15 +876,14 @@ const PharmacyPOSFirebaseIntegrated = () => {
         {/* MIDDLE PANEL - AVAILABLE MEDICINES (40%) */}
         <Box sx={{ width: '40%', display: 'flex', flexDirection: 'column' }}>
           
-          {/* MEDICINE SEARCH - ENHANCED */}
+          {/* MEDICINE SEARCH - COMPACT */}
           <Paper sx={{ 
-            p: 3, 
-            borderRadius: 3, 
-            mb: 3,
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)'
+            p: 2, 
+            borderRadius: 2, 
+            mb: 2,
+            backgroundColor: 'white',
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
             <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2', mb: 2 }}>
               MEDICINE SEARCH
@@ -911,16 +893,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
               placeholder="Search medicines by name, generic, manufacturer..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              size="small"
               sx={{ 
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  background: 'white',
-                  fontSize: '1.1rem',
+                  borderRadius: 1,
                   '&:hover fieldset': { borderColor: '#1976d2' },
                   '&.Mui-focused fieldset': { borderColor: '#1976d2' }
-                },
-                '& .MuiInputBase-input': {
-                  py: 1.5
                 }
               }}
             />
@@ -930,16 +908,16 @@ const PharmacyPOSFirebaseIntegrated = () => {
             flex: 1, 
             display: 'flex', 
             flexDirection: 'column',
-            borderRadius: 3,
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            borderRadius: 2,
+            backgroundColor: 'white',
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             overflow: 'hidden'
           }}>
             {/* HEADER */}
             <Box sx={{ 
-              p: 3, 
-              background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)', 
+              p: 2, 
+              backgroundColor: '#1976d2', 
               color: 'white',
               display: 'flex',
               justifyContent: 'space-between',
@@ -959,11 +937,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
               />
             </Box>
 
-            {/* SEARCH RESULTS - ENHANCED */}
+            {/* SEARCH RESULTS - COMPACT */}
             <Box sx={{ 
               flex: 1, 
               overflow: 'auto',
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
+              backgroundColor: '#f8f9fa'
             }}>
               {searchResults.length > 0 ? (
                 searchResults.map((medicine) => (
@@ -973,90 +951,92 @@ const PharmacyPOSFirebaseIntegrated = () => {
                     sx={{
                       cursor: 'pointer',
                       backgroundColor: 'white',
-                      mb: 2,
-                      mx: 2,
-                      borderRadius: 3,
-                      border: '2px solid #e3f2fd',
+                      mb: 1,
+                      mx: 1,
+                      borderRadius: 1,
+                      border: '1px solid #e5e7eb',
                       '&:hover': { 
-                        borderColor: '#2196f3',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 25px rgba(33, 150, 243, 0.2)'
+                        borderColor: '#1976d2',
+                        backgroundColor: '#f8f9fa'
                       },
-                      position: 'relative',
-                      transition: 'all 0.3s ease',
-                      p: 3
+                      transition: 'all 0.2s ease',
+                      p: 1.5
                     }}
                   >
                     {/* AVAILABILITY STATUS */}
                     <Box sx={{
                       position: 'absolute',
-                      top: 8,
-                      right: 8,
+                      top: 4,
+                      right: 4,
                       backgroundColor: '#4caf50',
                       color: 'white',
-                      px: 2,
-                      py: 1,
-                      borderRadius: 2,
-                      fontSize: '0.75rem',
-                      fontWeight: 'bold',
-                      boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)'
+                      px: 1,
+                      py: 0.25,
+                      borderRadius: 1,
+                      fontSize: '0.6rem',
+                      fontWeight: 'bold'
                     }}>
                       AVAILABLE
                     </Box>
 
-                    <Box sx={{ width: '100%', pr: 12 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                        <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2' }}>
+                    <Box sx={{ width: '100%', pr: 8 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#1976d2', fontSize: '0.9rem' }}>
                           {medicine.name}
                         </Typography>
-                        <Typography variant="h5" sx={{ 
+                        <Typography variant="h6" sx={{ 
                           color: '#4caf50', 
                           fontWeight: 'bold',
-                          background: 'linear-gradient(45deg, #c8e6c9, #a5d6a7)',
-                          px: 2,
-                          py: 1,
-                          borderRadius: 2
+                          fontSize: '0.9rem',
+                          backgroundColor: '#e8f5e8',
+                          px: 1,
+                          py: 0.25,
+                          borderRadius: 1
                         }}>
                           {formatCurrency(medicine.sellingPrice)}
                         </Typography>
                       </Box>
                       
-                      <Typography variant="body1" color="#666" sx={{ mb: 2 }}>
+                      <Typography variant="body2" color="#666" sx={{ mb: 1, fontSize: '0.8rem' }}>
                         {medicine.genericName} - {medicine.strength}
                       </Typography>
                       
-                      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                      <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
                         <Chip 
                           label={medicine.manufacturer} 
                           size="small" 
                           sx={{ 
-                            background: 'linear-gradient(45deg, #2196f3, #64b5f6)',
-                            color: 'white',
-                            fontWeight: 'bold'
+                            backgroundColor: '#e3f2fd',
+                            color: '#1976d2',
+                            fontSize: '0.65rem',
+                            height: '20px'
                           }} 
                         />
                         <Chip 
                           label={medicine.category} 
                           size="small" 
                           sx={{ 
-                            background: 'linear-gradient(45deg, #9c27b0, #ba68c8)',
-                            color: 'white',
-                            fontWeight: 'bold'
+                            backgroundColor: '#f3e5f5',
+                            color: '#7b1fa2',
+                            fontSize: '0.65rem',
+                            height: '20px'
                           }} 
                         />
                       </Box>
                       
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-                        <Typography variant="body2" color="#666">
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="body2" color="#666" sx={{ fontSize: '0.75rem' }}>
                           Batch: {medicine.batchNumber}
                         </Typography>
                         <Chip 
                           label={`Stock: ${getMedicineStock(medicine)}`}
                           size="small"
                           sx={{
-                            background: 'linear-gradient(45deg, #4caf50, #81c784)',
-                            color: 'white',
-                            fontWeight: 'bold'
+                            backgroundColor: '#e8f5e8',
+                            color: '#4caf50',
+                            fontWeight: 'bold',
+                            fontSize: '0.65rem',
+                            height: '20px'
                           }}
                         />
                       </Box>
