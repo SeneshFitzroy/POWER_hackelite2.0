@@ -16,6 +16,7 @@ import {
   TableRow,
   Switch,
   FormControlLabel,
+  Checkbox,
   RadioGroup,
   Radio,
   Dialog,
@@ -1261,7 +1262,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 variant="contained"
                 size="medium"
                 onClick={processSale}
-                disabled={cart.length === 0 || loading || !employeeId.trim() || (paymentMethod === 'cash' && cashReceived < total)}
+                disabled={cart.length === 0 || loading || !employeeId.trim()}
                 sx={{
                   backgroundColor: '#4caf50',
                   color: 'white',
