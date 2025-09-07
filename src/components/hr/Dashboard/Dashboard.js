@@ -1,37 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Grid,
-  Chip,
-  LinearProgress,
-  Button,
-  Paper,
-  IconButton,
-  Avatar,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider
-} from '@mui/material';
-import {
-  People,
-  Work,
-  Schedule,
-  AttachMoney,
+import { Link } from 'react-router-dom';
+import { 
+  Users, 
+  DollarSign, 
+  Clock, 
+  AlertTriangle,
   TrendingUp,
-  Warning,
-  Add,
-  Refresh,
-  Assessment
-} from '@mui/icons-material';
+  Calendar,
+  Award,
+  FileText
+} from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { initializeFirestore } from '../../../utils/hr/initializeFirestore';
 import InitializeData from '../Setup/InitializeData';
+import toast from 'react-hot-toast';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
