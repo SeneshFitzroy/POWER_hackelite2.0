@@ -8,11 +8,6 @@ import {
   CardContent,
   Chip,
   IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  ListItemButton,
   Divider,
   Table,
   TableBody,
@@ -25,7 +20,8 @@ import {
   Badge,
   Avatar,
   Tabs,
-  Tab
+  Tab,
+  CircularProgress
 } from '@mui/material';
 import {
   Dashboard,
@@ -36,7 +32,6 @@ import {
   TrendingDown,
   AttachMoney,
   AccountBalance,
-  MoreVert,
   ArrowUpward,
   ArrowDownward,
   Warning,
@@ -66,6 +61,8 @@ import {
   Pie,
   Cell
 } from 'recharts';
+import { db } from '../../firebase/config';
+import { collection, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore';
 
 function TabPanel({ children, value, index, ...other }) {
   return (
