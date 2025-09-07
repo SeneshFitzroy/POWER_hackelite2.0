@@ -496,13 +496,29 @@ export default function Finance({ dateFilter }) {
               >
                 Quick Reports
               </Typography>
-              <Button
-                size="small"
-                startIcon={<Download />}
-                sx={{ color: '#1e3a8a' }}
-              >
-                Export
-              </Button>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  size="small"
+                  startIcon={<Assessment />}
+                  variant="outlined"
+                  sx={{ 
+                    color: '#1e3a8a',
+                    borderColor: '#1e3a8a',
+                    '&:hover': {
+                      backgroundColor: '#e3f2fd'
+                    }
+                  }}
+                >
+                  View Reports
+                </Button>
+                <Button
+                  size="small"
+                  startIcon={<Download />}
+                  sx={{ color: '#1e3a8a' }}
+                >
+                  Export
+                </Button>
+              </Box>
             </Box>
 
             {/* P&L Summary */}
