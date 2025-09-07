@@ -577,8 +577,8 @@ export default function CustomerManagement({ dateFilter }) {
               !newCustomer.name || 
               !newCustomer.phoneNumber ||
               !validatePhoneNumber(newCustomer.phoneNumber) ||
-              (!newCustomer.isChild && !newCustomer.nic) ||
-              !validateNIC(newCustomer.nic)
+              (!newCustomer.isChild && !newCustomer.nic && !newCustomer.noNicAvailable) ||
+              (newCustomer.nic && !validateNIC(newCustomer.nic))
             }
             sx={{
               backgroundColor: '#000000',
