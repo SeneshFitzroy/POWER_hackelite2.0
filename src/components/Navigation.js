@@ -10,11 +10,13 @@ import {
   MenuItem,
   Avatar
 } from '@mui/material';
-import { AccountCircle, ExitToApp } from '@mui/icons-material';
+import { AccountCircle, ExitToApp, LocalPharmacy, Dashboard, Settings } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Navigation() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenu = (event) => {
@@ -34,12 +36,42 @@ export default function Navigation() {
     }
   };
 
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
   return (
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          CoreERP
+          CoreERP - Pharmacy System
         </Typography>
+        
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 2 }}>
+          <Button
+            color="inherit"
+            startIcon={<Dashboard />}
+            onClick={() => handleNavigation('/dashboard')}
+          >
+            Dashboard
+          </Button>
+          
+          <Button
+            color="inherit"
+            startIcon={<LocalPharmacy />}
+            onClick={() => handleNavigation('/pos')}
+          >
+            POS
+          </Button>
+          
+          <Button
+            color="inherit"
+            startIcon={<Settings />}
+            onClick={() => handleNavigation('/setup')}
+          >
+            Setup
+          </Button>
+        </Box>
         
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography variant="body2" sx={{ mr: 2 }}>
