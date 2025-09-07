@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/material'
 import SplashScreen from './components/SplashScreen'
@@ -172,6 +172,15 @@ class ErrorBoundary extends React.Component {
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('splash')
+
+  // Check URL parameters on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const screenParam = urlParams.get('screen');
+    if (screenParam === 'login') {
+      setCurrentScreen('login');
+    }
+  }, []);
 
   const handleSplashComplete = () => {
     setCurrentScreen('login')
