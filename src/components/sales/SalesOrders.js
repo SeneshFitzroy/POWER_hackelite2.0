@@ -54,7 +54,6 @@ export default function SalesOrders({ dateFilter }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [newOrder, setNewOrder] = useState({
     employeeId: '',
-    pharmacyNumber: '',
     customerId: '',
     customerName: '',
     items: [],
@@ -63,6 +62,7 @@ export default function SalesOrders({ dateFilter }) {
     discount: 0,
     total: 0,
     status: 'pending',
+    paymentMethod: 'cash',
     notes: ''
   });
 
@@ -76,7 +76,6 @@ export default function SalesOrders({ dateFilter }) {
     const filtered = orders.filter(order =>
       order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.pharmacyNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.status.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredOrders(filtered);

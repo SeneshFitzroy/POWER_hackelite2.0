@@ -19,7 +19,6 @@ import {
   Divider,
   Card,
   CardContent,
-  Autocomplete,
   InputAdornment
 } from '@mui/material';
 import {
@@ -671,11 +670,18 @@ const PharmacyPOS = () => {
             value={amountPaid}
             onChange={(e) => setAmountPaid(e.target.value)}
             margin="normal"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#e2e8f0' },
+                '&:hover fieldset': { borderColor: '#1e3a8a' },
+                '&.Mui-focused fieldset': { borderColor: '#1e40af' }
+              }
+            }}
           />
 
           {/* Change */}
           {amountPaid && (
-            <Typography variant="body2" sx={{ mt: 1 }}>
+            <Typography variant="body2" sx={{ mt: 1, color: '#059669', fontWeight: 'medium' }}>
               Change: {formatCurrency(Math.max(0, parseFloat(amountPaid) - transactionTotals.total))}
             </Typography>
           )}
