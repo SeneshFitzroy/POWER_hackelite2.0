@@ -635,7 +635,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
             />
             <Button
               variant="contained"
-              onClick={() => window.location.href = '/'}
+              onClick={() => {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/?screen=login';
+              }}
               sx={{
                 backgroundColor: '#dc2626',
                 color: 'white',
