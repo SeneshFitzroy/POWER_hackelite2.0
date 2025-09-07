@@ -13,14 +13,16 @@ import {
   ListItemText,
   ListItemButton,
   Drawer,
-  Divider
+  Divider,
+  Button
 } from '@mui/material';
 import {
   Assessment,
   People,
   ShoppingCart,
   Receipt,
-  CalendarToday
+  CalendarToday,
+  Logout
 } from '@mui/icons-material';
 import SalesDashboard from './SalesDashboard';
 import CustomerManagement from './CustomerManagement';
@@ -74,6 +76,15 @@ export default function SalesModule() {
 
   const handleDateFilterChange = (event) => {
     setDateFilter(event.target.value);
+  };
+
+  const handleLogout = () => {
+    // Clear any stored data
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Navigate back to login/home page
+    window.location.href = '/';
   };
 
   return (
@@ -297,6 +308,39 @@ export default function SalesModule() {
               </Select>
             </FormControl>
           </Box>
+
+          {/* Logout Button */}
+          <Button
+            fullWidth
+            variant="contained"
+            startIcon={<Logout />}
+            onClick={handleLogout}
+            sx={{
+              backgroundColor: '#dc2626',
+              color: '#ffffff',
+              fontWeight: 'bold',
+              fontSize: '13px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              borderRadius: '10px',
+              py: 1.5,
+              mt: 2,
+              boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
+              border: '1px solid rgba(220, 38, 38, 0.8)',
+              '&:hover': {
+                backgroundColor: '#b91c1c',
+                boxShadow: '0 6px 16px rgba(220, 38, 38, 0.4)',
+                transform: 'translateY(-1px)',
+              },
+              '&:active': {
+                transform: 'translateY(0px)',
+                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.4)',
+              },
+              transition: 'all 0.2s ease-in-out'
+            }}
+          >
+            Logout
+          </Button>
         </Box>
       </Drawer>
 
