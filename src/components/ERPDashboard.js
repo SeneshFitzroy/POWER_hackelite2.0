@@ -134,8 +134,8 @@ export default function ERPDashboard() {
         </div>
 
         <div className="dashboard-welcome">
-          <h2 className="dashboard-welcome-title">Command Center</h2>
-          <p className="dashboard-welcome-text">Streamline your pharmacy operations with integrated business intelligence and real-time analytics</p>
+          <h2 className="dashboard-welcome-title">Welcome to Your Dashboard</h2>
+          <p className="dashboard-welcome-text">Access all your business modules from one centralized platform</p>
         </div>
       </div>
 
