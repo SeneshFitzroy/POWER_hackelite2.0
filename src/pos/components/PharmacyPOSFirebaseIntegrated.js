@@ -1495,12 +1495,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
           </Box>
         </Box>
       </Dialog>
-            >
-              Save to Firebase
-            </Button>
-          </Box>
-        </Box>
-      </Dialog>
 
       {/* RECEIPT DIALOG */}
       <Dialog open={showReceipt} onClose={() => setShowReceipt(false)} maxWidth="sm" fullWidth>
