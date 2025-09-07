@@ -452,7 +452,7 @@ body {
 }
 
 .login-logo {
-  max-height: 9rem;
+  max-height: 12rem;
   max-width: 100%;
   object-fit: contain;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08)) contrast(1.1) saturate(1.1);
