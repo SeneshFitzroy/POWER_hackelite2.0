@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db } from '../../../firebase/config';
 import { uploadEmployeeImage, uploadDocument } from '../../utils/fileUpload';
 import { useForm } from 'react-hook-form';
 import { ArrowLeft, Upload, X } from 'lucide-react';

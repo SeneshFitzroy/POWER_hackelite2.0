@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db } from '../../../firebase/config';
 import { ArrowLeft, Edit, Mail, Phone, MapPin, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 
