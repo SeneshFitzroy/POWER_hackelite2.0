@@ -22,6 +22,10 @@ function App() {
     window.location.href = '/pos'
   }
 
+  const handleLogout = () => {
+    setCurrentScreen('login')
+  }
+
   return (
     <Routes>
       <Route path="/pos" element={
@@ -33,7 +37,7 @@ function App() {
         <div className="App">
           {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
           {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-          {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} />}
+          {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onLogout={handleLogout} />}
         </div>
       } />
       <Route path="*" element={<Navigate to="/" replace />} />
