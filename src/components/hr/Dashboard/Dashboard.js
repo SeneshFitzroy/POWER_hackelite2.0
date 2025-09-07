@@ -11,8 +11,8 @@ import {
   FileText
 } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase/config';
-import { initializeFirestore } from '../../utils/initializeFirestore';
+import { db } from '../../../firebase/config';
+import { initializeFirestore } from '../../../utils/hr/initializeFirestore';
 import InitializeData from '../Setup/InitializeData';
 import toast from 'react-hot-toast';
 
