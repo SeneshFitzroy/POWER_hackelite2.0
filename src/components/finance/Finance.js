@@ -590,7 +590,7 @@ export default function Finance({ dateFilter }) {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid item xs={12} md={4}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
@@ -615,7 +615,7 @@ export default function Finance({ dateFilter }) {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid item xs={12} md={4}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
@@ -741,7 +741,7 @@ export default function Finance({ dateFilter }) {
     <Box>
       {/* Payroll Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid size={{ xs: 12, md: 3 }}>
+        <Grid item xs={12} md={3}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
@@ -760,7 +760,7 @@ export default function Finance({ dateFilter }) {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 3 }}>
+        <Grid item xs={12} md={3}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -779,7 +779,7 @@ export default function Finance({ dateFilter }) {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 3 }}>
+        <Grid item xs={12} md={3}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
@@ -798,7 +798,7 @@ export default function Finance({ dateFilter }) {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 3 }}>
+        <Grid item xs={12} md={3}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
@@ -1170,12 +1170,6 @@ export default function Finance({ dateFilter }) {
             label="Payroll" 
             icon={<People />} 
             iconPosition="start"
-            sx={{ mr: 2 }}
-          />
-          <Tab 
-            label="Financial Reports" 
-            icon={<BarChart />} 
-            iconPosition="start"
           />
         </Tabs>
       </Box>
@@ -1189,9 +1183,6 @@ export default function Finance({ dateFilter }) {
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
         {renderPayroll()}
-      </TabPanel>
-      <TabPanel value={activeTab} index={3}>
-        {renderReports()}
       </TabPanel>
     </Box>
   );
