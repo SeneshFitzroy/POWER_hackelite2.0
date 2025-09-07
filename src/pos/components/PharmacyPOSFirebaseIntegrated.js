@@ -438,11 +438,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
       return;
     }
 
-    if (paymentMethod === 'cash' && cashReceived < total) {
-      alert('Insufficient cash received.');
-      return;
-    }
-
     if (!employeeId.trim()) {
       alert('Please enter Employee ID.');
       return;
