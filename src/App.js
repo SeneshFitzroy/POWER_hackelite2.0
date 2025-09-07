@@ -1,39 +1,27 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { Container, Box, Typography, Paper, Grid } from '@mui/material';
-import Dashboard from './components/Dashboard';
-import Login from './components/Login';
-import Navigation from './components/Navigation';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import './App.css';
+import React, { useState } from 'react'
+import SplashScreen from './components/SplashScreen'
+import LoginScreen from './components/LoginScreen'
+import ERPDashboard from './components/ERPDashboard'
+import './App.css'
 
-function AppContent() {
-  const { user } = useAuth();
+function App() {
+  const [currentScreen, setCurrentScreen] = useState('splash')
 
-  if (!user) {
-    return <Login />;
+  const handleSplashComplete = () => {
+    setCurrentScreen('login')
+  }
+
+  const handleLoginSuccess = () => {
+    setCurrentScreen('dashboard')
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Navigation />
-      <Container maxWidth="xl" sx={{ flexGrow: 1, py: 3 }}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Container>
-    </Box>
-  );
+    <div className="App">
+      {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
+      {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
+      {currentScreen === 'dashboard' && <ERPDashboard />}
+    </div>
+  )
 }
 
-function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  );
-}
-
-export default App;
+export default App
