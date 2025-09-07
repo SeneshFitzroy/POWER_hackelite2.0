@@ -1,58 +1,12 @@
-<<<<<<< HEAD
 import React, { useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Box } from '@mui/material'
+import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/material'
 import SplashScreen from './components/SplashScreen'
 import LoginScreen from './components/LoginScreen'
 import ERPDashboard from './components/ERPDashboard'
 import PharmacyPOSFirebaseIntegrated from './pos/components/PharmacyPOSFirebaseIntegrated'
+import SalesModule from './components/sales/SalesModule'
 import './App.css'
-
-function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash')
-
-  const handleSplashComplete = () => {
-    setCurrentScreen('login')
-  }
-
-  const handleLoginSuccess = () => {
-    setCurrentScreen('dashboard')
-  }
-
-  const handlePOSAccess = () => {
-    window.location.href = '/pos'
-  }
-
-  const handleLogout = () => {
-    setCurrentScreen('login')
-  }
-
-  return (
-    <Routes>
-      <Route path="/pos" element={
-        <Box sx={{ height: '100vh', overflow: 'hidden' }}>
-          <PharmacyPOSFirebaseIntegrated />
-        </Box>
-      } />
-      <Route path="/" element={
-        <div className="App">
-          {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
-          {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-          {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onLogout={handleLogout} />}
-        </div>
-      } />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  )
-}
-
-export default App
-=======
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/material';
-import SalesModule from './components/sales/SalesModule';
-import './App.css';
 
 // Professional Blue Theme (Matching POS System)
 const theme = createTheme({
@@ -217,25 +171,59 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
+  const [currentScreen, setCurrentScreen] = useState('splash')
+
+  const handleSplashComplete = () => {
+    setCurrentScreen('login')
+  }
+
+  const handleLoginSuccess = () => {
+    setCurrentScreen('dashboard')
+  }
+
+  const handlePOSAccess = () => {
+    window.location.href = '/pos'
+  }
+
+  const handleSalesAccess = () => {
+    window.location.href = '/sales'
+  }
+
+  const handleLogout = () => {
+    setCurrentScreen('login')
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <ErrorBoundary>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          minHeight: '100vh',
-          backgroundColor: '#f8fafc'
-        }}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/sales" replace />} />
-            <Route path="/sales" element={<SalesModule />} />
-            <Route path="*" element={<Navigate to="/sales" replace />} />
-          </Routes>
-        </Box>
+        <Routes>
+          <Route path="/pos" element={
+            <Box sx={{ height: '100vh', overflow: 'hidden' }}>
+              <PharmacyPOSFirebaseIntegrated />
+            </Box>
+          } />
+          <Route path="/sales" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <SalesModule />
+            </Box>
+          } />
+          <Route path="/" element={
+            <div className="App">
+              {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
+              {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onLogout={handleLogout} />}
+            </div>
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </ErrorBoundary>
     </ThemeProvider>
-  );
+  )
 }
 
-export default App;
->>>>>>> SALES
+export default App
