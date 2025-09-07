@@ -1580,51 +1580,51 @@ const PharmacyPOSFirebaseIntegrated = () => {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: 3,
+            borderRadius: 2,
             overflow: 'hidden'
           }
         }}
       >
         <Box sx={{ 
-          background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+          backgroundColor: '#1976d2',
           color: 'white',
-          p: 3,
+          p: 2,
           textAlign: 'center'
         }}>
-          <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
+          <Typography variant="h6" fontWeight="bold" sx={{ mb: 0.5 }}>
             Select Unit Type
           </Typography>
-          <Typography variant="body1" sx={{ opacity: 0.9 }}>
+          <Typography variant="body2" sx={{ opacity: 0.9 }}>
             Choose how you want to add this medicine to cart
           </Typography>
         </Box>
 
         {selectedMedicineForUnit && (
-          <Box sx={{ p: 4 }}>
+          <Box sx={{ p: 3 }}>
             {/* Medicine Information */}
             <Box sx={{ 
-              backgroundColor: '#f8fafc', 
+              backgroundColor: '#f8f9fa', 
               borderRadius: 2, 
-              p: 3, 
-              mb: 4,
-              border: '1px solid #e2e8f0'
+              p: 2, 
+              mb: 3,
+              border: '1px solid #e5e7eb'
             }}>
-              <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 1 }}>
+              <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 0.5 }}>
                 {selectedMedicineForUnit.name}
               </Typography>
-              <Typography variant="body2" color="#6b7280" sx={{ mb: 2 }}>
+              <Typography variant="body2" color="#666" sx={{ mb: 1.5 }}>
                 {selectedMedicineForUnit.genericName} - {selectedMedicineForUnit.strength}
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ color: '#1e40af', fontWeight: 'bold' }}>
+                <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
                   {formatCurrency(selectedMedicineForUnit.sellingPrice)} per unit
                 </Typography>
                 <Chip 
                   label={`Stock: ${getMedicineStock(selectedMedicineForUnit)}`}
                   size="small"
                   sx={{
-                    backgroundColor: '#dbeafe',
-                    color: '#1e40af',
+                    backgroundColor: '#e3f2fd',
+                    color: '#1976d2',
                     fontWeight: 'bold'
                   }}
                 />
@@ -1632,26 +1632,26 @@ const PharmacyPOSFirebaseIntegrated = () => {
             </Box>
 
             {/* Unit Selection */}
-            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+            <Typography variant="subtitle1" fontWeight="bold" color="#333" sx={{ mb: 2 }}>
               Select Unit Type:
             </Typography>
 
             <RadioGroup
               value={selectedUnitType}
               onChange={(e) => setSelectedUnitType(e.target.value)}
-              sx={{ mb: 4 }}
+              sx={{ mb: 3 }}
             >
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 <Paper
                   sx={{
-                    p: 3,
-                    border: selectedUnitType === 'tablets' ? '2px solid #1e40af' : '2px solid #e5e7eb',
+                    p: 2,
+                    border: selectedUnitType === 'tablets' ? '2px solid #1976d2' : '2px solid #e5e7eb',
                     borderRadius: 2,
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease-in-out',
+                    transition: 'all 0.2s ease',
                     '&:hover': {
-                      borderColor: '#1e40af',
-                      backgroundColor: '#f8fafc'
+                      borderColor: '#1976d2',
+                      backgroundColor: '#f8f9fa'
                     }
                   }}
                   onClick={() => setSelectedUnitType('tablets')}
@@ -1662,24 +1662,24 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         value="tablets"
                         checked={selectedUnitType === 'tablets'}
                         sx={{ 
-                          color: '#1e40af',
-                          '&.Mui-checked': { color: '#1e40af' }
+                          color: '#1976d2',
+                          '&.Mui-checked': { color: '#1976d2' }
                         }}
                       />
-                      <Box sx={{ ml: 2 }}>
-                        <Typography variant="h6" fontWeight="bold" color="#1f2937">
+                      <Box sx={{ ml: 1 }}>
+                        <Typography variant="subtitle1" fontWeight="bold" color="#333">
                           Individual Tablets/Capsules
                         </Typography>
-                        <Typography variant="body2" color="#6b7280">
+                        <Typography variant="body2" color="#666">
                           Add one tablet/capsule at a time
                         </Typography>
                       </Box>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
-                      <Typography variant="body1" fontWeight="bold" color="#1e40af">
+                      <Typography variant="body1" fontWeight="bold" color="#1976d2">
                         +1 unit
                       </Typography>
-                      <Typography variant="body2" color="#6b7280">
+                      <Typography variant="body2" color="#666">
                         {formatCurrency(selectedMedicineForUnit.sellingPrice)}
                       </Typography>
                     </Box>
@@ -1688,14 +1688,14 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
                 <Paper
                   sx={{
-                    p: 3,
-                    border: selectedUnitType === 'cards' ? '2px solid #1e40af' : '2px solid #e5e7eb',
+                    p: 2,
+                    border: selectedUnitType === 'cards' ? '2px solid #1976d2' : '2px solid #e5e7eb',
                     borderRadius: 2,
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease-in-out',
+                    transition: 'all 0.2s ease',
                     '&:hover': {
-                      borderColor: '#1e40af',
-                      backgroundColor: '#f8fafc'
+                      borderColor: '#1976d2',
+                      backgroundColor: '#f8f9fa'
                     }
                   }}
                   onClick={() => setSelectedUnitType('cards')}
@@ -1706,24 +1706,24 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         value="cards"
                         checked={selectedUnitType === 'cards'}
                         sx={{ 
-                          color: '#1e40af',
-                          '&.Mui-checked': { color: '#1e40af' }
+                          color: '#1976d2',
+                          '&.Mui-checked': { color: '#1976d2' }
                         }}
                       />
-                      <Box sx={{ ml: 2 }}>
-                        <Typography variant="h6" fontWeight="bold" color="#1f2937">
+                      <Box sx={{ ml: 1 }}>
+                        <Typography variant="subtitle1" fontWeight="bold" color="#333">
                           Full Card/Strip
                         </Typography>
-                        <Typography variant="body2" color="#6b7280">
+                        <Typography variant="body2" color="#666">
                           Add a complete card (10 tablets/capsules)
                         </Typography>
                       </Box>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
-                      <Typography variant="body1" fontWeight="bold" color="#1e40af">
+                      <Typography variant="body1" fontWeight="bold" color="#1976d2">
                         +10 units
                       </Typography>
-                      <Typography variant="body2" color="#6b7280">
+                      <Typography variant="body2" color="#666">
                         {formatCurrency(selectedMedicineForUnit.sellingPrice * 10)}
                       </Typography>
                     </Box>
@@ -1733,7 +1733,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
             </RadioGroup>
 
             {/* Action Buttons */}
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', pt: 1 }}>
               <Button
                 variant="outlined"
                 onClick={() => setShowUnitSelectionModal(false)}
@@ -1741,29 +1741,31 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   borderColor: '#6b7280', 
                   color: '#6b7280',
                   px: 4,
-                  py: 1.5,
-                  borderRadius: 2,
-                  fontWeight: 'bold'
+                  py: 1,
+                  borderRadius: 1,
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase'
                 }}
               >
-                Cancel
+                CANCEL
               </Button>
               <Button
                 variant="contained"
                 onClick={handleUnitSelectionAndAddToCart}
                 sx={{ 
-                  background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                  backgroundColor: '#1976d2',
                   color: 'white',
                   px: 4,
-                  py: 1.5,
-                  borderRadius: 2,
+                  py: 1,
+                  borderRadius: 1,
                   fontWeight: 'bold',
+                  textTransform: 'uppercase',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)'
+                    backgroundColor: '#1565c0'
                   }
                 }}
               >
-                Add to Cart
+                ADD TO CART
               </Button>
             </Box>
           </Box>
