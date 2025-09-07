@@ -62,8 +62,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
     gender: '',
     bloodGroup: '',
     medicalNotes: '',
-    isUnder15: false,
-    hasNoNic: false
+    isUnder15: false
   });
 
   // Cart item unit types for tablets/capsules
