@@ -474,5 +474,3 @@ const AttendanceList = () => {
 };
 
 export default AttendanceList;
-
-export default AttendanceList;
