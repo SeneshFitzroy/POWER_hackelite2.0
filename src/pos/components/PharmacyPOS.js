@@ -442,45 +442,71 @@ const PharmacyPOS = () => {
 
             {/* Search Results */}
             {searchResults.length > 0 && (
-              <List>
+              <List sx={{ maxHeight: 400, overflow: 'auto' }}>
                 {searchResults.map(medicine => (
                   <ListItem
                     key={medicine.id}
                     button
                     onClick={() => addToCart(medicine)}
                     sx={{ 
-                      border: 1, 
-                      borderColor: 'divider', 
-                      mb: 1,
-                      borderRadius: 1 
+                      border: '2px solid #e3f2fd', 
+                      mb: 2,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        borderColor: '#2196f3',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 25px rgba(33, 150, 243, 0.2)'
+                      }
                     }}
                   >
                     <ListItemText
                       primary={
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography variant="subtitle1">
+                          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                             {medicine.name}
                           </Typography>
-                          <Typography variant="h6" color="primary">
+                          <Typography variant="h5" sx={{ 
+                            fontWeight: 'bold',
+                            color: '#4caf50',
+                            background: 'linear-gradient(45deg, #c8e6c9, #a5d6a7)',
+                            px: 2,
+                            py: 0.5,
+                            borderRadius: 2
+                          }}>
                             {formatCurrency(medicine.sellingPrice)}
                           </Typography>
                         </Box>
                       }
                       secondary={
                         <Box>
-                          <Typography variant="body2" color="textSecondary">
+                          <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
                             {medicine.genericName} • {medicine.strength}
                           </Typography>
                           <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
                             <Chip 
                               label={medicine.type} 
                               size="small"
-                              color={medicine.type === 'Prescription' ? 'error' : 'default'}
+                              sx={{
+                                background: medicine.type === 'Prescription' 
+                                  ? 'linear-gradient(45deg, #f44336, #e57373)'
+                                  : 'linear-gradient(45deg, #2196f3, #64b5f6)',
+                                color: 'white',
+                                fontWeight: 'bold'
+                              }}
                             />
                             <Chip 
                               label={`Stock: ${medicine.stockQuantity}`} 
                               size="small"
-                              color={medicine.stockQuantity > 10 ? 'success' : 'warning'}
+                              sx={{
+                                background: medicine.stockQuantity > 10 
+                                  ? 'linear-gradient(45deg, #4caf50, #81c784)'
+                                  : 'linear-gradient(45deg, #ff9800, #ffb74d)',
+                                color: 'white',
+                                fontWeight: 'bold'
+                              }}
                             />
                           </Box>
                         </Box>
@@ -567,16 +593,21 @@ const PharmacyPOS = () => {
             </Button>
 
             {patient && (
-              <Card variant="outlined">
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                border: '2px solid #4caf50',
+                borderRadius: 3,
+                boxShadow: '0 4px 15px rgba(76, 175, 80, 0.2)'
+              }}>
                 <CardContent>
-                  <Typography variant="subtitle2">
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
                     {patient.name}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Phone: {patient.phoneNumber}
+                  <Typography variant="body1" sx={{ color: '#388e3c', mb: 1 }}>
+                    📱 Phone: {patient.phoneNumber}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Total Purchases: {formatCurrency(patient.totalPurchases || 0)}
+                  <Typography variant="body1" sx={{ color: '#388e3c' }}>
+                    💰 Total Purchases: {formatCurrency(patient.totalPurchases || 0)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -607,22 +638,37 @@ const PharmacyPOS = () => {
               </Typography>
             ) : (
               <>
-                <List>
+                <List sx={{ maxHeight: 300, overflow: 'auto' }}>
                   {cart.map(item => (
-                    <ListItem key={item.medicineId} sx={{ px: 0 }}>
+                    <ListItem 
+                      key={item.medicineId} 
+                      sx={{ 
+                        px: 0, 
+                        py: 1,
+                        borderBottom: '1px solid #e0e0e0',
+                        '&:last-child': { borderBottom: 'none' }
+                      }}
+                    >
                       <ListItemText
-                        primary={item.medicineName}
+                        primary={
+                          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                            {item.medicineName}
+                          </Typography>
+                        }
                         secondary={
                           <Box>
-                            <Typography variant="body2">
+                            <Typography variant="body2" sx={{ color: '#666', mb: 0.5 }}>
                               {formatCurrency(item.unitPrice)} × {item.quantity} = {formatCurrency(item.unitPrice * item.quantity)}
                             </Typography>
                             {item.prescriptionRequired && (
                               <Chip 
                                 label="Prescription Required" 
                                 size="small" 
-                                color="error" 
-                                sx={{ mt: 0.5 }}
+                                sx={{
+                                  background: 'linear-gradient(45deg, #f44336, #e57373)',
+                                  color: 'white',
+                                  fontWeight: 'bold'
+                                }}
                               />
                             )}
                           </Box>
@@ -632,15 +678,30 @@ const PharmacyPOS = () => {
                         <IconButton 
                           size="small"
                           onClick={() => updateCartQuantity(item.medicineId, item.quantity - 1)}
+                          sx={{ 
+                            color: '#f44336',
+                            '&:hover': { backgroundColor: 'rgba(244, 67, 54, 0.04)' }
+                          }}
                         >
                           <Remove />
                         </IconButton>
-                        <Typography sx={{ mx: 1, minWidth: 30, textAlign: 'center' }}>
+                        <Typography sx={{ 
+                          mx: 1, 
+                          minWidth: 40, 
+                          textAlign: 'center',
+                          fontWeight: 'bold',
+                          fontSize: '1.1rem',
+                          color: '#1976d2'
+                        }}>
                           {item.quantity}
                         </Typography>
                         <IconButton 
                           size="small"
                           onClick={() => updateCartQuantity(item.medicineId, item.quantity + 1)}
+                          sx={{ 
+                            color: '#4caf50',
+                            '&:hover': { backgroundColor: 'rgba(76, 175, 80, 0.04)' }
+                          }}
                         >
                           <Add />
                         </IconButton>
@@ -648,7 +709,10 @@ const PharmacyPOS = () => {
                           size="small"
                           color="error"
                           onClick={() => removeFromCart(item.medicineId)}
-                          sx={{ ml: 1 }}
+                          sx={{ 
+                            ml: 1,
+                            '&:hover': { backgroundColor: 'rgba(244, 67, 54, 0.04)' }
+                          }}
                         >
                           <Delete />
                         </IconButton>
