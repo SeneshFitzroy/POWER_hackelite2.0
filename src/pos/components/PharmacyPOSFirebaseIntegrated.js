@@ -1064,16 +1064,16 @@ const PharmacyPOSFirebaseIntegrated = () => {
             flex: 1, 
             display: 'flex', 
             flexDirection: 'column',
-            borderRadius: 3,
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            borderRadius: 2,
+            backgroundColor: 'white',
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             overflow: 'hidden'
           }}>
             {/* HEADER */}
             <Box sx={{ 
-              p: 3, 
-              background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)', 
+              p: 2, 
+              backgroundColor: '#1976d2', 
               color: 'white',
               display: 'flex',
               justifyContent: 'space-between',
@@ -1093,11 +1093,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
               />
             </Box>
 
-            {/* CART ITEMS */}
+            {/* CART ITEMS - COMPACT */}
             <Box sx={{ 
               flex: 1, 
               overflow: 'auto',
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
+              backgroundColor: '#f8f9fa'
             }}>
               {cart.length > 0 ? (
                 cart.map((item) => {
@@ -1113,26 +1113,20 @@ const PharmacyPOSFirebaseIntegrated = () => {
                       key={item.id}
                       sx={{
                         backgroundColor: 'white',
-                        mb: 2,
-                        mx: 2,
-                        p: 3,
-                        borderRadius: 3,
-                        border: '2px solid #e3f2fd',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
-                        '&:hover': {
-                          borderColor: '#2196f3',
-                          transform: 'translateY(-1px)',
-                          boxShadow: '0 6px 20px rgba(33, 150, 243, 0.15)'
-                        },
-                        transition: 'all 0.3s ease'
+                        mb: 1,
+                        mx: 1,
+                        p: 1.5,
+                        borderRadius: 1,
+                        border: '1px solid #e5e7eb',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
                       }}
                     >
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                         <Box sx={{ flex: 1 }}>
-                          <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2' }}>
+                          <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#1976d2', fontSize: '0.9rem' }}>
                             {item.name}
                           </Typography>
-                          <Typography variant="body1" color="#666" sx={{ mb: 1 }}>
+                          <Typography variant="body2" color="#666" sx={{ fontSize: '0.8rem' }}>
                             {item.strength} - {formatCurrency(item.sellingPrice)}
                           </Typography>
                         </Box>
@@ -1141,9 +1135,9 @@ const PharmacyPOSFirebaseIntegrated = () => {
                           onClick={() => removeFromCart(item.id)}
                           sx={{ 
                             color: '#f44336',
+                            padding: '2px',
                             '&:hover': { 
-                              backgroundColor: 'rgba(244, 67, 54, 0.04)',
-                              transform: 'scale(1.1)'
+                              backgroundColor: 'rgba(244, 67, 54, 0.04)'
                             }
                           }}
                         >
@@ -1151,27 +1145,28 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         </IconButton>
                       </Box>
 
-                      {/* UNIT TYPE SELECTION for Tablets/Capsules */}
+                      {/* UNIT TYPE SELECTION for Tablets/Capsules - COMPACT */}
                       {isTabletOrCapsule && (
-                        <Box sx={{ mb: 2 }}>
-                          <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold', color: '#666' }}>
+                        <Box sx={{ mb: 1 }}>
+                          <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 'bold', color: '#666', fontSize: '0.75rem' }}>
                             Unit Type:
                           </Typography>
-                          <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Box sx={{ display: 'flex', gap: 0.5 }}>
                             <Button
                               size="small"
                               variant={cartItemUnits[item.id] === 'tablets' ? 'contained' : 'outlined'}
                               onClick={() => updateCartItemUnit(item.id, 'tablets')}
                               sx={{
-                                fontSize: '0.8rem',
-                                px: 2,
-                                py: 1,
-                                borderRadius: 2,
-                                backgroundColor: cartItemUnits[item.id] === 'tablets' ? '#2196f3' : 'transparent',
-                                borderColor: '#2196f3',
-                                color: cartItemUnits[item.id] === 'tablets' ? 'white' : '#2196f3',
+                                fontSize: '0.7rem',
+                                px: 1,
+                                py: 0.25,
+                                minHeight: 24,
+                                borderRadius: 1,
+                                backgroundColor: cartItemUnits[item.id] === 'tablets' ? '#1976d2' : 'transparent',
+                                borderColor: '#1976d2',
+                                color: cartItemUnits[item.id] === 'tablets' ? 'white' : '#1976d2',
                                 '&:hover': {
-                                  backgroundColor: cartItemUnits[item.id] === 'tablets' ? '#1976d2' : '#e3f2fd'
+                                  backgroundColor: cartItemUnits[item.id] === 'tablets' ? '#1565c0' : '#e3f2fd'
                                 }
                               }}
                             >
@@ -1182,15 +1177,16 @@ const PharmacyPOSFirebaseIntegrated = () => {
                               variant={cartItemUnits[item.id] === 'cards' ? 'contained' : 'outlined'}
                               onClick={() => updateCartItemUnit(item.id, 'cards')}
                               sx={{
-                                fontSize: '0.8rem',
-                                px: 2,
-                                py: 1,
-                                borderRadius: 2,
-                                backgroundColor: cartItemUnits[item.id] === 'cards' ? '#2196f3' : 'transparent',
-                                borderColor: '#2196f3',
-                                color: cartItemUnits[item.id] === 'cards' ? 'white' : '#2196f3',
+                                fontSize: '0.7rem',
+                                px: 1,
+                                py: 0.25,
+                                minHeight: 24,
+                                borderRadius: 1,
+                                backgroundColor: cartItemUnits[item.id] === 'cards' ? '#1976d2' : 'transparent',
+                                borderColor: '#1976d2',
+                                color: cartItemUnits[item.id] === 'cards' ? 'white' : '#1976d2',
                                 '&:hover': {
-                                  backgroundColor: cartItemUnits[item.id] === 'cards' ? '#1976d2' : '#e3f2fd'
+                                  backgroundColor: cartItemUnits[item.id] === 'cards' ? '#1565c0' : '#e3f2fd'
                                 }
                               }}
                             >
@@ -1200,38 +1196,38 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         </Box>
                       )}
                       
-                      {/* QUANTITY CONTROLS */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                      {/* QUANTITY CONTROLS - COMPACT */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                         <Button
                           size="small"
                           onClick={() => updateCartQuantity(item.id, item.quantity - (cartItemUnits[item.id] === 'cards' ? 10 : 1))}
                           sx={{ 
-                            minWidth: '36px', 
-                            height: '36px',
-                            borderRadius: 2,
+                            minWidth: '28px', 
+                            height: '28px',
+                            borderRadius: 1,
                             backgroundColor: '#f44336',
                             color: 'white',
+                            fontSize: '0.8rem',
                             '&:hover': { 
-                              backgroundColor: '#d32f2f',
-                              transform: 'scale(1.1)'
+                              backgroundColor: '#d32f2f'
                             }
                           }}
                         >
                           -
                         </Button>
                         <Box sx={{ 
-                          px: 3, 
-                          py: 1.5, 
+                          px: 1.5, 
+                          py: 0.5, 
                           backgroundColor: '#e3f2fd', 
-                          borderRadius: 2,
-                          minWidth: '80px',
+                          borderRadius: 1,
+                          minWidth: '50px',
                           textAlign: 'center',
-                          border: '2px solid #2196f3'
+                          border: '1px solid #1976d2'
                         }}>
-                          <Typography sx={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#1976d2' }}>
+                          <Typography sx={{ fontWeight: 'bold', fontSize: '0.8rem', color: '#1976d2' }}>
                             {displayQty}
                           </Typography>
-                          <Typography sx={{ fontSize: '0.8rem', color: '#666' }}>
+                          <Typography sx={{ fontSize: '0.6rem', color: '#666' }}>
                             {displayUnit}
                           </Typography>
                         </Box>
@@ -1239,43 +1235,44 @@ const PharmacyPOSFirebaseIntegrated = () => {
                           size="small"
                           onClick={() => updateCartQuantity(item.id, item.quantity + (cartItemUnits[item.id] === 'cards' ? 10 : 1))}
                           sx={{ 
-                            minWidth: '36px', 
-                            height: '36px',
-                            borderRadius: 2,
+                            minWidth: '28px', 
+                            height: '28px',
+                            borderRadius: 1,
                             backgroundColor: '#4caf50',
                             color: 'white',
+                            fontSize: '0.8rem',
                             '&:hover': { 
-                              backgroundColor: '#388e3c',
-                              transform: 'scale(1.1)'
+                              backgroundColor: '#388e3c'
                             }
                           }}
                         >
                           +
                         </Button>
-                        <Typography variant="h6" sx={{ 
+                        <Typography variant="body2" sx={{ 
                           ml: 'auto', 
                           fontWeight: 'bold', 
                           color: '#4caf50',
-                          background: 'linear-gradient(45deg, #c8e6c9, #a5d6a7)',
-                          px: 2,
-                          py: 0.5,
-                          borderRadius: 2
+                          backgroundColor: '#e8f5e8',
+                          px: 1,
+                          py: 0.25,
+                          borderRadius: 1,
+                          fontSize: '0.8rem'
                         }}>
                           {formatCurrency(item.sellingPrice * item.quantity)}
                         </Typography>
                       </Box>
 
-                      {/* ACTUAL TABLETS INFO */}
+                      {/* ACTUAL TABLETS INFO - COMPACT */}
                       {isTabletOrCapsule && cartItemUnits[item.id] === 'cards' && (
                         <Typography variant="body2" sx={{ 
-                          fontSize: '0.8rem', 
+                          fontSize: '0.7rem', 
                           color: '#666',
                           fontStyle: 'italic',
                           textAlign: 'center',
-                          mt: 1,
-                          p: 1,
+                          mt: 0.5,
+                          p: 0.5,
                           backgroundColor: '#f5f5f5',
-                          borderRadius: 1
+                          borderRadius: 0.5
                         }}>
                           = {item.quantity} tablets total
                         </Typography>
@@ -1285,69 +1282,68 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 })
               ) : (
                 <Box sx={{ p: 4, textAlign: 'center' }}>
-                  <Typography color="#666" sx={{ fontSize: '1.1rem' }}>Cart is empty</Typography>
+                  <Typography color="#666">Cart is empty</Typography>
                 </Box>
               )}
             </Box>
 
-            {/* BILLING SUMMARY - NEW ORDER: NET TOTAL, BALANCE, BILL */}
-            <Box sx={{ p: 3, backgroundColor: 'white', borderTop: '3px solid #2196f3' }}>
-              <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body1">Subtotal:</Typography>
-                  <Typography variant="body1" fontWeight="bold">{formatCurrency(totals.subtotal)}</Typography>
+            {/* BILLING SUMMARY - COMPACT WITH BLUE/WHITE/BLACK ONLY */}
+            <Box sx={{ p: 2, backgroundColor: 'white', borderTop: '2px solid #1976d2' }}>
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                  <Typography variant="body2">Subtotal:</Typography>
+                  <Typography variant="body2" fontWeight="bold">{formatCurrency(totals.subtotal)}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="body1">Discount ({discountRate}%):</Typography>
-                  <Typography variant="body1" fontWeight="bold" color="error">-{formatCurrency(discountAmount)}</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2">Discount ({discountRate}%):</Typography>
+                  <Typography variant="body2" fontWeight="bold" color="error">-{formatCurrency(discountAmount)}</Typography>
                 </Box>
                 
-                {/* NET TOTAL */}
+                {/* NET TOTAL - BLUE */}
                 <Box sx={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
-                  mb: 2, 
-                  p: 2, 
+                  mb: 1, 
+                  p: 1, 
                   backgroundColor: '#e3f2fd', 
-                  borderRadius: 2,
-                  border: '2px solid #2196f3'
+                  borderRadius: 1,
+                  border: '1px solid #1976d2'
                 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>NET TOTAL:</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#1976d2' }}>NET TOTAL:</Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                     {formatCurrency(netTotal)}
                   </Typography>
                 </Box>
 
-                {/* BALANCE */}
+                {/* BALANCE - BLACK */}
                 {paymentMethod === 'cash' && cashReceived > 0 && (
                   <Box sx={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
-                    mb: 2, 
-                    p: 2, 
-                    backgroundColor: '#f3e5f5', 
-                    borderRadius: 2,
-                    border: '2px solid #9c27b0'
+                    mb: 1, 
+                    p: 1, 
+                    backgroundColor: '#f5f5f5', 
+                    borderRadius: 1,
+                    border: '1px solid #333'
                   }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#7b1fa2' }}>BALANCE:</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#7b1fa2' }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#333' }}>BALANCE:</Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#333' }}>
                       {formatCurrency(balance)}
                     </Typography>
                   </Box>
                 )}
 
-                {/* BILL (Final Amount) */}
+                {/* BILL (Final Amount) - GREEN */}
                 <Box sx={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
-                  p: 3, 
-                  backgroundColor: '#c8e6c9', 
-                  borderRadius: 2, 
-                  border: '3px solid #4caf50',
-                  boxShadow: '0 4px 15px rgba(76, 175, 80, 0.3)'
+                  p: 1.5, 
+                  backgroundColor: '#e8f5e8', 
+                  borderRadius: 1, 
+                  border: '2px solid #4caf50'
                 }}>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>BILL:</Typography>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>BILL:</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
                     {formatCurrency(total)}
                   </Typography>
                 </Box>
@@ -1356,27 +1352,23 @@ const PharmacyPOSFirebaseIntegrated = () => {
               <Button
                 fullWidth
                 variant="contained"
-                size="large"
+                size="medium"
                 onClick={processSale}
                 disabled={cart.length === 0 || loading || !employeeId.trim() || (paymentMethod === 'cash' && cashReceived < total)}
                 sx={{
-                  background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
+                  backgroundColor: '#4caf50',
                   color: 'white',
                   fontWeight: 'bold',
-                  fontSize: '1.2rem',
-                  py: 2,
-                  borderRadius: 3,
-                  boxShadow: '0 6px 25px rgba(76, 175, 80, 0.4)',
+                  fontSize: '1rem',
+                  py: 1.5,
+                  borderRadius: 1,
                   '&:hover': {
-                    background: 'linear-gradient(45deg, #388e3c 30%, #4caf50 90%)',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 30px rgba(76, 175, 80, 0.5)'
+                    backgroundColor: '#388e3c'
                   },
                   '&:disabled': {
-                    background: '#9ca3af',
+                    backgroundColor: '#9ca3af',
                     color: '#ffffff'
-                  },
-                  transition: 'all 0.3s ease'
+                  }
                 }}
               >
                 {loading ? 'PROCESSING...' : 'COMPLETE SALE'}
