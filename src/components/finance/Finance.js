@@ -476,20 +476,20 @@ export default function Finance({ dateFilter }) {
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="body2">Revenue:</Typography>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#10b981' }}>
-                  {formatCurrency(profitLossData.revenue.total)}
+                  {formatCurrency(financialMetrics.totalRevenue)}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="body2">Expenses:</Typography>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#ef4444' }}>
-                  {formatCurrency(profitLossData.expenses.total)}
+                  {formatCurrency(financialMetrics.totalExpenses)}
                 </Typography>
               </Box>
               <Divider sx={{ my: 1 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Net Income:</Typography>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
-                  {formatCurrency(profitLossData.netIncome)}
+                  {formatCurrency(financialMetrics.totalRevenue - financialMetrics.totalExpenses)}
                 </Typography>
               </Box>
             </Box>
@@ -499,7 +499,7 @@ export default function Finance({ dateFilter }) {
               Cash Flow Trend
             </Typography>
             <ResponsiveContainer width="100%" height={120}>
-              <BarChart data={cashFlowData}>
+              <BarChart data={salesTrendData}>
                 <XAxis 
                   dataKey="month" 
                   axisLine={false}
@@ -512,7 +512,7 @@ export default function Finance({ dateFilter }) {
                   labelStyle={{ color: '#1e3a8a' }}
                 />
                 <Bar 
-                  dataKey="net" 
+                  dataKey="amount" 
                   fill="#10b981" 
                   radius={[2, 2, 0, 0]}
                 />
