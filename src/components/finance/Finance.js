@@ -332,7 +332,7 @@ export default function Finance({ dateFilter }) {
       {/* Key Metrics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {metrics.map((metric, index) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+          <Grid item xs={12} sm={6} md={3} key={index}>
             <Card
               sx={{
                 height: '100%',
@@ -406,7 +406,7 @@ export default function Finance({ dateFilter }) {
       {/* Charts Section */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {/* Sales vs Expenses Chart */}
-        <Grid size={{ xs: 12, lg: 8 }}>
+        <Grid item xs={12} lg={8}>
           <Paper
             sx={{
               p: 3,
@@ -476,7 +476,7 @@ export default function Finance({ dateFilter }) {
         </Grid>
 
         {/* Financial Reports Summary */}
-        <Grid size={{ xs: 12, lg: 4 }}>
+        <Grid item xs={12} lg={4}>
           <Paper
             sx={{
               p: 3,
@@ -565,7 +565,7 @@ export default function Finance({ dateFilter }) {
     <Box>
       {/* Bills Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid item xs={12} md={4}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
