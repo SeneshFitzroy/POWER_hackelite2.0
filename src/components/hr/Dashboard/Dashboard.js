@@ -1,5 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Paper,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  CircularProgress,
+  Container,
+  Chip,
+  Avatar
+} from '@mui/material';
 import { 
   Users, 
   DollarSign, 
@@ -82,42 +99,48 @@ const Dashboard = () => {
       title: 'Total Employees',
       value: stats.totalEmployees,
       icon: Users,
-      color: 'bg-blue-500',
+      color: '#1e40af',
+      bgColor: '#eff6ff',
       link: '/employees'
     },
     {
       title: 'Active Employees',
       value: stats.activeEmployees,
       icon: TrendingUp,
-      color: 'bg-green-500',
+      color: '#059669',
+      bgColor: '#f0fdf4',
       link: '/employees'
     },
     {
       title: 'Pending Payroll',
       value: stats.pendingPayroll,
       icon: DollarSign,
-      color: 'bg-yellow-500',
+      color: '#d97706',
+      bgColor: '#fffbeb',
       link: '/payroll'
     },
     {
       title: 'Expiring Licenses',
       value: stats.expiringLicenses,
       icon: AlertTriangle,
-      color: 'bg-red-500',
+      color: '#dc2626',
+      bgColor: '#fef2f2',
       link: '/licenses'
     },
     {
       title: 'Today Attendance',
       value: stats.todayAttendance,
       icon: Clock,
-      color: 'bg-purple-500',
+      color: '#7c3aed',
+      bgColor: '#faf5ff',
       link: '/attendance'
     },
     {
       title: 'Pending Reviews',
       value: stats.pendingReviews,
       icon: FileText,
-      color: 'bg-indigo-500',
+      color: '#4338ca',
+      bgColor: '#eef2ff',
       link: '/performance'
     }
   ];
@@ -131,126 +154,326 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-      </div>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '400px' 
+      }}>
+        <CircularProgress size={60} sx={{ color: '#1e40af' }} />
+      </Box>
     );
   }
 
   return (
-    <div className="space-y-8 ml-8">
+    <Container maxWidth="xl" sx={{ py: 3 }}>
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">HR Dashboard</h1>
-        <div className="flex items-center space-x-4">
-          <button className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center">
-            <Users className="h-4 w-4 mr-2" />
-            Add New Employee
-          </button>
-        </div>
-      </div>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: 4 
+      }}>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontWeight: 'bold', 
+            color: '#1e3a8a',
+            letterSpacing: '0.5px'
+          }}
+        >
+          HR Dashboard
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<Users size={20} />}
+          sx={{
+            background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+            color: 'white',
+            px: 3,
+            py: 1.5,
+            fontWeight: 'bold',
+            borderRadius: '10px',
+            boxShadow: '0 4px 12px rgba(30, 64, 175, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)',
+              boxShadow: '0 6px 16px rgba(30, 64, 175, 0.4)',
+              transform: 'translateY(-1px)'
+            },
+            transition: 'all 0.2s ease-in-out'
+          }}
+        >
+          Add New Employee
+        </Button>
+      </Box>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+      <Grid container spacing={3} sx={{ mb: 4 }}>
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
-          const colorMap = {
-            'bg-blue-500': { bg: 'bg-blue-100', text: 'text-blue-600' },
-            'bg-green-500': { bg: 'bg-green-100', text: 'text-green-600' },
-            'bg-yellow-500': { bg: 'bg-yellow-100', text: 'text-yellow-600' },
-            'bg-red-500': { bg: 'bg-red-100', text: 'text-red-600' },
-            'bg-purple-500': { bg: 'bg-purple-100', text: 'text-purple-600' },
-            'bg-indigo-500': { bg: 'bg-indigo-100', text: 'text-indigo-600' }
-          };
-          const colors = colorMap[stat.color] || { bg: 'bg-gray-100', text: 'text-gray-600' };
           
           return (
-            <Link
-              key={index}
-              to={stat.link}
-              className="bg-white overflow-hidden shadow-lg rounded-xl border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-200 hover:-translate-y-1"
-            >
-              <div className="p-6">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className={`${colors.bg} rounded-xl p-3`}>
-                      <Icon className={`h-8 w-8 ${colors.text}`} />
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-600 truncate">
+            <Grid item xs={12} sm={6} lg={4} key={index}>
+              <Card
+                sx={{
+                  borderRadius: '16px',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                  border: '1px solid #f0f0f0',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 8px 30px rgba(30, 58, 138, 0.15)',
+                    borderColor: '#1e40af'
+                  }
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Avatar
+                      sx={{
+                        backgroundColor: stat.bgColor,
+                        width: 56,
+                        height: 56,
+                        mr: 2.5
+                      }}
+                    >
+                      <Icon size={28} color={stat.color} />
+                    </Avatar>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: '#6b7280',
+                          fontWeight: '500',
+                          mb: 0.5,
+                          fontSize: '13px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px'
+                        }}
+                      >
                         {stat.title}
-                      </dt>
-                      <dd className="text-3xl font-bold text-gray-900">
+                      </Typography>
+                      <Typography
+                        variant="h3"
+                        sx={{
+                          fontWeight: 'bold',
+                          color: '#1f2937',
+                          lineHeight: 1
+                        }}
+                      >
                         {stat.value}
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </Link>
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
           );
         })}
-      </div>
+      </Grid>
 
       {/* Quick Actions */}
-      <div className="bg-white shadow-lg rounded-xl border border-gray-200 mt-8">
-        <div className="px-6 py-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">
+      <Paper
+        elevation={0}
+        sx={{
+          borderRadius: '16px',
+          border: '1px solid #f0f0f0',
+          mb: 4,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+        }}
+      >
+        <Box sx={{ p: 3 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+              color: '#1f2937',
+              mb: 3,
+              fontSize: '18px'
+            }}
+          >
             Quick Actions
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          </Typography>
+          <Grid container spacing={2}>
             {quickActions.map((action, index) => {
               const Icon = action.icon;
               return (
-                <Link
-                  key={index}
-                  to={action.link}
-                  className="flex items-center p-4 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group"
-                >
-                  <Icon className="h-6 w-6 text-gray-400 group-hover:text-blue-600 mr-4" />
-                  <span className="text-sm font-medium text-gray-900 group-hover:text-blue-900">
-                    {action.title}
-                  </span>
-                </Link>
+                <Grid item xs={12} sm={6} lg={3} key={index}>
+                  <Card
+                    sx={{
+                      borderRadius: '12px',
+                      border: '1px solid #e5e7eb',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        backgroundColor: '#f8fafc',
+                        borderColor: '#1e40af',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(30, 64, 175, 0.1)'
+                      }
+                    }}
+                  >
+                    <CardContent sx={{ p: 2.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Avatar
+                          sx={{
+                            backgroundColor: '#f8fafc',
+                            width: 40,
+                            height: 40,
+                            mr: 2
+                          }}
+                        >
+                          <Icon size={20} color="#6b7280" />
+                        </Avatar>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: '600',
+                            color: '#374151',
+                            fontSize: '14px'
+                          }}
+                        >
+                          {action.title}
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
               );
             })}
-          </div>
-        </div>
-      </div>
+          </Grid>
+        </Box>
+      </Paper>
 
       {/* Database Setup */}
       {stats.totalEmployees === 0 && (
-        <InitializeData />
+        <Box sx={{ mb: 4 }}>
+          <InitializeData />
+        </Box>
       )}
 
       {/* Recent Activity */}
-      <div className="bg-white shadow-lg rounded-xl border border-gray-200 mt-8">
-        <div className="px-6 py-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">
+      <Paper
+        elevation={0}
+        sx={{
+          borderRadius: '16px',
+          border: '1px solid #f0f0f0',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+        }}
+      >
+        <Box sx={{ p: 3 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+              color: '#1f2937',
+              mb: 3,
+              fontSize: '18px'
+            }}
+          >
             Recent Activity
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-3 h-3 bg-green-400 rounded-full mr-4"></div>
-              <span className="text-gray-700 flex-1">New employee John Doe added to system</span>
-              <span className="text-gray-400 text-xs">2 hours ago</span>
-            </div>
-            <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-3 h-3 bg-yellow-400 rounded-full mr-4"></div>
-              <span className="text-gray-700 flex-1">Pharmacist license for Jane Smith expires in 15 days</span>
-              <span className="text-gray-400 text-xs">1 day ago</span>
-            </div>
-            <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-3 h-3 bg-blue-400 rounded-full mr-4"></div>
-              <span className="text-gray-700 flex-1">Monthly payroll processed for 25 employees</span>
-              <span className="text-gray-400 text-xs">3 days ago</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Typography>
+          <List sx={{ p: 0 }}>
+            <ListItem
+              sx={{
+                borderRadius: '10px',
+                mb: 1,
+                '&:hover': { backgroundColor: '#f9fafb' },
+                transition: 'background-color 0.2s'
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <Box
+                  sx={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    backgroundColor: '#10b981'
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="New employee John Doe added to system"
+                secondary="2 hours ago"
+                primaryTypographyProps={{
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151'
+                }}
+                secondaryTypographyProps={{
+                  fontSize: '12px',
+                  color: '#9ca3af'
+                }}
+              />
+            </ListItem>
+            <ListItem
+              sx={{
+                borderRadius: '10px',
+                mb: 1,
+                '&:hover': { backgroundColor: '#f9fafb' },
+                transition: 'background-color 0.2s'
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <Box
+                  sx={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    backgroundColor: '#f59e0b'
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="Pharmacist license for Jane Smith expires in 15 days"
+                secondary="1 day ago"
+                primaryTypographyProps={{
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151'
+                }}
+                secondaryTypographyProps={{
+                  fontSize: '12px',
+                  color: '#9ca3af'
+                }}
+              />
+            </ListItem>
+            <ListItem
+              sx={{
+                borderRadius: '10px',
+                '&:hover': { backgroundColor: '#f9fafb' },
+                transition: 'background-color 0.2s'
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <Box
+                  sx={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    backgroundColor: '#3b82f6'
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="Monthly payroll processed for 25 employees"
+                secondary="3 days ago"
+                primaryTypographyProps={{
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151'
+                }}
+                secondaryTypographyProps={{
+                  fontSize: '12px',
+                  color: '#9ca3af'
+                }}
+              />
+            </ListItem>
+          </List>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 

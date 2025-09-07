@@ -1,6 +1,32 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Paper,
+  Button,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+  Chip,
+  Avatar,
+  CircularProgress,
+  Container,
+  InputAdornment,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel
+} from '@mui/material';
 import { db } from '../../../firebase/config';
 import { Plus, Search, Edit, Trash2, Eye, Filter, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
