@@ -1,4 +1,6 @@
 import React, { useState } from "react"
+// Uncomment the line below if you put the logo in src/assets/images/
+// import npkLogo from "../assets/images/npk-logo.png"
 
 export default function LoginScreen({ onLoginSuccess }) {
   const [email, setEmail] = useState("")
@@ -45,9 +47,17 @@ export default function LoginScreen({ onLoginSuccess }) {
     <div className="login-screen">
       <div className="login-card">
         <div className="p-6 pb-4">
-          {/* Company Brand Placeholder */}
-          <div className="login-brand">
-            <span className="login-brand-text">Company Brand Here</span>
+          {/* Company Brand Logo */}
+          <div className="login-brand-logo">
+            <img 
+              src="/images/npk-logo.png" 
+              alt="NPK New Pharmacy" 
+              style={{
+                maxHeight: '60px',
+                maxWidth: '100%',
+                objectFit: 'contain'
+              }}
+            />
           </div>
 
           <div className="text-center mb-6">
