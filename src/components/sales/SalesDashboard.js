@@ -1,0 +1,822 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Card,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  IconButton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert
+} from '@mui/material';
+import {
+  TrendingUp,
+  AttachMoney,
+  People,
+  ShoppingCart,
+  Add,
+  AccountBalance,
+  CreditCard,
+  MonetizationOn
+} from '@mui/icons-material';
+import { db } from '../../firebase/config';
+import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+
+// Add beautiful animations
+const styles = `
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+`;
+
+// Inject styles
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  styleSheet.innerText = styles;
+  document.head.appendChild(styleSheet);
+}
+
+// Clean Professional Chart Component
+const CleanChart = ({ data, title, type = 'bar', height = 200 }) => (
+  <Box sx={{ 
+    height: height, 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: '12px',
+    border: '1px solid #e5e7eb',
+    color: '#6b7280'
+  }}>
+    <Box sx={{ textAlign: 'center' }}>
+      <Typography variant="body1" color="#6b7280" fontWeight="500">
+        {title} Chart
+      </Typography>
+      <Typography variant="body2" color="#9ca3af" sx={{ mt: 1 }}>
+        Data visualization
+      </Typography>
+    </Box>
+  </Box>
+);
+
+// Simple Pie Chart Component for Payment Methods
+const PaymentPieChart = ({ paymentStats }) => {
+  const total = paymentStats.cash + paymentStats.card + paymentStats.bank;
+  
+  if (total === 0) {
+    return (
+      <Box sx={{ 
+        height: 200, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        color: '#6b7280'
+      }}>
+        <Typography variant="body2">No payment data available</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ 
+        width: 120, 
+        height: 120, 
+        borderRadius: '50%',
+        background: `conic-gradient(
+          #1e3a8a 0deg ${(paymentStats.cash / total) * 360}deg,
+          #059669 ${(paymentStats.cash / total) * 360}deg ${((paymentStats.cash + paymentStats.card) / total) * 360}deg,
+          #7c3aed ${((paymentStats.cash + paymentStats.card) / total) * 360}deg 360deg
+        )`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <Box sx={{ 
+          width: 60, 
+          height: 60, 
+          borderRadius: '50%', 
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Typography variant="h6" fontWeight="bold" color="#1f2937">
+            {total}
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+// Professional Stats Card matching the design
+const ProfessionalStatsCard = ({ title, value, icon, bgColor, iconColor }) => (
+  <Paper sx={{ 
+    p: 2.5,
+    borderRadius: '16px',
+    backgroundColor: bgColor,
+    border: 'none',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 4px 16px rgba(0,0,0,0.12)'
+    }
+  }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box>
+        <Typography variant="h4" fontWeight="bold" color="#1f2937" sx={{ mb: 0.5 }}>
+          {value}
+        </Typography>
+        <Typography variant="body2" color="#6b7280" fontWeight="500">
+          {title}
+        </Typography>
+        <Typography variant="caption" color="#10b981" fontWeight="600" sx={{ mt: 0.5, display: 'block' }}>
+          +12% from yesterday
+        </Typography>
+      </Box>
+      <Box sx={{ 
+        p: 1.5, 
+        backgroundColor: iconColor, 
+        borderRadius: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {icon}
+      </Box>
+    </Box>
+  </Paper>
+);
+
+export default function SalesDashboard({ dateFilter }) {
+  const [salesData, setSalesData] = useState({
+    totalSales: 0,
+    totalOrders: 0,
+    totalCustomers: 0,
+    totalRevenue: 0
+  });
+  const [paymentRecords, setPaymentRecords] = useState([]);
+  const [topCustomers, setTopCustomers] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+  const [recentSales, setRecentSales] = useState([]);
+  const [paymentStats, setPaymentStats] = useState({ cash: 0, card: 0, bank: 0 });
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [newPayment, setNewPayment] = useState({
+    amount: '',
+    method: 'cash',
+    description: '',
+    customerName: '',
+    date: new Date().toISOString().split('T')[0]
+  });
+
+  // Load dashboard data
+  useEffect(() => {
+    loadDashboardData();
+  }, [dateFilter]);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Calculate date range based on filter
+      const now = new Date();
+      let startDate = new Date();
+      
+      switch (dateFilter) {
+        case 'daily':
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'weekly':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case 'monthly':
+          startDate.setDate(now.getDate() - 30);
+          break;
+        default:
+          startDate.setHours(0, 0, 0, 0);
+      }
+
+      // Load sales data
+      const salesQuery = query(
+        collection(db, 'sales'),
+        where('createdAt', '>=', Timestamp.fromDate(startDate)),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const salesSnapshot = await getDocs(salesQuery);
+      const sales = salesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Load payment records
+      const paymentsQuery = query(
+        collection(db, 'payments'),
+        where('createdAt', '>=', Timestamp.fromDate(startDate)),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const paymentsSnapshot = await getDocs(paymentsQuery);
+      const payments = paymentsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Calculate statistics
+      const totalSales = sales.length;
+      const totalRevenue = sales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+      const uniqueCustomers = new Set(sales.map(sale => sale.customerId)).size;
+      
+      setSalesData({
+        totalSales,
+        totalOrders: totalSales,
+        totalCustomers: uniqueCustomers,
+        totalRevenue
+      });
+
+      // Calculate top customers from real sales data
+      const customerTotals = {};
+      sales.forEach(sale => {
+        if (sale.customerId && sale.customerName) {
+          customerTotals[sale.customerId] = customerTotals[sale.customerId] || {
+            name: sale.customerName,
+            total: 0,
+            orders: 0
+          };
+          customerTotals[sale.customerId].total += sale.total || 0;
+          customerTotals[sale.customerId].orders += 1;
+        }
+      });
+      
+      const topCustomersData = Object.values(customerTotals)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 5);
+
+      // Calculate top products from real sales data  
+      const productTotals = {};
+      sales.forEach(sale => {
+        if (sale.items) {
+          sale.items.forEach(item => {
+            const productId = item.id || item.productId;
+            if (productId) {
+              productTotals[productId] = productTotals[productId] || {
+                name: item.name,
+                sold: 0,
+                revenue: 0
+              };
+              productTotals[productId].sold += item.quantity || 1;
+              productTotals[productId].revenue += (item.quantity || 1) * (item.price || 0);
+            }
+          });
+        }
+      });
+      
+      const topProductsData = Object.values(productTotals)
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 5);
+
+      // Calculate payment method statistics
+      const paymentMethodStats = { cash: 0, card: 0, bank: 0, total: 0 };
+      payments.forEach(payment => {
+        if (payment.method) {
+          paymentMethodStats[payment.method] = (paymentMethodStats[payment.method] || 0) + 1;
+          paymentMethodStats.total++;
+        }
+      });
+
+      const paymentPercentages = {
+        cash: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.cash / paymentMethodStats.total) * 100) : 0,
+        card: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.card / paymentMethodStats.total) * 100) : 0,
+        bank: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.bank / paymentMethodStats.total) * 100) : 0
+      };
+
+      setPaymentRecords(payments.slice(0, 10)); // Latest 10 payments
+      setTopCustomers(topCustomersData);
+      setTopProducts(topProductsData);
+      setRecentSales(sales.slice(0, 5)); // Latest 5 sales
+      setPaymentStats(paymentPercentages);
+
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddPayment = async () => {
+    try {
+      setLoading(true);
+      
+      const paymentData = {
+        ...newPayment,
+        amount: parseFloat(newPayment.amount),
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      };
+
+      await addDoc(collection(db, 'payments'), paymentData);
+      
+      setShowPaymentDialog(false);
+      setNewPayment({
+        amount: '',
+        method: 'cash',
+        description: '',
+        customerName: '',
+        date: new Date().toISOString().split('T')[0]
+      });
+      
+      loadDashboardData(); // Refresh data
+    } catch (error) {
+      console.error('Error adding payment:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatCurrency = (amount) => {
+    return `Rs. ${amount?.toLocaleString() || '0.00'}`;
+  };
+
+  return (
+    <Box sx={{ 
+      p: 3, 
+      backgroundColor: '#f8fafc',
+      minHeight: '100vh'
+    }}>
+      {/* Header Section - Removed */}
+
+      {/* Stats Cards Row - Matching the design */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <ProfessionalStatsCard
+            title="Total Sales"
+            value={salesData.totalSales}
+            icon={<TrendingUp sx={{ color: '#ffffff', fontSize: 24 }} />}
+            bgColor="#fef2f2"
+            iconColor="#ef4444"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <ProfessionalStatsCard
+            title="Total Order"
+            value={salesData.totalOrders}
+            icon={<ShoppingCart sx={{ color: '#ffffff', fontSize: 24 }} />}
+            bgColor="#fff7ed"
+            iconColor="#f97316"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <ProfessionalStatsCard
+            title="Revenue"
+            value={formatCurrency(salesData.totalRevenue)}
+            icon={<AttachMoney sx={{ color: '#ffffff', fontSize: 24 }} />}
+            bgColor="#f0fdf4"
+            iconColor="#22c55e"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <ProfessionalStatsCard
+            title="Customers"
+            value={salesData.totalCustomers}
+            icon={<People sx={{ color: '#ffffff', fontSize: 24 }} />}
+            bgColor="#f0f9ff"
+            iconColor="#1e3a8a"
+          />
+        </Grid>
+      </Grid>
+
+      {/* Main Dashboard Content */}
+      <Grid container spacing={3}>
+        {/* Total Revenue Chart */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Total Revenue
+            </Typography>
+            <CleanChart title="Revenue" type="bar" height={250} />
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+                  <Box sx={{ width: 12, height: 12, backgroundColor: '#1e3a8a', borderRadius: '50%', mr: 1 }} />
+                  <Typography variant="caption" color="#6b7280">Online Sales</Typography>
+                </Box>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+                  <Box sx={{ width: 12, height: 12, backgroundColor: '#10b981', borderRadius: '50%', mr: 1 }} />
+                  <Typography variant="caption" color="#6b7280">Offline Sales</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Payment Recording (Pie Chart) */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Payment Methods
+            </Typography>
+            <PaymentPieChart paymentStats={paymentStats} />
+            <Box sx={{ mt: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <MonetizationOn sx={{ color: '#1e3a8a', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#1f2937" fontWeight="500">Cash</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="600" color="#1e3a8a">{paymentStats.cash}%</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <CreditCard sx={{ color: '#059669', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#1f2937" fontWeight="500">Card</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="600" color="#059669">{paymentStats.card}%</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <AccountBalance sx={{ color: '#7c3aed', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#1f2937" fontWeight="500">Bank</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="600" color="#7c3aed">{paymentStats.bank}%</Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Sales Reports */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Sales Reports
+            </Typography>
+            <CleanChart title="Sales" type="bar" height={200} />
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">Daily Sales</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#1e3a8a">{salesData.totalSales}</Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">Revenue</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#10b981">{formatCurrency(salesData.totalRevenue)}</Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Top Products */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Top Products
+            </Typography>
+            <Box sx={{ space: 2 }}>
+              {topProducts.map((product, index) => (
+                <Box key={index} sx={{ mb: 2, p: 2, backgroundColor: '#f9fafb', borderRadius: '8px' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="body2" fontWeight="medium" color="#1f2937">
+                      {product.name}
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold" color="#1e3a8a">
+                      {formatCurrency(product.revenue)}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ backgroundColor: '#e5e7eb', height: 4, borderRadius: 2, overflow: 'hidden' }}>
+                    <Box 
+                      sx={{ 
+                        backgroundColor: '#1e3a8a', 
+                        height: '100%', 
+                        width: `${Math.min((product.revenue / (topProducts[0]?.revenue || 1)) * 100, 100)}%`,
+                        borderRadius: 2 
+                      }} 
+                    />
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Recent Activity */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+              Recent Activity
+            </Typography>
+            <Box>
+              {recentSales.map((sale, index) => (
+                <Box key={index} sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  py: 2,
+                  borderBottom: index < 4 ? '1px solid #f3f4f6' : 'none'
+                }}>
+                  <Box>
+                    <Typography variant="body2" fontWeight="medium" color="#1f2937">
+                      New order placed
+                    </Typography>
+                    <Typography variant="caption" color="#6b7280">
+                      {sale.customerName || 'Unknown Customer'} • {formatCurrency(sale.total || 0)}
+                    </Typography>
+                  </Box>
+                  <Typography variant="caption" color="#9ca3af">
+                    {sale.createdAt ? new Date(sale.createdAt.toDate()).toLocaleTimeString() : 'Unknown time'}
+                  </Typography>
+                </Box>
+              ))}
+              {recentSales.length === 0 && (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <Typography variant="body2" color="#6b7280">
+                    No recent activity
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      {/* Payment Recording Dialog */}
+      <Dialog 
+        open={showPaymentDialog} 
+        onClose={() => setShowPaymentDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ 
+          backgroundColor: '#1e3a8a', 
+          color: 'white', 
+          fontWeight: 600,
+          py: 2
+        }}>
+          Record New Payment
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, backgroundColor: '#ffffff' }}>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Customer Name"
+                value={newPayment.customerName}
+                onChange={(e) => setNewPayment({ ...newPayment, customerName: e.target.value })}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#000000',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#333333',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#000000',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#000000',
+                    '&.Mui-focused': {
+                      color: '#000000',
+                    },
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Amount"
+                type="number"
+                value={newPayment.amount}
+                onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#000000',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#333333',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#000000',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#000000',
+                    '&.Mui-focused': {
+                      color: '#000000',
+                    },
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#000000',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#333333',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#000000',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: '#000000',
+                  '&.Mui-focused': {
+                    color: '#000000',
+                  },
+                },
+              }}>
+                <InputLabel>Payment Method</InputLabel>
+                <Select
+                  value={newPayment.method}
+                  onChange={(e) => setNewPayment({ ...newPayment, method: e.target.value })}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #000000',
+                        '& .MuiMenuItem-root': {
+                          color: '#000000',
+                          '&:hover': {
+                            backgroundColor: '#f5f5f5'
+                          },
+                          '&.Mui-selected': {
+                            backgroundColor: '#000000',
+                            color: '#ffffff'
+                          }
+                        }
+                      }
+                    }
+                  }}
+                >
+                  <MenuItem value="cash">Cash</MenuItem>
+                  <MenuItem value="card">Credit/Debit Card</MenuItem>
+                  <MenuItem value="bank">Bank Transfer</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Date"
+                type="date"
+                value={newPayment.date}
+                onChange={(e) => setNewPayment({ ...newPayment, date: e.target.value })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#000000',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#333333',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#000000',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#000000',
+                    '&.Mui-focused': {
+                      color: '#000000',
+                    },
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                multiline
+                rows={3}
+                value={newPayment.description}
+                onChange={(e) => setNewPayment({ ...newPayment, description: e.target.value })}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#000000',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#333333',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#000000',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#000000',
+                    '&.Mui-focused': {
+                      color: '#000000',
+                    },
+                  },
+                }}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, backgroundColor: '#ffffff' }}>
+          <Button 
+            onClick={() => setShowPaymentDialog(false)}
+            sx={{ 
+              color: '#666666',
+              border: '1px solid #cccccc',
+              '&:hover': {
+                backgroundColor: '#f5f5f5',
+                borderColor: '#999999'
+              }
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleAddPayment}
+            disabled={loading || !newPayment.amount || !newPayment.customerName}
+            sx={{
+              backgroundColor: '#000000',
+              color: '#ffffff',
+              fontWeight: 'bold',
+              border: '2px solid #000000',
+              '&:hover': {
+                backgroundColor: '#333333',
+                borderColor: '#333333'
+              },
+              '&:disabled': {
+                backgroundColor: '#cccccc',
+                color: '#666666',
+                borderColor: '#cccccc'
+              }
+            }}
+          >
+            Record Payment
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+}

@@ -1,0 +1,664 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Card,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
+} from '@mui/material';
+import {
+  TrendingUp,
+  AttachMoney,
+  People,
+  ShoppingCart,
+  Add,
+  AccountBalance,
+  CreditCard,
+  MonetizationOn
+} from '@mui/icons-material';
+import { db } from '../../firebase/config';
+import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+
+// Professional Stats Card - Clean Design
+const StatsCard = ({ title, value, icon, color = '#1e3a8a', trend }) => (
+  <Card sx={{ 
+    height: '120px',
+    backgroundColor: color,
+    color: '#ffffff',
+    borderRadius: '8px',
+    border: 'none',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+    }
+  }}>
+    <CardContent sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Box>
+          <Typography variant="h4" fontWeight="bold" color="#ffffff">
+            {value}
+          </Typography>
+          <Typography variant="body2" color="rgba(255,255,255,0.9)" sx={{ fontWeight: 'bold' }}>
+            {title}
+          </Typography>
+        </Box>
+        <Box sx={{ 
+          p: 1, 
+          backgroundColor: 'rgba(255,255,255,0.2)', 
+          borderRadius: '6px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          {icon}
+        </Box>
+      </Box>
+      {trend && (
+        <Typography variant="caption" color="rgba(255,255,255,0.8)" sx={{ fontSize: '11px' }}>
+          {trend}
+        </Typography>
+      )}
+    </CardContent>
+  </Card>
+);
+
+// Clean Chart Component
+const SimpleChart = ({ data, title, type = 'bar' }) => (
+  <Box sx={{ 
+    height: 200, 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    backgroundColor: '#f9fafb',
+    borderRadius: '6px',
+    border: '2px dashed #d1d5db',
+    color: '#6b7280'
+  }}>
+    <Box sx={{ textAlign: 'center' }}>
+      <Typography variant="h6" color="#6b7280" fontWeight="600">
+        {title}
+      </Typography>
+      <Typography variant="body2" color="#9ca3af" sx={{ mt: 1 }}>
+        Chart placeholder
+      </Typography>
+    </Box>
+  </Box>
+);
+
+// Simple Pie Chart Component for Payment Methods
+const PaymentPieChart = ({ paymentPercentages }) => {
+  const total = paymentPercentages.cash + paymentPercentages.card + paymentPercentages.bank;
+  
+  if (total === 0) {
+    return (
+      <Box sx={{ 
+        height: 200, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        color: '#6b7280'
+      }}>
+        <Typography variant="body2">No payment data available</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ 
+        width: 120, 
+        height: 120, 
+        borderRadius: '50%',
+        background: `conic-gradient(
+          #1e3a8a 0deg ${(paymentPercentages.cash / 100) * 360}deg,
+          #059669 ${(paymentPercentages.cash / 100) * 360}deg ${((paymentPercentages.cash + paymentPercentages.card) / 100) * 360}deg,
+          #7c3aed ${((paymentPercentages.cash + paymentPercentages.card) / 100) * 360}deg 360deg
+        )`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <Box sx={{ 
+          width: 60, 
+          height: 60, 
+          borderRadius: '50%', 
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Typography variant="h6" fontWeight="bold" color="#1f2937">
+            100%
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default function SalesDashboard({ dateFilter }) {
+  const [salesData, setSalesData] = useState({
+    totalSales: 0,
+    totalOrders: 0,
+    totalCustomers: 0,
+    totalRevenue: 0
+  });
+  const [paymentRecords, setPaymentRecords] = useState([]);
+  const [topCustomers, setTopCustomers] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+  const [paymentPercentages, setPaymentPercentages] = useState({ cash: 0, card: 0, bank: 0 });
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [newPayment, setNewPayment] = useState({
+    amount: '',
+    method: 'cash',
+    description: '',
+    customerName: '',
+    date: new Date().toISOString().split('T')[0]
+  });
+
+  // Load dashboard data
+  useEffect(() => {
+    loadDashboardData();
+  }, [dateFilter]);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Calculate date range based on filter
+      const now = new Date();
+      let startDate = new Date();
+      
+      switch (dateFilter) {
+        case 'daily':
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'weekly':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case 'monthly':
+          startDate.setDate(now.getDate() - 30);
+          break;
+        default:
+          startDate.setHours(0, 0, 0, 0);
+      }
+
+      // Load sales data
+      const salesQuery = query(
+        collection(db, 'sales'),
+        where('createdAt', '>=', Timestamp.fromDate(startDate)),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const salesSnapshot = await getDocs(salesQuery);
+      const sales = salesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Load payment records
+      const paymentsQuery = query(
+        collection(db, 'payments'),
+        where('createdAt', '>=', Timestamp.fromDate(startDate)),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const paymentsSnapshot = await getDocs(paymentsQuery);
+      const payments = paymentsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Calculate statistics
+      const totalSales = sales.length;
+      const totalRevenue = sales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+      const uniqueCustomers = new Set(sales.map(sale => sale.customerId)).size;
+      
+      setSalesData({
+        totalSales,
+        totalOrders: totalSales,
+        totalCustomers: uniqueCustomers,
+        totalRevenue
+      });
+
+      // Calculate top customers from real sales data
+      const customerTotals = {};
+      sales.forEach(sale => {
+        if (sale.customerId && sale.customerName) {
+          customerTotals[sale.customerId] = customerTotals[sale.customerId] || {
+            name: sale.customerName,
+            total: 0,
+            orders: 0
+          };
+          customerTotals[sale.customerId].total += sale.total || 0;
+          customerTotals[sale.customerId].orders += 1;
+        }
+      });
+      
+      const topCustomersData = Object.values(customerTotals)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 5);
+
+      // Calculate top products from real sales data  
+      const productTotals = {};
+      sales.forEach(sale => {
+        if (sale.items) {
+          sale.items.forEach(item => {
+            const productId = item.id || item.productId;
+            if (productId) {
+              productTotals[productId] = productTotals[productId] || {
+                name: item.name,
+                sold: 0,
+                revenue: 0
+              };
+              productTotals[productId].sold += item.quantity || 1;
+              productTotals[productId].revenue += (item.quantity || 1) * (item.price || 0);
+            }
+          });
+        }
+      });
+      
+      const topProductsData = Object.values(productTotals)
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 5);
+
+      // Calculate payment method statistics
+      const paymentMethodStats = {
+        cash: 0,
+        card: 0,
+        bank: 0,
+        total: 0
+      };
+      
+      payments.forEach(payment => {
+        if (payment.method) {
+          paymentMethodStats[payment.method] = (paymentMethodStats[payment.method] || 0) + 1;
+          paymentMethodStats.total++;
+        }
+      });
+
+      setPaymentRecords(payments.slice(0, 10)); // Latest 10 payments
+      setTopCustomers(topCustomersData);
+      setTopProducts(topProductsData);
+      setPaymentPercentages({
+        cash: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.cash / paymentMethodStats.total) * 100) : 0,
+        card: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.card / paymentMethodStats.total) * 100) : 0,
+        bank: paymentMethodStats.total > 0 ? Math.round((paymentMethodStats.bank / paymentMethodStats.total) * 100) : 0
+      });
+
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddPayment = async () => {
+    try {
+      setLoading(true);
+      
+      const paymentData = {
+        ...newPayment,
+        amount: parseFloat(newPayment.amount),
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      };
+
+      await addDoc(collection(db, 'payments'), paymentData);
+      
+      setShowPaymentDialog(false);
+      setNewPayment({
+        amount: '',
+        method: 'cash',
+        description: '',
+        customerName: '',
+        date: new Date().toISOString().split('T')[0]
+      });
+      
+      loadDashboardData(); // Refresh data
+    } catch (error) {
+      console.error('Error adding payment:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatCurrency = (amount) => {
+    return `Rs. ${amount?.toLocaleString() || '0.00'}`;
+  };
+
+  return (
+    <Box sx={{ p: 0 }}>
+      {/* Stats Cards Row */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatsCard
+            title="Total Sales"
+            value={salesData.totalSales}
+            icon={<TrendingUp sx={{ color: '#ffffff', fontSize: 24 }} />}
+            color="#1e3a8a"
+            trend="+12% from last period"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatsCard
+            title="Revenue"
+            value={formatCurrency(salesData.totalRevenue)}
+            icon={<AttachMoney sx={{ color: '#ffffff', fontSize: 24 }} />}
+            color="#059669"
+            trend="+8% from last period"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatsCard
+            title="Customers"
+            value={salesData.totalCustomers}
+            icon={<People sx={{ color: '#ffffff', fontSize: 24 }} />}
+            color="#7c3aed"
+            trend="+15% from last period"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatsCard
+            title="Orders"
+            value={salesData.totalOrders}
+            icon={<ShoppingCart sx={{ color: '#ffffff', fontSize: 24 }} />}
+            color="#dc2626"
+            trend="+5% from last period"
+          />
+        </Grid>
+      </Grid>
+
+      {/* Main Content Grid */}
+      <Grid container spacing={2}>
+        {/* Sales Chart */}
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 2, height: 280 }}>
+            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#1f2937' }}>
+              Sales Reports - {dateFilter.toUpperCase()}
+            </Typography>
+            <SimpleChart data={[]} title="Sales Trends" type="line" />
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-around' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">Daily Sales</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#1e3a8a">{salesData.totalSales}</Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="caption" color="#6b7280">Revenue</Typography>
+                <Typography variant="h6" fontWeight="bold" color="#10b981">{formatCurrency(salesData.totalRevenue)}</Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Payment Methods */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 2, height: 280 }}>
+            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#1f2937' }}>
+              Payment Methods
+            </Typography>
+            <PaymentPieChart paymentPercentages={paymentPercentages} />
+            
+            <Box sx={{ mt: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <MonetizationOn sx={{ color: '#1e3a8a', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#1f2937" fontWeight="500">Cash</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="600" color="#1e3a8a">{paymentPercentages.cash}%</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <CreditCard sx={{ color: '#059669', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#1f2937" fontWeight="500">Card</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="600" color="#059669">{paymentPercentages.card}%</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <AccountBalance sx={{ color: '#7c3aed', mr: 1, fontSize: 18 }} />
+                  <Typography variant="body2" color="#1f2937" fontWeight="500">Bank</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="600" color="#7c3aed">{paymentPercentages.bank}%</Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Recent Payments */}
+        <Grid item xs={12} md={7}>
+          <Paper sx={{ p: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6" fontWeight="600" color="#1f2937">
+                Recent Payments
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => setShowPaymentDialog(true)}
+                size="small"
+                sx={{ textTransform: 'none' }}
+              >
+                Record Payment
+              </Button>
+            </Box>
+            
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#f9fafb' }}>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Customer</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Amount</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Method</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Date</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {paymentRecords.map((payment, index) => (
+                    <TableRow key={payment.id || index} sx={{
+                      '&:nth-of-type(odd)': { backgroundColor: '#fafafa' },
+                      '&:hover': { backgroundColor: '#f3f4f6' }
+                    }}>
+                      <TableCell sx={{ color: '#1f2937', py: 1 }}>{payment.customerName}</TableCell>
+                      <TableCell sx={{ color: '#1e3a8a', fontWeight: 600, py: 1 }}>{formatCurrency(payment.amount)}</TableCell>
+                      <TableCell sx={{ py: 1 }}>
+                        <Chip 
+                          label={payment.method} 
+                          size="small"
+                          sx={{
+                            backgroundColor: payment.method === 'cash' ? '#1e3a8a' : 
+                                           payment.method === 'card' ? '#059669' : '#7c3aed',
+                            color: '#ffffff',
+                            fontWeight: 500,
+                            fontSize: '11px'
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ color: '#6b7280', py: 1 }}>{new Date(payment.date).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+
+        {/* Top Customers */}
+        <Grid item xs={12} md={5}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#1f2937' }}>
+              Top Customers
+            </Typography>
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#f9fafb' }}>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Customer</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Total</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Orders</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {topCustomers.map((customer, index) => (
+                    <TableRow key={index}>
+                      <TableCell sx={{ color: '#1f2937', py: 1 }}>{customer.name}</TableCell>
+                      <TableCell sx={{ color: '#1e3a8a', fontWeight: 600, py: 1 }}>{formatCurrency(customer.total)}</TableCell>
+                      <TableCell sx={{ color: '#6b7280', py: 1 }}>{customer.orders}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+
+        {/* Top Products */}
+        <Grid item xs={12}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" fontWeight="600" sx={{ mb: 2, color: '#1f2937' }}>
+              Top Selling Products
+            </Typography>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#f9fafb' }}>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Product</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Units Sold</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Revenue</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#1f2937', py: 1 }}>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {topProducts.map((product, index) => (
+                    <TableRow key={index}>
+                      <TableCell sx={{ color: '#1f2937', py: 1 }}>{product.name}</TableCell>
+                      <TableCell sx={{ color: '#6b7280', py: 1 }}>{product.sold}</TableCell>
+                      <TableCell sx={{ color: '#1e3a8a', fontWeight: 600, py: 1 }}>{formatCurrency(product.revenue)}</TableCell>
+                      <TableCell sx={{ py: 1 }}>
+                        <Chip 
+                          label="Excellent" 
+                          sx={{
+                            backgroundColor: '#059669',
+                            color: '#ffffff',
+                            fontWeight: 500,
+                            fontSize: '11px'
+                          }}
+                          size="small"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      {/* Payment Recording Dialog */}
+      <Dialog 
+        open={showPaymentDialog} 
+        onClose={() => setShowPaymentDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ 
+          backgroundColor: '#1e3a8a', 
+          color: 'white', 
+          fontWeight: 600,
+          py: 2
+        }}>
+          Record New Payment
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, backgroundColor: '#ffffff' }}>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Customer Name"
+                value={newPayment.customerName}
+                onChange={(e) => setNewPayment({ ...newPayment, customerName: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Amount"
+                type="number"
+                value={newPayment.amount}
+                onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Payment Method</InputLabel>
+                <Select
+                  value={newPayment.method}
+                  onChange={(e) => setNewPayment({ ...newPayment, method: e.target.value })}
+                >
+                  <MenuItem value="cash">Cash</MenuItem>
+                  <MenuItem value="card">Credit/Debit Card</MenuItem>
+                  <MenuItem value="bank">Bank Transfer</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Date"
+                type="date"
+                value={newPayment.date}
+                onChange={(e) => setNewPayment({ ...newPayment, date: e.target.value })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                multiline
+                rows={3}
+                value={newPayment.description}
+                onChange={(e) => setNewPayment({ ...newPayment, description: e.target.value })}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, backgroundColor: '#ffffff' }}>
+          <Button onClick={() => setShowPaymentDialog(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleAddPayment}
+            disabled={loading || !newPayment.amount || !newPayment.customerName}
+          >
+            Record Payment
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+}

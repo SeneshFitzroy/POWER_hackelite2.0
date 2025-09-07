@@ -481,7 +481,11 @@ const PharmacyPOSCleanFinal = () => {
         p: 3, 
         mb: 2, 
         borderRadius: 0,
+<<<<<<< HEAD
         background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+=======
+        background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+>>>>>>> SALES
         boxShadow: '0 2px 8px rgba(30, 64, 175, 0.2)'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

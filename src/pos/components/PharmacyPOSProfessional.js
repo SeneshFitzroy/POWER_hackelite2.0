@@ -384,7 +384,11 @@ const PharmacyPOSProfessional = () => {
         p: 2, 
         mb: 2, 
         borderRadius: 0,
+<<<<<<< HEAD
         background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
+=======
+        background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #60a5fa 100%)',
+>>>>>>> SALES
         boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -462,7 +466,11 @@ const PharmacyPOSProfessional = () => {
             <Box sx={{ 
               flexShrink: 0,
               p: 2,
+<<<<<<< HEAD
               background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+=======
+              background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+>>>>>>> SALES
               borderRadius: '8px 8px 0 0'
             }}>
               <Typography variant="h6" sx={{ color: 'white', mb: 1.5, fontWeight: 'bold' }}>
@@ -479,7 +487,11 @@ const PharmacyPOSProfessional = () => {
                     backgroundColor: 'white',
                     borderRadius: '8px',
                     '& fieldset': { borderColor: '#e2e8f0' },
+<<<<<<< HEAD
                     '&:hover fieldset': { borderColor: '#3b82f6' },
+=======
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
+>>>>>>> SALES
                     '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                   }
                 }}
@@ -522,7 +534,11 @@ const PharmacyPOSProfessional = () => {
                   '& .MuiOutlinedInput-root': {
                     backgroundColor: 'white',
                     '& fieldset': { borderColor: '#e2e8f0' },
+<<<<<<< HEAD
                     '&:hover fieldset': { borderColor: '#3b82f6' },
+=======
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
+>>>>>>> SALES
                     '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                   }
                 }}
@@ -548,13 +564,21 @@ const PharmacyPOSProfessional = () => {
               >
                 <FormControlLabel 
                   value="employee" 
+<<<<<<< HEAD
                   control={<Radio size="small" sx={{ color: '#3b82f6', '&.Mui-checked': { color: '#1e40af' } }} />} 
+=======
+                  control={<Radio size="small" sx={{ color: '#1e3a8a', '&.Mui-checked': { color: '#1e40af' } }} />} 
+>>>>>>> SALES
                   label="Employee" 
                   sx={{ mr: 3 }}
                 />
                 <FormControlLabel 
                   value="pharmacist" 
+<<<<<<< HEAD
                   control={<Radio size="small" sx={{ color: '#3b82f6', '&.Mui-checked': { color: '#1e40af' } }} />} 
+=======
+                  control={<Radio size="small" sx={{ color: '#1e3a8a', '&.Mui-checked': { color: '#1e40af' } }} />} 
+>>>>>>> SALES
                   label="Pharmacist" 
                 />
               </RadioGroup>
@@ -568,7 +592,11 @@ const PharmacyPOSProfessional = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     '& fieldset': { borderColor: '#e2e8f0' },
+<<<<<<< HEAD
                     '&:hover fieldset': { borderColor: '#3b82f6' },
+=======
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
+>>>>>>> SALES
                     '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                   }
                 }}
@@ -597,7 +625,11 @@ const PharmacyPOSProfessional = () => {
                   '& .MuiOutlinedInput-root': {
                     backgroundColor: 'white',
                     '& fieldset': { borderColor: '#e2e8f0' },
+<<<<<<< HEAD
                     '&:hover fieldset': { borderColor: '#3b82f6' },
+=======
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
+>>>>>>> SALES
                     '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                   }
                 }}
@@ -616,7 +648,11 @@ const PharmacyPOSProfessional = () => {
                 onClick={() => setShowCashBalance(!showCashBalance)}
                 sx={{ 
                   mb: 1.5,
+<<<<<<< HEAD
                   borderColor: '#3b82f6',
+=======
+                  borderColor: '#1e3a8a',
+>>>>>>> SALES
                   color: '#1e40af',
                   '&:hover': {
                     borderColor: '#1e40af',
@@ -633,7 +669,11 @@ const PharmacyPOSProfessional = () => {
                   backgroundColor: '#dbeafe', 
                   borderRadius: 2, 
                   textAlign: 'center',
+<<<<<<< HEAD
                   border: '2px solid #3b82f6'
+=======
+                  border: '2px solid #1e3a8a'
+>>>>>>> SALES
                 }}>
                   <Typography variant="h6" color="#1e40af" fontWeight="bold">
                     Cash Balance: {formatCurrency(cashBalance)}
@@ -661,7 +701,11 @@ const PharmacyPOSProfessional = () => {
                     '& .MuiOutlinedInput-root': {
                       backgroundColor: 'white',
                       '& fieldset': { borderColor: '#e2e8f0' },
+<<<<<<< HEAD
                       '&:hover fieldset': { borderColor: '#3b82f6' },
+=======
+                      '&:hover fieldset': { borderColor: '#1e3a8a' },
+>>>>>>> SALES
                       '&.Mui-focused fieldset': { borderColor: '#1e40af' }
                     }
                   }}
@@ -1019,7 +1063,11 @@ const PharmacyPOSProfessional = () => {
         }}
       >
         <Box sx={{ 
+<<<<<<< HEAD
           background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+=======
+          background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+>>>>>>> SALES
           color: 'white',
           p: 3,
           display: 'flex',
@@ -1156,9 +1204,15 @@ const PharmacyPOSProfessional = () => {
               onClick={saveNewPatient}
               disabled={!newPatient.name || !newPatient.contact}
               sx={{ 
+<<<<<<< HEAD
                 background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
                 '&:hover': { 
                   background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+=======
+                background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                '&:hover': { 
+                  background: 'linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%)',
+>>>>>>> SALES
                   boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
                 }
               }}
@@ -1339,8 +1393,13 @@ const PharmacyPOSProfessional = () => {
                 variant="outlined" 
                 onClick={() => window.print()}
                 sx={{ 
+<<<<<<< HEAD
                   borderColor: '#3b82f6',
                   color: '#3b82f6',
+=======
+                  borderColor: '#1e3a8a',
+                  color: '#1e3a8a',
+>>>>>>> SALES
                   '&:hover': { 
                     borderColor: '#1e40af', 
                     backgroundColor: 'rgba(59, 130, 246, 0.04)' 

@@ -19,7 +19,10 @@ import {
   Divider,
   Card,
   CardContent,
+<<<<<<< HEAD
   Autocomplete,
+=======
+>>>>>>> SALES
   InputAdornment
 } from '@mui/material';
 import {
@@ -64,18 +67,29 @@ const PharmacyPOS = () => {
   // Dialog states
   const [checkoutDialog, setCheckoutDialog] = useState(false);
   const [employeeVerification, setEmployeeVerification] = useState('');
+<<<<<<< HEAD
   const [slmcRegNumber, setSlmcRegNumber] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [amountPaid, setAmountPaid] = useState('');
   const [prescriptionDialog, setPrescriptionDialog] = useState(false);
   const [discountRate, setDiscountRate] = useState(0);
+=======
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [amountPaid, setAmountPaid] = useState('');
+  const [prescriptionDialog, setPrescriptionDialog] = useState(false);
+>>>>>>> SALES
   
   // Transaction calculations
   const [transactionTotals, setTransactionTotals] = useState({
     subtotal: 0,
+<<<<<<< HEAD
     discountAmount: 0,
     netTotal: 0,
     balance: 0,
+=======
+    discount: 0,
+    tax: 0,
+>>>>>>> SALES
     total: 0
   });
 
@@ -87,6 +101,7 @@ const PharmacyPOS = () => {
   // Recalculate totals when cart changes
   useEffect(() => {
     if (cart.length > 0) {
+<<<<<<< HEAD
       const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
       const discountAmount = (subtotal * discountRate) / 100;
       const netTotal = subtotal - discountAmount;
@@ -103,6 +118,14 @@ const PharmacyPOS = () => {
       setTransactionTotals({ subtotal: 0, discountAmount: 0, netTotal: 0, balance: 0, total: 0 });
     }
   }, [cart, discountRate, amountPaid]);
+=======
+      const totals = calculateTransactionTotal(cart);
+      setTransactionTotals(totals);
+    } else {
+      setTransactionTotals({ subtotal: 0, discount: 0, tax: 0, total: 0 });
+    }
+  }, [cart]);
+>>>>>>> SALES
 
   // Load all medicines
   const loadMedicines = async () => {
@@ -185,6 +208,10 @@ const PharmacyPOS = () => {
         unitPrice: medicine.sellingPrice,
         quantity: 1,
         discount: 0,
+<<<<<<< HEAD
+=======
+        taxRate: medicine.taxRate || 18,
+>>>>>>> SALES
         prescriptionRequired: medicine.prescriptionRequired,
         stockQuantity: medicine.stockQuantity,
         batchNumber: medicine.batchNumber,
@@ -274,6 +301,7 @@ const PharmacyPOS = () => {
         return;
       }
 
+<<<<<<< HEAD
       // For prescription medicines, verify SLMC registration
       const validation = validateSale();
       if (validation.prescriptionRequired && !slmcRegNumber) {
@@ -286,6 +314,8 @@ const PharmacyPOS = () => {
         return;
       }
 
+=======
+>>>>>>> SALES
       // Create transaction
       const transactionData = {
         transactionId: generateTransactionId(),
@@ -296,19 +326,30 @@ const PharmacyPOS = () => {
         patientName: patient?.name || 'Walk-in Customer',
         items: cart,
         subtotal: transactionTotals.subtotal,
+<<<<<<< HEAD
         discountRate: discountRate,
         discountAmount: transactionTotals.discountAmount,
         netTotal: transactionTotals.netTotal,
+=======
+        discount: transactionTotals.discount,
+        taxAmount: transactionTotals.tax,
+>>>>>>> SALES
         totalAmount: transactionTotals.total,
         paymentMethod,
         paymentDetails: {
           [paymentMethod]: parseFloat(amountPaid) || transactionTotals.total,
+<<<<<<< HEAD
           balance: transactionTotals.balance
         },
         employeeId: employeeVerification,
         authorizedPersonId: employeeVerification,
         slmcRegistrationNumber: slmcRegNumber || '',
         prescriptionRequired: validation.prescriptionRequired
+=======
+          change: Math.max(0, (parseFloat(amountPaid) || 0) - transactionTotals.total)
+        },
+        employeeId: employeeVerification
+>>>>>>> SALES
       };
 
       // Process the sale
@@ -320,9 +361,13 @@ const PharmacyPOS = () => {
       clearCart();
       setCheckoutDialog(false);
       setEmployeeVerification('');
+<<<<<<< HEAD
       setSlmcRegNumber('');
       setAmountPaid('');
       setDiscountRate(0);
+=======
+      setAmountPaid('');
+>>>>>>> SALES
       
     } catch (error) {
       addAlert('error', 'Checkout failed: ' + error.message);
@@ -348,23 +393,32 @@ const PharmacyPOS = () => {
   };
 
   return (
+<<<<<<< HEAD
     <Box sx={{ 
       p: 3, 
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       minHeight: '100vh'
     }}>
+=======
+    <Box sx={{ p: 3 }}>
+>>>>>>> SALES
       {/* Alerts */}
       {alerts.map(alert => (
         <Alert 
           key={alert.id} 
           severity={alert.severity} 
+<<<<<<< HEAD
           sx={{ mb: 1, borderRadius: 2, boxShadow: 2 }}
+=======
+          sx={{ mb: 1 }}
+>>>>>>> SALES
           onClose={() => removeAlert(alert.id)}
         >
           {alert.message}
         </Alert>
       ))}
 
+<<<<<<< HEAD
       {/* Header */}
       <Paper sx={{ 
         p: 3, 
@@ -387,10 +441,17 @@ const PharmacyPOS = () => {
           Advanced Point of Sale System for Healthcare
         </Typography>
       </Paper>
+=======
+      <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+        <LocalPharmacy sx={{ mr: 1 }} />
+        Pharmacy POS System
+      </Typography>
+>>>>>>> SALES
 
       <Grid container spacing={3}>
         {/* Left Panel - Search and Products */}
         <Grid item xs={12} md={8}>
+<<<<<<< HEAD
           <Paper sx={{ 
             p: 3, 
             mb: 2, 
@@ -407,6 +468,11 @@ const PharmacyPOS = () => {
             }}>
               <Search sx={{ mr: 1 }} />
               Medicine Search & Selection
+=======
+          <Paper sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Medicine Search
+>>>>>>> SALES
             </Typography>
             
             {/* Search Bar */}
@@ -418,17 +484,26 @@ const PharmacyPOS = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
+<<<<<<< HEAD
                     <Search sx={{ color: '#1976d2' }} />
+=======
+                    <Search />
+>>>>>>> SALES
                   </InputAdornment>
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
+<<<<<<< HEAD
                     <IconButton sx={{ color: '#1976d2' }}>
+=======
+                    <IconButton>
+>>>>>>> SALES
                       <QrCodeScanner />
                     </IconButton>
                   </InputAdornment>
                 )
               }}
+<<<<<<< HEAD
               sx={{ 
                 mb: 2,
                 '& .MuiOutlinedInput-root': {
@@ -438,17 +513,25 @@ const PharmacyPOS = () => {
                   '&.Mui-focused fieldset': { borderColor: '#1976d2' }
                 }
               }}
+=======
+              sx={{ mb: 2 }}
+>>>>>>> SALES
             />
 
             {/* Search Results */}
             {searchResults.length > 0 && (
+<<<<<<< HEAD
               <List sx={{ maxHeight: 400, overflow: 'auto' }}>
+=======
+              <List>
+>>>>>>> SALES
                 {searchResults.map(medicine => (
                   <ListItem
                     key={medicine.id}
                     button
                     onClick={() => addToCart(medicine)}
                     sx={{ 
+<<<<<<< HEAD
                       border: '2px solid #e3f2fd', 
                       mb: 2,
                       borderRadius: 3,
@@ -460,11 +543,18 @@ const PharmacyPOS = () => {
                         transform: 'translateY(-2px)',
                         boxShadow: '0 8px 25px rgba(33, 150, 243, 0.2)'
                       }
+=======
+                      border: 1, 
+                      borderColor: 'divider', 
+                      mb: 1,
+                      borderRadius: 1 
+>>>>>>> SALES
                     }}
                   >
                     <ListItemText
                       primary={
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+<<<<<<< HEAD
                           <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                             {medicine.name}
                           </Typography>
@@ -476,19 +566,30 @@ const PharmacyPOS = () => {
                             py: 0.5,
                             borderRadius: 2
                           }}>
+=======
+                          <Typography variant="subtitle1">
+                            {medicine.name}
+                          </Typography>
+                          <Typography variant="h6" color="primary">
+>>>>>>> SALES
                             {formatCurrency(medicine.sellingPrice)}
                           </Typography>
                         </Box>
                       }
                       secondary={
                         <Box>
+<<<<<<< HEAD
                           <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
+=======
+                          <Typography variant="body2" color="textSecondary">
+>>>>>>> SALES
                             {medicine.genericName} • {medicine.strength}
                           </Typography>
                           <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
                             <Chip 
                               label={medicine.type} 
                               size="small"
+<<<<<<< HEAD
                               sx={{
                                 background: medicine.type === 'Prescription' 
                                   ? 'linear-gradient(45deg, #f44336, #e57373)'
@@ -496,10 +597,14 @@ const PharmacyPOS = () => {
                                 color: 'white',
                                 fontWeight: 'bold'
                               }}
+=======
+                              color={medicine.type === 'Prescription' ? 'error' : 'default'}
+>>>>>>> SALES
                             />
                             <Chip 
                               label={`Stock: ${medicine.stockQuantity}`} 
                               size="small"
+<<<<<<< HEAD
                               sx={{
                                 background: medicine.stockQuantity > 10 
                                   ? 'linear-gradient(45deg, #4caf50, #81c784)'
@@ -507,6 +612,9 @@ const PharmacyPOS = () => {
                                 color: 'white',
                                 fontWeight: 'bold'
                               }}
+=======
+                              color={medicine.stockQuantity > 10 ? 'success' : 'warning'}
+>>>>>>> SALES
                             />
                           </Box>
                         </Box>
@@ -522,6 +630,7 @@ const PharmacyPOS = () => {
         {/* Right Panel - Cart and Checkout */}
         <Grid item xs={12} md={4}>
           {/* Patient Information */}
+<<<<<<< HEAD
           <Paper sx={{ 
             p: 3, 
             mb: 2, 
@@ -536,6 +645,10 @@ const PharmacyPOS = () => {
               color: '#1976d2',
               fontWeight: 'bold'
             }}>
+=======
+          <Paper sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+>>>>>>> SALES
               <Person sx={{ mr: 1 }} />
               Patient Information
             </Typography>
@@ -546,6 +659,7 @@ const PharmacyPOS = () => {
               value={patientPhone}
               onChange={(e) => setPatientPhone(e.target.value)}
               placeholder="Enter 10-digit phone number"
+<<<<<<< HEAD
               sx={{ 
                 mb: 2,
                 '& .MuiOutlinedInput-root': {
@@ -571,10 +685,14 @@ const PharmacyPOS = () => {
                   '&.Mui-focused fieldset': { borderColor: '#1976d2' }
                 }
               }}
+=======
+              sx={{ mb: 1 }}
+>>>>>>> SALES
             />
             
             <Button
               fullWidth
+<<<<<<< HEAD
               variant="contained"
               onClick={findPatient}
               disabled={loading}
@@ -588,11 +706,18 @@ const PharmacyPOS = () => {
                   boxShadow: '0 6px 25px rgba(33, 150, 243, 0.4)'
                 }
               }}
+=======
+              variant="outlined"
+              onClick={findPatient}
+              disabled={loading}
+              sx={{ mb: 2 }}
+>>>>>>> SALES
             >
               Find Patient
             </Button>
 
             {patient && (
+<<<<<<< HEAD
               <Card sx={{ 
                 background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
                 border: '2px solid #4caf50',
@@ -608,6 +733,18 @@ const PharmacyPOS = () => {
                   </Typography>
                   <Typography variant="body1" sx={{ color: '#388e3c' }}>
                     💰 Total Purchases: {formatCurrency(patient.totalPurchases || 0)}
+=======
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle2">
+                    {patient.name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Phone: {patient.phoneNumber}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Total Purchases: {formatCurrency(patient.totalPurchases || 0)}
+>>>>>>> SALES
                   </Typography>
                 </CardContent>
               </Card>
@@ -615,6 +752,7 @@ const PharmacyPOS = () => {
           </Paper>
 
           {/* Shopping Cart */}
+<<<<<<< HEAD
           <Paper sx={{ 
             p: 3,
             borderRadius: 3,
@@ -628,6 +766,10 @@ const PharmacyPOS = () => {
               color: '#1976d2',
               fontWeight: 'bold'
             }}>
+=======
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+>>>>>>> SALES
               <ShoppingCart sx={{ mr: 1 }} />
               Shopping Cart ({cart.length})
             </Typography>
@@ -638,6 +780,7 @@ const PharmacyPOS = () => {
               </Typography>
             ) : (
               <>
+<<<<<<< HEAD
                 <List sx={{ maxHeight: 300, overflow: 'auto' }}>
                   {cart.map(item => (
                     <ListItem 
@@ -658,17 +801,32 @@ const PharmacyPOS = () => {
                         secondary={
                           <Box>
                             <Typography variant="body2" sx={{ color: '#666', mb: 0.5 }}>
+=======
+                <List>
+                  {cart.map(item => (
+                    <ListItem key={item.medicineId} sx={{ px: 0 }}>
+                      <ListItemText
+                        primary={item.medicineName}
+                        secondary={
+                          <Box>
+                            <Typography variant="body2">
+>>>>>>> SALES
                               {formatCurrency(item.unitPrice)} × {item.quantity} = {formatCurrency(item.unitPrice * item.quantity)}
                             </Typography>
                             {item.prescriptionRequired && (
                               <Chip 
                                 label="Prescription Required" 
                                 size="small" 
+<<<<<<< HEAD
                                 sx={{
                                   background: 'linear-gradient(45deg, #f44336, #e57373)',
                                   color: 'white',
                                   fontWeight: 'bold'
                                 }}
+=======
+                                color="error" 
+                                sx={{ mt: 0.5 }}
+>>>>>>> SALES
                               />
                             )}
                           </Box>
@@ -678,6 +836,7 @@ const PharmacyPOS = () => {
                         <IconButton 
                           size="small"
                           onClick={() => updateCartQuantity(item.medicineId, item.quantity - 1)}
+<<<<<<< HEAD
                           sx={{ 
                             color: '#f44336',
                             '&:hover': { backgroundColor: 'rgba(244, 67, 54, 0.04)' }
@@ -693,15 +852,24 @@ const PharmacyPOS = () => {
                           fontSize: '1.1rem',
                           color: '#1976d2'
                         }}>
+=======
+                        >
+                          <Remove />
+                        </IconButton>
+                        <Typography sx={{ mx: 1, minWidth: 30, textAlign: 'center' }}>
+>>>>>>> SALES
                           {item.quantity}
                         </Typography>
                         <IconButton 
                           size="small"
                           onClick={() => updateCartQuantity(item.medicineId, item.quantity + 1)}
+<<<<<<< HEAD
                           sx={{ 
                             color: '#4caf50',
                             '&:hover': { backgroundColor: 'rgba(76, 175, 80, 0.04)' }
                           }}
+=======
+>>>>>>> SALES
                         >
                           <Add />
                         </IconButton>
@@ -709,10 +877,14 @@ const PharmacyPOS = () => {
                           size="small"
                           color="error"
                           onClick={() => removeFromCart(item.medicineId)}
+<<<<<<< HEAD
                           sx={{ 
                             ml: 1,
                             '&:hover': { backgroundColor: 'rgba(244, 67, 54, 0.04)' }
                           }}
+=======
+                          sx={{ ml: 1 }}
+>>>>>>> SALES
                         >
                           <Delete />
                         </IconButton>
@@ -723,6 +895,7 @@ const PharmacyPOS = () => {
 
                 <Divider sx={{ my: 2 }} />
 
+<<<<<<< HEAD
                 {/* Discount Rate */}
                 <Box sx={{ mb: 2 }}>
                   <TextField
@@ -780,12 +953,33 @@ const PharmacyPOS = () => {
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 2, bgcolor: '#c8e6c9', borderRadius: 1, border: '2px solid #4caf50' }}>
                     <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>BILL:</Typography>
                     <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
+=======
+                {/* Totals */}
+                <Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography>Subtotal:</Typography>
+                    <Typography>{formatCurrency(transactionTotals.subtotal)}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography>Discount:</Typography>
+                    <Typography>-{formatCurrency(transactionTotals.discount)}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography>Tax:</Typography>
+                    <Typography>{formatCurrency(transactionTotals.tax)}</Typography>
+                  </Box>
+                  <Divider sx={{ my: 1 }} />
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                    <Typography variant="h6">Total:</Typography>
+                    <Typography variant="h6" color="primary">
+>>>>>>> SALES
                       {formatCurrency(transactionTotals.total)}
                     </Typography>
                   </Box>
                 </Box>
 
                 {/* Action Buttons */}
+<<<<<<< HEAD
                 <Box sx={{ display: 'flex', gap: 1, mt: 3 }}>
                   <Button
                     variant="outlined"
@@ -800,6 +994,13 @@ const PharmacyPOS = () => {
                         backgroundColor: 'rgba(244, 67, 54, 0.04)'
                       }
                     }}
+=======
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={clearCart}
+                    sx={{ flex: 1 }}
+>>>>>>> SALES
                   >
                     Clear
                   </Button>
@@ -807,6 +1008,7 @@ const PharmacyPOS = () => {
                     variant="contained"
                     onClick={() => setCheckoutDialog(true)}
                     startIcon={<Receipt />}
+<<<<<<< HEAD
                     sx={{ 
                       flex: 2,
                       borderRadius: 2,
@@ -817,6 +1019,9 @@ const PharmacyPOS = () => {
                         boxShadow: '0 6px 25px rgba(76, 175, 80, 0.4)'
                       }
                     }}
+=======
+                    sx={{ flex: 2 }}
+>>>>>>> SALES
                   >
                     Checkout
                   </Button>
@@ -833,6 +1038,7 @@ const PharmacyPOS = () => {
         onClose={() => setCheckoutDialog(false)}
         maxWidth="sm"
         fullWidth
+<<<<<<< HEAD
         PaperProps={{
           sx: {
             borderRadius: 3,
@@ -867,6 +1073,18 @@ const PharmacyPOS = () => {
               <Typography variant="h6" color="primary">{formatCurrency(transactionTotals.netTotal)}</Typography>
             </Box>
           </Paper>
+=======
+      >
+        <DialogTitle>Complete Sale</DialogTitle>
+        <DialogContent>
+          {/* Sale Summary */}
+          <Typography variant="h6" gutterBottom>
+            Sale Summary
+          </Typography>
+          <Typography>
+            Total Amount: {formatCurrency(transactionTotals.total)}
+          </Typography>
+>>>>>>> SALES
           
           {/* Validation Alerts */}
           {(() => {
@@ -885,6 +1103,7 @@ const PharmacyPOS = () => {
             return null;
           })()}
 
+<<<<<<< HEAD
           {/* Payment Method */}
           <Autocomplete
             options={['cash', 'card', 'insurance']}
@@ -906,6 +1125,59 @@ const PharmacyPOS = () => {
               />
             )}
           />
+=======
+          {/* Payment Method Selection */}
+          <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
+            Payment Method
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            <Button
+              variant={paymentMethod === 'card' ? 'contained' : 'outlined'}
+              onClick={() => setPaymentMethod('card')}
+              sx={{ 
+                flex: 1,
+                backgroundColor: paymentMethod === 'card' ? '#1e3a8a' : 'transparent',
+                color: paymentMethod === 'card' ? 'white' : '#1e3a8a',
+                borderColor: '#1e3a8a',
+                '&:hover': {
+                  backgroundColor: paymentMethod === 'card' ? '#1e40af' : 'rgba(30, 58, 138, 0.1)'
+                }
+              }}
+            >
+              Card
+            </Button>
+            <Button
+              variant={paymentMethod === 'cash' ? 'contained' : 'outlined'}
+              onClick={() => setPaymentMethod('cash')}
+              sx={{ 
+                flex: 1,
+                backgroundColor: paymentMethod === 'cash' ? '#1e3a8a' : 'transparent',
+                color: paymentMethod === 'cash' ? 'white' : '#1e3a8a',
+                borderColor: '#1e3a8a',
+                '&:hover': {
+                  backgroundColor: paymentMethod === 'cash' ? '#1e40af' : 'rgba(30, 58, 138, 0.1)'
+                }
+              }}
+            >
+              Cash
+            </Button>
+            <Button
+              variant={paymentMethod === 'other' ? 'contained' : 'outlined'}
+              onClick={() => setPaymentMethod('other')}
+              sx={{ 
+                flex: 1,
+                backgroundColor: paymentMethod === 'other' ? '#1e3a8a' : 'transparent',
+                color: paymentMethod === 'other' ? 'white' : '#1e3a8a',
+                borderColor: '#1e3a8a',
+                '&:hover': {
+                  backgroundColor: paymentMethod === 'other' ? '#1e40af' : 'rgba(30, 58, 138, 0.1)'
+                }
+              }}
+            >
+              Other
+            </Button>
+          </Box>
+>>>>>>> SALES
 
           {/* Amount Paid */}
           <TextField
@@ -917,13 +1189,20 @@ const PharmacyPOS = () => {
             margin="normal"
             sx={{
               '& .MuiOutlinedInput-root': {
+<<<<<<< HEAD
                 borderRadius: 2,
                 '&:hover fieldset': { borderColor: '#1976d2' },
                 '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+=======
+                '& fieldset': { borderColor: '#e2e8f0' },
+                '&:hover fieldset': { borderColor: '#1e3a8a' },
+                '&.Mui-focused fieldset': { borderColor: '#1e40af' }
+>>>>>>> SALES
               }
             }}
           />
 
+<<<<<<< HEAD
           {/* Balance Display */}
           {amountPaid && (
             <Paper sx={{ p: 2, mt: 2, borderRadius: 2, background: 'rgba(76, 175, 80, 0.1)', border: '1px solid #4caf50' }}>
@@ -937,12 +1216,26 @@ const PharmacyPOS = () => {
           <TextField
             fullWidth
             label="Authorized Person - Employee ID *"
+=======
+          {/* Change */}
+          {amountPaid && (
+            <Typography variant="body2" sx={{ mt: 1, color: '#059669', fontWeight: 'medium' }}>
+              Change: {formatCurrency(Math.max(0, parseFloat(amountPaid) - transactionTotals.total))}
+            </Typography>
+          )}
+
+          {/* Employee Verification */}
+          <TextField
+            fullWidth
+            label="Employee ID *"
+>>>>>>> SALES
             value={employeeVerification}
             onChange={(e) => setEmployeeVerification(e.target.value)}
             margin="normal"
             required
             sx={{
               '& .MuiOutlinedInput-root': {
+<<<<<<< HEAD
                 borderRadius: 2,
                 '&:hover fieldset': { borderColor: '#1976d2' },
                 '&.Mui-focused fieldset': { borderColor: '#1976d2' }
@@ -979,12 +1272,24 @@ const PharmacyPOS = () => {
               '&:hover': { backgroundColor: 'rgba(244, 67, 54, 0.04)' }
             }}
           >
+=======
+                '& fieldset': { borderColor: '#e2e8f0' },
+                '&:hover fieldset': { borderColor: '#1e3a8a' },
+                '&.Mui-focused fieldset': { borderColor: '#1e40af' }
+              }
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCheckoutDialog(false)}>
+>>>>>>> SALES
             Cancel
           </Button>
           <Button 
             onClick={processCheckout}
             variant="contained"
             disabled={loading || !employeeVerification}
+<<<<<<< HEAD
             sx={{
               borderRadius: 2,
               background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
@@ -994,6 +1299,8 @@ const PharmacyPOS = () => {
                 boxShadow: '0 6px 25px rgba(76, 175, 80, 0.4)'
               }
             }}
+=======
+>>>>>>> SALES
           >
             Complete Sale
           </Button>
