@@ -42,25 +42,25 @@ export default function LoginScreen({ onLoginSuccess }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#4169E1]/5 via-white to-[#4169E1]/10 flex items-center justify-center p-4 relative">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-xl border-0 shadow-[#4169E1]/20 backdrop-blur-sm">
+    <div className="login-screen">
+      <div className="login-card">
         <div className="p-6 pb-4">
           {/* Company Brand Placeholder */}
-          <div className="w-full h-12 border-2 border-dashed border-[#4169E1]/30 rounded flex items-center justify-center mb-6">
-            <span className="text-[#4169E1]/70 text-sm font-medium">Company Brand Here</span>
+          <div className="login-brand">
+            <span className="login-brand-text">Company Brand Here</span>
           </div>
 
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-[#4169E1] mb-2">Welcome Back</h2>
-            <p className="text-[#4169E1]/70">Sign in to your PharmaCore account</p>
+            <h2 className="login-title">Welcome Back</h2>
+            <p className="login-subtitle">Sign in to your PharmaCore account</p>
           </div>
         </div>
 
-        <div className="p-6 pt-0">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="p-6" style={{paddingTop: 0}}>
+          <form onSubmit={handleSubmit} className="login-form">
             {/* Email Field */}
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-[#4169E1] font-medium block">
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">
                 Email
               </label>
               <input
@@ -68,55 +68,51 @@ export default function LoginScreen({ onLoginSuccess }) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#4169E1]/20 focus:border-[#4169E1] ${
-                  errors.email ? "border-red-500" : "border-[#4169E1]/30"
-                }`}
+                className={`form-input ${errors.email ? 'error' : ''}`}
                 placeholder="Enter your email"
               />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+              {errors.email && <p className="error-text">{errors.email}</p>}
             </div>
 
             {/* Password Field */}
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-[#4169E1] font-medium block">
+            <div className="form-group">
+              <label htmlFor="password" className="form-label">
                 Password
               </label>
-              <div className="relative">
+              <div className="password-container">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#4169E1]/20 focus:border-[#4169E1] ${
-                    errors.password ? "border-red-500" : "border-[#4169E1]/30"
-                  }`}
+                  className={`form-input ${errors.password ? 'error' : ''}`}
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4169E1]/60 hover:text-[#4169E1]"
+                  className="password-toggle"
                 >
                   {showPassword ? "🙈" : "👁️"}
                 </button>
               </div>
-              {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+              {errors.password && <p className="error-text">{errors.password}</p>}
             </div>
 
             {/* Login Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#4169E1] hover:bg-[#4169E1]/90 text-white py-3 font-medium transition-all duration-300 shadow-lg hover:shadow-xl rounded-md disabled:opacity-50"
+              className="login-button"
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </button>
 
             {/* Forgot Password Link */}
-            <div className="text-center">
+            <div className="forgot-password">
               <button
                 type="button"
-                className="text-[#4169E1]/70 hover:text-[#4169E1] text-sm font-medium transition-colors duration-200"
+                className="forgot-link"
               >
                 Forgot Password?
               </button>
@@ -125,8 +121,8 @@ export default function LoginScreen({ onLoginSuccess }) {
         </div>
       </div>
 
-      <div className="absolute bottom-6 right-6">
-        <p className="text-[#4169E1]/60 italic text-sm font-light">by CoreERP Solutions</p>
+      <div className="footer-text">
+        <p>by CoreERP Solutions</p>
       </div>
     </div>
   )
