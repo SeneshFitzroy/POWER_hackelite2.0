@@ -122,8 +122,8 @@ export default function SalesOrders({ dateFilter }) {
       setLoading(true);
 
       // Validation
-      if (!newOrder.employeeId || !newOrder.pharmacyNumber || !newOrder.customerId) {
-        alert('Employee ID, Pharmacy Number, and Customer are required!');
+      if (!newOrder.employeeId || !newOrder.customerId) {
+        alert('Employee ID and Customer are required!');
         return;
       }
 
@@ -161,7 +161,6 @@ export default function SalesOrders({ dateFilter }) {
     setEditingOrder(order);
     setNewOrder({
       employeeId: order.employeeId,
-      pharmacyNumber: order.pharmacyNumber,
       customerId: order.customerId,
       customerName: order.customerName,
       items: order.items || [],
@@ -170,6 +169,7 @@ export default function SalesOrders({ dateFilter }) {
       discount: order.discount || 0,
       total: order.total || 0,
       status: order.status,
+      paymentMethod: order.paymentMethod || 'cash',
       notes: order.notes || ''
     });
     setShowOrderDialog(true);
@@ -207,7 +207,6 @@ export default function SalesOrders({ dateFilter }) {
   const resetNewOrder = () => {
     setNewOrder({
       employeeId: '',
-      pharmacyNumber: '',
       customerId: '',
       customerName: '',
       items: [],
@@ -216,6 +215,7 @@ export default function SalesOrders({ dateFilter }) {
       discount: 0,
       total: 0,
       status: 'pending',
+      paymentMethod: 'cash',
       notes: ''
     });
   };
@@ -266,7 +266,7 @@ export default function SalesOrders({ dateFilter }) {
         
         <TextField
           fullWidth
-          placeholder="Search orders by customer name, employee ID, pharmacy number, or status..."
+          placeholder="Search orders by customer name, employee ID, or status..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
