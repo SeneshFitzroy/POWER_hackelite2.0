@@ -893,102 +893,269 @@ export default function Finance({ dateFilter }) {
     </Box>
   );
 
+  const renderReports = () => (
+    <Box>
+      <Grid container spacing={3}>
+        {/* Financial Reports Summary */}
+        <Grid item xs={12} lg={8}>
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              height: '100%'
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 'bold',
+                color: '#1e293b',
+                mb: 3
+              }}
+            >
+              Profit & Loss Statement
+            </Typography>
+
+            {/* P&L Detailed */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ p: 2, backgroundColor: '#f0fdf4', borderRadius: '8px', mb: 2 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: '#15803d' }}>
+                    Revenue
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2">Sales Revenue:</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      {formatCurrency(financialMetrics.totalRevenue)}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2">Other Income:</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      {formatCurrency(0)}
+                    </Typography>
+                  </Box>
+                  <Divider sx={{ my: 1 }} />
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Total Revenue:</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#15803d' }}>
+                      {formatCurrency(financialMetrics.totalRevenue)}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Box sx={{ p: 2, backgroundColor: '#fef2f2', borderRadius: '8px', mb: 2 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: '#dc2626' }}>
+                    Expenses
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2">Operating Expenses:</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      {formatCurrency(financialMetrics.totalExpenses)}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2">Payroll:</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      {formatCurrency(employeesData.reduce((sum, emp) => sum + emp.salary, 0))}
+                    </Typography>
+                  </Box>
+                  <Divider sx={{ my: 1 }} />
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Total Expenses:</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#dc2626' }}>
+                      {formatCurrency(financialMetrics.totalExpenses + employeesData.reduce((sum, emp) => sum + emp.salary, 0))}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+
+            {/* Net Income */}
+            <Box sx={{ p: 2, backgroundColor: '#eff6ff', borderRadius: '8px', mt: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e40af' }}>
+                  Net Income:
+                </Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1e40af' }}>
+                  {formatCurrency(financialMetrics.totalRevenue - (financialMetrics.totalExpenses + employeesData.reduce((sum, emp) => sum + emp.salary, 0)))}
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Balance Sheet */}
+        <Grid item xs={12} lg={4}>
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              height: '100%'
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 'bold',
+                color: '#1e293b',
+                mb: 3
+              }}
+            >
+              Balance Sheet Summary
+            </Typography>
+
+            {/* Assets */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: '#1e3a8a' }}>
+                Assets
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Cash & Bank:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  {formatCurrency(financialMetrics.cashBalance)}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Accounts Receivable:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  {formatCurrency(financialMetrics.totalRevenue * 0.1)}
+                </Typography>
+              </Box>
+              <Divider sx={{ my: 1 }} />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Total Assets:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+                  {formatCurrency(financialMetrics.cashBalance + (financialMetrics.totalRevenue * 0.1))}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Liabilities */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: '#dc2626' }}>
+                Liabilities
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Accounts Payable:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  {formatCurrency(suppliersData.reduce((sum, bill) => sum + bill.amount, 0))}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Accrued Expenses:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  {formatCurrency(employeesData.filter(emp => emp.paymentStatus === 'pending').reduce((sum, emp) => sum + emp.salary, 0))}
+                </Typography>
+              </Box>
+              <Divider sx={{ my: 1 }} />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Total Liabilities:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#dc2626' }}>
+                  {formatCurrency(suppliersData.reduce((sum, bill) => sum + bill.amount, 0) + 
+                    employeesData.filter(emp => emp.paymentStatus === 'pending').reduce((sum, emp) => sum + emp.salary, 0))}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Equity */}
+            <Box sx={{ p: 2, backgroundColor: '#f0fdf4', borderRadius: '8px' }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: '#15803d' }}>
+                Owner's Equity
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Net Worth:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#15803d' }}>
+                  {formatCurrency((financialMetrics.cashBalance + (financialMetrics.totalRevenue * 0.1)) - 
+                    (suppliersData.reduce((sum, bill) => sum + bill.amount, 0) + 
+                    employeesData.filter(emp => emp.paymentStatus === 'pending').reduce((sum, emp) => sum + emp.salary, 0)))}
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+
   return (
-    <Box sx={{ display: 'flex', minHeight: '80vh' }}>
-      {/* Left Sidebar Navigation */}
-      <Box
-        sx={{
-          width: sidebarWidth,
-          backgroundColor: '#f8fafc',
-          borderRight: '1px solid #e2e8f0',
-          borderRadius: '12px 0 0 12px'
-        }}
-      >
-        <Box sx={{ p: 3, borderBottom: '1px solid #e2e8f0' }}>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 'bold',
-              color: '#1e3a8a',
-              mb: 1
-            }}
-          >
-            Finance Module
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{
-              color: '#64748b'
-            }}
-          >
-            Financial management & analytics
-          </Typography>
-        </Box>
-
-        <List sx={{ p: 2 }}>
-          {navigationItems.map((item) => (
-            <ListItem key={item.index} disablePadding sx={{ mb: 1 }}>
-              <ListItemButton
-                onClick={() => setActiveTab(item.index)}
-                sx={{
-                  borderRadius: '8px',
-                  py: 1.5,
-                  px: 2,
-                  backgroundColor: activeTab === item.index ? '#1e3a8a' : 'transparent',
-                  color: activeTab === item.index ? 'white' : '#64748b',
-                  '&:hover': {
-                    backgroundColor: activeTab === item.index ? '#1e40af' : '#e2e8f0',
-                  },
-                  transition: 'all 0.2s ease-in-out'
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    color: 'inherit',
-                    minWidth: 36,
-                    '& .MuiSvgIcon-root': {
-                      fontSize: '20px'
-                    }
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  sx={{
-                    '& .MuiListItemText-primary': {
-                      fontSize: '14px',
-                      fontWeight: activeTab === item.index ? 'bold' : 'medium'
-                    }
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+    <Box sx={{ p: 3 }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1e3a8a', mb: 1 }}>
+          Finance Module
+        </Typography>
+        <Typography variant="body1" sx={{ color: '#64748b' }}>
+          Comprehensive financial management and analytics
+        </Typography>
       </Box>
 
-      {/* Main Content Area */}
-      <Box
-        sx={{
-          flexGrow: 1,
-          backgroundColor: '#ffffff',
-          borderRadius: '0 12px 12px 0',
-          minHeight: '80vh'
-        }}
-      >
-        <Box sx={{ p: 4 }}>
-          <TabPanel value={activeTab} index={0}>
-            {renderDashboard()}
-          </TabPanel>
-          <TabPanel value={activeTab} index={1}>
-            {renderBills()}
-          </TabPanel>
-          <TabPanel value={activeTab} index={2}>
-            {renderPayroll()}
-          </TabPanel>
-        </Box>
+      {/* Horizontal Navigation Tabs */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs 
+          value={activeTab} 
+          onChange={handleTabChange}
+          sx={{
+            '& .MuiTab-root': {
+              textTransform: 'none',
+              fontWeight: 600,
+              fontSize: '16px',
+              color: '#64748b',
+              '&.Mui-selected': {
+                color: '#1e3a8a',
+              }
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: '#1e3a8a',
+              height: 3
+            }
+          }}
+        >
+          <Tab 
+            label="Dashboard" 
+            icon={<Dashboard />} 
+            iconPosition="start"
+            sx={{ mr: 2 }}
+          />
+          <Tab 
+            label="Bills & Payments" 
+            icon={<Receipt />} 
+            iconPosition="start"
+            sx={{ mr: 2 }}
+          />
+          <Tab 
+            label="Payroll" 
+            icon={<People />} 
+            iconPosition="start"
+            sx={{ mr: 2 }}
+          />
+          <Tab 
+            label="Financial Reports" 
+            icon={<BarChart />} 
+            iconPosition="start"
+          />
+        </Tabs>
       </Box>
+
+      {/* Tab Content */}
+      <TabPanel value={activeTab} index={0}>
+        {renderDashboard()}
+      </TabPanel>
+      <TabPanel value={activeTab} index={1}>
+        {renderBills()}
+      </TabPanel>
+      <TabPanel value={activeTab} index={2}>
+        {renderPayroll()}
+      </TabPanel>
+      <TabPanel value={activeTab} index={3}>
+        {renderReports()}
+      </TabPanel>
     </Box>
   );
 }
