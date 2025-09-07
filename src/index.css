@@ -701,6 +701,19 @@ body {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
+.dashboard-npk-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-logo-image {
+  max-height: 4rem;
+  max-width: 200px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+}
+
 .dashboard-cross {
   position: relative;
 }

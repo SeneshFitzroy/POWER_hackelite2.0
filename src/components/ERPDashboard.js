@@ -127,15 +127,13 @@ export default function ERPDashboard() {
               <circle cx="70" cy="70" r="8" fill="white" style={{opacity: 0.3}} />
             </svg>
           </div>
-          <div>
-            <h1 className="dashboard-title">PharmaCore</h1>
-            <p className="dashboard-subtitle">Enterprise Resource Planning</p>
+          <div className="dashboard-npk-logo">
+            <img 
+              src="/images/npk-logo.png" 
+              alt="NPK New Pharmacy" 
+              className="dashboard-logo-image"
+            />
           </div>
-        </div>
-
-        <div className="dashboard-welcome">
-          <h2 className="dashboard-welcome-title">Welcome to Your Dashboard</h2>
-          <p className="dashboard-welcome-text">Access all your business modules from one centralized platform</p>
         </div>
       </div>
 
