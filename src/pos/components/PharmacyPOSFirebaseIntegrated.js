@@ -1339,12 +1339,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
       {/* NEW PATIENT FORM DIALOG */}
       <Dialog open={showPatientForm} onClose={() => setShowPatientForm(false)} maxWidth="md" fullWidth>
-        <Box sx={{ p: 4 }}>
-          <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 3 }}>
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 2, textAlign: 'center' }}>
             NEW PATIENT REGISTRATION
           </Typography>
           
-          <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -1352,6 +1352,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 value={newPatient.name}
                 onChange={(e) => setNewPatient({...newPatient, name: e.target.value})}
                 required
+                size="small"
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -1361,6 +1362,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 value={newPatient.contact}
                 onChange={(e) => setNewPatient({...newPatient, contact: e.target.value})}
                 required
+                size="small"
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -1370,10 +1372,21 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 value={newPatient.nic}
                 onChange={(e) => setNewPatient({...newPatient, nic: e.target.value})}
                 disabled={newPatient.isUnder15 || newPatient.hasNoNic}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Age"
+                type="number"
+                value={newPatient.age}
+                onChange={(e) => setNewPatient({...newPatient, age: e.target.value})}
+                size="small"
               />
             </Grid>
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -1384,9 +1397,10 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         hasNoNic: e.target.checked ? false : newPatient.hasNoNic,
                         nic: e.target.checked ? '' : newPatient.nic
                       })}
+                      size="small"
                     />
                   }
-                  label="Patient is under 15 years old (No NIC required)"
+                  label={<Typography variant="body2">Patient is under 15 years old (No NIC required)</Typography>}
                 />
                 <FormControlLabel
                   control={
@@ -1398,29 +1412,20 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         isUnder15: e.target.checked ? false : newPatient.isUnder15,
                         nic: e.target.checked ? '' : newPatient.nic
                       })}
+                      size="small"
                     />
                   }
-                  label="Patient has no NIC"
+                  label={<Typography variant="body2">Patient has no NIC</Typography>}
                 />
               </Box>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Age"
-                type="number"
-                value={newPatient.age}
-                onChange={(e) => setNewPatient({...newPatient, age: e.target.value})}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
                 label="Address"
                 value={newPatient.address}
                 onChange={(e) => setNewPatient({...newPatient, address: e.target.value})}
-                multiline
-                rows={2}
+                size="small"
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -1431,6 +1436,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 onChange={(e) => setNewPatient({...newPatient, gender: e.target.value})}
                 select
                 SelectProps={{ native: true }}
+                size="small"
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -1444,32 +1450,51 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 label="Blood Group"
                 value={newPatient.bloodGroup}
                 onChange={(e) => setNewPatient({...newPatient, bloodGroup: e.target.value})}
+                size="small"
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Medical Notes"
                 value={newPatient.medicalNotes}
                 onChange={(e) => setNewPatient({...newPatient, medicalNotes: e.target.value})}
-                multiline
-                rows={3}
+                size="small"
               />
             </Grid>
           </Grid>
 
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', pt: 1 }}>
             <Button
               variant="outlined"
               onClick={() => setShowPatientForm(false)}
-              sx={{ borderColor: '#6b7280', color: '#6b7280' }}
+              sx={{ 
+                borderColor: '#6b7280', 
+                color: '#6b7280',
+                px: 3,
+                py: 1
+              }}
             >
-              Cancel
+              CANCEL
             </Button>
             <Button
               variant="contained"
               onClick={saveNewPatient}
-              sx={{ background: '#1e40af', color: 'white' }}
+              sx={{ 
+                backgroundColor: '#1976d2', 
+                color: 'white',
+                px: 3,
+                py: 1,
+                '&:hover': {
+                  backgroundColor: '#1565c0'
+                }
+              }}
+            >
+              SAVE TO FIREBASE
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
             >
               Save to Firebase
             </Button>
