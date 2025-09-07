@@ -833,7 +833,6 @@ body {
   width: 4rem;
   height: 4rem;
   margin: 0 auto 1rem;
-  background: linear-gradient(135deg, #1e3a8a 0%, rgba(30, 58, 138, 0.8) 100%);
   border-radius: 1rem;
   display: flex;
   align-items: center;
@@ -841,7 +840,7 @@ body {
   color: white;
   font-size: 1.5rem;
   transition: transform 0.3s ease;
-  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .module-card:hover .module-icon {

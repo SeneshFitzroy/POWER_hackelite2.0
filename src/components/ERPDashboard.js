@@ -139,6 +139,7 @@ export default function ERPDashboard() {
               icon={module.icon}
               title={module.title}
               description={module.description}
+              color={module.color}
               delay={400 + index * 100}
               onClick={() => handleModuleClick(module.title)}
             />
