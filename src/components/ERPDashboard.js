@@ -113,20 +113,6 @@ export default function ERPDashboard() {
       <div className={`dashboard-header ${headerVisible ? 'animate' : ''}`}>
         {/* Logo and Title */}
         <div className="dashboard-logo-title">
-          <div className="dashboard-logo">
-            <svg width="48" height="48" viewBox="0 0 140 140" style={{filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))'}}>
-              {/* Main circle background */}
-              <circle cx="70" cy="70" r="60" fill="white" style={{opacity: 0.95}} />
-              {/* Medical cross - using current color for theme consistency */}
-              <rect x="58" y="30" width="24" height="80" fill="currentColor" rx="6" />
-              <rect x="30" y="58" width="80" height="24" fill="currentColor" rx="6" />
-              {/* Inner highlight for depth */}
-              <rect x="60" y="32" width="20" height="76" fill="currentColor" style={{opacity: 0.9}} rx="4" />
-              <rect x="32" y="60" width="76" height="20" fill="currentColor" style={{opacity: 0.9}} rx="4" />
-              {/* Center highlight */}
-              <circle cx="70" cy="70" r="8" fill="white" style={{opacity: 0.3}} />
-            </svg>
-          </div>
           <div className="dashboard-npk-logo">
             <img 
               src="/images/npk-logo.png" 
