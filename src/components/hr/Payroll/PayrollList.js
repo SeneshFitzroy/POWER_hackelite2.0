@@ -68,6 +68,23 @@ const PayrollList = () => {
     }
   };
 
+  // Calculate payroll statistics
+  const calculatePayrollStats = () => {
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const thisMonthPayrolls = payrolls.filter(p => p.month === currentMonth);
+    const totalPayout = payrolls.reduce((sum, p) => sum + (p.netSalary || 0), 0);
+    const uniqueMonths = [...new Set(payrolls.map(p => p.month))].length;
+
+    return {
+      totalEmployees: employees.filter(e => e.status === 'active').length,
+      thisMonthProcessed: thisMonthPayrolls.length,
+      totalPayout: totalPayout,
+      monthsProcessed: uniqueMonths
+    };
+  };
+
+  const payrollStats = calculatePayrollStats();
+
   const processPayroll = async () => {
     if (!selectedMonth) {
       toast.error('Please select a month');
@@ -347,8 +364,7 @@ const PayrollList = () => {
               </Box>
             </Box>
             
-            <div className="overflow-x-auto">
-              <TableContainer component={Paper} elevation={0}>
+            <TableContainer component={Paper} elevation={0}>
                 <Table>
                   <TableHead>
                     <TableRow sx={{ backgroundColor: '#f8fafc' }}>
@@ -423,7 +439,6 @@ const PayrollList = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-            </div>
           </Paper>
         ))}
       </Box>
