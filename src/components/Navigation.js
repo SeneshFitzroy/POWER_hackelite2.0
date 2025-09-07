@@ -10,11 +10,7 @@ import {
   MenuItem,
   Avatar
 } from '@mui/material';
-<<<<<<< HEAD
-import { AccountCircle, ExitToApp, LocalPharmacy, Dashboard, Settings } from '@mui/icons-material';
-=======
-import { AccountCircle, ExitToApp, Dashboard, TrendingUp } from '@mui/icons-material';
->>>>>>> SALES
+import { AccountCircle, ExitToApp, LocalPharmacy, Dashboard, Settings, TrendingUp } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
