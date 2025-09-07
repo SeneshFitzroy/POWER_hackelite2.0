@@ -204,6 +204,18 @@ export default function SalesOrders({ dateFilter }) {
     }
   };
 
+  const handlePaymentMethodChange = async (orderId, paymentMethod) => {
+    try {
+      await updateDoc(doc(db, 'salesOrders', orderId), {
+        paymentMethod: paymentMethod,
+        updatedAt: Timestamp.now()
+      });
+      loadOrders();
+    } catch (error) {
+      console.error('Error updating payment method:', error);
+    }
+  };
+
   const resetNewOrder = () => {
     setNewOrder({
       employeeId: '',
@@ -296,11 +308,10 @@ export default function SalesOrders({ dateFilter }) {
                   Customer
                 </TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Employee ID</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Pharmacy #</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Total</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Actions</TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Payment Method</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -317,7 +328,6 @@ export default function SalesOrders({ dateFilter }) {
                   </TableCell>
                   <TableCell>{order.customerName}</TableCell>
                   <TableCell>{order.employeeId}</TableCell>
-                  <TableCell>{order.pharmacyNumber}</TableCell>
                   <TableCell>
                     <Typography fontWeight="bold" color="#000000">
                       {formatCurrency(order.total)}
@@ -341,33 +351,65 @@ export default function SalesOrders({ dateFilter }) {
                     {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString() : 'N/A'}
                   </TableCell>
                   <TableCell sx={{ textAlign: 'center' }}>
-                    <IconButton
-                      onClick={() => handleViewDetails(order)}
-                      sx={{ color: '#000000', mr: 1 }}
-                      title="View Details"
-                    >
-                      <Visibility />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => handleEditOrder(order)}
-                      sx={{ color: '#000000', mr: 1 }}
-                      title="Edit Order"
-                    >
-                      <Edit />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => handleDeleteOrder(order.id)}
-                      sx={{ color: '#d32f2f' }}
-                      title="Delete Order"
-                    >
-                      <Delete />
-                    </IconButton>
+                    <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                      <Button
+                        size="small"
+                        variant={order.paymentMethod === 'card' ? 'contained' : 'outlined'}
+                        onClick={() => handlePaymentMethodChange(order.id, 'card')}
+                        sx={{ 
+                          minWidth: '50px',
+                          fontSize: '10px',
+                          backgroundColor: order.paymentMethod === 'card' ? '#1e3a8a' : 'transparent',
+                          color: order.paymentMethod === 'card' ? 'white' : '#1e3a8a',
+                          borderColor: '#1e3a8a',
+                          '&:hover': {
+                            backgroundColor: order.paymentMethod === 'card' ? '#1e40af' : 'rgba(30, 58, 138, 0.1)'
+                          }
+                        }}
+                      >
+                        Card
+                      </Button>
+                      <Button
+                        size="small"
+                        variant={order.paymentMethod === 'cash' ? 'contained' : 'outlined'}
+                        onClick={() => handlePaymentMethodChange(order.id, 'cash')}
+                        sx={{ 
+                          minWidth: '50px',
+                          fontSize: '10px',
+                          backgroundColor: order.paymentMethod === 'cash' ? '#1e3a8a' : 'transparent',
+                          color: order.paymentMethod === 'cash' ? 'white' : '#1e3a8a',
+                          borderColor: '#1e3a8a',
+                          '&:hover': {
+                            backgroundColor: order.paymentMethod === 'cash' ? '#1e40af' : 'rgba(30, 58, 138, 0.1)'
+                          }
+                        }}
+                      >
+                        Cash
+                      </Button>
+                      <Button
+                        size="small"
+                        variant={order.paymentMethod === 'other' ? 'contained' : 'outlined'}
+                        onClick={() => handlePaymentMethodChange(order.id, 'other')}
+                        sx={{ 
+                          minWidth: '50px',
+                          fontSize: '10px',
+                          backgroundColor: order.paymentMethod === 'other' ? '#1e3a8a' : 'transparent',
+                          color: order.paymentMethod === 'other' ? 'white' : '#1e3a8a',
+                          borderColor: '#1e3a8a',
+                          '&:hover': {
+                            backgroundColor: order.paymentMethod === 'other' ? '#1e40af' : 'rgba(30, 58, 138, 0.1)'
+                          }
+                        }}
+                      >
+                        Other
+                      </Button>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
               {filteredOrders.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} sx={{ textAlign: 'center', py: 4 }}>
+                  <TableCell colSpan={7} sx={{ textAlign: 'center', py: 4 }}>
                     <Typography color="textSecondary">
                       {searchTerm ? 'No orders found matching your search.' : 'No orders found. Create your first order!'}
                     </Typography>
@@ -402,14 +444,17 @@ export default function SalesOrders({ dateFilter }) {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Pharmacy Number *"
-                value={newOrder.pharmacyNumber}
-                onChange={(e) => setNewOrder({ ...newOrder, pharmacyNumber: e.target.value })}
-                error={!newOrder.pharmacyNumber}
-                helperText={!newOrder.pharmacyNumber ? 'Pharmacy Number is required' : ''}
-              />
+              <FormControl fullWidth>
+                <InputLabel>Payment Method</InputLabel>
+                <Select
+                  value={newOrder.paymentMethod}
+                  onChange={(e) => setNewOrder({ ...newOrder, paymentMethod: e.target.value })}
+                >
+                  <MenuItem value="cash">Cash</MenuItem>
+                  <MenuItem value="card">Card</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <Autocomplete
@@ -494,7 +539,7 @@ export default function SalesOrders({ dateFilter }) {
           <Button
             variant="contained"
             onClick={handleAddOrder}
-            disabled={loading || !newOrder.employeeId || !newOrder.pharmacyNumber || !newOrder.customerId}
+            disabled={loading || !newOrder.employeeId || !newOrder.customerId}
             sx={{
               backgroundColor: '#000000',
               color: 'white',
@@ -549,7 +594,7 @@ export default function SalesOrders({ dateFilter }) {
                     </Typography>
                     <Typography><strong>Customer:</strong> {selectedOrder.customerName}</Typography>
                     <Typography><strong>Employee ID:</strong> {selectedOrder.employeeId}</Typography>
-                    <Typography><strong>Pharmacy #:</strong> {selectedOrder.pharmacyNumber}</Typography>
+                    <Typography><strong>Payment Method:</strong> {selectedOrder.paymentMethod || 'Cash'}</Typography>
                   </CardContent>
                 </Card>
               </Grid>

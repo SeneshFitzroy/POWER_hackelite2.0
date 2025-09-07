@@ -54,8 +54,7 @@ export default function CustomerManagement({ dateFilter }) {
     age: '',
     nic: '',
     email: '',
-    isChild: false,
-    noNicAvailable: false
+    isChild: false
   });
 
   useEffect(() => {
@@ -105,8 +104,8 @@ export default function CustomerManagement({ dateFilter }) {
         return;
       }
 
-      if (!newCustomer.isChild && !newCustomer.nic && !newCustomer.noNicAvailable) {
-        alert('NIC is required for customers 15 years and above, or please check "No NIC Available" option!');
+      if (!newCustomer.isChild && !newCustomer.nic) {
+        alert('NIC is required for customers 15 years and above!');
         return;
       }
 
@@ -162,8 +161,7 @@ export default function CustomerManagement({ dateFilter }) {
       age: customer.age.toString(),
       nic: customer.nic || '',
       email: customer.email || '',
-      isChild: customer.isChild || false,
-      noNicAvailable: customer.noNicAvailable || false
+      isChild: customer.isChild || false
     });
     setShowCustomerDialog(true);
   };
@@ -327,21 +325,6 @@ export default function CustomerManagement({ dateFilter }) {
                             </Typography>
                           </Box>
                         </>
-                      ) : customer.noNicAvailable ? (
-                        <>
-                          <Cancel sx={{ color: '#ff9800', fontSize: '20px' }} />
-                          <Box>
-                            <Chip 
-                              label="No NIC Available" 
-                              color="warning" 
-                              size="small" 
-                              variant="outlined"
-                            />
-                            <Typography variant="caption" display="block" color="warning.main">
-                              NIC Not Available
-                            </Typography>
-                          </Box>
-                        </>
                       ) : (
                         <>
                           <Cancel sx={{ color: '#f44336', fontSize: '20px' }} />
@@ -473,20 +456,14 @@ export default function CustomerManagement({ dateFilter }) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label={
-                  newCustomer.isChild 
-                    ? "NIC (Optional for children)" 
-                    : newCustomer.noNicAvailable 
-                    ? "NIC (Not Available)" 
-                    : "NIC *"
-                }
+                label={newCustomer.isChild ? "NIC (Optional for children)" : "NIC *"}
                 value={newCustomer.nic}
                 onChange={(e) => setNewCustomer({ ...newCustomer, nic: e.target.value })}
-                disabled={newCustomer.isChild || newCustomer.noNicAvailable}
-                error={!newCustomer.isChild && !newCustomer.nic && !newCustomer.noNicAvailable}
+                disabled={newCustomer.isChild}
+                error={!newCustomer.isChild && !newCustomer.nic}
                 helperText={
-                  !newCustomer.isChild && !newCustomer.nic && !newCustomer.noNicAvailable
-                    ? 'NIC is required for customers 15 years and above, or check "No NIC Available"' 
+                  !newCustomer.isChild && !newCustomer.nic 
+                    ? 'NIC is required for customers 15 years and above' 
                     : !validateNIC(newCustomer.nic) && newCustomer.nic
                     ? 'Please enter a valid NIC number' 
                     : ''
@@ -507,44 +484,16 @@ export default function CustomerManagement({ dateFilter }) {
                 control={
                   <Checkbox
                     checked={newCustomer.isChild}
-                    onChange={(e) => setNewCustomer({ 
-                      ...newCustomer, 
-                      isChild: e.target.checked,
-                      noNicAvailable: e.target.checked ? false : newCustomer.noNicAvailable
-                    })}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, isChild: e.target.checked })}
                   />
                 }
                 label="Customer is under 15 years old (NIC not required)"
               />
             </Grid>
-            {!newCustomer.isChild && (
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={newCustomer.noNicAvailable}
-                      onChange={(e) => setNewCustomer({ 
-                        ...newCustomer, 
-                        noNicAvailable: e.target.checked,
-                        nic: e.target.checked ? '' : newCustomer.nic
-                      })}
-                    />
-                  }
-                  label="No NIC Available (Customer doesn't have a NIC)"
-                />
-              </Grid>
-            )}
             {newCustomer.isChild && (
               <Grid item xs={12}>
                 <Alert severity="info">
                   NIC is not required for customers under 15 years old.
-                </Alert>
-              </Grid>
-            )}
-            {!newCustomer.isChild && newCustomer.noNicAvailable && (
-              <Grid item xs={12}>
-                <Alert severity="warning">
-                  Customer marked as "No NIC Available" - they can be registered without providing a NIC number.
                 </Alert>
               </Grid>
             )}
@@ -561,8 +510,7 @@ export default function CustomerManagement({ dateFilter }) {
                 age: '',
                 nic: '',
                 email: '',
-                isChild: false,
-                noNicAvailable: false
+                isChild: false
               });
             }}
             sx={{ color: '#666666' }}
@@ -577,7 +525,7 @@ export default function CustomerManagement({ dateFilter }) {
               !newCustomer.name || 
               !newCustomer.phoneNumber ||
               !validatePhoneNumber(newCustomer.phoneNumber) ||
-              (!newCustomer.isChild && !newCustomer.nic && !newCustomer.noNicAvailable) ||
+              (!newCustomer.isChild && !newCustomer.nic) ||
               (newCustomer.nic && !validateNIC(newCustomer.nic))
             }
             sx={{
