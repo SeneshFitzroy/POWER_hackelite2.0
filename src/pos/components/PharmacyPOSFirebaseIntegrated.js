@@ -1371,7 +1371,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 label="NIC Number"
                 value={newPatient.nic}
                 onChange={(e) => setNewPatient({...newPatient, nic: e.target.value})}
-                disabled={newPatient.isUnder15 || newPatient.hasNoNic}
+                disabled={newPatient.isUnder15}
                 size="small"
               />
             </Grid>
@@ -1394,28 +1394,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
                       onChange={(e) => setNewPatient({
                         ...newPatient, 
                         isUnder15: e.target.checked,
-                        hasNoNic: e.target.checked ? false : newPatient.hasNoNic,
                         nic: e.target.checked ? '' : newPatient.nic
                       })}
                       size="small"
                     />
                   }
                   label={<Typography variant="body2">Patient is under 15 years old (No NIC required)</Typography>}
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={newPatient.hasNoNic}
-                      onChange={(e) => setNewPatient({
-                        ...newPatient, 
-                        hasNoNic: e.target.checked,
-                        isUnder15: e.target.checked ? false : newPatient.isUnder15,
-                        nic: e.target.checked ? '' : newPatient.nic
-                      })}
-                      size="small"
-                    />
-                  }
-                  label={<Typography variant="body2">Patient has no NIC</Typography>}
                 />
               </Box>
             </Grid>
