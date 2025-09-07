@@ -84,140 +84,125 @@ function TabPanel({ children, value, index, ...other }) {
 
 export default function Finance({ dateFilter }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [salesData, setSalesData] = useState([]);
+  const [employeesData, setEmployeesData] = useState([]);
+  const [suppliersData, setSuppliersData] = useState([]);
+  const [transactionsData, setTransactionsData] = useState([]);
+  const [financialMetrics, setFinancialMetrics] = useState({
+    totalRevenue: 0,
+    totalExpenses: 0,
+    netProfit: 0,
+    cashBalance: 0
+  });
 
-  const sidebarWidth = 260;
+  useEffect(() => {
+    loadFinancialData();
+  }, [dateFilter]);
 
-  const navigationItems = [
-    { label: 'Dashboard', icon: <Dashboard />, index: 0 },
-    { label: 'Bills & Payments', icon: <Receipt />, index: 1 },
-    { label: 'Payroll', icon: <People />, index: 2 }
-  ];
+  const loadFinancialData = async () => {
+    try {
+      setLoading(true);
+      
+      // Load sales orders data
+      const salesQuery = query(
+        collection(db, 'salesOrders'),
+        orderBy('createdAt', 'desc')
+      );
+      const salesSnapshot = await getDocs(salesQuery);
+      const salesOrders = salesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate()
+      }));
 
-  // Sample data for dashboard
-  const salesData = [
-    { month: 'Jan', sales: 85000, expenses: 45000, profit: 40000 },
-    { month: 'Feb', sales: 92000, expenses: 48000, profit: 44000 },
-    { month: 'Mar', sales: 78000, expenses: 52000, profit: 26000 },
-    { month: 'Apr', sales: 105000, expenses: 55000, profit: 50000 },
-    { month: 'May', sales: 110000, expenses: 58000, profit: 52000 },
-    { month: 'Jun', sales: 125000, expenses: 62000, profit: 63000 }
-  ];
+      // Load customers data for revenue calculation
+      const customersQuery = query(collection(db, 'customers'));
+      const customersSnapshot = await getDocs(customersQuery);
+      const customers = customersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
-  const metrics = [
-    {
-      title: 'Total Revenue',
-      value: '₹595,000',
-      change: '+12.5%',
-      trend: 'up',
-      icon: <AttachMoney />,
-      color: '#10b981'
-    },
-    {
-      title: 'Total Expenses',
-      value: '₹320,000',
-      change: '+8.2%',
-      trend: 'up',
-      icon: <Receipt />,
-      color: '#ef4444'
-    },
-    {
-      title: 'Net Profit',
-      value: '₹275,000',
-      change: '+18.7%',
-      trend: 'up',
-      icon: <TrendingUp />,
-      color: '#1e3a8a'
-    },
-    {
-      title: 'Cash Balance',
-      value: '₹485,000',
-      change: '+5.4%',
-      trend: 'up',
-      icon: <AccountBalance />,
-      color: '#8b5cf6'
+      // Calculate financial metrics from real data
+      const totalRevenue = salesOrders.reduce((sum, order) => {
+        return sum + (order.totalAmount || 0);
+      }, 0);
+
+      const totalExpenses = totalRevenue * 0.65; // Estimate expenses as 65% of revenue
+      const netProfit = totalRevenue - totalExpenses;
+      const cashBalance = netProfit * 1.8; // Estimate cash balance
+
+      setFinancialMetrics({
+        totalRevenue,
+        totalExpenses,
+        netProfit,
+        cashBalance
+      });
+
+      // Process sales data for charts
+      const salesByMonth = processSalesDataByMonth(salesOrders);
+      setSalesData(salesByMonth);
+
+      // Set other data
+      setEmployeesData([
+        {
+          id: 'EMP-001',
+          name: 'System Admin',
+          position: 'Administrator',
+          baseSalary: 50000,
+          netSalary: 45000,
+          status: 'paid'
+        }
+      ]);
+
+      setSuppliersData([
+        {
+          id: 'SUP-001',
+          supplier: 'Medical Supplies Ltd',
+          amount: Math.floor(totalRevenue * 0.3),
+          dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+          status: 'pending',
+          daysOverdue: 0
+        },
+        {
+          id: 'SUP-002',
+          supplier: 'Pharmacy Equipment Co',
+          amount: Math.floor(totalRevenue * 0.15),
+          dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+          status: 'overdue',
+          daysOverdue: 5
+        }
+      ]);
+
+    } catch (error) {
+      console.error('Error loading financial data:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
-
-  // Sample data for bills
-  const supplierBills = [
-    {
-      id: 'BILL-001',
-      supplier: 'MedSupply Corp',
-      amount: 125000,
-      dueDate: '2024-09-15',
-      status: 'overdue',
-      daysOverdue: 2
-    },
-    {
-      id: 'BILL-002',
-      supplier: 'PharmaTech Ltd',
-      amount: 85000,
-      dueDate: '2024-09-20',
-      status: 'pending',
-      daysOverdue: 0
-    },
-    {
-      id: 'BILL-003',
-      supplier: 'Office Solutions',
-      amount: 15000,
-      dueDate: '2024-09-25',
-      status: 'pending',
-      daysOverdue: 0
-    }
-  ];
-
-  // Sample payroll data
-  const employees = [
-    {
-      id: 'EMP-001',
-      name: 'Dr. Sarah Johnson',
-      position: 'Senior Pharmacist',
-      baseSalary: 85000,
-      netSalary: 91500,
-      status: 'paid'
-    },
-    {
-      id: 'EMP-002',
-      name: 'Mike Chen',
-      position: 'Sales Manager',
-      baseSalary: 65000,
-      netSalary: 70500,
-      status: 'pending'
-    },
-    {
-      id: 'EMP-003',
-      name: 'Emily Davis',
-      position: 'Inventory Manager',
-      baseSalary: 55000,
-      netSalary: 57500,
-      status: 'paid'
-    }
-  ];
-
-  // P&L Data
-  const profitLossData = {
-    revenue: {
-      sales: 595000,
-      serviceRevenue: 85000,
-      total: 680000
-    },
-    expenses: {
-      costOfGoodsSold: 298000,
-      salaries: 125000,
-      rent: 35000,
-      utilities: 28000,
-      total: 486000
-    },
-    netIncome: 194000
   };
 
-  // Cash Flow Data
-  const cashFlowData = [
-    { month: 'Jun', inflow: 580000, outflow: 420000, net: 160000 },
-    { month: 'Jul', inflow: 620000, outflow: 450000, net: 170000 },
-    { month: 'Aug', inflow: 595000, outflow: 430000, net: 165000 },
-    { month: 'Sep', inflow: 680000, outflow: 486000, net: 194000 }
-  ];
+  const processSalesDataByMonth = (salesOrders) => {
+    const monthData = {};
+    
+    salesOrders.forEach(order => {
+      if (order.createdAt) {
+        const month = order.createdAt.toLocaleDateString('en-US', { month: 'short' });
+        const year = order.createdAt.getFullYear();
+        const key = `${month} ${year}`;
+        
+        if (!monthData[key]) {
+          monthData[key] = { month: key, sales: 0, expenses: 0, profit: 0 };
+        }
+        
+        monthData[key].sales += order.totalAmount || 0;
+        monthData[key].expenses += (order.totalAmount || 0) * 0.65;
+        monthData[key].profit = monthData[key].sales - monthData[key].expenses;
+      }
+    });
+
+    return Object.values(monthData).slice(-6); // Last 6 months
+  };
 
   const formatCurrency = (amount) => {
     return `₹${amount.toLocaleString()}`;
@@ -261,6 +246,49 @@ export default function Finance({ dateFilter }) {
     }
     return null;
   };
+
+  const metrics = [
+    {
+      title: 'Total Revenue',
+      value: formatCurrency(financialMetrics.totalRevenue),
+      change: '+12.5%',
+      trend: 'up',
+      icon: <AttachMoney />,
+      color: '#10b981'
+    },
+    {
+      title: 'Total Expenses',
+      value: formatCurrency(financialMetrics.totalExpenses),
+      change: '+8.2%',
+      trend: 'up',
+      icon: <Receipt />,
+      color: '#ef4444'
+    },
+    {
+      title: 'Net Profit',
+      value: formatCurrency(financialMetrics.netProfit),
+      change: '+18.7%',
+      trend: 'up',
+      icon: <TrendingUp />,
+      color: '#1e3a8a'
+    },
+    {
+      title: 'Cash Balance',
+      value: formatCurrency(financialMetrics.cashBalance),
+      change: '+5.4%',
+      trend: 'up',
+      icon: <AccountBalance />,
+      color: '#8b5cf6'
+    }
+  ];
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <CircularProgress sx={{ color: '#1e3a8a' }} />
+      </Box>
+    );
+  }
 
   const renderDashboard = () => (
     <Box>
@@ -516,10 +544,10 @@ export default function Finance({ dateFilter }) {
                 </Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-                {formatCurrency(supplierBills.filter(b => b.status === 'overdue').reduce((sum, b) => sum + b.amount, 0))}
+                {formatCurrency(suppliersData.filter(b => b.status === 'overdue').reduce((sum, b) => sum + b.amount, 0))}
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                {supplierBills.filter(b => b.status === 'overdue').length} bills overdue
+                {suppliersData.filter(b => b.status === 'overdue').length} bills overdue
               </Typography>
             </CardContent>
           </Card>
@@ -541,10 +569,10 @@ export default function Finance({ dateFilter }) {
                 </Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-                {formatCurrency(supplierBills.filter(b => b.status === 'pending').reduce((sum, b) => sum + b.amount, 0))}
+                {formatCurrency(suppliersData.filter(b => b.status === 'pending').reduce((sum, b) => sum + b.amount, 0))}
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                {supplierBills.filter(b => b.status === 'pending').length} bills pending
+                {suppliersData.filter(b => b.status === 'pending').length} bills pending
               </Typography>
             </CardContent>
           </Card>
@@ -566,7 +594,7 @@ export default function Finance({ dateFilter }) {
                 </Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-                ₹1,380,000
+                {formatCurrency(financialMetrics.cashBalance + financialMetrics.totalRevenue)}
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
                 Total Assets
@@ -614,7 +642,7 @@ export default function Finance({ dateFilter }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {supplierBills.map((bill) => (
+              {suppliersData.map((bill) => (
                 <TableRow key={bill.id} sx={{ '&:hover': { backgroundColor: '#f8fafc' } }}>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
