@@ -6,6 +6,7 @@ import LoginScreen from './components/LoginScreen'
 import ERPDashboard from './components/ERPDashboard'
 import PharmacyPOSFirebaseIntegrated from './pos/components/PharmacyPOSFirebaseIntegrated'
 import SalesModule from './components/sales/SalesModule'
+import HRModule from './components/hr/HRModule'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
@@ -198,6 +199,10 @@ function App() {
     window.location.href = '/sales'
   }
 
+  const handleHRAccess = () => {
+    window.location.href = '/hr'
+  }
+
   const handleLogout = () => {
     setCurrentScreen('login')
   }
@@ -221,11 +226,21 @@ function App() {
               <SalesModule />
             </Box>
           } />
+          <Route path="/hr" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <HRModule />
+            </Box>
+          } />
           <Route path="/" element={
             <div className="App">
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLogout={handleLogout} />}
             </div>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
