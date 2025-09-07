@@ -25,7 +25,7 @@ import {
   Logout
 } from '@mui/icons-material';
 import Dashboard from './Dashboard/Dashboard';
-import EmployeeList from './Employee/EmployeeListClean';
+import EmployeeList from './Employee/EmployeeList';
 import AttendanceList from './Attendance/AttendanceList';
 import PayrollList from './Payroll/PayrollList';
 import LicenseTracking from './License/LicenseTracking';
