@@ -633,6 +633,22 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 py: 0.5
               }}
             />
+            <Button
+              variant="contained"
+              onClick={() => window.location.href = '/'}
+              sx={{
+                backgroundColor: '#dc2626',
+                color: 'white',
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#b91c1c'
+                },
+                px: 3,
+                py: 1
+              }}
+            >
+              Logout
+            </Button>
           </Box>
         </Box>
       </Paper>
