@@ -73,8 +73,9 @@ const PharmacyPOS = () => {
   // Transaction calculations
   const [transactionTotals, setTransactionTotals] = useState({
     subtotal: 0,
-    discount: 0,
-    tax: 0,
+    discountAmount: 0,
+    netTotal: 0,
+    balance: 0,
     total: 0
   });
 
@@ -86,12 +87,22 @@ const PharmacyPOS = () => {
   // Recalculate totals when cart changes
   useEffect(() => {
     if (cart.length > 0) {
-      const totals = calculateTransactionTotal(cart);
-      setTransactionTotals(totals);
+      const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+      const discountAmount = (subtotal * discountRate) / 100;
+      const netTotal = subtotal - discountAmount;
+      const balance = Math.max(0, (parseFloat(amountPaid) || 0) - netTotal);
+      
+      setTransactionTotals({
+        subtotal,
+        discountAmount,
+        netTotal,
+        balance,
+        total: netTotal
+      });
     } else {
-      setTransactionTotals({ subtotal: 0, discount: 0, tax: 0, total: 0 });
+      setTransactionTotals({ subtotal: 0, discountAmount: 0, netTotal: 0, balance: 0, total: 0 });
     }
-  }, [cart]);
+  }, [cart, discountRate, amountPaid]);
 
   // Load all medicines
   const loadMedicines = async () => {
@@ -174,7 +185,6 @@ const PharmacyPOS = () => {
         unitPrice: medicine.sellingPrice,
         quantity: 1,
         discount: 0,
-        taxRate: medicine.taxRate || 18,
         prescriptionRequired: medicine.prescriptionRequired,
         stockQuantity: medicine.stockQuantity,
         batchNumber: medicine.batchNumber,
@@ -264,19 +274,16 @@ const PharmacyPOS = () => {
         return;
       }
 
-      // For prescription medicines, verify pharmacy registration
+      // For prescription medicines, verify SLMC registration
       const validation = validateSale();
-      if (validation.prescriptionRequired && !pharmacyRegistration) {
-        addAlert('error', 'Pharmacy registration number required for prescription medicines');
+      if (validation.prescriptionRequired && !slmcRegNumber) {
+        addAlert('error', 'SLMC Registration Number required for prescription medicines');
         return;
       }
 
-      if (pharmacyRegistration) {
-        const pharmacyReg = await employeeService.verifyPharmacyRegistration(pharmacyRegistration);
-        if (!pharmacyReg) {
-          addAlert('error', 'Invalid pharmacy registration number');
-          return;
-        }
+      if (slmcRegNumber && slmcRegNumber.length !== 6) {
+        addAlert('error', 'SLMC Registration Number must be 6 digits');
+        return;
       }
 
       // Create transaction
@@ -289,17 +296,18 @@ const PharmacyPOS = () => {
         patientName: patient?.name || 'Walk-in Customer',
         items: cart,
         subtotal: transactionTotals.subtotal,
-        discount: transactionTotals.discount,
-        taxAmount: transactionTotals.tax,
+        discountRate: discountRate,
+        discountAmount: transactionTotals.discountAmount,
+        netTotal: transactionTotals.netTotal,
         totalAmount: transactionTotals.total,
         paymentMethod,
         paymentDetails: {
           [paymentMethod]: parseFloat(amountPaid) || transactionTotals.total,
-          change: Math.max(0, (parseFloat(amountPaid) || 0) - transactionTotals.total)
+          balance: transactionTotals.balance
         },
         employeeId: employeeVerification,
-        pharmacistId: validation.prescriptionRequired ? employeeVerification : null,
-        pharmacyRegistrationNumber: pharmacyRegistration || '',
+        authorizedPersonId: employeeVerification,
+        slmcRegistrationNumber: slmcRegNumber || '',
         prescriptionRequired: validation.prescriptionRequired
       };
 
@@ -312,8 +320,9 @@ const PharmacyPOS = () => {
       clearCart();
       setCheckoutDialog(false);
       setEmployeeVerification('');
-      setPharmacyRegistration('');
+      setSlmcRegNumber('');
       setAmountPaid('');
+      setDiscountRate(0);
       
     } catch (error) {
       addAlert('error', 'Checkout failed: ' + error.message);
@@ -339,30 +348,65 @@ const PharmacyPOS = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ 
+      p: 3, 
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      minHeight: '100vh'
+    }}>
       {/* Alerts */}
       {alerts.map(alert => (
         <Alert 
           key={alert.id} 
           severity={alert.severity} 
-          sx={{ mb: 1 }}
+          sx={{ mb: 1, borderRadius: 2, boxShadow: 2 }}
           onClose={() => removeAlert(alert.id)}
         >
           {alert.message}
         </Alert>
       ))}
 
-      <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-        <LocalPharmacy sx={{ mr: 1 }} />
-        Pharmacy POS System
-      </Typography>
+      {/* Header */}
+      <Paper sx={{ 
+        p: 3, 
+        mb: 3, 
+        borderRadius: 3, 
+        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+      }}>
+        <Typography variant="h3" gutterBottom sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          fontWeight: 'bold',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+        }}>
+          <LocalPharmacy sx={{ mr: 2, fontSize: 40 }} />
+          Professional Pharmacy POS
+        </Typography>
+        <Typography variant="h6" sx={{ opacity: 0.9 }}>
+          Advanced Point of Sale System for Healthcare
+        </Typography>
+      </Paper>
 
       <Grid container spacing={3}>
         {/* Left Panel - Search and Products */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 2, mb: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Medicine Search
+          <Paper sx={{ 
+            p: 3, 
+            mb: 2, 
+            borderRadius: 3,
+            background: 'rgba(255,255,255,0.95)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+          }}>
+            <Typography variant="h5" gutterBottom sx={{ 
+              color: '#1976d2', 
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <Search sx={{ mr: 1 }} />
+              Medicine Search & Selection
             </Typography>
             
             {/* Search Bar */}
@@ -374,18 +418,26 @@ const PharmacyPOS = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Search />
+                    <Search sx={{ color: '#1976d2' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton>
+                    <IconButton sx={{ color: '#1976d2' }}>
                       <QrCodeScanner />
                     </IconButton>
                   </InputAdornment>
                 )
               }}
-              sx={{ mb: 2 }}
+              sx={{ 
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  background: 'white',
+                  '&:hover fieldset': { borderColor: '#1976d2' },
+                  '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                }
+              }}
             />
 
             {/* Search Results */}
@@ -444,8 +496,20 @@ const PharmacyPOS = () => {
         {/* Right Panel - Cart and Checkout */}
         <Grid item xs={12} md={4}>
           {/* Patient Information */}
-          <Paper sx={{ p: 2, mb: 2 }}>
-            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+          <Paper sx={{ 
+            p: 3, 
+            mb: 2, 
+            borderRadius: 3,
+            background: 'rgba(255,255,255,0.95)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+          }}>
+            <Typography variant="h6" gutterBottom sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              color: '#1976d2',
+              fontWeight: 'bold'
+            }}>
               <Person sx={{ mr: 1 }} />
               Patient Information
             </Typography>
@@ -456,15 +520,48 @@ const PharmacyPOS = () => {
               value={patientPhone}
               onChange={(e) => setPatientPhone(e.target.value)}
               placeholder="Enter 10-digit phone number"
-              sx={{ mb: 1 }}
+              sx={{ 
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': { borderColor: '#1976d2' },
+                  '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                }
+              }}
+            />
+            
+            {/* SLMC Registration Number */}
+            <TextField
+              fullWidth
+              label="SLMC REG NUMBER (6 digits)"
+              value={slmcRegNumber}
+              onChange={(e) => setSlmcRegNumber(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="Enter 6-digit SLMC number"
+              sx={{ 
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': { borderColor: '#1976d2' },
+                  '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                }
+              }}
             />
             
             <Button
               fullWidth
-              variant="outlined"
+              variant="contained"
               onClick={findPatient}
               disabled={loading}
-              sx={{ mb: 2 }}
+              sx={{ 
+                mb: 2,
+                borderRadius: 2,
+                background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                boxShadow: '0 4px 20px rgba(33, 150, 243, 0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #1976d2 30%, #1e88e5 90%)',
+                  boxShadow: '0 6px 25px rgba(33, 150, 243, 0.4)'
+                }
+              }}
             >
               Find Patient
             </Button>
@@ -487,8 +584,19 @@ const PharmacyPOS = () => {
           </Paper>
 
           {/* Shopping Cart */}
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+          <Paper sx={{ 
+            p: 3,
+            borderRadius: 3,
+            background: 'rgba(255,255,255,0.95)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+          }}>
+            <Typography variant="h6" gutterBottom sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              color: '#1976d2',
+              fontWeight: 'bold'
+            }}>
               <ShoppingCart sx={{ mr: 1 }} />
               Shopping Cart ({cart.length})
             </Typography>
@@ -551,35 +659,83 @@ const PharmacyPOS = () => {
 
                 <Divider sx={{ my: 2 }} />
 
-                {/* Totals */}
-                <Box>
+                {/* Discount Rate */}
+                <Box sx={{ mb: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="Discount Rate (%)"
+                    type="number"
+                    value={discountRate}
+                    onChange={(e) => setDiscountRate(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2,
+                        '&:hover fieldset': { borderColor: '#1976d2' },
+                        '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                      }
+                    }}
+                  />
+                </Box>
+
+                {/* Billing Summary - New Order: NET TOTAL, BALANCE, BILL */}
+                <Box sx={{ 
+                  p: 2, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                  border: '2px solid #1976d2'
+                }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography>Subtotal:</Typography>
-                    <Typography>{formatCurrency(transactionTotals.subtotal)}</Typography>
+                    <Typography variant="body2">Subtotal:</Typography>
+                    <Typography variant="body2">{formatCurrency(transactionTotals.subtotal)}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography>Discount:</Typography>
-                    <Typography>-{formatCurrency(transactionTotals.discount)}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography>Tax:</Typography>
-                    <Typography>{formatCurrency(transactionTotals.tax)}</Typography>
+                    <Typography variant="body2">Discount ({discountRate}%):</Typography>
+                    <Typography variant="body2" color="error">-{formatCurrency(transactionTotals.discountAmount)}</Typography>
                   </Box>
                   <Divider sx={{ my: 1 }} />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                    <Typography variant="h6">Total:</Typography>
-                    <Typography variant="h6" color="primary">
+                  
+                  {/* NET TOTAL */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, p: 1, bgcolor: '#e3f2fd', borderRadius: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>NET TOTAL:</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                      {formatCurrency(transactionTotals.netTotal)}
+                    </Typography>
+                  </Box>
+                  
+                  {/* BALANCE */}
+                  {amountPaid && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, p: 1, bgcolor: '#f3e5f5', borderRadius: 1 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#7b1fa2' }}>BALANCE:</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#7b1fa2' }}>
+                        {formatCurrency(transactionTotals.balance)}
+                      </Typography>
+                    </Box>
+                  )}
+                  
+                  {/* BILL (Final Amount) */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 2, bgcolor: '#c8e6c9', borderRadius: 1, border: '2px solid #4caf50' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>BILL:</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
                       {formatCurrency(transactionTotals.total)}
                     </Typography>
                   </Box>
                 </Box>
 
                 {/* Action Buttons */}
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box sx={{ display: 'flex', gap: 1, mt: 3 }}>
                   <Button
                     variant="outlined"
                     onClick={clearCart}
-                    sx={{ flex: 1 }}
+                    sx={{ 
+                      flex: 1,
+                      borderRadius: 2,
+                      borderColor: '#f44336',
+                      color: '#f44336',
+                      '&:hover': {
+                        borderColor: '#d32f2f',
+                        backgroundColor: 'rgba(244, 67, 54, 0.04)'
+                      }
+                    }}
                   >
                     Clear
                   </Button>
@@ -587,7 +743,16 @@ const PharmacyPOS = () => {
                     variant="contained"
                     onClick={() => setCheckoutDialog(true)}
                     startIcon={<Receipt />}
-                    sx={{ flex: 2 }}
+                    sx={{ 
+                      flex: 2,
+                      borderRadius: 2,
+                      background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
+                      boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)',
+                      '&:hover': {
+                        background: 'linear-gradient(45deg, #388e3c 30%, #4caf50 90%)',
+                        boxShadow: '0 6px 25px rgba(76, 175, 80, 0.4)'
+                      }
+                    }}
                   >
                     Checkout
                   </Button>
@@ -604,16 +769,40 @@ const PharmacyPOS = () => {
         onClose={() => setCheckoutDialog(false)}
         maxWidth="sm"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+          }
+        }}
       >
-        <DialogTitle>Complete Sale</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+          color: 'white',
+          fontWeight: 'bold'
+        }}>
+          Complete Sale Transaction
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
           {/* Sale Summary */}
-          <Typography variant="h6" gutterBottom>
-            Sale Summary
-          </Typography>
-          <Typography>
-            Total Amount: {formatCurrency(transactionTotals.total)}
-          </Typography>
+          <Paper sx={{ p: 2, mb: 2, borderRadius: 2, background: 'rgba(255,255,255,0.8)' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', fontWeight: 'bold' }}>
+              Sale Summary
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography>Subtotal:</Typography>
+              <Typography>{formatCurrency(transactionTotals.subtotal)}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography>Discount ({discountRate}%):</Typography>
+              <Typography color="error">-{formatCurrency(transactionTotals.discountAmount)}</Typography>
+            </Box>
+            <Divider sx={{ my: 1 }} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+              <Typography variant="h6" color="primary">NET TOTAL:</Typography>
+              <Typography variant="h6" color="primary">{formatCurrency(transactionTotals.netTotal)}</Typography>
+            </Box>
+          </Paper>
           
           {/* Validation Alerts */}
           {(() => {
@@ -638,7 +827,19 @@ const PharmacyPOS = () => {
             value={paymentMethod}
             onChange={(e, newValue) => setPaymentMethod(newValue || 'cash')}
             renderInput={(params) => (
-              <TextField {...params} label="Payment Method" margin="normal" fullWidth />
+              <TextField 
+                {...params} 
+                label="Payment Method" 
+                margin="normal" 
+                fullWidth
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover fieldset': { borderColor: '#1976d2' },
+                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  }
+                }}
+              />
             )}
           />
 
@@ -650,45 +851,85 @@ const PharmacyPOS = () => {
             value={amountPaid}
             onChange={(e) => setAmountPaid(e.target.value)}
             margin="normal"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                '&:hover fieldset': { borderColor: '#1976d2' },
+                '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+              }
+            }}
           />
 
-          {/* Change */}
+          {/* Balance Display */}
           {amountPaid && (
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              Change: {formatCurrency(Math.max(0, parseFloat(amountPaid) - transactionTotals.total))}
-            </Typography>
+            <Paper sx={{ p: 2, mt: 2, borderRadius: 2, background: 'rgba(76, 175, 80, 0.1)', border: '1px solid #4caf50' }}>
+              <Typography variant="h6" sx={{ color: '#2e7d32', fontWeight: 'bold' }}>
+                Balance: {formatCurrency(transactionTotals.balance)}
+              </Typography>
+            </Paper>
           )}
 
-          {/* Employee Verification */}
+          {/* Authorized Person (Employee) Verification */}
           <TextField
             fullWidth
-            label="Employee ID *"
+            label="Authorized Person - Employee ID *"
             value={employeeVerification}
             onChange={(e) => setEmployeeVerification(e.target.value)}
             margin="normal"
             required
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                '&:hover fieldset': { borderColor: '#1976d2' },
+                '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+              }
+            }}
           />
 
-          {/* Pharmacy Registration (for prescription medicines) */}
+          {/* SLMC Registration (for prescription medicines) */}
           {validateSale().prescriptionRequired && (
             <TextField
               fullWidth
-              label="Pharmacy Registration Number *"
-              value={pharmacyRegistration}
-              onChange={(e) => setPharmacyRegistration(e.target.value)}
+              label="SLMC REG NUMBER (6 digits) *"
+              value={slmcRegNumber}
+              onChange={(e) => setSlmcRegNumber(e.target.value.replace(/\D/g, '').slice(0, 6))}
               margin="normal"
               required
+              placeholder="Enter 6-digit SLMC registration number"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': { borderColor: '#1976d2' },
+                  '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                }
+              }}
             />
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCheckoutDialog(false)}>
+        <DialogActions sx={{ p: 3, background: 'rgba(255,255,255,0.8)' }}>
+          <Button 
+            onClick={() => setCheckoutDialog(false)}
+            sx={{ 
+              borderRadius: 2,
+              color: '#f44336',
+              '&:hover': { backgroundColor: 'rgba(244, 67, 54, 0.04)' }
+            }}
+          >
             Cancel
           </Button>
           <Button 
             onClick={processCheckout}
             variant="contained"
             disabled={loading || !employeeVerification}
+            sx={{
+              borderRadius: 2,
+              background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
+              boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #388e3c 30%, #4caf50 90%)',
+                boxShadow: '0 6px 25px rgba(76, 175, 80, 0.4)'
+              }
+            }}
           >
             Complete Sale
           </Button>
