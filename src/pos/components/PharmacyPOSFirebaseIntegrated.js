@@ -41,7 +41,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
   const [employeeId, setEmployeeId] = useState('');
   const [staffType, setStaffType] = useState('employee');
   const [cashReceived, setCashReceived] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [paymentMethod, setPaymentMethod] = useState('card');
   const [loading, setLoading] = useState(false);
   const [showCashBalance, setShowCashBalance] = useState(false);
   const [cashBalance, setCashBalance] = useState(0);
@@ -498,8 +498,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
         customerContact: customerContact,
         patientNIC: patientNIC,
         patientId: patientId,
-        staffName: `${staffType.toUpperCase()}: ${employeeId}`,
-        staffType: staffType,
+        staffName: `EMPLOYEE: ${employeeId}`,
+        staffType: 'employee',
         employeeId: employeeId,
         slmcRegNumber: slmcRegNumber,
         invoiceNumber: invoiceNumber,
