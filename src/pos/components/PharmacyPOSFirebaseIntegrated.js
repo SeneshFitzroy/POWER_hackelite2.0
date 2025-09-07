@@ -567,8 +567,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         gender: '',
         bloodGroup: '',
         medicalNotes: '',
-        isUnder15: false,
-        hasNoNic: false
+        isUnder15: false
       });
       setShowPatientForm(false);
 
@@ -1428,7 +1427,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   }
                 }}
               >
-                <option value="">Select Gender</option>
+                <option value=""></option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
