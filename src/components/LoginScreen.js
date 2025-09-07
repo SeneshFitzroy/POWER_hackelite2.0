@@ -113,16 +113,6 @@ export default function LoginScreen({ onLoginSuccess }) {
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </button>
-
-            {/* Forgot Password Link */}
-            <div className="forgot-password">
-              <button
-                type="button"
-                className="forgot-link"
-              >
-                Forgot Password?
-              </button>
-            </div>
           </form>
         </div>
       </div>
