@@ -64,10 +64,11 @@ const PharmacyPOS = () => {
   // Dialog states
   const [checkoutDialog, setCheckoutDialog] = useState(false);
   const [employeeVerification, setEmployeeVerification] = useState('');
-  const [pharmacyRegistration, setPharmacyRegistration] = useState('');
+  const [slmcRegNumber, setSlmcRegNumber] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [amountPaid, setAmountPaid] = useState('');
   const [prescriptionDialog, setPrescriptionDialog] = useState(false);
+  const [discountRate, setDiscountRate] = useState(0);
   
   // Transaction calculations
   const [transactionTotals, setTransactionTotals] = useState({
