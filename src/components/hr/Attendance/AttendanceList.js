@@ -1,7 +1,38 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
+  Grid,
+  Card,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  Container,
+  Avatar,
+  CircularProgress,
+  Divider
+} from '@mui/material';
+import {
+  CheckCircle,
+  Cancel,
+  Schedule,
+  People,
+  AccessTime
+} from '@mui/icons-material';
 import { collection, getDocs, addDoc, query, where, orderBy } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
-import { Clock, Users, CheckCircle, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -103,17 +134,23 @@ const AttendanceList = () => {
   };
 
   const getStatusBadge = (status) => {
-    const statusClasses = {
-      present: 'bg-green-100 text-green-800',
-      absent: 'bg-red-100 text-red-800',
-      late: 'bg-yellow-100 text-yellow-800',
-      'half-day': 'bg-blue-100 text-blue-800'
+    const statusConfig = {
+      present: { color: 'success', icon: <CheckCircle sx={{ fontSize: 16 }} /> },
+      absent: { color: 'error', icon: <Cancel sx={{ fontSize: 16 }} /> },
+      late: { color: 'warning', icon: <Schedule sx={{ fontSize: 16 }} /> },
+      'half-day': { color: 'info', icon: <AccessTime sx={{ fontSize: 16 }} /> }
     };
     
+    const config = statusConfig[status] || { color: 'default', icon: <Schedule sx={{ fontSize: 16 }} /> };
+    
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClasses[status] || 'bg-gray-100 text-gray-800'}`}>
-        {status?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-      </span>
+      <Chip
+        icon={config.icon}
+        label={status?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+        color={config.color}
+        size="small"
+        sx={{ fontWeight: 'medium' }}
+      />
     );
   };
 
