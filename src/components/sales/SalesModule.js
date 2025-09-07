@@ -83,8 +83,8 @@ export default function SalesModule() {
     localStorage.clear();
     sessionStorage.clear();
     
-    // Navigate back to login/home page
-    window.location.href = '/';
+    // Navigate back to login screen (not splash screen)
+    window.location.href = '/?screen=login';
   };
 
   return (
