@@ -424,7 +424,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
   const discountAmount = (totals.subtotal * discountRate) / 100;
   const netTotal = totals.subtotal - discountAmount;
-  const balance = 0; // No balance for card payments
+  const balance = Math.max(0, (parseFloat(cashReceived) || 0) - netTotal);
   const total = netTotal;
 
   // Format currency
@@ -511,6 +511,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
       // Process the sale transaction with stock updates
       const transaction = await transactionService.processSale(saleData);
       
+      // Update local cash balance for cash payments
+      if (paymentMethod === 'cash') {
+        const newBalance = cashBalance + total;
+        setCashBalance(newBalance);
+        localStorage.setItem('pharmacyCashBalance', newBalance.toString());
+      }
+      
       // Reload medicines to reflect updated stock
       await loadInitialData();
       
@@ -519,6 +526,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
       
       // Clear cart and reset form
       setCart([]);
+      setCashReceived(0);
       setSearchTerm('');
       setSearchResults([]);
       if (!currentPatient) {
@@ -733,7 +741,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               error={!employeeId.trim()}
               size="small"
               sx={{ 
-                mb: 2,
+                mb: 1.5,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 1,
                   '&:hover fieldset': { borderColor: '#1976d2' },
@@ -1266,8 +1274,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   </Typography>
                 </Box>
 
-                {/* BALANCE - Not shown for card payments */}
-                {false && (
+                {/* BALANCE - BLACK */}
+                {paymentMethod === 'cash' && cashReceived > 0 && (
                   <Box sx={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
