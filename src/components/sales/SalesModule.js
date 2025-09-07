@@ -25,7 +25,7 @@ import {
 import SalesDashboard from './SalesDashboard';
 import CustomerManagement from './CustomerManagement';
 import SalesOrders from './SalesOrders';
-import Invoicing from './Invoicing';
+import FinanceModule from '../finance/FinanceModule';
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -56,7 +56,7 @@ export default function SalesModule() {
     { label: 'Sales Dashboard', icon: <Assessment />, index: 0 },
     { label: 'Customer Management', icon: <People />, index: 1 },
     { label: 'Sales Orders', icon: <ShoppingCart />, index: 2 },
-    { label: 'Invoicing', icon: <Receipt />, index: 3 }
+    { label: 'Finance', icon: <Receipt />, index: 3 }
   ];
 
   // Update time every second
@@ -322,7 +322,7 @@ export default function SalesModule() {
             <SalesOrders dateFilter={dateFilter} />
           </TabPanel>
           <TabPanel value={activeTab} index={3}>
-            <Invoicing dateFilter={dateFilter} />
+            <FinanceModule dateFilter={dateFilter} />
           </TabPanel>
         </Container>
       </Box>
