@@ -426,7 +426,7 @@ const PayrollList = () => {
             </div>
           </Paper>
         ))}
-      </div>
+      </Box>
 
       {Object.keys(groupedPayrolls).length === 0 && (
         <Box sx={{ textAlign: 'center', py: 12 }}>
