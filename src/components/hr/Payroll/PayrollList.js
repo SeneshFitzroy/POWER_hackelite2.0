@@ -459,3 +459,5 @@ const PayrollList = () => {
 };
 
 export default PayrollList;
+
+export default PayrollList;
