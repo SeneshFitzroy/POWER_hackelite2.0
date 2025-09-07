@@ -493,7 +493,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         netTotal: netTotal,
         total: total,
         paymentMethod: paymentMethod,
-        amountPaid: total,
+        amountPaid: paymentMethod === 'cash' ? cashReceived : total,
         balance: balance,
         customerName: customerName || 'Walk-in Customer',
         customerContact: customerContact,
