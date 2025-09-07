@@ -33,7 +33,10 @@ import {
   Phone,
   Email,
   Badge,
-  Receipt
+  Receipt,
+  CheckCircle,
+  Cancel,
+  ChildCare
 } from '@mui/icons-material';
 import { db } from '../../firebase/config';
 import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, Timestamp } from 'firebase/firestore';
@@ -294,11 +297,51 @@ export default function CustomerManagement({ dateFilter }) {
                   <TableCell>{customer.phoneNumber}</TableCell>
                   <TableCell>{customer.age}</TableCell>
                   <TableCell>
-                    {customer.isChild ? (
-                      <Chip label="Child (<15)" color="info" size="small" />
-                    ) : (
-                      customer.nic || 'N/A'
-                    )}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {customer.isChild ? (
+                        <>
+                          <ChildCare sx={{ color: '#ff9800', fontSize: '20px' }} />
+                          <Box>
+                            <Chip 
+                              label="Child" 
+                              color="warning" 
+                              size="small" 
+                              sx={{ fontWeight: 'bold' }}
+                            />
+                            <Typography variant="caption" display="block" color="textSecondary">
+                              No NIC Required
+                            </Typography>
+                          </Box>
+                        </>
+                      ) : customer.nic ? (
+                        <>
+                          <CheckCircle sx={{ color: '#4caf50', fontSize: '20px' }} />
+                          <Box>
+                            <Typography variant="body2" fontWeight="bold">
+                              {customer.nic}
+                            </Typography>
+                            <Typography variant="caption" color="success.main">
+                              ✓ NIC Verified
+                            </Typography>
+                          </Box>
+                        </>
+                      ) : (
+                        <>
+                          <Cancel sx={{ color: '#f44336', fontSize: '20px' }} />
+                          <Box>
+                            <Chip 
+                              label="No NIC" 
+                              color="error" 
+                              size="small" 
+                              variant="outlined"
+                            />
+                            <Typography variant="caption" display="block" color="error">
+                              NIC Missing
+                            </Typography>
+                          </Box>
+                        </>
+                      )}
+                    </Box>
                   </TableCell>
                   <TableCell>{customer.email || 'N/A'}</TableCell>
                   <TableCell>
