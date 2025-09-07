@@ -42,7 +42,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
   const [employeeId, setEmployeeId] = useState('');
   const [staffType, setStaffType] = useState('employee');
   const [cashReceived, setCashReceived] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [loading, setLoading] = useState(false);
   const [showCashBalance, setShowCashBalance] = useState(false);
   const [cashBalance, setCashBalance] = useState(0);
@@ -635,24 +635,24 @@ const PharmacyPOSFirebaseIntegrated = () => {
       <Box sx={{ 
         flex: 1, 
         display: 'flex', 
-        gap: 2, 
-        px: 2, 
+        gap: 1.5, 
+        p: 1.5, 
         overflow: 'hidden',
         backgroundColor: '#ffffff'
       }}>
         
         {/* LEFT PANEL - INPUT SECTIONS (30%) */}
-        <Box sx={{ width: '30%', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ width: '30%', display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           
           {/* PATIENT INFORMATION - COMPACT */}
           <Paper sx={{ 
-            p: 2, 
+            p: 1.5, 
             borderRadius: 2, 
             backgroundColor: 'white',
             border: '1px solid #e5e7eb',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
               <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2' }}>
                 PATIENT INFORMATION
               </Typography>
@@ -1305,7 +1305,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 variant="contained"
                 size="medium"
                 onClick={processSale}
-                disabled={cart.length === 0 || loading || !employeeId.trim()}
+                disabled={cart.length === 0 || loading || !employeeId.trim() || (paymentMethod === 'cash' && cashReceived < total)}
                 sx={{
                   backgroundColor: '#4caf50',
                   color: 'white',
