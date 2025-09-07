@@ -22,7 +22,7 @@ function ModuleCard({ icon, title, description, delay, onClick, color }) {
   )
 }
 
-export default function ERPDashboard() {
+export default function ERPDashboard({ onPOSAccess }) {
   const [headerVisible, setHeaderVisible] = useState(false)
 
   useEffect(() => {
@@ -113,7 +113,10 @@ export default function ERPDashboard() {
 
   const handleModuleClick = (moduleTitle) => {
     console.log(`Module clicked: ${moduleTitle}`)
-    // Module navigation logic will be implemented here
+    if (moduleTitle === "POS" && onPOSAccess) {
+      onPOSAccess()
+    }
+    // Other module navigation logic will be implemented here
   }
 
   return (
