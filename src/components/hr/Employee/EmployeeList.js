@@ -25,11 +25,452 @@ import {
   FormControl,
   Select,
   MenuItem,
-  InputLabel
+  InputLabel,
+  Stack,
+  Divider
 } from '@mui/material';
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Visibility as ViewIcon,
+  FilterList as FilterIcon,
+  People as PeopleIcon
+} from '@mui/icons-material';
 import { db } from '../../../firebase/config';
-import { Plus, Search, Edit, Trash2, Eye, Filter, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+const EmployeeList = () => {
+  const [employees, setEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState('all');
+
+  const fetchEmployees = useCallback(async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'employees'));
+      const employeeData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEmployees(employeeData);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+      toast.error('Failed to fetch employees');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees]);
+
+  useEffect(() => {
+    let filtered = employees;
+
+    if (searchTerm) {
+      filtered = filtered.filter(emp =>
+        emp.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.employeeId?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(emp => emp.status === statusFilter);
+    }
+
+    if (roleFilter !== 'all') {
+      filtered = filtered.filter(emp => emp.role === roleFilter);
+    }
+
+    setFilteredEmployees(filtered);
+  }, [employees, searchTerm, statusFilter, roleFilter]);
+
+  const handleDeleteEmployee = async (id) => {
+    if (window.confirm('Are you sure you want to delete this employee?')) {
+      try {
+        await deleteDoc(doc(db, 'employees', id));
+        toast.success('Employee deleted successfully');
+        fetchEmployees();
+      } catch (error) {
+        console.error('Error deleting employee:', error);
+        toast.error('Failed to delete employee');
+      }
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'active': return 'success';
+      case 'inactive': return 'error';
+      case 'on leave': return 'warning';
+      default: return 'default';
+    }
+  };
+
+  const getRoleColor = (role) => {
+    switch (role?.toLowerCase()) {
+      case 'manager': return '#1976d2';
+      case 'developer': return '#2e7d32';
+      case 'designer': return '#ed6c02';
+      case 'analyst': return '#9c27b0';
+      default: return '#757575';
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '400px' 
+        }}
+      >
+        <CircularProgress size={60} sx={{ color: '#1e3a8a' }} />
+      </Box>
+    );
+  }
+
+  return (
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      {/* Header Section */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <PeopleIcon sx={{ fontSize: 32, color: '#1e3a8a', mr: 2 }} />
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontWeight: 'bold', 
+              color: '#1e3a8a',
+              letterSpacing: '0.5px'
+            }}
+          >
+            Employee Management
+          </Typography>
+        </Box>
+        
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            color: '#6b7280', 
+            mb: 3,
+            fontSize: '1.1rem'
+          }}
+        >
+          Manage employee records, roles, and information
+        </Typography>
+
+        {/* Stats Cards */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(30, 58, 138, 0.2)'
+            }}>
+              <CardContent>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  {employees.length}
+                </Typography>
+                <Typography variant="body2">Total Employees</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(16, 185, 129, 0.2)'
+            }}>
+              <CardContent>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  {employees.filter(emp => emp.status === 'active').length}
+                </Typography>
+                <Typography variant="body2">Active Employees</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(245, 158, 11, 0.2)'
+            }}>
+              <CardContent>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  {employees.filter(emp => emp.status === 'on leave').length}
+                </Typography>
+                <Typography variant="body2">On Leave</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(220, 38, 38, 0.2)'
+            }}>
+              <CardContent>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  {new Set(employees.map(emp => emp.role)).size}
+                </Typography>
+                <Typography variant="body2">Different Roles</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Controls Section */}
+      <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Search employees..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: '#6b7280' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': {
+                    borderColor: '#1e3a8a',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1e3a8a',
+                  }
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Status Filter</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Status Filter"
+                onChange={(e) => setStatusFilter(e.target.value)}
+                sx={{
+                  borderRadius: 2,
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#1e3a8a',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#1e3a8a',
+                  }
+                }}
+              >
+                <MenuItem value="all">All Status</MenuItem>
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="inactive">Inactive</MenuItem>
+                <MenuItem value="on leave">On Leave</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Role Filter</InputLabel>
+              <Select
+                value={roleFilter}
+                label="Role Filter"
+                onChange={(e) => setRoleFilter(e.target.value)}
+                sx={{
+                  borderRadius: 2,
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#1e3a8a',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#1e3a8a',
+                  }
+                }}
+              >
+                <MenuItem value="all">All Roles</MenuItem>
+                {[...new Set(employees.map(emp => emp.role))].map(role => (
+                  <MenuItem key={role} value={role}>{role}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              fullWidth
+              sx={{
+                py: 1.5,
+                borderRadius: 2,
+                fontWeight: 'bold',
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
+                }
+              }}
+            >
+              Add Employee
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Employees Table */}
+      <Paper sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+        <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+            Employee Directory ({filteredEmployees.length} employees)
+          </Typography>
+        </Box>
+        
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#f8fafc' }}>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Employee</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Contact</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Role</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Join Date</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredEmployees.map((employee) => (
+                <TableRow 
+                  key={employee.id}
+                  sx={{ 
+                    '&:hover': { backgroundColor: '#f9fafb' },
+                    transition: 'background-color 0.2s'
+                  }}
+                >
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar 
+                        sx={{ 
+                          mr: 2, 
+                          bgcolor: '#1e3a8a',
+                          width: 40,
+                          height: 40
+                        }}
+                      >
+                        {`${employee.firstName?.[0] || ''}${employee.lastName?.[0] || ''}`}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                          {`${employee.firstName || ''} ${employee.lastName || ''}`}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                          ID: {employee.employeeId}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{employee.email}</Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                      {employee.phone}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={employee.role}
+                      size="small"
+                      sx={{
+                        backgroundColor: getRoleColor(employee.role),
+                        color: 'white',
+                        fontWeight: 'bold'
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={employee.status}
+                      size="small"
+                      color={getStatusColor(employee.status)}
+                      variant="filled"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {employee.dateOfJoining ? new Date(employee.dateOfJoining).toLocaleDateString() : 'N/A'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" spacing={1}>
+                      <IconButton 
+                        size="small" 
+                        sx={{ 
+                          color: '#1e3a8a',
+                          '&:hover': { backgroundColor: '#eff6ff' }
+                        }}
+                      >
+                        <ViewIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton 
+                        size="small"
+                        sx={{ 
+                          color: '#059669',
+                          '&:hover': { backgroundColor: '#ecfdf5' }
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton 
+                        size="small"
+                        onClick={() => handleDeleteEmployee(employee.id)}
+                        sx={{ 
+                          color: '#dc2626',
+                          '&:hover': { backgroundColor: '#fef2f2' }
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {filteredEmployees.length === 0 && (
+          <Box sx={{ p: 6, textAlign: 'center' }}>
+            <PeopleIcon sx={{ fontSize: 64, color: '#d1d5db', mb: 2 }} />
+            <Typography variant="h6" sx={{ color: '#6b7280', mb: 1 }}>
+              No employees found
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+              {searchTerm || statusFilter !== 'all' || roleFilter !== 'all' 
+                ? 'Try adjusting your filters' 
+                : 'Add your first employee to get started'
+              }
+            </Typography>
+          </Box>
+        )}
+      </Paper>
+    </Container>
+  );
+};
+
+export default EmployeeList;
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -100,123 +541,258 @@ const EmployeeList = () => {
   };
 
   const getStatusBadge = (status) => {
-    const statusClasses = {
-      active: 'bg-green-100 text-green-800',
-      inactive: 'bg-red-100 text-red-800',
-      probation: 'bg-yellow-100 text-yellow-800'
+    const statusColors = {
+      active: 'success',
+      inactive: 'error',
+      probation: 'warning'
     };
     
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClasses[status] || 'bg-gray-100 text-gray-800'}`}>
-        {status?.charAt(0).toUpperCase() + status?.slice(1)}
-      </span>
+      <Chip
+        label={status?.charAt(0).toUpperCase() + status?.slice(1)}
+        color={statusColors[status] || 'default'}
+        size="small"
+        sx={{ fontWeight: 'bold' }}
+      />
     );
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
-      </div>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '400px' 
+      }}>
+        <CircularProgress size={60} sx={{ color: '#1e3a8a' }} />
+      </Box>
     );
   }
 
   return (
-    <div className="space-y-8 ml-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Employee Management</h1>
-        <Link
-          to="/employees/new"
-          className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center"
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+          Employee Management
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<Plus size={20} />}
+          sx={{
+            background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+            color: 'white',
+            fontWeight: 'bold',
+            px: 3,
+            py: 1.5,
+            borderRadius: 2,
+            boxShadow: '0 4px 12px rgba(30, 58, 138, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)',
+              boxShadow: '0 6px 16px rgba(30, 58, 138, 0.4)',
+            }
+          }}
         >
-          <Plus className="h-4 w-4 mr-2" />
           Add New Employee
-        </Link>
-      </div>
+        </Button>
+      </Box>
 
-      {/* Search Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type="text"
+      {/* Search and Filters Card */}
+      <Card sx={{ mb: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+        <CardContent sx={{ p: 3 }}>
+          <TextField
+            fullWidth
             placeholder="Search employees by name, phone, NIC, or email..."
-            className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search size={20} style={{ color: '#1e3a8a' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                '&:hover fieldset': {
+                  borderColor: '#1e3a8a',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#1e3a8a',
+                }
+              }
+            }}
           />
-        </div>
-        
-        {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          <select
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="probation">Probation</option>
-          </select>
+          
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth>
+                <InputLabel>Status Filter</InputLabel>
+                <Select
+                  value={statusFilter}
+                  label="Status Filter"
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  sx={{
+                    borderRadius: 2,
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#1e3a8a',
+                    }
+                  }}
+                >
+                  <MenuItem value="all">All Status</MenuItem>
+                  <MenuItem value="active">Active</MenuItem>
+                  <MenuItem value="inactive">Inactive</MenuItem>
+                  <MenuItem value="probation">Probation</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
 
-          <select
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-          >
-            <option value="all">All Roles</option>
-            <option value="owner">Owner</option>
-            <option value="registered_pharmacist">Registered Pharmacist</option>
-            <option value="assistant_pharmacist">Assistant Pharmacist</option>
-            <option value="cashier">Cashier</option>
-            <option value="delivery_driver">Delivery Driver</option>
-            <option value="admin">Admin</option>
-          </select>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth>
+                <InputLabel>Role Filter</InputLabel>
+                <Select
+                  value={roleFilter}
+                  label="Role Filter"
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                  sx={{
+                    borderRadius: 2,
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#1e3a8a',
+                    }
+                  }}
+                >
+                  <MenuItem value="all">All Roles</MenuItem>
+                  <MenuItem value="owner">Owner</MenuItem>
+                  <MenuItem value="registered_pharmacist">Registered Pharmacist</MenuItem>
+                  <MenuItem value="assistant_pharmacist">Assistant Pharmacist</MenuItem>
+                  <MenuItem value="cashier">Cashier</MenuItem>
+                  <MenuItem value="delivery_driver">Delivery Driver</MenuItem>
+                  <MenuItem value="admin">Admin</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
 
-          <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-4 py-3 rounded-lg">
-            <Filter className="h-4 w-4 mr-2" />
-            {filteredEmployees.length} of {employees.length} employees
-          </div>
-        </div>
-      </div>
+            <Grid item xs={12} md={4}>
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '56px',
+                backgroundColor: '#f8fafc',
+                borderRadius: 2,
+                px: 2
+              }}>
+                <Filter size={16} style={{ marginRight: '8px', color: '#6b7280' }} />
+                <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 'medium' }}>
+                  {filteredEmployees.length} of {employees.length} employees
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       {/* Employee Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+      <Grid container spacing={3}>
         {filteredEmployees.map((employee) => (
-          <div
-            key={employee.id}
-            className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl hover:border-primary-300 transition-all duration-200 hover:-translate-y-1"
-          >
-            {/* Profile Image and Name */}
-            <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 h-16 w-16">
-                {employee.profileImage ? (
-                  <img
-                    src={employee.profileImage}
-                    alt={`${employee.firstName} ${employee.lastName}`}
-                    className="h-16 w-16 rounded-full object-cover border-3 border-gray-200"
-                  />
-                ) : (
-                  <div className="h-16 w-16 rounded-full bg-primary-500 flex items-center justify-center border-3 border-gray-200">
-                    <span className="text-lg font-bold text-white">
+          <Grid item xs={12} sm={6} md={4} lg={3} key={employee.id}>
+            <Card
+              sx={{
+                borderRadius: 3,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                transition: 'all 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(30, 58, 138, 0.2)',
+                  borderColor: '#1e3a8a'
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                {/* Profile Section */}
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  {employee.profileImage ? (
+                    <Avatar
+                      src={employee.profileImage}
+                      alt={`${employee.firstName} ${employee.lastName}`}
+                      sx={{ width: 64, height: 64, mr: 2, border: '3px solid #e5e7eb' }}
+                    />
+                  ) : (
+                    <Avatar
+                      sx={{ 
+                        width: 64, 
+                        height: 64, 
+                        bgcolor: '#1e3a8a',
+                        fontSize: '1.2rem',
+                        fontWeight: 'bold'
+                      }}
+                    >
                       {employee.firstName?.charAt(0)}{employee.lastName?.charAt(0)}
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="ml-4 flex-1">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900">
+                    </Avatar>
+                  )}
+                  <Box sx={{ ml: 2, flex: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
                       {employee.firstName} {employee.lastName}
-                    </h3>
-                    <p className="text-sm text-gray-600">
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#6b7280', mb: 1 }}>
                       {employee.role?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </p>
-                  </div>
-                  <div className="ml-2">
+                    </Typography>
                     {getStatusBadge(employee.status)}
+                  </Box>
+                </Box>
+
+                {/* Contact Information */}
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body2" sx={{ color: '#374151', mb: 0.5 }}>
+                    📞 {employee.phone || 'No phone'}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#374151', mb: 0.5 }}>
+                    📧 {employee.email || 'No email'}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#374151' }}>
+                    🆔 {employee.nic || 'No NIC'}
+                  </Typography>
+                </Box>
+
+                {/* Action Buttons */}
+                <Box sx={{ display: 'flex', gap: 1, pt: 2, borderTop: '1px solid #e5e7eb' }}>
+                  <IconButton
+                    size="small"
+                    sx={{
+                      color: '#1e3a8a',
+                      '&:hover': { backgroundColor: '#eff6ff' }
+                    }}
+                  >
+                    <Eye size={16} />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    sx={{
+                      color: '#059669',
+                      '&:hover': { backgroundColor: '#ecfdf5' }
+                    }}
+                  >
+                    <Edit size={16} />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleDeleteEmployee(employee.id)}
+                    sx={{
+                      color: '#dc2626',
+                      '&:hover': { backgroundColor: '#fef2f2' }
+                    }}
+                  >
+                    <Trash2 size={16} />
+                  </IconButton>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
                   </div>
                 </div>
               </div>

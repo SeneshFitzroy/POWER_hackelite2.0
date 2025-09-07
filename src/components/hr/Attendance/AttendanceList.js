@@ -1,9 +1,558 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, addDoc, query, where, orderBy } from 'firebase/firestore';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Paper,
+  Button,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+  Chip,
+  Avatar,
+  CircularProgress,
+  Container,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+  Stack,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
+import {
+  Schedule as ScheduleIcon,
+  CheckCircle as CheckIcon,
+  Cancel as CancelIcon,
+  AccessTime as ClockIcon,
+  People as PeopleIcon,
+  Today as TodayIcon,
+  CalendarMonth as CalendarIcon
+} from '@mui/icons-material';
 import { db } from '../../../firebase/config';
-import { Clock, Users, CheckCircle, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+
+const AttendanceList = () => {
+  const [employees, setEmployees] = useState([]);
+  const [attendance, setAttendance] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [viewMode, setViewMode] = useState('daily');
+  const [markingAttendance, setMarkingAttendance] = useState(false);
+  const [bulkMarkOpen, setBulkMarkOpen] = useState(false);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch employees
+      const employeesSnapshot = await getDocs(
+        query(collection(db, 'employees'), where('status', '==', 'active'))
+      );
+      const employeeData = employeesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEmployees(employeeData);
+
+      // Fetch attendance for selected date range
+      let startDate, endDate;
+      if (viewMode === 'weekly') {
+        const date = new Date(selectedDate);
+        const start = new Date(date);
+        start.setDate(date.getDate() - date.getDay());
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        startDate = format(start, 'yyyy-MM-dd');
+        endDate = format(end, 'yyyy-MM-dd');
+      } else {
+        startDate = endDate = selectedDate;
+      }
+
+      const attendanceSnapshot = await getDocs(
+        query(
+          collection(db, 'attendance'),
+          where('date', '>=', startDate),
+          where('date', '<=', endDate),
+          orderBy('date', 'desc')
+        )
+      );
+      
+      const attendanceData = attendanceSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      setAttendance(attendanceData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast.error('Failed to fetch attendance data');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedDate, viewMode]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const markAttendance = async (employeeId, status, time = null) => {
+    try {
+      setMarkingAttendance(true);
+      const attendanceRecord = {
+        employeeId,
+        date: selectedDate,
+        status,
+        time: time || new Date().toISOString(),
+        markedAt: new Date().toISOString(),
+        markedBy: 'current_user' // Replace with actual user
+      };
+
+      await addDoc(collection(db, 'attendance'), attendanceRecord);
+      toast.success(`Attendance marked as ${status}`);
+      fetchData();
+    } catch (error) {
+      console.error('Error marking attendance:', error);
+      toast.error('Failed to mark attendance');
+    } finally {
+      setMarkingAttendance(false);
+    }
+  };
+
+  const getAttendanceStatus = (employeeId, date) => {
+    return attendance.find(att => 
+      att.employeeId === employeeId && att.date === date
+    );
+  };
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'present': return 'success';
+      case 'absent': return 'error';
+      case 'late': return 'warning';
+      case 'half-day': return 'info';
+      default: return 'default';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'present': return <CheckIcon fontSize="small" />;
+      case 'absent': return <CancelIcon fontSize="small" />;
+      case 'late': return <ClockIcon fontSize="small" />;
+      default: return <ClockIcon fontSize="small" />;
+    }
+  };
+
+  const todayAttendance = attendance.filter(att => att.date === selectedDate);
+  const presentCount = todayAttendance.filter(att => att.status === 'present').length;
+  const absentCount = todayAttendance.filter(att => att.status === 'absent').length;
+  const lateCount = todayAttendance.filter(att => att.status === 'late').length;
+
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '400px' 
+        }}
+      >
+        <CircularProgress size={60} sx={{ color: '#1e3a8a' }} />
+      </Box>
+    );
+  }
+
+  return (
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      {/* Header Section */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <ScheduleIcon sx={{ fontSize: 32, color: '#1e3a8a', mr: 2 }} />
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontWeight: 'bold', 
+              color: '#1e3a8a',
+              letterSpacing: '0.5px'
+            }}
+          >
+            Attendance Management
+          </Typography>
+        </Box>
+        
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            color: '#6b7280', 
+            mb: 3,
+            fontSize: '1.1rem'
+          }}
+        >
+          Track and manage employee attendance records
+        </Typography>
+
+        {/* Stats Cards */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(16, 185, 129, 0.2)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <CheckIcon sx={{ mr: 1 }} />
+                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                    {presentCount}
+                  </Typography>
+                </Box>
+                <Typography variant="body2">Present Today</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(220, 38, 38, 0.2)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <CancelIcon sx={{ mr: 1 }} />
+                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                    {absentCount}
+                  </Typography>
+                </Box>
+                <Typography variant="body2">Absent Today</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(245, 158, 11, 0.2)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <ClockIcon sx={{ mr: 1 }} />
+                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                    {lateCount}
+                  </Typography>
+                </Box>
+                <Typography variant="body2">Late Today</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+              color: 'white',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(30, 58, 138, 0.2)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <PeopleIcon sx={{ mr: 1 }} />
+                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                    {employees.length}
+                  </Typography>
+                </Box>
+                <Typography variant="body2">Total Employees</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Controls Section */}
+      <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} md={3}>
+            <TextField
+              fullWidth
+              type="date"
+              label="Select Date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': {
+                    borderColor: '#1e3a8a',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1e3a8a',
+                  }
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>View Mode</InputLabel>
+              <Select
+                value={viewMode}
+                label="View Mode"
+                onChange={(e) => setViewMode(e.target.value)}
+                sx={{
+                  borderRadius: 2,
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#1e3a8a',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#1e3a8a',
+                  }
+                }}
+              >
+                <MenuItem value="daily">Daily View</MenuItem>
+                <MenuItem value="weekly">Weekly View</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Button
+              variant="outlined"
+              startIcon={<CalendarIcon />}
+              fullWidth
+              onClick={() => setBulkMarkOpen(true)}
+              sx={{
+                py: 1.5,
+                borderRadius: 2,
+                fontWeight: 'bold',
+                borderColor: '#1e3a8a',
+                color: '#1e3a8a',
+                '&:hover': {
+                  backgroundColor: '#eff6ff',
+                  borderColor: '#1e40af'
+                }
+              }}
+            >
+              Bulk Mark
+            </Button>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Button
+              variant="contained"
+              startIcon={<TodayIcon />}
+              fullWidth
+              onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
+              sx={{
+                py: 1.5,
+                borderRadius: 2,
+                fontWeight: 'bold',
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
+                }
+              }}
+            >
+              Today
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Attendance Table */}
+      <Paper sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+        <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+            Attendance for {new Date(selectedDate).toLocaleDateString()}
+          </Typography>
+        </Box>
+        
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#f8fafc' }}>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Employee</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Time</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {employees.map((employee) => {
+                const attendanceRecord = getAttendanceStatus(employee.id, selectedDate);
+                return (
+                  <TableRow 
+                    key={employee.id}
+                    sx={{ 
+                      '&:hover': { backgroundColor: '#f9fafb' },
+                      transition: 'background-color 0.2s'
+                    }}
+                  >
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Avatar 
+                          sx={{ 
+                            mr: 2, 
+                            bgcolor: '#1e3a8a',
+                            width: 40,
+                            height: 40
+                          }}
+                        >
+                          {`${employee.firstName?.[0] || ''}${employee.lastName?.[0] || ''}`}
+                        </Avatar>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                            {`${employee.firstName || ''} ${employee.lastName || ''}`}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                            {employee.employeeId}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      {attendanceRecord ? (
+                        <Chip
+                          icon={getStatusIcon(attendanceRecord.status)}
+                          label={attendanceRecord.status}
+                          color={getStatusColor(attendanceRecord.status)}
+                          variant="filled"
+                        />
+                      ) : (
+                        <Chip
+                          label="Not Marked"
+                          variant="outlined"
+                          sx={{ color: '#6b7280' }}
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {attendanceRecord 
+                          ? new Date(attendanceRecord.time).toLocaleTimeString()
+                          : '-'
+                        }
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      {!attendanceRecord ? (
+                        <Stack direction="row" spacing={1}>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="success"
+                            onClick={() => markAttendance(employee.id, 'present')}
+                            disabled={markingAttendance}
+                            sx={{ minWidth: 80 }}
+                          >
+                            Present
+                          </Button>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="error"
+                            onClick={() => markAttendance(employee.id, 'absent')}
+                            disabled={markingAttendance}
+                            sx={{ minWidth: 80 }}
+                          >
+                            Absent
+                          </Button>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="warning"
+                            onClick={() => markAttendance(employee.id, 'late')}
+                            disabled={markingAttendance}
+                            sx={{ minWidth: 80 }}
+                          >
+                            Late
+                          </Button>
+                        </Stack>
+                      ) : (
+                        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                          Marked
+                        </Typography>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {employees.length === 0 && (
+          <Box sx={{ p: 6, textAlign: 'center' }}>
+            <ScheduleIcon sx={{ fontSize: 64, color: '#d1d5db', mb: 2 }} />
+            <Typography variant="h6" sx={{ color: '#6b7280', mb: 1 }}>
+              No employees found
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+              Add employees to start tracking attendance
+            </Typography>
+          </Box>
+        )}
+      </Paper>
+
+      {/* Bulk Mark Dialog */}
+      <Dialog open={bulkMarkOpen} onClose={() => setBulkMarkOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Bulk Mark Attendance</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2, color: '#6b7280' }}>
+            Mark attendance for all employees at once for {new Date(selectedDate).toLocaleDateString()}
+          </Typography>
+          <Stack spacing={2} sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => {
+                employees.forEach(emp => {
+                  if (!getAttendanceStatus(emp.id, selectedDate)) {
+                    markAttendance(emp.id, 'present');
+                  }
+                });
+                setBulkMarkOpen(false);
+              }}
+            >
+              Mark All Present
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                employees.forEach(emp => {
+                  if (!getAttendanceStatus(emp.id, selectedDate)) {
+                    markAttendance(emp.id, 'absent');
+                  }
+                });
+                setBulkMarkOpen(false);
+              }}
+            >
+              Mark All Absent
+            </Button>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBulkMarkOpen(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  );
+};
+
+export default AttendanceList;
 
 const AttendanceList = () => {
   const [employees, setEmployees] = useState([]);
