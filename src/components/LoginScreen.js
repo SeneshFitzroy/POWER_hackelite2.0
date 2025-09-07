@@ -52,11 +52,7 @@ export default function LoginScreen({ onLoginSuccess }) {
             <img 
               src="/images/npk-logo.png" 
               alt="NPK New Pharmacy" 
-              style={{
-                maxHeight: '60px',
-                maxWidth: '100%',
-                objectFit: 'contain'
-              }}
+              className="login-logo"
             />
           </div>
 
