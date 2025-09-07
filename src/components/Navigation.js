@@ -41,7 +41,6 @@ export default function Navigation() {
   };
 
   return (
-<<<<<<< HEAD
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -71,33 +70,6 @@ export default function Navigation() {
             onClick={() => handleNavigation('/setup')}
           >
             Setup
-=======
-    <AppBar 
-      position="static" 
-      sx={{ 
-        backgroundColor: '#000000',
-        boxShadow: 'none',
-        borderBottom: '1px solid #333333'
-      }}
-    >
-      <Toolbar sx={{ minHeight: '64px !important' }}>
-        <Typography 
-          variant="h5" 
-          component="div" 
-          sx={{ 
-            flexGrow: 1,
-            color: '#ffffff',
-            fontWeight: 600,
-            letterSpacing: '0.5px'
-          }}
-        >
-          CoreERP
-        </Typography>
-        
-        {/* Navigation Buttons */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
-          <Button
-            startIcon={<Dashboard />}
             onClick={() => navigate('/dashboard')}
             sx={{ 
               mr: 2,
@@ -139,7 +111,6 @@ export default function Navigation() {
             }}
           >
             Sales
->>>>>>> SALES
           </Button>
         </Box>
         
