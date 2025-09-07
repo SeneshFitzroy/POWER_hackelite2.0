@@ -439,6 +439,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
       return;
     }
 
+    if (paymentMethod === 'cash' && cashReceived < total) {
+      alert('Insufficient cash received.');
+      return;
+    }
+
     if (!employeeId.trim()) {
       alert('Please enter Employee ID.');
       return;
@@ -754,29 +759,67 @@ const PharmacyPOSFirebaseIntegrated = () => {
               }}
             />
 
-            {/* Payment Method - CARD ONLY */}
+            {/* Payment Method Selection - COMPACT */}
             <Box sx={{ mb: 2 }}>
               <Typography variant="body2" fontWeight="bold" sx={{ mb: 1, color: '#1976d2' }}>
                 Payment Method:
               </Typography>
-              <Button
-                variant="contained"
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  variant={paymentMethod === 'cash' ? 'contained' : 'outlined'}
+                  onClick={() => setPaymentMethod('cash')}
+                  size="small"
+                  sx={{
+                    flex: 1,
+                    borderRadius: 1,
+                    backgroundColor: paymentMethod === 'cash' ? '#4caf50' : 'transparent',
+                    borderColor: '#4caf50',
+                    color: paymentMethod === 'cash' ? 'white' : '#4caf50',
+                    '&:hover': {
+                      backgroundColor: paymentMethod === 'cash' ? '#388e3c' : '#e8f5e8'
+                    }
+                  }}
+                >
+                  CASH
+                </Button>
+                <Button
+                  variant={paymentMethod === 'card' ? 'contained' : 'outlined'}
+                  onClick={() => setPaymentMethod('card')}
+                  size="small"
+                  sx={{
+                    flex: 1,
+                    borderRadius: 1,
+                    backgroundColor: paymentMethod === 'card' ? '#2196f3' : 'transparent',
+                    borderColor: '#2196f3',
+                    color: paymentMethod === 'card' ? 'white' : '#2196f3',
+                    '&:hover': {
+                      backgroundColor: paymentMethod === 'card' ? '#1976d2' : '#e3f2fd'
+                    }
+                  }}
+                >
+                  CARD
+                </Button>
+              </Box>
+            </Box>
+
+            {paymentMethod === 'cash' && (
+              <TextField
                 fullWidth
+                label="Cash Received"
+                type="number"
+                value={cashReceived}
+                onChange={(e) => setCashReceived(parseFloat(e.target.value) || 0)}
                 size="small"
-                disabled
                 sx={{
-                  borderRadius: 1,
-                  backgroundColor: '#2196f3',
-                  color: 'white',
-                  '&:disabled': {
-                    backgroundColor: '#2196f3',
-                    color: 'white'
+                  mb: 2,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1,
+                    '&:hover fieldset': { borderColor: '#1976d2' },
+                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
                   }
                 }}
-              >
-                CARD PAYMENT
-              </Button>
-            </Box>
+              />
+            )}
 
           </Paper>
         </Box>
