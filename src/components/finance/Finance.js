@@ -89,6 +89,7 @@ export default function Finance({ dateFilter }) {
   const [employeesData, setEmployeesData] = useState([]);
   const [suppliersData, setSuppliersData] = useState([]);
   const [transactionsData, setTransactionsData] = useState([]);
+  const [salesTrendData, setSalesTrendData] = useState([]);
   const [financialMetrics, setFinancialMetrics] = useState({
     totalRevenue: 0,
     totalExpenses: 0,
@@ -99,6 +100,10 @@ export default function Finance({ dateFilter }) {
   useEffect(() => {
     loadFinancialData();
   }, [dateFilter]);
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   const loadFinancialData = async () => {
     try {
@@ -143,15 +148,47 @@ export default function Finance({ dateFilter }) {
       // Process sales data for charts
       const salesByMonth = processSalesDataByMonth(salesOrders);
       setSalesData(salesByMonth);
+      setSalesTrendData(salesByMonth);
 
       // Set other data
       setEmployeesData([
         {
           id: 'EMP-001',
           name: 'System Admin',
+          email: 'admin@coreerp.com',
+          department: 'Administration',
           position: 'Administrator',
+          salary: 50000,
           baseSalary: 50000,
           netSalary: 45000,
+          joinDate: new Date('2024-01-15').toISOString(),
+          paymentStatus: 'paid',
+          status: 'paid'
+        },
+        {
+          id: 'EMP-002',
+          name: 'John Doe',
+          email: 'john@coreerp.com',
+          department: 'Pharmacy',
+          position: 'Pharmacist',
+          salary: 45000,
+          baseSalary: 45000,
+          netSalary: 40500,
+          joinDate: new Date('2024-02-01').toISOString(),
+          paymentStatus: 'pending',
+          status: 'pending'
+        },
+        {
+          id: 'EMP-003',
+          name: 'Jane Smith',
+          email: 'jane@coreerp.com',
+          department: 'Sales',
+          position: 'Sales Manager',
+          salary: 40000,
+          baseSalary: 40000,
+          netSalary: 36000,
+          joinDate: new Date('2024-03-01').toISOString(),
+          paymentStatus: 'paid',
           status: 'paid'
         }
       ]);
@@ -295,7 +332,7 @@ export default function Finance({ dateFilter }) {
       {/* Key Metrics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {metrics.map((metric, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
             <Card
               sx={{
                 height: '100%',
@@ -369,7 +406,7 @@ export default function Finance({ dateFilter }) {
       {/* Charts Section */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {/* Sales vs Expenses Chart */}
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Paper
             sx={{
               p: 3,
@@ -439,7 +476,7 @@ export default function Finance({ dateFilter }) {
         </Grid>
 
         {/* Financial Reports Summary */}
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Paper
             sx={{
               p: 3,
@@ -528,7 +565,7 @@ export default function Finance({ dateFilter }) {
     <Box>
       {/* Bills Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
@@ -553,7 +590,7 @@ export default function Finance({ dateFilter }) {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
@@ -578,7 +615,7 @@ export default function Finance({ dateFilter }) {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
@@ -704,7 +741,7 @@ export default function Finance({ dateFilter }) {
     <Box>
       {/* Payroll Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
@@ -717,13 +754,13 @@ export default function Finance({ dateFilter }) {
                 Total Employees
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {employees.length}
+                {employeesData.length}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -736,13 +773,13 @@ export default function Finance({ dateFilter }) {
                 Total Gross Pay
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {formatCurrency(employees.reduce((sum, emp) => sum + emp.baseSalary, 0))}
+                {formatCurrency(employeesData.reduce((sum, emp) => sum + emp.salary, 0))}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
@@ -755,13 +792,13 @@ export default function Finance({ dateFilter }) {
                 Net Payable
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {formatCurrency(employees.reduce((sum, emp) => sum + emp.netSalary, 0))}
+                {formatCurrency(employeesData.reduce((sum, emp) => sum + emp.salary, 0))}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
@@ -774,7 +811,7 @@ export default function Finance({ dateFilter }) {
                 Pending Payments
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {employees.filter(emp => emp.status === 'pending').length}
+                {employeesData.filter(emp => emp.paymentStatus === 'pending').length}
               </Typography>
             </CardContent>
           </Card>
@@ -820,7 +857,7 @@ export default function Finance({ dateFilter }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {employees.map((employee) => (
+              {employeesData.map((employee) => (
                 <TableRow key={employee.id} sx={{ '&:hover': { backgroundColor: '#f8fafc' } }}>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -897,7 +934,7 @@ export default function Finance({ dateFilter }) {
     <Box>
       <Grid container spacing={3}>
         {/* Financial Reports Summary */}
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Paper
             sx={{
               p: 3,
@@ -920,7 +957,7 @@ export default function Finance({ dateFilter }) {
 
             {/* P&L Detailed */}
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Box sx={{ p: 2, backgroundColor: '#f0fdf4', borderRadius: '8px', mb: 2 }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: '#15803d' }}>
                     Revenue
@@ -947,7 +984,7 @@ export default function Finance({ dateFilter }) {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Box sx={{ p: 2, backgroundColor: '#fef2f2', borderRadius: '8px', mb: 2 }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: '#dc2626' }}>
                     Expenses
@@ -990,7 +1027,7 @@ export default function Finance({ dateFilter }) {
         </Grid>
 
         {/* Balance Sheet */}
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Paper
             sx={{
               p: 3,
