@@ -4,9 +4,9 @@
   "description": "**A smart, affordable, and modular ERP system designed to empower Small and Medium-sized Businesses (SMBs) in growing economies.**",
   "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "repository": {
