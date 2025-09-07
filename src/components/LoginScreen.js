@@ -57,8 +57,8 @@ export default function LoginScreen({ onLoginSuccess }) {
           </div>
 
           <div className="text-center mb-6">
-            <h2 className="login-title">Welcome Back</h2>
-            <p className="login-subtitle">Sign in to your PharmaCore account</p>
+            <h2 className="login-title">ආයුබෝවන් - Welcome</h2>
+            <p className="login-subtitle">Access your NPK Pharmacy ERP System</p>
           </div>
         </div>
 
