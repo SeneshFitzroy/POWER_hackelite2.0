@@ -60,7 +60,9 @@ const PharmacyPOSFirebaseIntegrated = () => {
     address: '',
     gender: '',
     bloodGroup: '',
-    medicalNotes: ''
+    medicalNotes: '',
+    isUnder15: false,
+    hasNoNic: false
   });
 
   // Cart item unit types for tablets/capsules
@@ -564,7 +566,9 @@ const PharmacyPOSFirebaseIntegrated = () => {
         address: '',
         gender: '',
         bloodGroup: '',
-        medicalNotes: ''
+        medicalNotes: '',
+        isUnder15: false,
+        hasNoNic: false
       });
       setShowPatientForm(false);
 
@@ -727,24 +731,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
               STAFF INFORMATION
             </Typography>
             
-            <RadioGroup
-              value={staffType}
-              onChange={(e) => setStaffType(e.target.value)}
-              row
-              sx={{ mb: 2 }}
-            >
-              <FormControlLabel 
-                value="employee" 
-                control={<Radio sx={{ color: '#1976d2' }} />} 
-                label={<Typography sx={{ fontWeight: 'bold' }}>Employee</Typography>}
-              />
-              <FormControlLabel 
-                value="pharmacist" 
-                control={<Radio sx={{ color: '#1976d2' }} />} 
-                label={<Typography sx={{ fontWeight: 'bold' }}>Pharmacist</Typography>}
-              />
-            </RadioGroup>
-            
             <TextField
               fullWidth
               label="Authorized Person - Employee ID"
@@ -780,96 +766,30 @@ const PharmacyPOSFirebaseIntegrated = () => {
               }}
             />
 
-            {/* Payment Method Selection - COMPACT */}
+            {/* Payment Method - CARD ONLY */}
             <Box sx={{ mb: 2 }}>
               <Typography variant="body2" fontWeight="bold" sx={{ mb: 1, color: '#1976d2' }}>
                 Payment Method:
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button
-                  variant={paymentMethod === 'cash' ? 'contained' : 'outlined'}
-                  onClick={() => setPaymentMethod('cash')}
-                  size="small"
-                  sx={{
-                    flex: 1,
-                    borderRadius: 1,
-                    backgroundColor: paymentMethod === 'cash' ? '#4caf50' : 'transparent',
-                    borderColor: '#4caf50',
-                    color: paymentMethod === 'cash' ? 'white' : '#4caf50',
-                    '&:hover': {
-                      backgroundColor: paymentMethod === 'cash' ? '#388e3c' : '#e8f5e8'
-                    }
-                  }}
-                >
-                  CASH
-                </Button>
-                <Button
-                  variant={paymentMethod === 'card' ? 'contained' : 'outlined'}
-                  onClick={() => setPaymentMethod('card')}
-                  size="small"
-                  sx={{
-                    flex: 1,
-                    borderRadius: 1,
-                    backgroundColor: paymentMethod === 'card' ? '#2196f3' : 'transparent',
-                    borderColor: '#2196f3',
-                    color: paymentMethod === 'card' ? 'white' : '#2196f3',
-                    '&:hover': {
-                      backgroundColor: paymentMethod === 'card' ? '#1976d2' : '#e3f2fd'
-                    }
-                  }}
-                >
-                  CARD
-                </Button>
-              </Box>
-            </Box>
-
-            <Button
-              variant="outlined"
-              fullWidth
-              size="small"
-              onClick={() => setShowCashBalance(!showCashBalance)}
-              sx={{ 
-                mb: 2,
-                borderRadius: 1,
-                borderColor: '#1976d2',
-                color: '#1976d2'
-              }}
-            >
-              SHOW CASH BALANCE
-            </Button>
-
-            {showCashBalance && (
-              <Typography variant="h6" sx={{ 
-                textAlign: 'center', 
-                mb: 2,
-                color: '#4caf50',
-                fontWeight: 'bold',
-                p: 1,
-                borderRadius: 1,
-                backgroundColor: '#f1f8e9',
-                border: '1px solid #4caf50'
-              }}>
-                {formatCurrency(cashBalance)}
-              </Typography>
-            )}
-
-            {paymentMethod === 'cash' && (
-              <TextField
+              <Button
+                variant="contained"
                 fullWidth
-                label="Cash Received"
-                type="number"
-                value={cashReceived}
-                onChange={(e) => setCashReceived(parseFloat(e.target.value) || 0)}
                 size="small"
+                disabled
                 sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 1,
-                    '&:hover fieldset': { borderColor: '#1976d2' },
-                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  borderRadius: 1,
+                  backgroundColor: '#2196f3',
+                  color: 'white',
+                  '&:disabled': {
+                    backgroundColor: '#2196f3',
+                    color: 'white'
                   }
                 }}
-              />
-            )}
+              >
+                CARD PAYMENT
+              </Button>
+            </Box>
+
           </Paper>
         </Box>
 
@@ -1410,7 +1330,40 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 label="NIC Number"
                 value={newPatient.nic}
                 onChange={(e) => setNewPatient({...newPatient, nic: e.target.value})}
+                disabled={newPatient.isUnder15 || newPatient.hasNoNic}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={newPatient.isUnder15}
+                      onChange={(e) => setNewPatient({
+                        ...newPatient, 
+                        isUnder15: e.target.checked,
+                        hasNoNic: e.target.checked ? false : newPatient.hasNoNic,
+                        nic: e.target.checked ? '' : newPatient.nic
+                      })}
+                    />
+                  }
+                  label="Patient is under 15 years old (No NIC required)"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={newPatient.hasNoNic}
+                      onChange={(e) => setNewPatient({
+                        ...newPatient, 
+                        hasNoNic: e.target.checked,
+                        isUnder15: e.target.checked ? false : newPatient.isUnder15,
+                        nic: e.target.checked ? '' : newPatient.nic
+                      })}
+                    />
+                  }
+                  label="Patient has no NIC"
+                />
+              </Box>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
