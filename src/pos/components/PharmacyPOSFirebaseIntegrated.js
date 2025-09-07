@@ -423,7 +423,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
   const discountAmount = (totals.subtotal * discountRate) / 100;
   const netTotal = totals.subtotal - discountAmount;
-  const balance = Math.max(0, (parseFloat(cashReceived) || 0) - netTotal);
+  const balance = 0; // No balance for card payments
   const total = netTotal;
 
   // Format currency
@@ -487,7 +487,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         netTotal: netTotal,
         total: total,
         paymentMethod: paymentMethod,
-        amountPaid: paymentMethod === 'cash' ? cashReceived : total,
+        amountPaid: total,
         balance: balance,
         customerName: customerName || 'Walk-in Customer',
         customerContact: customerContact,
@@ -505,13 +505,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
       // Process the sale transaction with stock updates
       const transaction = await transactionService.processSale(saleData);
       
-      // Update local cash balance for cash payments
-      if (paymentMethod === 'cash') {
-        const newBalance = cashBalance + total;
-        setCashBalance(newBalance);
-        localStorage.setItem('pharmacyCashBalance', newBalance.toString());
-      }
-      
       // Reload medicines to reflect updated stock
       await loadInitialData();
       
@@ -520,7 +513,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
       
       // Clear cart and reset form
       setCart([]);
-      setCashReceived(0);
       setSearchTerm('');
       setSearchResults([]);
       if (!currentPatient) {
@@ -1230,8 +1222,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   </Typography>
                 </Box>
 
-                {/* BALANCE - BLACK */}
-                {paymentMethod === 'cash' && cashReceived > 0 && (
+                {/* BALANCE - Not shown for card payments */}
+                {false && (
                   <Box sx={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
