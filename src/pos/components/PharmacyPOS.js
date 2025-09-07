@@ -64,7 +64,6 @@ const PharmacyPOS = () => {
   // Dialog states
   const [checkoutDialog, setCheckoutDialog] = useState(false);
   const [employeeVerification, setEmployeeVerification] = useState('');
-  const [pharmacyRegistration, setPharmacyRegistration] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [amountPaid, setAmountPaid] = useState('');
   const [prescriptionDialog, setPrescriptionDialog] = useState(false);
@@ -263,21 +262,6 @@ const PharmacyPOS = () => {
         return;
       }
 
-      // For prescription medicines, verify pharmacy registration
-      const validation = validateSale();
-      if (validation.prescriptionRequired && !pharmacyRegistration) {
-        addAlert('error', 'Pharmacy registration number required for prescription medicines');
-        return;
-      }
-
-      if (pharmacyRegistration) {
-        const pharmacyReg = await employeeService.verifyPharmacyRegistration(pharmacyRegistration);
-        if (!pharmacyReg) {
-          addAlert('error', 'Invalid pharmacy registration number');
-          return;
-        }
-      }
-
       // Create transaction
       const transactionData = {
         transactionId: generateTransactionId(),
@@ -296,10 +280,7 @@ const PharmacyPOS = () => {
           [paymentMethod]: parseFloat(amountPaid) || transactionTotals.total,
           change: Math.max(0, (parseFloat(amountPaid) || 0) - transactionTotals.total)
         },
-        employeeId: employeeVerification,
-        pharmacistId: validation.prescriptionRequired ? employeeVerification : null,
-        pharmacyRegistrationNumber: pharmacyRegistration || '',
-        prescriptionRequired: validation.prescriptionRequired
+        employeeId: employeeVerification
       };
 
       // Process the sale
@@ -311,7 +292,6 @@ const PharmacyPOS = () => {
       clearCart();
       setCheckoutDialog(false);
       setEmployeeVerification('');
-      setPharmacyRegistration('');
       setAmountPaid('');
       
     } catch (error) {
@@ -631,15 +611,57 @@ const PharmacyPOS = () => {
             return null;
           })()}
 
-          {/* Payment Method */}
-          <Autocomplete
-            options={['cash', 'card', 'insurance']}
-            value={paymentMethod}
-            onChange={(e, newValue) => setPaymentMethod(newValue || 'cash')}
-            renderInput={(params) => (
-              <TextField {...params} label="Payment Method" margin="normal" fullWidth />
-            )}
-          />
+          {/* Payment Method Selection */}
+          <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
+            Payment Method
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            <Button
+              variant={paymentMethod === 'card' ? 'contained' : 'outlined'}
+              onClick={() => setPaymentMethod('card')}
+              sx={{ 
+                flex: 1,
+                backgroundColor: paymentMethod === 'card' ? '#1e3a8a' : 'transparent',
+                color: paymentMethod === 'card' ? 'white' : '#1e3a8a',
+                borderColor: '#1e3a8a',
+                '&:hover': {
+                  backgroundColor: paymentMethod === 'card' ? '#1e40af' : 'rgba(30, 58, 138, 0.1)'
+                }
+              }}
+            >
+              Card
+            </Button>
+            <Button
+              variant={paymentMethod === 'cash' ? 'contained' : 'outlined'}
+              onClick={() => setPaymentMethod('cash')}
+              sx={{ 
+                flex: 1,
+                backgroundColor: paymentMethod === 'cash' ? '#1e3a8a' : 'transparent',
+                color: paymentMethod === 'cash' ? 'white' : '#1e3a8a',
+                borderColor: '#1e3a8a',
+                '&:hover': {
+                  backgroundColor: paymentMethod === 'cash' ? '#1e40af' : 'rgba(30, 58, 138, 0.1)'
+                }
+              }}
+            >
+              Cash
+            </Button>
+            <Button
+              variant={paymentMethod === 'other' ? 'contained' : 'outlined'}
+              onClick={() => setPaymentMethod('other')}
+              sx={{ 
+                flex: 1,
+                backgroundColor: paymentMethod === 'other' ? '#1e3a8a' : 'transparent',
+                color: paymentMethod === 'other' ? 'white' : '#1e3a8a',
+                borderColor: '#1e3a8a',
+                '&:hover': {
+                  backgroundColor: paymentMethod === 'other' ? '#1e40af' : 'rgba(30, 58, 138, 0.1)'
+                }
+              }}
+            >
+              Other
+            </Button>
+          </Box>
 
           {/* Amount Paid */}
           <TextField
@@ -666,19 +688,14 @@ const PharmacyPOS = () => {
             onChange={(e) => setEmployeeVerification(e.target.value)}
             margin="normal"
             required
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#e2e8f0' },
+                '&:hover fieldset': { borderColor: '#1e3a8a' },
+                '&.Mui-focused fieldset': { borderColor: '#1e40af' }
+              }
+            }}
           />
-
-          {/* Pharmacy Registration (for prescription medicines) */}
-          {validateSale().prescriptionRequired && (
-            <TextField
-              fullWidth
-              label="Pharmacy Registration Number *"
-              value={pharmacyRegistration}
-              onChange={(e) => setPharmacyRegistration(e.target.value)}
-              margin="normal"
-              required
-            />
-          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setCheckoutDialog(false)}>
