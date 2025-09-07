@@ -164,203 +164,312 @@ const AttendanceList = () => {
     };
   };
 
+  const MetricCard = ({ title, value, icon, color }) => (
+    <Card 
+      sx={{ 
+        height: '100%',
+        background: `linear-gradient(135deg, ${color}15 0%, ${color}08 100%)`,
+        border: `1px solid ${color}30`,
+        borderRadius: 3,
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: `0 8px 25px ${color}25`
+        }
+      }}
+    >
+      <CardContent sx={{ textAlign: 'center', py: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: '50%',
+              backgroundColor: `${color}20`,
+              color: color,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {icon}
+          </Box>
+        </Box>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontWeight: 'bold',
+            color: color,
+            mb: 1 
+          }}
+        >
+          {value}
+        </Typography>
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            color: 'text.secondary',
+            fontWeight: 'medium',
+            textTransform: 'capitalize'
+          }}
+        >
+          {title}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+
   const renderDailyView = () => {
     const stats = getDailyStats();
     
     return (
-      <div className="space-y-6 ml-8">
+      <Box sx={{ space: 4 }}>
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Present</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.present}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow">
-            <div className="flex items-center">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <XCircle className="h-6 w-6 text-red-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Absent</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.absent}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Clock className="h-6 w-6 text-yellow-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Late</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.late}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <MetricCard
+              title="Present"
+              value={stats.present}
+              icon={<CheckCircle sx={{ fontSize: 28 }} />}
+              color="#10b981"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <MetricCard
+              title="Absent"
+              value={stats.absent}
+              icon={<Cancel sx={{ fontSize: 28 }} />}
+              color="#ef4444"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <MetricCard
+              title="Late"
+              value={stats.late}
+              icon={<Schedule sx={{ fontSize: 28 }} />}
+              color="#f59e0b"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <MetricCard
+              title="Total"
+              value={stats.total}
+              icon={<People sx={{ fontSize: 28 }} />}
+              color="#1e3a8a"
+            />
+          </Grid>
+        </Grid>
 
         {/* Attendance Table */}
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">
+        <Paper 
+          sx={{ 
+            borderRadius: 3,
+            overflow: 'hidden',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            border: '1px solid #e5e7eb'
+          }}
+        >
+          <Box sx={{ p: 3, backgroundColor: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 'bold',
+                color: '#1e3a8a'
+              }}
+            >
               Attendance for {new Date(selectedDate).toLocaleDateString()}
-            </h3>
-          </div>
+            </Typography>
+          </Box>
           
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Employee
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Time In
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Time Out
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Hours
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ backgroundColor: '#f8fafc' }}>
+                  <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Employee</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Time In</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Time Out</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Hours</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {employees.map((employee) => {
                   const attendanceRecord = getAttendanceForEmployee(employee.id, selectedDate);
                   
                   return (
-                    <tr key={employee.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-8 w-8">
-                            <div className="h-8 w-8 rounded-full bg-primary-500 flex items-center justify-center">
-                              <span className="text-xs font-medium text-white">
-                                {employee.firstName?.charAt(0)}{employee.lastName?.charAt(0)}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
+                    <TableRow 
+                      key={employee.id}
+                      sx={{ 
+                        '&:hover': { 
+                          backgroundColor: '#f8fafc' 
+                        },
+                        '&:last-child td': { 
+                          borderBottom: 0 
+                        }
+                      }}
+                    >
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Avatar 
+                            sx={{ 
+                              width: 32, 
+                              height: 32, 
+                              bgcolor: '#1e3a8a',
+                              fontSize: '12px',
+                              mr: 2
+                            }}
+                          >
+                            {employee.firstName?.charAt(0)}{employee.lastName?.charAt(0)}
+                          </Avatar>
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                               {employee.firstName} {employee.lastName}
-                            </div>
-                            <div className="text-sm text-gray-500">{employee.role}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {employee.role}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
                         {attendanceRecord ? (
                           getStatusBadge(attendanceRecord.status)
                         ) : (
-                          <span className="text-sm text-gray-500">Not marked</span>
+                          <Typography variant="body2" color="text.secondary">
+                            Not marked
+                          </Typography>
                         )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {attendanceRecord?.timeIn || '-'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {attendanceRecord?.timeOut || '-'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {attendanceRecord?.hoursWorked ? `${attendanceRecord.hoursWorked.toFixed(1)}h` : '-'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {attendanceRecord?.timeIn || '-'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {attendanceRecord?.timeOut || '-'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {attendanceRecord?.hoursWorked ? `${attendanceRecord.hoursWorked.toFixed(1)}h` : '-'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
                         {!attendanceRecord && (
-                          <div className="flex space-x-2">
-                            <button
+                          <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              color="success"
                               onClick={() => markAttendance(employee.id, 'present', '09:00', '17:00')}
                               disabled={markingAttendance}
-                              className="text-green-600 hover:text-green-900"
+                              sx={{ 
+                                borderRadius: 2,
+                                textTransform: 'none',
+                                fontSize: '12px'
+                              }}
                             >
                               Present
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              color="error"
                               onClick={() => markAttendance(employee.id, 'absent')}
                               disabled={markingAttendance}
-                              className="text-red-600 hover:text-red-900"
+                              sx={{ 
+                                borderRadius: 2,
+                                textTransform: 'none',
+                                fontSize: '12px'
+                              }}
                             >
                               Absent
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              color="warning"
                               onClick={() => markAttendance(employee.id, 'late', '09:30', '17:00')}
                               disabled={markingAttendance}
-                              className="text-yellow-600 hover:text-yellow-900"
+                              sx={{ 
+                                borderRadius: 2,
+                                textTransform: 'none',
+                                fontSize: '12px'
+                              }}
                             >
                               Late
-                            </button>
-                          </div>
+                            </Button>
+                          </Box>
                         )}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </Box>
     );
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
-      </div>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+          <CircularProgress size={60} sx={{ color: '#1e3a8a' }} />
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <div className="space-y-8 ml-2">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Attendance Management</h1>
-        <div className="flex items-center space-x-3">
-          <select
-            value={viewMode}
-            onChange={(e) => setViewMode(e.target.value)}
-            className="input"
-          >
-            <option value="daily">Daily View</option>
-            <option value="weekly">Weekly View</option>
-          </select>
-          <input
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontWeight: 'bold',
+            color: '#1e3a8a',
+            mb: 2
+          }}
+        >
+          Attendance Management
+        </Typography>
+        
+        {/* Controls */}
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel>View Type</InputLabel>
+            <Select
+              value={viewMode}
+              label="View Type"
+              onChange={(e) => setViewMode(e.target.value)}
+              sx={{ borderRadius: 2 }}
+            >
+              <MenuItem value="daily">Daily View</MenuItem>
+              <MenuItem value="weekly">Weekly View</MenuItem>
+            </Select>
+          </FormControl>
+          
+          <TextField
             type="date"
+            size="small"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="input"
+            sx={{ 
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: 2 
+              }
+            }}
           />
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       {viewMode === 'daily' && renderDailyView()}
-    </div>
+    </Container>
   );
 };
 
