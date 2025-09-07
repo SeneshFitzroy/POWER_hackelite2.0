@@ -313,151 +313,131 @@ const PayrollList = () => {
           />
         </Grid>
       </Grid>
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <DollarSign className="h-6 w-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Employees</p>
-              <p className="text-2xl font-bold text-gray-900">{employees.filter(e => e.status === 'active').length}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <DollarSign className="h-6 w-6 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">This Month Processed</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {groupedPayrolls[selectedMonth]?.length || 0}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <DollarSign className="h-6 w-6 text-yellow-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Payout</p>
-              <p className="text-2xl font-bold text-gray-900">
-                LKR {(groupedPayrolls[selectedMonth]?.reduce((sum, p) => sum + p.netSalary, 0) || 0).toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Calendar className="h-6 w-6 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Months Processed</p>
-              <p className="text-2xl font-bold text-gray-900">{Object.keys(groupedPayrolls).length}</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Payroll Records */}
       <div className="space-y-6">
         {Object.entries(groupedPayrolls).map(([month, monthPayrolls]) => (
-          <div key={month} className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-gray-900">
+          <Paper 
+            key={month} 
+            sx={{ 
+              borderRadius: 3,
+              overflow: 'hidden',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+              border: '1px solid #e5e7eb',
+              mb: 3
+            }}
+          >
+            <Box sx={{ p: 3, backgroundColor: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 'bold',
+                    color: '#1e3a8a'
+                  }}
+                >
                   {new Date(month + '-01').toLocaleDateString('en-US', { 
                     year: 'numeric', 
                     month: 'long' 
                   })}
-                </h3>
-                <div className="text-sm text-gray-500">
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
                   {monthPayrolls.length} employees • LKR {monthPayrolls.reduce((sum, p) => sum + p.netSalary, 0).toLocaleString()}
-                </div>
-              </div>
-            </div>
+                </Typography>
+              </Box>
+            </Box>
             
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Employee
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Base Salary
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Overtime
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Gross Salary
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Deductions
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Net Salary
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {monthPayrolls.map((payroll) => (
-                    <tr key={payroll.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{payroll.employeeName}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">LKR {payroll.baseSalary.toLocaleString()}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {payroll.overtimeHours}h • LKR {payroll.overtimePay.toLocaleString()}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">LKR {payroll.grossSalary.toLocaleString()}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">LKR {payroll.totalDeductions.toLocaleString()}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">LKR {payroll.netSalary.toLocaleString()}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => generatePayslip(payroll)}
-                          className="text-primary-600 hover:text-primary-900 flex items-center"
-                        >
-                          <Download className="h-4 w-4 mr-1" />
-                          Payslip
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <TableContainer component={Paper} elevation={0}>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: '#f8fafc' }}>
+                      <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Employee</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Base Salary</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Overtime</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Gross Salary</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Deductions</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Net Salary</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {monthPayrolls.map((payroll) => (
+                      <TableRow 
+                        key={payroll.id}
+                        sx={{ 
+                          '&:hover': { 
+                            backgroundColor: '#f8fafc' 
+                          },
+                          '&:last-child td': { 
+                            borderBottom: 0 
+                          }
+                        }}
+                      >
+                        <TableCell>
+                          <Typography variant="body2" sx={{ fontWeight: 'medium', color: '#1f2937' }}>
+                            {payroll.employeeName}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" color="text.primary">
+                            LKR {payroll.baseSalary.toLocaleString()}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" color="text.primary">
+                            {payroll.overtimeHours}h • LKR {payroll.overtimePay.toLocaleString()}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" color="text.primary">
+                            LKR {payroll.grossSalary.toLocaleString()}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" color="text.primary">
+                            LKR {payroll.totalDeductions.toLocaleString()}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" sx={{ fontWeight: 'medium', color: '#1f2937' }}>
+                            LKR {payroll.netSalary.toLocaleString()}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => generatePayslip(payroll)}
+                            startIcon={<GetApp />}
+                            variant="text"
+                            size="small"
+                            sx={{ 
+                              color: '#1e3a8a',
+                              '&:hover': { backgroundColor: '#eff6ff' }
+                            }}
+                          >
+                            Payslip
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </div>
-          </div>
+          </Paper>
         ))}
       </div>
 
       {Object.keys(groupedPayrolls).length === 0 && (
-        <div className="text-center py-12">
-          <DollarSign className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No payroll records</h3>
-          <p className="mt-1 text-sm text-gray-500">
+        <Box sx={{ textAlign: 'center', py: 12 }}>
+          <AttachMoney sx={{ mx: 'auto', height: 48, width: 48, color: '#9ca3af', mb: 2 }} />
+          <Typography variant="h6" sx={{ fontWeight: 'medium', color: '#1f2937', mb: 1 }}>
+            No payroll records
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
             Get started by processing payroll for the selected month.
-          </p>
-        </div>
+          </Typography>
+        </Box>
       )}
     </div>
   );
