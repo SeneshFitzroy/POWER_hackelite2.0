@@ -304,6 +304,80 @@ const ViewAllDetails = () => {
         </div>
       </div>
       
+      {/* License Renewal Status Card - Modern Design */}
+      {legalData && (
+        <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-5 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center mb-4 md:mb-0">
+              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-100 text-blue-600 mr-4">
+                <Calendar size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">License Renewal</h3>
+                <p className="text-sm text-gray-600">
+                  {legalData.licenseRenewalDate 
+                    ? `Next renewal: ${new Date(legalData.licenseRenewalDate).toLocaleDateString()}` 
+                    : "No renewal date set"}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                legalData.licenseReminder 
+                  ? "bg-green-100 text-green-800" 
+                  : "bg-yellow-100 text-yellow-800"
+              }`}>
+                {legalData.licenseReminder ? "Reminder Active" : "Reminder Off"}
+              </div>
+              
+              {legalData.licenseRenewalDate && (
+                <div className="ml-4 px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  {(() => {
+                    const today = new Date();
+                    const renewalDate = new Date(legalData.licenseRenewalDate);
+                    const timeDiff = renewalDate.getTime() - today.getTime();
+                    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                    
+                    if (daysDiff < 0) {
+                      return "Expired";
+                    } else if (daysDiff <= 30) {
+                      return `${daysDiff} days left`;
+                    } else {
+                      return "Active";
+                    }
+                  })()}
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {legalData.licenseRenewalDate && (
+            <div className="mt-4 pt-4 border-t border-blue-100">
+              <div className="flex items-center text-sm text-gray-600">
+                <Shield size={16} className="mr-2 text-blue-500" />
+                <span>
+                  {(() => {
+                    const today = new Date();
+                    const renewalDate = new Date(legalData.licenseRenewalDate);
+                    const timeDiff = renewalDate.getTime() - today.getTime();
+                    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                    
+                    if (daysDiff < 0) {
+                      return `License expired ${Math.abs(daysDiff)} days ago`;
+                    } else if (daysDiff <= 30) {
+                      return `License expires in ${daysDiff} days`;
+                    } else {
+                      return `License is valid for ${daysDiff} more days`;
+                    }
+                  })()}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      
       <div className="space-y-8">
         {/* Legal Documents Section - No dropdown */}
         <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
@@ -318,23 +392,28 @@ const ViewAllDetails = () => {
           </div>
           
           {legalData.pharmacyImages && legalData.pharmacyImages.length > 0 ? (
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {legalData.pharmacyImages.map((imageObj, index) => (
                 <div key={index} className="border rounded-lg p-3 bg-white">
-                  <div className="flex items-start">
-                    <div 
-                      className="cursor-pointer flex-shrink-0 mr-3"
-                      onClick={() => openImagePopup(imageObj.src)}
-                    >
-                      <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center">
-                        <FileImage size={24} className="text-gray-400" />
-                      </div>
-                    </div>
-                    <div className="flex-grow">
-                      <div className="font-medium text-gray-800">{imageObj.title}</div>
-                      <div className="text-xs text-gray-500 mt-1">Click image to preview</div>
+                  <div 
+                    className="cursor-pointer relative group rounded-lg overflow-hidden mb-2"
+                    onClick={() => openImagePopup(imageObj.src)}
+                  >
+                    <img 
+                      src={imageObj.src} 
+                      alt={imageObj.title} 
+                      className="w-full h-auto object-contain max-h-32"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.parentElement.innerHTML = '<div class="bg-gray-100 w-full h-32 flex items-center justify-center"><FileImage size={20} class="text-gray-400" /></div>';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 flex items-center justify-center transition-all">
+                      <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={16} />
                     </div>
                   </div>
+                  <div className="text-sm font-medium text-gray-800 text-center truncate">{imageObj.title}</div>
+                  <div className="text-xs text-gray-500 mt-1 text-center">Click to preview</div>
                 </div>
               ))}
             </div>
@@ -359,16 +438,22 @@ const ViewAllDetails = () => {
           </div>
           
           {legalData.businessRegistrationImage ? (
-            <div className="max-w-md mx-auto">
+            <div className="max-w-xs mx-auto">
               <div 
-                className="cursor-pointer relative group border rounded-lg overflow-hidden bg-white"
+                className="cursor-pointer relative group rounded-lg overflow-hidden bg-white"
                 onClick={() => openImagePopup(legalData.businessRegistrationImage)}
               >
-                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-60 flex items-center justify-center">
-                  <FileImage size={48} className="text-gray-400" />
-                </div>
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-all">
-                  <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={24} />
+                <img 
+                  src={legalData.businessRegistrationImage} 
+                  alt="Business Registration" 
+                  className="w-full h-auto object-contain max-h-40"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.parentElement.innerHTML = '<div class="bg-gray-100 w-full h-40 flex items-center justify-center"><FileImage size={24} class="text-gray-400" /></div>';
+                  }}
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 flex items-center justify-center transition-all">
+                  <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={20} />
                 </div>
               </div>
               <div className="mt-2 text-center">

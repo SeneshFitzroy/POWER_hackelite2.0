@@ -483,44 +483,23 @@ const LegalForm = () => {
                   <div className="mt-4">
                     <h4 className="text-sm font-medium text-gray-700 mb-2">Document Preview</h4>
                     <div 
-                      className="border rounded-lg p-2 bg-gray-50 cursor-pointer relative group"
+                      className="rounded-lg overflow-hidden cursor-pointer relative group max-w-xs mx-auto"
                       onClick={() => openImagePopup(formData.businessRegistrationImage)}
                     >
-                      <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-32 flex items-center justify-center">
-                        <FileImage size={32} className="text-gray-400" />
-                      </div>
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center transition-all rounded-lg">
+                      <img 
+                        src={formData.businessRegistrationImage} 
+                        alt="Business Registration" 
+                        className="w-full h-auto object-contain max-h-40"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.parentElement.innerHTML = '<div class="bg-gray-100 w-full h-40 flex items-center justify-center"><FileImage size={24} class="text-gray-400" /></div>';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 flex items-center justify-center transition-all">
                         <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={20} />
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 mt-1 text-center">Click to preview</p>
-                    
-                    {/* Direct Image Preview for Business Registration */}
-                    <div className="mt-6">
-                      <h4 className="text-sm font-medium text-gray-700 mb-3">Image Preview</h4>
-                      <div className="flex justify-center">
-                        <div 
-                          className="border rounded-lg p-2 bg-white cursor-pointer relative group w-full max-w-xs"
-                          onClick={() => openImagePopup(formData.businessRegistrationImage)}
-                        >
-                          <div className="w-full h-40 flex items-center justify-center overflow-hidden rounded">
-                            <img 
-                              src={formData.businessRegistrationImage} 
-                              alt="Business Registration" 
-                              className="object-cover w-full h-full"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.parentElement.innerHTML = '<div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-full flex items-center justify-center"><FileImage size={24} class="text-gray-400" /></div>';
-                              }}
-                            />
-                          </div>
-                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 flex items-center justify-center transition-all rounded-lg">
-                            <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={20} />
-                          </div>
-                          <p className="text-xs text-gray-600 mt-2 text-center">Business Registration</p>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 )}
               </div>
