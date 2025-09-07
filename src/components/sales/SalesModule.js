@@ -25,7 +25,7 @@ import {
 import SalesDashboard from './SalesDashboard';
 import CustomerManagement from './CustomerManagement';
 import SalesOrders from './SalesOrders';
-import FinanceModule from '../finance/FinanceModule';
+import Finance from '../finance/Finance';
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -322,7 +322,7 @@ export default function SalesModule() {
             <SalesOrders dateFilter={dateFilter} />
           </TabPanel>
           <TabPanel value={activeTab} index={3}>
-            <FinanceModule dateFilter={dateFilter} />
+            <Finance dateFilter={dateFilter} />
           </TabPanel>
         </Container>
       </Box>
