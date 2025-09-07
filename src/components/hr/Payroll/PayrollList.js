@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, query, where, orderBy } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db } from '../../../firebase/config';
 import { DollarSign, Download, Calendar, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 

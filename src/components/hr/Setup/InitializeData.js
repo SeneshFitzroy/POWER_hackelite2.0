@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { initializeFirestore, resetFirestore } from '../../utils/initializeFirestore';
+import { initializeFirestore } from '../../../utils/hr/initializeFirestore';
 import { Database, RefreshCw, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
