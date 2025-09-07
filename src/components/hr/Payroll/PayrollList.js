@@ -315,7 +315,7 @@ const PayrollList = () => {
       </Grid>
 
       {/* Payroll Records */}
-      <div className="space-y-6">
+      <Box sx={{ space: 4 }}>
         {Object.entries(groupedPayrolls).map(([month, monthPayrolls]) => (
           <Paper 
             key={month} 
@@ -439,7 +439,7 @@ const PayrollList = () => {
           </Typography>
         </Box>
       )}
-    </div>
+    </Container>
   );
 };
 
