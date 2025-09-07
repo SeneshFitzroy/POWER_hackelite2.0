@@ -787,7 +787,7 @@ body {
 
 .module-card:hover {
   transform: translateY(-0.5rem) scale(1.02);
-  box-shadow: 0 12px 40px rgba(65, 105, 225, 0.2);
+  box-shadow: 0 12px 40px rgba(30, 58, 138, 0.2);
   background: white;
 }
 
@@ -795,7 +795,7 @@ body {
   width: 4rem;
   height: 4rem;
   margin: 0 auto 1rem;
-  background: linear-gradient(135deg, #4169E1 0%, rgba(65, 105, 225, 0.8) 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, rgba(30, 58, 138, 0.8) 100%);
   border-radius: 1rem;
   display: flex;
   align-items: center;
@@ -803,7 +803,7 @@ body {
   color: white;
   font-size: 1.5rem;
   transition: transform 0.3s ease;
-  box-shadow: 0 4px 12px rgba(65, 105, 225, 0.3);
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
 }
 
 .module-card:hover .module-icon {
@@ -812,7 +812,7 @@ body {
 
 .module-title {
   font-weight: 700;
-  color: #4169E1;
+  color: #1e3a8a;
   margin-bottom: 0.5rem;
   transition: color 0.3s ease;
 }
