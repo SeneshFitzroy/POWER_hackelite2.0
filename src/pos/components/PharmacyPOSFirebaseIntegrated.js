@@ -622,17 +622,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 {currentTime.toLocaleTimeString()}
               </Typography>
             </Box>
-            <Chip
-              label={paymentMethod.toUpperCase()}
-              sx={{
-                backgroundColor: paymentMethod === 'cash' ? '#16a34a' : '#3b82f6',
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: '1rem',
-                px: 2,
-                py: 0.5
-              }}
-            />
             <Button
               variant="outlined"
               sx={{
