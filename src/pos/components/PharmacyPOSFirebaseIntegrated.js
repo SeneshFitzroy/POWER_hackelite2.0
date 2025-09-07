@@ -1437,6 +1437,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 select
                 SelectProps={{ native: true }}
                 size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1,
+                    '&:hover fieldset': { borderColor: '#1976d2' },
+                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  }
+                }}
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -1451,6 +1458,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 value={newPatient.bloodGroup}
                 onChange={(e) => setNewPatient({...newPatient, bloodGroup: e.target.value})}
                 size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1,
+                    '&:hover fieldset': { borderColor: '#1976d2' },
+                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  }
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -1460,6 +1474,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 value={newPatient.medicalNotes}
                 onChange={(e) => setNewPatient({...newPatient, medicalNotes: e.target.value})}
                 size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1,
+                    '&:hover fieldset': { borderColor: '#1976d2' },
+                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  }
+                }}
               />
             </Grid>
           </Grid>
@@ -1490,7 +1511,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 }
               }}
             >
-              SAVE TO FIREBASE
+              SAVE
             </Button>
           </Box>
         </Box>
