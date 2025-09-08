@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -89,7 +89,7 @@ const AddEmployee = ({ onBack, onSave }) => {
     { value: 'flexible', label: 'Flexible Hours' }
   ];
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = useCallback((field, value) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -102,9 +102,9 @@ const AddEmployee = ({ onBack, onSave }) => {
         [field]: ''
       }));
     }
-  };
+  }, [errors]);
 
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors = {};
 
     // Required fields validation
@@ -140,7 +140,7 @@ const AddEmployee = ({ onBack, onSave }) => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
 
   const handleSubmit = async () => {
     if (!validateForm()) {
