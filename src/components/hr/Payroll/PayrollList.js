@@ -3,7 +3,7 @@ import {
   Box,
   Typography,
   Paper,
-  Grid,
+  Grid2 as Grid,
   Card,
   CardContent,
   Table,
@@ -297,7 +297,7 @@ const PayrollList = () => {
 
       {/* Payroll Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard
             title="Total Employees"
             value={payrollStats.totalEmployees}
@@ -305,7 +305,7 @@ const PayrollList = () => {
             color="#1e3a8a"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard
             title="This Month Processed"
             value={payrollStats.thisMonthProcessed}
@@ -313,7 +313,7 @@ const PayrollList = () => {
             color="#10b981"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard
             title="Total Payout"
             value={`LKR ${payrollStats.totalPayout.toLocaleString()}`}
@@ -321,7 +321,7 @@ const PayrollList = () => {
             color="#f59e0b"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard
             title="Months Processed"
             value={payrollStats.monthsProcessed}
