@@ -38,7 +38,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
   // Logout function
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      navigate('/');
+      navigate('/?screen=login');
     }
   };
 
