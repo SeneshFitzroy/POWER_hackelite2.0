@@ -9,12 +9,7 @@ const InitializeData = () => {
   const handleInitialize = async () => {
     setInitializing(true);
     try {
-      const success = await initializeFirestore();
-      if (success) {
-        toast.success('Database initialized successfully!');
-      } else {
-        toast.error('Failed to initialize database');
-      }
+      toast.info('Initialization service has been removed. Please add data manually through the forms.');
     } catch (error) {
       console.error('Initialization error:', error);
       toast.error('Error during initialization');
@@ -27,12 +22,7 @@ const InitializeData = () => {
     if (window.confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
       setResetting(true);
       try {
-        const success = await resetFirestore();
-        if (success) {
-          toast.success('Database reset and reinitialized successfully!');
-        } else {
-          toast.error('Failed to reset database');
-        }
+        toast.info('Reset service has been removed. Please clear data manually if needed.');
       } catch (error) {
         console.error('Reset error:', error);
         toast.error('Error during reset');
