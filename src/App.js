@@ -4,7 +4,7 @@ import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/materia
 import SplashScreen from './components/SplashScreen'
 import LoginScreen from './components/LoginScreen'
 import ERPDashboard from './components/ERPDashboard'
-import PharmacyPOS from './pos/components/PharmacyPOS'
+import PharmacyPOS from './pos/components/PharmacyPOSFirebaseIntegrated'
 import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
