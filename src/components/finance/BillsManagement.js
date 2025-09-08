@@ -154,19 +154,11 @@ export default function BillsManagement({ dateFilter }) {
     }
   ];
 
-  // Payment status distribution
-  const paymentStatusData = [
-    { name: 'Paid', value: 45, count: 12, color: '#10b981' },
-    { name: 'Pending', value: 35, count: 8, color: '#f59e0b' },
-    { name: 'Overdue', value: 20, count: 5, color: '#ef4444' }
-  ];
+  // Payment status distribution - empty by default
+  const paymentStatusData = [];
 
-  // Monthly payment trends
-  const paymentTrends = [
-    { month: 'Jul', paid: 285000, pending: 95000 },
-    { month: 'Aug', paid: 320000, pending: 125000 },
-    { month: 'Sep', paid: 180000, pending: 255000 }
-  ];
+  // Monthly payment trends - empty by default
+  const paymentTrends = [];
 
   const getStatusColor = (status) => {
     switch (status) {

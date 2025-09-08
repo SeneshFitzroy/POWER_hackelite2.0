@@ -31,12 +31,12 @@ const SetupComponent = () => {
     setResult(null);
     
     try {
-      const response = await initializeSampleData();
-      setResult(response);
-      
-      if (response.success) {
-        setSetupComplete(true);
-      }
+      // No sample data initialization - setup complete
+      setResult({
+        success: true,
+        message: 'Setup completed. No sample data was added. Add your own data through the application forms.'
+      });
+      setSetupComplete(true);
     } catch (error) {
       setResult({
         success: false,
