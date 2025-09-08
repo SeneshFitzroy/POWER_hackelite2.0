@@ -179,6 +179,10 @@ const EmployeeList = () => {
             }}
             onClick={() => {
               console.log('Refreshing employees...');
+              if (!isFirebaseConfigured()) {
+                toast.error('Firebase not configured. Please set up your .env file.');
+                return;
+              }
               fetchEmployees();
               toast.success('Employee list refreshed!');
             }}
@@ -272,7 +276,19 @@ const EmployeeList = () => {
       </Paper>
 
       {/* Employee Cards */}
-      {filteredEmployees.length === 0 ? (
+      {firebaseError ? (
+        <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 3, backgroundColor: '#fff3cd', border: '1px solid #ffeaa7' }}>
+          <Typography variant="h6" color="#856404" gutterBottom>
+            ⚠️ Firebase Configuration Required
+          </Typography>
+          <Typography variant="body2" color="#856404" sx={{ mb: 2 }}>
+            Please configure your Firebase credentials in the .env file to use the Employee Management system.
+          </Typography>
+          <Typography variant="body2" color="#856404" sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
+            Update REACT_APP_FIREBASE_* values in your .env file
+          </Typography>
+        </Paper>
+      ) : filteredEmployees.length === 0 ? (
         <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 3 }}>
           <Users size={48} color="#ccc" style={{ marginBottom: '16px' }} />
           <Typography variant="h6" color="text.secondary" gutterBottom>
