@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -25,12 +26,22 @@ import {
   Grid,
   IconButton
 } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { medicineService } from '../services/medicineService';
 import { transactionService } from '../services/transactionService';
 import { patientService } from '../services/patientService';
 import { initializeSampleData } from '../services/dataInitServiceNew';
 
 const PharmacyPOSFirebaseIntegrated = () => {
+  const navigate = useNavigate();
+  
+  // Logout function
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      navigate('/');
+    }
+  };
+
   // State variables
   const [medicines, setMedicines] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -633,6 +644,25 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 py: 0.5
               }}
             />
+            <Button
+              onClick={handleLogout}
+              variant="contained"
+              startIcon={<LogoutIcon />}
+              sx={{
+                backgroundColor: '#dc2626',
+                color: 'white',
+                fontWeight: 'bold',
+                px: 3,
+                py: 1,
+                borderRadius: 2,
+                '&:hover': {
+                  backgroundColor: '#b91c1c',
+                },
+                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)'
+              }}
+            >
+              LOGOUT
+            </Button>
           </Box>
         </Box>
       </Paper>
