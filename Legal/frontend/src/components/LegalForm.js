@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
 import { collection, doc, setDoc, getDocs } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
-import { 
-  Upload, 
-  Save, 
-  FileImage, 
-  Building2, 
-  User, 
+import {
+  Upload,
+  Save,
+  FileImage,
+  Building2,
+  User,
   Calendar,
   Shield,
   X,
@@ -24,31 +24,128 @@ import {
   ChevronUp,
   ZoomIn,
   Plus,
-  Edit3
+  Edit3,
+  Eye,
+  EyeOff
 } from 'lucide-react';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Collapse,
+  Container,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Grid,
+  IconButton,
+  InputAdornment,
+  OutlinedInput,
+  Switch,
+  TextField,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  CircularProgress,
+  Chip
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-// Simple image popup for form previews
+// Custom colors for the legal module
+const COLORS = {
+  darkBlue: '#1E3A8A',    // For sidebar and main buttons
+  mediumBlue: '#3B82F6',  // For headers and interactive elements
+  lightGray: '#f8f9fa',   // For main content background
+  darkGray: '#212121',    // For main text
+  lighterGray: '#757575'  // For secondary text
+};
+
+// Simple image popup for form previews using Material UI Dialog
 const ImagePreviewPopup = ({ imageSrc, onClose }) => {
   if (!imageSrc) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-      <div className="relative max-w-4xl max-h-full">
-        <button
-          onClick={onClose}
-          className="absolute -top-12 right-0 text-white hover:text-gray-300 bg-black bg-opacity-50 rounded-full p-2"
-        >
-          <X size={32} />
-        </button>
-        <img 
-          src={imageSrc} 
-          alt="Preview" 
-          className="max-w-full max-h-full object-contain"
-        />
-      </div>
-    </div>
+    <Dialog 
+      open={!!imageSrc} 
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+    >
+      <DialogTitle>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h6">Image Preview</Typography>
+          <IconButton onClick={onClose}>
+            <X />
+          </IconButton>
+        </Box>
+      </DialogTitle>
+      <DialogContent>
+        <Box display="flex" justifyContent="center">
+          <img 
+            src={imageSrc} 
+            alt="Preview" 
+            style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} sx={{ backgroundColor: COLORS.darkBlue, color: 'white', '&:hover': { backgroundColor: COLORS.mediumBlue } }}>
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+  borderRadius: theme.spacing(2),
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+  backgroundColor: COLORS.lightGray, // Light gray background
+}));
+
+const SectionHeader = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(2),
+  backgroundColor: COLORS.lightGray, // Light gray background
+  borderRadius: theme.spacing(1),
+  marginBottom: theme.spacing(2),
+  cursor: 'pointer',
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  borderRadius: theme.spacing(1.5),
+  padding: theme.spacing(1.5, 3),
+  textTransform: 'none',
+  fontWeight: 600,
+  backgroundColor: COLORS.darkBlue, // Dark blue for buttons
+  color: 'white',
+  '&:hover': {
+    backgroundColor: COLORS.mediumBlue, // Medium blue on hover
+  },
+}));
+
+const UploadArea = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  border: '2px dashed',
+  borderColor: COLORS.mediumBlue, // Medium blue border
+  borderRadius: theme.spacing(2),
+  textAlign: 'center',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease-in-out',
+  '&:hover': {
+    borderColor: COLORS.darkBlue, // Dark blue on hover
+    backgroundColor: 'rgba(59, 130, 246, 0.05)', // Light blue background on hover
+  },
+}));
 
 const LegalForm = () => {
   const [formData, setFormData] = useState({
@@ -233,519 +330,892 @@ const LegalForm = () => {
     onToggle,
     subtitle 
   }) => (
-    <div 
-      className="flex items-center justify-between cursor-pointer p-4 bg-gray-100 rounded-lg mb-4"
-      onClick={onToggle}
-    >
-      <div className="flex items-center">
-        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 mr-3">
+    <SectionHeader onClick={onToggle}>
+      <Box display="flex" alignItems="center">
+        <Box 
+          display="flex" 
+          alignItems="center" 
+          justifyContent="center" 
+          sx={{ 
+            width: 40, 
+            height: 40, 
+            borderRadius: 1, 
+            backgroundColor: COLORS.mediumBlue, // Medium blue background
+            color: 'white',
+            mr: 2 
+          }}
+        >
           <Icon size={20} />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-          {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
-        </div>
-      </div>
-      <div className="text-gray-500">
+        </Box>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+            {title}
+          </Typography>
+          {subtitle && (
+            <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
+              {subtitle}
+            </Typography>
+          )}
+        </Box>
+      </Box>
+      <Box sx={{ color: COLORS.lighterGray }}>
         {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-      </div>
-    </div>
+      </Box>
+    </SectionHeader>
   );
 
-  // Input group component
-  const InputGroup = ({ label, children, icon: Icon }) => (
-    <div className="mb-5">
-      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-        {Icon && <Icon size={16} className="mr-2 text-gray-500" />}
-        {label}
-      </label>
-      {children}
-    </div>
-  );
+  // Masked input component for sensitive information
+  const MaskedInput = ({ label, name, value, onChange, icon: Icon }) => {
+    const [showFull, setShowFull] = useState(false);
+    
+    const maskedValue = showFull 
+      ? value 
+      : value.length > 4 
+        ? `${'*'.repeat(Math.max(0, value.length - 4))}${value.slice(-4)}`
+        : '*'.repeat(value.length);
+    
+    return (
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <FormLabel sx={{ mb: 1, fontWeight: 'medium', color: COLORS.darkGray }}>
+          {label}
+        </FormLabel>
+        <OutlinedInput
+          name={name}
+          value={value ? maskedValue : ''}
+          onChange={onChange}
+          startAdornment={
+            Icon && (
+              <InputAdornment position="start">
+                <Icon size={18} />
+              </InputAdornment>
+            )
+          }
+          endAdornment={
+            value && (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowFull(!showFull)}
+                  edge="end"
+                  size="small"
+                >
+                  {showFull ? <EyeOff size={18} /> : <Eye size={18} />}
+                </IconButton>
+              </InputAdornment>
+            )
+          }
+          placeholder={`Enter ${label.toLowerCase()}`}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: COLORS.mediumBlue, // Medium blue border
+              },
+              '&:hover fieldset': {
+                borderColor: COLORS.darkBlue, // Dark blue on hover
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: COLORS.darkBlue, // Dark blue when focused
+              },
+            },
+          }}
+        />
+      </FormControl>
+    );
+  };
 
   // Styled input component
-  const StyledInput = ({ icon: Icon, ...props }) => (
-    <div className="relative">
-      {Icon && (
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Icon size={18} className="text-gray-400" />
-        </div>
-      )}
-      <input
+  const StyledInput = ({ label, icon: Icon, ...props }) => (
+    <FormControl fullWidth sx={{ mb: 2 }}>
+      <FormLabel sx={{ mb: 1, fontWeight: 'medium', color: COLORS.darkGray }}>
+        {label}
+      </FormLabel>
+      <OutlinedInput
         {...props}
-        className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-          Icon ? 'pl-10' : ''
-        }`}
+        startAdornment={
+          Icon && (
+            <InputAdornment position="start">
+              <Icon size={18} />
+            </InputAdornment>
+          )
+        }
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: COLORS.mediumBlue, // Medium blue border
+            },
+            '&:hover fieldset': {
+              borderColor: COLORS.darkBlue, // Dark blue on hover
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: COLORS.darkBlue, // Dark blue when focused
+            },
+          },
+        }}
       />
-    </div>
+    </FormControl>
   );
 
   // Styled textarea component
-  const StyledTextarea = ({ icon: Icon, ...props }) => (
-    <div className="relative">
-      {Icon && (
-        <div className="absolute top-3 left-3">
-          <Icon size={18} className="text-gray-400" />
-        </div>
-      )}
-      <textarea
+  const StyledTextarea = ({ label, icon: Icon, ...props }) => (
+    <FormControl fullWidth sx={{ mb: 2 }}>
+      <FormLabel sx={{ mb: 1, fontWeight: 'medium', color: COLORS.darkGray }}>
+        {label}
+      </FormLabel>
+      <TextField
         {...props}
-        className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-          Icon ? 'pl-10' : ''
-        }`}
+        multiline
+        minRows={3}
+        maxRows={6}
+        InputProps={{
+          startAdornment: Icon && (
+            <InputAdornment position="start" sx={{ mt: -2 }}>
+              <Icon size={18} />
+            </InputAdornment>
+          ),
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: COLORS.mediumBlue, // Medium blue border
+            },
+            '&:hover fieldset': {
+              borderColor: COLORS.darkBlue, // Dark blue on hover
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: COLORS.darkBlue, // Dark blue when focused
+            },
+          },
+        }}
       />
-    </div>
+    </FormControl>
   );
 
   return (
-    <div className="space-y-8">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center mb-6">
-          <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-blue-600 text-white mr-4">
-            <FileImage size={28} />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Legal Documentation</h1>
-            <p className="text-gray-600">Manage all legal documents and information for your pharmacy</p>
-          </div>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-10">
-          {/* Documentation Section - No dropdown */}
-          <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
-            <div className="flex items-start mb-6">
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-100 text-blue-600 mr-4">
-                <FileImage size={24} />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">Documentation</h2>
-                <p className="text-gray-600">Upload required legal documents and certificates</p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Legal Documents Upload */}
-              <div className="bg-white rounded-lg p-5 border border-gray-200">
-                <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
-                  <FileImage size={18} className="mr-2 text-blue-500" />
-                  Legal Documents & Certificates
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">Upload medical council registration, pharmacist license, degree certificates, etc.</p>
+    <Container maxWidth={false} className="legal-form-container">
+      <StyledCard className="legal-form-card">
+        <CardContent>
+          <Box display="flex" alignItems="center" sx={{ mb: 3 }} className="section-header">
+            <Box 
+              display="flex" 
+              alignItems="center" 
+              justifyContent="center" 
+              sx={{ 
+                width: 56, 
+                height: 56, 
+                borderRadius: 2, 
+                backgroundColor: COLORS.mediumBlue, // Medium blue for header icon
+                color: 'white',
+                mr: 2 
+              }}
+            >
+              <FileImage size={28} />
+            </Box>
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+                Legal Documentation
+              </Typography>
+              <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
+                Manage all legal documents and information for your pharmacy
+              </Typography>
+            </Box>
+          </Box>
+          
+          <form onSubmit={handleSubmit}>
+            {/* Documentation Section - No dropdown */}
+            <StyledCard variant="outlined" className="legal-form-card">
+              <CardContent>
+                <Box display="flex" alignItems="center" sx={{ mb: 2 }} className="section-header">
+                  <Box 
+                    display="flex" 
+                    alignItems="center" 
+                    justifyContent="center" 
+                    sx={{ 
+                      width: 48, 
+                      height: 48, 
+                      borderRadius: 1.5, 
+                      backgroundColor: COLORS.mediumBlue, // Medium blue background
+                      color: 'white',
+                      mr: 2 
+                    }}
+                  >
+                    <FileImage size={24} />
+                  </Box>
+                  <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+                      Documentation
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
+                      Upload required legal documents and certificates
+                    </Typography>
+                  </Box>
+                </Box>
                 
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition">
-                  <div className="space-y-1 text-center">
-                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                    <div className="flex text-sm text-gray-600">
-                      <label className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
-                        <span>Upload files</span>
-                        <input 
-                          type="file" 
-                          multiple 
-                          className="sr-only" 
-                          onChange={(e) => handleFileChange(e, 'pharmacyImages', true)}
-                        />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
-                  </div>
-                </div>
-                
-                {/* Preview of uploaded images */}
-                {formData.pharmacyImages.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Documents ({formData.pharmacyImages.length})</h4>
-                    <div className="space-y-3">
-                      {formData.pharmacyImages.map((imageObj, index) => (
-                        <div key={imageObj.id} className="border rounded-lg p-3 bg-gray-50">
-                          <div className="flex items-start">
-                            <div 
-                              className="cursor-pointer flex-shrink-0 mr-3"
-                              onClick={() => openImagePopup(imageObj.src)}
-                            >
-                              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center">
-                                <FileImage size={24} className="text-gray-400" />
-                              </div>
-                            </div>
-                            <div className="flex-grow">
-                              {editingTitleIndex === index ? (
-                                <div className="flex items-center">
-                                  <input
-                                    type="text"
-                                    value={titleInput}
-                                    onChange={(e) => setTitleInput(e.target.value)}
-                                    className="flex-grow px-2 py-1 text-sm border border-gray-300 rounded"
-                                    placeholder="Enter document title"
-                                    autoFocus
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => saveTitle(index)}
-                                    className="ml-2 text-green-600 hover:text-green-800"
-                                  >
-                                    <Save size={16} />
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={cancelEditing}
-                                    className="ml-1 text-gray-600 hover:text-gray-800"
-                                  >
-                                    <X size={16} />
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className="flex items-center justify-between">
-                                  <span className="font-medium text-gray-800">{imageObj.title}</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => startEditingTitle(index, imageObj.title)}
-                                    className="text-blue-600 hover:text-blue-800"
-                                  >
-                                    <Edit3 size={16} />
-                                  </button>
-                                </div>
-                              )}
-                              <p className="text-xs text-gray-500 mt-1">Click image to preview</p>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => removePharmacyImage(index)}
-                              className="text-red-500 hover:text-red-700 ml-2"
-                            >
-                              <X size={20} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                <Grid container spacing={2} className="legal-form-grid">
+                  {/* Legal Documents Upload */}
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: COLORS.darkGray }}>
+                      <FileImage size={18} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+                      Legal Documents & Certificates
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: COLORS.lighterGray, mb: 2 }}>
+                      Upload medical council registration, pharmacist license, degree certificates, etc.
+                    </Typography>
                     
-                    {/* Direct Image Preview for Legal Documents */}
-                    <div className="mt-6">
-                      <h4 className="text-sm font-medium text-gray-700 mb-3">Document Previews</h4>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        {formData.pharmacyImages.map((imageObj, index) => (
-                          <div 
-                            key={`preview-${imageObj.id}`}
-                            className="border rounded-lg p-2 bg-white cursor-pointer relative group"
+                    <UploadArea 
+                      variant="outlined"
+                      onClick={() => document.getElementById('pharmacyImages').click()}
+                    >
+                      <input
+                        id="pharmacyImages"
+                        type="file"
+                        multiple
+                        style={{ display: 'none' }}
+                        onChange={(e) => handleFileChange(e, 'pharmacyImages', true)}
+                      />
+                      <Upload size={48} style={{ color: COLORS.mediumBlue, marginBottom: 16 }} />
+                      <Typography variant="body1" sx={{ mb: 1, color: COLORS.darkGray }}>
+                        <span style={{ color: COLORS.mediumBlue, fontWeight: 'bold', cursor: 'pointer' }}>
+                          Upload files
+                        </span>{' '}
+                        or drag and drop
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: COLORS.lighterGray }}>
+                        PNG, JPG, PDF up to 10MB
+                      </Typography>
+                    </UploadArea>
+                    
+                    {/* Preview of uploaded images */}
+                    {formData.pharmacyImages.length > 0 && (
+                      <Box sx={{ mt: 3 }}>
+                        <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'medium', color: COLORS.darkGray }}>
+                          Uploaded Documents ({formData.pharmacyImages.length})
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          {formData.pharmacyImages.map((imageObj, index) => (
+                            <Paper key={imageObj.id} variant="outlined" sx={{ p: 2 }}>
+                              <Box display="flex" alignItems="flex-start">
+                                <Box 
+                                  sx={{ 
+                                    mr: 2, 
+                                    cursor: 'pointer',
+                                    flexShrink: 0
+                                  }}
+                                  onClick={() => openImagePopup(imageObj.src)}
+                                >
+                                  <Box 
+                                    sx={{ 
+                                      width: 64, 
+                                      height: 64, 
+                                      backgroundColor: 'grey.200',
+                                      border: '2px dashed',
+                                      borderColor: COLORS.mediumBlue, // Medium blue border
+                                      borderRadius: 1.5,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    <FileImage size={24} style={{ color: COLORS.mediumBlue }} />
+                                  </Box>
+                                </Box>
+                                <Box sx={{ flexGrow: 1 }}>
+                                  {editingTitleIndex === index ? (
+                                    <Box display="flex" alignItems="center">
+                                      <TextField
+                                        value={titleInput}
+                                        onChange={(e) => setTitleInput(e.target.value)}
+                                        size="small"
+                                        sx={{ mr: 1, flexGrow: 1 }}
+                                        autoFocus
+                                        InputProps={{
+                                          sx: {
+                                            '& .MuiOutlinedInput-root': {
+                                              '& fieldset': {
+                                                borderColor: COLORS.mediumBlue, // Medium blue border
+                                              },
+                                              '&:hover fieldset': {
+                                                borderColor: COLORS.darkBlue, // Dark blue on hover
+                                              },
+                                              '&.Mui-focused fieldset': {
+                                                borderColor: COLORS.darkBlue, // Dark blue when focused
+                                              },
+                                            },
+                                          }}
+                                        }
+                                      />
+                                      <IconButton 
+                                        onClick={() => saveTitle(index)}
+                                        sx={{ backgroundColor: COLORS.darkBlue, color: 'white', '&:hover': { backgroundColor: COLORS.mediumBlue } }}
+                                        size="small"
+                                      >
+                                        <Save size={16} />
+                                      </IconButton>
+                                      <IconButton 
+                                        onClick={cancelEditing}
+                                        sx={{ backgroundColor: COLORS.lighterGray, color: 'white', '&:hover': { backgroundColor: COLORS.darkGray }, ml: 1 }}
+                                        size="small"
+                                      >
+                                        <X size={16} />
+                                      </IconButton>
+                                    </Box>
+                                  ) : (
+                                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                                      <Typography variant="body1" sx={{ fontWeight: 'medium', color: COLORS.darkGray }}>
+                                        {imageObj.title}
+                                      </Typography>
+                                      <IconButton 
+                                        onClick={() => startEditingTitle(index, imageObj.title)}
+                                        sx={{ color: COLORS.mediumBlue, '&:hover': { color: COLORS.darkBlue } }}
+                                        size="small"
+                                      >
+                                        <Edit3 size={16} />
+                                      </IconButton>
+                                    </Box>
+                                  )}
+                                  <Typography variant="caption" sx={{ color: COLORS.lighterGray }}>
+                                    Click image to preview
+                                  </Typography>
+                                </Box>
+                                <IconButton 
+                                  onClick={() => removePharmacyImage(index)}
+                                  sx={{ color: '#f44336', '&:hover': { color: '#d32f2f' } }}
+                                  size="small"
+                                >
+                                  <X size={20} />
+                                </IconButton>
+                              </Box>
+                            </Paper>
+                          ))}
+                        </Box>
+                      </Box>
+                    )}
+                  </Grid>
+                  
+                  {/* BR Image Upload */}
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: COLORS.darkGray }}>
+                      <CreditCard size={18} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+                      Business Registration
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: COLORS.lighterGray, mb: 2 }}>
+                      Upload your Business Registration document
+                    </Typography>
+                    
+                    <UploadArea 
+                      variant="outlined"
+                      onClick={() => document.getElementById('businessRegistrationImage').click()}
+                    >
+                      <input
+                        id="businessRegistrationImage"
+                        type="file"
+                        style={{ display: 'none' }}
+                        onChange={(e) => handleFileChange(e, 'businessRegistrationImage')}
+                      />
+                      <Upload size={48} style={{ color: COLORS.mediumBlue, marginBottom: 16 }} />
+                      <Typography variant="body1" sx={{ mb: 1, color: COLORS.darkGray }}>
+                        <span style={{ color: COLORS.mediumBlue, fontWeight: 'bold', cursor: 'pointer' }}>
+                          Upload file
+                        </span>{' '}
+                        or drag and drop
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: COLORS.lighterGray }}>
+                        PNG, JPG, PDF up to 10MB
+                      </Typography>
+                    </UploadArea>
+                    
+                    {/* Preview of BR image */}
+                    {formData.businessRegistrationImage && (
+                      <Box sx={{ mt: 3 }}>
+                        <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'medium', color: COLORS.darkGray }}>
+                          Document Preview
+                        </Typography>
+                        <Box 
+                          sx={{ 
+                            border: '1px solid',
+                            borderColor: COLORS.mediumBlue, // Medium blue border
+                            borderRadius: 2,
+                            p: 1,
+                            backgroundColor: 'grey.50',
+                            cursor: 'pointer',
+                            position: 'relative',
+                            '&:hover': {
+                              backgroundColor: 'grey.100'
+                            }
+                          }}
+                          onClick={() => openImagePopup(formData.businessRegistrationImage)}
+                        >
+                          <Box 
+                            sx={{ 
+                              width: '100%', 
+                              height: 128, 
+                              backgroundColor: 'grey.200',
+                              border: '2px dashed',
+                              borderColor: COLORS.mediumBlue, // Medium blue border
+                              borderRadius: 1.5,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                          >
+                            <FileImage size={32} style={{ color: COLORS.mediumBlue }} />
+                          </Box>
+                          <Box 
+                            sx={{ 
+                              position: 'absolute',
+                              inset: 0,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              backgroundColor: 'rgba(0, 0, 0, 0)',
+                              transition: 'background-color 0.2s',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                              }
+                            }}
+                          >
+                            <ZoomIn size={20} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
+                          </Box>
+                        </Box>
+                        <Typography variant="caption" sx={{ color: COLORS.lighterGray, display: 'block', textAlign: 'center', mt: 1 }}>
+                          Click to preview
+                        </Typography>
+                      </Box>
+                    )}
+                  </Grid>
+                </Grid>
+
+                {/* Image Preview Gallery Section */}
+                {(formData.pharmacyImages.length > 0 || formData.businessRegistrationImage) && (
+                  <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: COLORS.mediumBlue }} className="image-preview-gallery">
+                    <Box display="flex" alignItems="center" sx={{ mb: 2 }} className="section-header">
+                      <Camera size={20} style={{ color: COLORS.mediumBlue, marginRight: 8 }} />
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+                        Image Preview Gallery
+                      </Typography>
+                    </Box>
+                    <Grid container spacing={2}>
+                      {/* Preview for Business Registration Image */}
+                      {formData.businessRegistrationImage && (
+                        <Grid item xs={6} sm={4} md={3}>
+                          <Box 
+                            sx={{ 
+                              border: '1px solid',
+                              borderColor: COLORS.mediumBlue, // Medium blue border
+                              borderRadius: 2,
+                              p: 1,
+                              backgroundColor: 'grey.50',
+                              cursor: 'pointer',
+                              position: 'relative',
+                              height: '100%',
+                              '&:hover': {
+                                backgroundColor: 'grey.100'
+                              }
+                            }}
+                            onClick={() => openImagePopup(formData.businessRegistrationImage)}
+                          >
+                            <Box 
+                              sx={{ 
+                                width: '100%', 
+                                height: 128, 
+                                backgroundColor: 'grey.200',
+                                borderRadius: 1.5,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                overflow: 'hidden'
+                              }}
+                            >
+                              <img 
+                                src={formData.businessRegistrationImage} 
+                                alt="Business Registration" 
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.parentElement.innerHTML = '<div style="width:100%;height:100%;background-color:#eee;display:flex;align-items:center;justify-content:center;"><FileImage size={24} style="color:' + COLORS.mediumBlue + '" /></div>';
+                                }}
+                              />
+                            </Box>
+                            <Box 
+                              sx={{ 
+                                position: 'absolute',
+                                inset: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: 'rgba(0, 0, 0, 0)',
+                                transition: 'background-color 0.2s',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                                }
+                              }}
+                            >
+                              <ZoomIn size={20} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
+                            </Box>
+                            <Typography variant="caption" sx={{ color: COLORS.lighterGray, display: 'block', textAlign: 'center', mt: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              BR Document
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      )}
+                      
+                      {/* Preview for Pharmacy Images */}
+                      {formData.pharmacyImages.map((imageObj, index) => (
+                        <Grid key={`preview-${imageObj.id}`} item xs={6} sm={4} md={3}>
+                          <Box 
+                            sx={{ 
+                              border: '1px solid',
+                              borderColor: COLORS.mediumBlue, // Medium blue border
+                              borderRadius: 2,
+                              p: 1,
+                              backgroundColor: 'grey.50',
+                              cursor: 'pointer',
+                              position: 'relative',
+                              height: '100%',
+                              '&:hover': {
+                                backgroundColor: 'grey.100'
+                              }
+                            }}
                             onClick={() => openImagePopup(imageObj.src)}
                           >
-                            <div className="w-full h-20 flex items-center justify-center overflow-hidden rounded">
+                            <Box 
+                              sx={{ 
+                                width: '100%', 
+                                height: 128, 
+                                backgroundColor: 'grey.200',
+                                borderRadius: 1.5,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                overflow: 'hidden'
+                              }}
+                            >
                               <img 
                                 src={imageObj.src} 
                                 alt={imageObj.title} 
-                                className="object-cover w-full h-full"
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 onError={(e) => {
                                   e.target.onerror = null;
-                                  e.target.parentElement.innerHTML = '<div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-full flex items-center justify-center"><FileImage size={16} class="text-gray-400" /></div>';
+                                  e.target.parentElement.innerHTML = '<div style="width:100%;height:100%;background-color:#eee;display:flex;align-items:center;justify-content:center;"><FileImage size={24} style="color:' + COLORS.mediumBlue + '" /></div>';
                                 }}
                               />
-                            </div>
-                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 flex items-center justify-center transition-all rounded-lg">
-                              <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={16} />
-                            </div>
-                            <p className="text-xs text-gray-600 mt-1 text-center truncate">{imageObj.title}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                            </Box>
+                            <Box 
+                              sx={{ 
+                                position: 'absolute',
+                                inset: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: 'rgba(0, 0, 0, 0)',
+                                transition: 'background-color 0.2s',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                                }
+                              }}
+                            >
+                              <ZoomIn size={20} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
+                            </Box>
+                            <Typography variant="caption" sx={{ color: COLORS.lighterGray, display: 'block', textAlign: 'center', mt: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {imageObj.title}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                    <Typography variant="caption" sx={{ color: COLORS.lighterGray, display: 'block', textAlign: 'center', mt: 2 }}>
+                      Click on any image to view full size
+                    </Typography>
+                  </Box>
                 )}
-              </div>
-              
-              {/* BR Image Upload */}
-              <div className="bg-white rounded-lg p-5 border border-gray-200">
-                <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
-                  <CreditCard size={18} className="mr-2 text-blue-500" />
-                  Business Registration
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">Upload your Business Registration document</p>
+              </CardContent>
+            </StyledCard>
+            
+            {/* Pharmacy Details Section - With dropdown */}
+            <StyledCard variant="outlined">
+              <CardContent>
+                <DropdownSectionHeader 
+                  icon={Building2}
+                  title="Pharmacy Details"
+                  subtitle="Basic information about your pharmacy business"
+                  isOpen={openSections.pharmacyDetails}
+                  onToggle={() => toggleSection('pharmacyDetails')}
+                />
                 
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition">
-                  <div className="space-y-1 text-center">
-                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                    <div className="flex text-sm text-gray-600">
-                      <label className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
-                        <span>Upload file</span>
-                        <input 
-                          type="file" 
-                          className="sr-only" 
-                          onChange={(e) => handleFileChange(e, 'businessRegistrationImage')}
+                <Collapse in={openSections.pharmacyDetails}>
+                  <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
+                    <Grid container spacing={2} className="legal-form-grid">
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Pharmacy Name"
+                          name="pharmacyName"
+                          value={formData.pharmacyName}
+                          onChange={handleInputChange}
+                          icon={Building2}
+                          placeholder="Enter pharmacy name"
+                          className="form-input"
                         />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
-                  </div>
-                </div>
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <StyledTextarea
+                          label="Address"
+                          name="pharmacyAddress"
+                          value={formData.pharmacyAddress}
+                          onChange={handleInputChange}
+                          icon={MapPin}
+                          placeholder="Enter full address"
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Website/Directory Link"
+                          name="pharmacyWebsite"
+                          value={formData.pharmacyWebsite}
+                          onChange={handleInputChange}
+                          icon={Globe}
+                          placeholder="https://example.com"
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <MaskedInput
+                          label="BR Number"
+                          name="brNumber"
+                          value={formData.brNumber}
+                          onChange={handleInputChange}
+                          icon={CreditCard}
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Email"
+                          name="pharmacyEmail"
+                          type="email"
+                          value={formData.pharmacyEmail}
+                          onChange={handleInputChange}
+                          icon={Mail}
+                          placeholder="pharmacy@example.com"
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Mobile Number"
+                          name="pharmacyMobile"
+                          value={formData.pharmacyMobile}
+                          onChange={handleInputChange}
+                          icon={Phone}
+                          placeholder="+94 7X XXX XXXX"
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Landline Number"
+                          name="pharmacyLandline"
+                          value={formData.pharmacyLandline}
+                          onChange={handleInputChange}
+                          icon={Phone}
+                          placeholder="+94 XX XXX XXXX"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </Collapse>
+              </CardContent>
+            </StyledCard>
+            
+            {/* Owner Information Section - With dropdown */}
+            <StyledCard variant="outlined">
+              <CardContent>
+                <DropdownSectionHeader 
+                  icon={User}
+                  title="Owner Information"
+                  subtitle="Details of the pharmacy owner"
+                  isOpen={openSections.ownerInfo}
+                  onToggle={() => toggleSection('ownerInfo')}
+                />
                 
-                {/* Preview of BR image */}
-                {formData.businessRegistrationImage && (
-                  <div className="mt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Document Preview</h4>
-                    <div 
-                      className="rounded-lg overflow-hidden cursor-pointer relative group max-w-xs mx-auto"
-                      onClick={() => openImagePopup(formData.businessRegistrationImage)}
-                    >
-                      <img 
-                        src={formData.businessRegistrationImage} 
-                        alt="Business Registration" 
-                        className="w-full h-auto object-contain max-h-40"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.parentElement.innerHTML = '<div class="bg-gray-100 w-full h-40 flex items-center justify-center"><FileImage size={24} class="text-gray-400" /></div>';
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 flex items-center justify-center transition-all">
-                        <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={20} />
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1 text-center">Click to preview</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          {/* Pharmacy Details Section - With dropdown */}
-          <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
-            <DropdownSectionHeader 
-              icon={Building2}
-              title="Pharmacy Details"
-              subtitle="Basic information about your pharmacy business"
-              isOpen={openSections.pharmacyDetails}
-              onToggle={() => toggleSection('pharmacyDetails')}
-            />
+                <Collapse in={openSections.ownerInfo}>
+                  <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
+                    <Grid container spacing={2} className="legal-form-grid">
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Owner Name"
+                          name="ownerName"
+                          value={formData.ownerName}
+                          onChange={handleInputChange}
+                          icon={UserCircle}
+                          placeholder="Enter owner's full name"
+                          className="form-input"
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <MaskedInput
+                          label="NIC"
+                          name="ownerNIC"
+                          value={formData.ownerNIC}
+                          onChange={handleInputChange}
+                          icon={CreditCard}
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Email"
+                          name="ownerEmail"
+                          type="email"
+                          value={formData.ownerEmail}
+                          onChange={handleInputChange}
+                          icon={Mail}
+                          placeholder="owner@example.com"
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Phone Number"
+                          name="ownerPhone"
+                          value={formData.ownerPhone}
+                          onChange={handleInputChange}
+                          icon={Phone}
+                          placeholder="+94 7X XXX XXXX"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </Collapse>
+              </CardContent>
+            </StyledCard>
             
-            {openSections.pharmacyDetails && (
-              <div className="bg-white rounded-lg p-5 border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <InputGroup label="Pharmacy Name" icon={Building2}>
-                    <StyledInput
-                      type="text"
-                      name="pharmacyName"
-                      value={formData.pharmacyName}
-                      onChange={handleInputChange}
-                      placeholder="Enter pharmacy name"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="Address" icon={MapPin}>
-                    <StyledTextarea
-                      name="pharmacyAddress"
-                      value={formData.pharmacyAddress}
-                      onChange={handleInputChange}
-                      placeholder="Enter full address"
-                      rows="3"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="Website/Directory Link" icon={Globe}>
-                    <StyledInput
-                      type="text"
-                      name="pharmacyWebsite"
-                      value={formData.pharmacyWebsite}
-                      onChange={handleInputChange}
-                      placeholder="https://example.com"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="BR Number" icon={CreditCard}>
-                    <StyledInput
-                      type="text"
-                      name="brNumber"
-                      value={formData.brNumber}
-                      onChange={handleInputChange}
-                      placeholder="Enter BR number"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="Email" icon={Mail}>
-                    <StyledInput
-                      type="email"
-                      name="pharmacyEmail"
-                      value={formData.pharmacyEmail}
-                      onChange={handleInputChange}
-                      placeholder="pharmacy@example.com"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="Mobile Number" icon={Phone}>
-                    <StyledInput
-                      type="text"
-                      name="pharmacyMobile"
-                      value={formData.pharmacyMobile}
-                      onChange={handleInputChange}
-                      placeholder="+94 7X XXX XXXX"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="Landline Number" icon={Phone}>
-                    <StyledInput
-                      type="text"
-                      name="pharmacyLandline"
-                      value={formData.pharmacyLandline}
-                      onChange={handleInputChange}
-                      placeholder="+94 XX XXX XXXX"
-                    />
-                  </InputGroup>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Owner Information Section - With dropdown */}
-          <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
-            <DropdownSectionHeader 
-              icon={User}
-              title="Owner Information"
-              subtitle="Details of the pharmacy owner"
-              isOpen={openSections.ownerInfo}
-              onToggle={() => toggleSection('ownerInfo')}
-            />
+            {/* Responsible Pharmacist Section - With dropdown */}
+            <StyledCard variant="outlined">
+              <CardContent>
+                <DropdownSectionHeader 
+                  icon={Award}
+                  title="Responsible Pharmacist"
+                  subtitle="Details of the licensed pharmacist in charge"
+                  isOpen={openSections.pharmacist}
+                  onToggle={() => toggleSection('pharmacist')}
+                />
+                
+                <Collapse in={openSections.pharmacist}>
+                  <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
+                    <Grid container spacing={2} className="legal-form-grid">
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Pharmacist Name"
+                          name="pharmacistName"
+                          value={formData.pharmacistName}
+                          onChange={handleInputChange}
+                          icon={User}
+                          placeholder="Enter pharmacist's full name"
+                          className="form-input"
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <MaskedInput
+                          label="Registration Number"
+                          name="pharmacistRegNumber"
+                          value={formData.pharmacistRegNumber}
+                          onChange={handleInputChange}
+                          icon={Award}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </Collapse>
+              </CardContent>
+            </StyledCard>
             
-            {openSections.ownerInfo && (
-              <div className="bg-white rounded-lg p-5 border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <InputGroup label="Owner Name" icon={UserCircle}>
-                    <StyledInput
-                      type="text"
-                      name="ownerName"
-                      value={formData.ownerName}
-                      onChange={handleInputChange}
-                      placeholder="Enter owner's full name"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="NIC" icon={CreditCard}>
-                    <StyledInput
-                      type="text"
-                      name="ownerNIC"
-                      value={formData.ownerNIC}
-                      onChange={handleInputChange}
-                      placeholder="Enter NIC number"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="Email" icon={Mail}>
-                    <StyledInput
-                      type="email"
-                      name="ownerEmail"
-                      value={formData.ownerEmail}
-                      onChange={handleInputChange}
-                      placeholder="owner@example.com"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="Phone Number" icon={Phone}>
-                    <StyledInput
-                      type="text"
-                      name="ownerPhone"
-                      value={formData.ownerPhone}
-                      onChange={handleInputChange}
-                      placeholder="+94 7X XXX XXXX"
-                    />
-                  </InputGroup>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Responsible Pharmacist Section - With dropdown */}
-          <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
-            <DropdownSectionHeader 
-              icon={Award}
-              title="Responsible Pharmacist"
-              subtitle="Details of the licensed pharmacist in charge"
-              isOpen={openSections.pharmacist}
-              onToggle={() => toggleSection('pharmacist')}
-            />
+            {/* License & Renewal Section - With dropdown */}
+            <StyledCard variant="outlined">
+              <CardContent>
+                <DropdownSectionHeader 
+                  icon={Shield}
+                  title="License & Renewal"
+                  subtitle="License information and renewal settings"
+                  isOpen={openSections.license}
+                  onToggle={() => toggleSection('license')}
+                />
+                
+                <Collapse in={openSections.license}>
+                  <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
+                    <Grid container spacing={2} className="legal-form-grid">
+                      <Grid item xs={12} md={6}>
+                        <StyledInput
+                          label="Next License Renewal Date"
+                          name="licenseRenewalDate"
+                          type="date"
+                          value={formData.licenseRenewalDate}
+                          onChange={handleInputChange}
+                          icon={Calendar}
+                          className="form-input"
+                        />
+                      </Grid>
+                      
+                      <Grid item xs={12} md={6}>
+                        <Paper 
+                          variant="outlined" 
+                          sx={{ 
+                            p: 2, 
+                            backgroundColor: 'grey.50',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <FormGroup>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  name="licenseReminder"
+                                  checked={formData.licenseReminder}
+                                  onChange={handleInputChange}
+                                  color="primary"
+                                />
+                              }
+                              label={
+                                <Box display="flex" alignItems="center">
+                                  <Bell size={16} style={{ marginRight: 8, color: COLORS.mediumBlue }} />
+                                  <Typography variant="body1" sx={{ color: COLORS.darkGray }}>
+                                    Notify before expiry
+                                  </Typography>
+                                </Box>
+                              }
+                            />
+                          </FormGroup>
+                        </Paper>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </Collapse>
+              </CardContent>
+            </StyledCard>
             
-            {openSections.pharmacist && (
-              <div className="bg-white rounded-lg p-5 border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <InputGroup label="Pharmacist Name" icon={User}>
-                    <StyledInput
-                      type="text"
-                      name="pharmacistName"
-                      value={formData.pharmacistName}
-                      onChange={handleInputChange}
-                      placeholder="Enter pharmacist's full name"
-                    />
-                  </InputGroup>
-                  
-                  <InputGroup label="Registration Number" icon={Award}>
-                    <StyledInput
-                      type="text"
-                      name="pharmacistRegNumber"
-                      value={formData.pharmacistRegNumber}
-                      onChange={handleInputChange}
-                      placeholder="Enter registration number"
-                    />
-                  </InputGroup>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* License & Renewal Section - With dropdown */}
-          <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
-            <DropdownSectionHeader 
-              icon={Shield}
-              title="License & Renewal"
-              subtitle="License information and renewal settings"
-              isOpen={openSections.license}
-              onToggle={() => toggleSection('license')}
-            />
-            
-            {openSections.license && (
-              <div className="bg-white rounded-lg p-5 border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <InputGroup label="Next License Renewal Date" icon={Calendar}>
-                    <StyledInput
-                      type="date"
-                      name="licenseRenewalDate"
-                      value={formData.licenseRenewalDate}
-                      onChange={handleInputChange}
-                    />
-                  </InputGroup>
-                  
-                  <div className="flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <input
-                      type="checkbox"
-                      name="licenseReminder"
-                      checked={formData.licenseReminder}
-                      onChange={handleInputChange}
-                      className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <label className="ml-3 block text-sm font-medium text-gray-700 flex items-center">
-                      <Bell size={16} className="mr-2 text-gray-500" />
-                      Notify before expiry
-                    </label>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Submit Button */}
-          <div className="flex justify-end pt-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all"
-            >
-              <Save className="h-5 w-5 mr-2" />
-              {loading ? 'Saving...' : 'Save Legal Details'}
-            </button>
-          </div>
-        </form>
-      </div>
+            {/* Submit Button */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+              <StyledButton
+                type="submit"
+                variant="contained"
+                disabled={loading}
+                startIcon={loading ? <CircularProgress size={20} sx={{ color: 'white' }} /> : <Save />}
+              >
+                {loading ? 'Saving...' : 'Save Legal Details'}
+              </StyledButton>
+            </Box>
+          </form>
+        </CardContent>
+      </StyledCard>
       
       {/* Image Popup */}
       {popupImage && (
         <ImagePreviewPopup imageSrc={popupImage} onClose={closeImagePopup} />
       )}
-    </div>
+    </Container>
   );
 };
 

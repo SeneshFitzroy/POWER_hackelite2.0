@@ -5,21 +5,21 @@ import Layout from './components/Layout';
 import LegalForm from './components/LegalForm';
 import { db } from './firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
-import { 
-  X, 
-  ZoomIn, 
+import {
+  X,
+  ZoomIn,
   ZoomOut,
   RotateCw,
-  Building2, 
-  User, 
-  Award, 
-  Shield, 
-  Camera, 
-  CreditCard, 
-  MapPin, 
-  Globe, 
-  Phone, 
-  Mail, 
+  Building2,
+  User,
+  Award,
+  Shield,
+  Camera,
+  CreditCard,
+  MapPin,
+  Globe,
+  Phone,
+  Mail,
   Eye,
   EyeOff,
   FileImage,
@@ -30,9 +30,48 @@ import {
   Plus,
   Minus
 } from 'lucide-react';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Collapse,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Grid,
+  IconButton,
+  InputAdornment,
+  OutlinedInput,
+  Paper,
+  Switch,
+  Typography,
+  CircularProgress,
+  Chip,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import './index.css';
 
-// Image popup component with zoom functionality
+// Custom colors for the legal module
+const COLORS = {
+  darkBlue: '#1E3A8A',    // For sidebar and main buttons
+  mediumBlue: '#3B82F6',  // For headers and interactive elements
+  lightGray: '#f8f9fa',   // For main content background
+  darkGray: '#212121',    // For main text
+  lighterGray: '#757575'  // For secondary text
+};
+
+// Image popup component with zoom functionality using Material UI Dialog
 const ImagePopup = ({ imageSrc, onClose }) => {
   const [scale, setScale] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -106,70 +145,92 @@ const ImagePopup = ({ imageSrc, onClose }) => {
   }, [isDragging, dragStart]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-      <div className="relative w-full h-full flex items-center justify-center">
-        {/* Controls */}
-        <div className="absolute top-4 right-4 flex flex-col space-y-2 z-10">
-          <button
-            onClick={onClose}
-            className="bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition"
-          >
-            <X size={24} />
-          </button>
-          <button
-            onClick={handleZoomIn}
-            className="bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition"
-          >
-            <Plus size={24} />
-          </button>
-          <button
-            onClick={handleZoomOut}
-            className="bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition"
-          >
-            <Minus size={24} />
-          </button>
-          <button
-            onClick={handleRotate}
-            className="bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition"
-          >
-            <RotateCw size={24} />
-          </button>
-          <button
-            onClick={resetView}
-            className="bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-              <path d="M3 3v5h5"/>
-            </svg>
-          </button>
-        </div>
-
-        {/* Image container */}
-        <div 
-          className="relative overflow-hidden"
-          onWheel={handleWheel}
+    <Dialog 
+      open={!!imageSrc} 
+      onClose={onClose}
+      maxWidth={false}
+      fullWidth
+      fullScreen
+    >
+      <DialogTitle>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h6">Document Preview</Typography>
+          <Box>
+            <IconButton onClick={handleZoomIn} sx={{ color: COLORS.mediumBlue, '&:hover': { color: COLORS.darkBlue } }}>
+              <Plus />
+            </IconButton>
+            <IconButton onClick={handleZoomOut} sx={{ color: COLORS.mediumBlue, '&:hover': { color: COLORS.darkBlue } }}>
+              <Minus />
+            </IconButton>
+            <IconButton onClick={handleRotate} sx={{ color: COLORS.mediumBlue, '&:hover': { color: COLORS.darkBlue } }}>
+              <RotateCw />
+            </IconButton>
+            <IconButton onClick={resetView} sx={{ color: COLORS.mediumBlue, '&:hover': { color: COLORS.darkBlue } }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+            </IconButton>
+            <IconButton onClick={onClose} sx={{ color: '#f44336', '&:hover': { color: '#d32f2f' } }}>
+              <X />
+            </IconButton>
+          </Box>
+        </Box>
+      </DialogTitle>
+      <DialogContent 
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          p: 0,
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+        onWheel={handleWheel}
+      >
+        <Box
+          sx={{
+            position: 'relative',
+            overflow: 'hidden',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
-          <img 
-            src={imageSrc} 
-            alt="Document" 
+          <img
+            src={imageSrc}
+            alt="Document"
             style={{
               transform: `scale(${scale}) rotate(${rotation}deg) translate(${position.x}px, ${position.y}px)`,
               transformOrigin: 'center center',
               cursor: isDragging ? 'grabbing' : 'grab',
-              transition: isDragging ? 'none' : 'transform 0.2s ease'
+              transition: isDragging ? 'none' : 'transform 0.2s ease',
+              maxWidth: 'none',
             }}
-            className="max-w-none"
             onMouseDown={handleMouseDown}
           />
-        </div>
-
-        {/* Zoom indicator */}
-        <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-          Zoom: {Math.round(scale * 100)}%
-        </div>
-      </div>
-    </div>
+        </Box>
+        
+        <Box 
+          sx={{ 
+            position: 'absolute', 
+            bottom: 16, 
+            left: 16,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            color: 'white',
+            px: 2,
+            py: 1,
+            borderRadius: 2
+          }}
+        >
+          <Typography variant="caption">
+            Zoom: {Math.round(scale * 100)}%
+          </Typography>
+        </Box>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -223,35 +284,58 @@ const ViewAllDetails = () => {
 
   if (loading) {
     return (
-      <div className="bg-white shadow rounded-xl p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">View All Legal Details</h2>
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </div>
+      <Card sx={{ backgroundColor: COLORS.lightGray }}>
+        <CardContent>
+          <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold', color: COLORS.darkGray }}>
+            View All Legal Details
+          </Typography>
+          <Box display="flex" justifyContent="center" alignItems="center" sx={{ height: 200 }}>
+            <CircularProgress sx={{ color: COLORS.mediumBlue }} />
+          </Box>
+        </CardContent>
+      </Card>
     );
   }
 
   if (!legalData) {
     return (
-      <div className="bg-white shadow rounded-xl p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">View All Legal Details</h2>
-        <div className="text-center py-12">
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100">
-            <FileText className="h-6 w-6 text-gray-400" />
-          </div>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No legal data found</h3>
-          <p className="mt-1 text-sm text-gray-500">Get started by adding legal information.</p>
-          <div className="mt-6">
-            <a
+      <Card sx={{ backgroundColor: COLORS.lightGray }}>
+        <CardContent>
+          <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold', color: COLORS.darkGray }}>
+            View All Legal Details
+          </Typography>
+          <Box textAlign="center" sx={{ py: 8 }}>
+            <Box 
+              sx={{ 
+                width: 48, 
+                height: 48, 
+                backgroundColor: 'grey.100',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                mb: 2
+              }}
+            >
+              <FileText style={{ color: COLORS.mediumBlue }} />
+            </Box>
+            <Typography variant="h6" sx={{ mb: 1, color: COLORS.darkGray }}>
+              No legal data found
+            </Typography>
+            <Typography variant="body2" sx={{ color: COLORS.lighterGray, mb: 3 }}>
+              Get started by adding legal information.
+            </Typography>
+            <Button 
+              variant="contained" 
+              sx={{ backgroundColor: COLORS.darkBlue, color: 'white', '&:hover': { backgroundColor: COLORS.mediumBlue } }}
               href="/form"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Add Legal Information
-            </a>
-          </div>
-        </div>
-      </div>
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -263,34 +347,64 @@ const ViewAllDetails = () => {
     onToggle,
     subtitle 
   }) => (
-    <div 
-      className="flex items-center justify-between cursor-pointer p-4 bg-gray-100 rounded-lg mb-4"
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        p: 2, 
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 1,
+        mb: 2,
+        cursor: 'pointer'
+      }}
       onClick={onToggle}
     >
-      <div className="flex items-center">
-        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 mr-3">
+      <Box display="flex" alignItems="center">
+        <Box 
+          sx={{ 
+            width: 40, 
+            height: 40, 
+            borderRadius: 1, 
+            backgroundColor: COLORS.mediumBlue, 
+            color: 'white',
+            mr: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
           <Icon size={20} />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-          {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
-        </div>
-      </div>
-      <div className="text-gray-500">
+        </Box>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+            {title}
+          </Typography>
+          {subtitle && (
+            <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
+              {subtitle}
+            </Typography>
+          )}
+        </Box>
+      </Box>
+      <Box sx={{ color: COLORS.lighterGray, ml: 'auto' }}>
         {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   // Detail item component
   const DetailItem = ({ label, value, icon: Icon }) => (
-    <div className="flex items-start py-2">
-      {Icon && <Icon size={16} className="text-gray-400 mt-1 mr-2 flex-shrink-0" />}
-      <div>
-        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
-        <p className="text-sm font-medium text-gray-900">{value || 'N/A'}</p>
-      </div>
-    </div>
+    <Box sx={{ display: 'flex', alignItems: 'flex-start', py: 1 }}>
+      {Icon && <Icon size={16} style={{ color: COLORS.mediumBlue, marginTop: 4, marginRight: 8, flexShrink: 0 }} />}
+      <Box>
+        <Typography variant="caption" sx={{ fontWeight: 'medium', color: COLORS.lighterGray, textTransform: 'uppercase' }}>
+          {label}
+        </Typography>
+        <Typography variant="body2" sx={{ fontWeight: 'medium', color: COLORS.darkGray }}>
+          {value || 'N/A'}
+        </Typography>
+      </Box>
+    </Box>
   );
 
   // Masked detail item component for sensitive information
@@ -299,13 +413,17 @@ const ViewAllDetails = () => {
     
     if (!value) {
       return (
-        <div className="flex items-start py-2">
-          {Icon && <Icon size={16} className="text-gray-400 mt-1 mr-2 flex-shrink-0" />}
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
-            <p className="text-sm font-medium text-gray-900">N/A</p>
-          </div>
-        </div>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', py: 1 }}>
+          {Icon && <Icon size={16} style={{ color: COLORS.mediumBlue, marginTop: 4, marginRight: 8, flexShrink: 0 }} />}
+          <Box>
+            <Typography variant="caption" sx={{ fontWeight: 'medium', color: COLORS.lighterGray, textTransform: 'uppercase' }}>
+              {label}
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 'medium', color: COLORS.darkGray }}>
+              N/A
+            </Typography>
+          </Box>
+        </Box>
       );
     }
     
@@ -316,397 +434,649 @@ const ViewAllDetails = () => {
         : '*'.repeat(value.length);
     
     return (
-      <div className="flex items-start py-2">
-        {Icon && <Icon size={16} className="text-gray-400 mt-1 mr-2 flex-shrink-0" />}
-        <div className="flex-grow">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
-          <div className="flex items-center">
-            <p className="text-sm font-medium text-gray-900 mr-2">{maskedValue}</p>
-            <button 
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', py: 1 }}>
+        {Icon && <Icon size={16} style={{ color: COLORS.mediumBlue, marginTop: 4, marginRight: 8, flexShrink: 0 }} />}
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography variant="caption" sx={{ fontWeight: 'medium', color: COLORS.lighterGray, textTransform: 'uppercase' }}>
+            {label}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ fontWeight: 'medium', color: COLORS.darkGray, mr: 1 }}>
+              {maskedValue}
+            </Typography>
+            <IconButton 
               onClick={() => setShowFull(!showFull)}
-              className="text-blue-600 hover:text-blue-800"
-              aria-label={showFull ? "Hide full number" : "Show full number"}
+              size="small"
+              sx={{ p: 0.5, color: COLORS.mediumBlue, '&:hover': { color: COLORS.darkBlue } }}
             >
-              {showFull ? (
-                <EyeOff size={16} />
-              ) : (
-                <Eye size={16} />
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
+              {showFull ? <EyeOff size={16} /> : <Eye size={16} />}
+            </IconButton>
+          </Box>
+        </Box>
+      </Box>
     );
   };
 
   return (
-    <div className="bg-white shadow rounded-xl p-6">
-      <div className="flex items-center mb-6">
-        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600 text-white mr-4">
-          <Shield size={24} />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800">Legal Information Overview</h2>
-          <p className="text-gray-600">Complete details of your pharmacy's legal documentation</p>
-        </div>
-      </div>
-      
-      {/* License Renewal Status Card - Modern Design */}
-      {legalData && (
-        <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-5 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center mb-4 md:mb-0">
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-100 text-blue-600 mr-4">
-                <Calendar size={24} />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800">License Renewal</h3>
-                <p className="text-sm text-gray-600">
-                  {legalData.licenseRenewalDate 
-                    ? `Next renewal: ${new Date(legalData.licenseRenewalDate).toLocaleDateString()}` 
-                    : "No renewal date set"}
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center">
-              <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                legalData.licenseReminder 
-                  ? "bg-green-100 text-green-800" 
-                  : "bg-yellow-100 text-yellow-800"
-              }`}>
-                {legalData.licenseReminder ? "Reminder Active" : "Reminder Off"}
-              </div>
-              
-              {legalData.licenseRenewalDate && (
-                <div className="ml-4 px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                  {(() => {
-                    const today = new Date();
-                    const renewalDate = new Date(legalData.licenseRenewalDate);
-                    const timeDiff = renewalDate.getTime() - today.getTime();
-                    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                    
-                    if (daysDiff < 0) {
-                      return "Expired";
-                    } else if (daysDiff <= 30) {
-                      return `${daysDiff} days left`;
-                    } else {
-                      return "Active";
-                    }
-                  })()}
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {legalData.licenseRenewalDate && (
-            <div className="mt-4 pt-4 border-t border-blue-100">
-              <div className="flex items-center text-sm text-gray-600">
-                <Shield size={16} className="mr-2 text-blue-500" />
-                <span>
-                  {(() => {
-                    const today = new Date();
-                    const renewalDate = new Date(legalData.licenseRenewalDate);
-                    const timeDiff = renewalDate.getTime() - today.getTime();
-                    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                    
-                    if (daysDiff < 0) {
-                      return `License expired ${Math.abs(daysDiff)} days ago`;
-                    } else if (daysDiff <= 30) {
-                      return `License expires in ${daysDiff} days`;
-                    } else {
-                      return `License is valid for ${daysDiff} more days`;
-                    }
-                  })()}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-      
-      <div className="space-y-8">
-        {/* Legal Documents Section - No dropdown */}
-        <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
-          <div className="flex items-start mb-4">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 mr-3">
-              <FileImage size={20} />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800">Legal Documents & Certificates</h3>
-              <p className="text-sm text-gray-600">Medical council registration, pharmacist license, degree certificates, etc.</p>
-            </div>
-          </div>
-          
-          {legalData.pharmacyImages && legalData.pharmacyImages.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {legalData.pharmacyImages.map((imageObj, index) => (
-                <div key={index} className="border rounded-lg p-3 bg-white">
-                  <div 
-                    className="cursor-pointer relative group rounded-lg overflow-hidden mb-2"
-                    onClick={() => openImagePopup(imageObj.src)}
-                  >
-                    <img 
-                      src={imageObj.src} 
-                      alt={imageObj.title} 
-                      className="w-full h-auto object-contain max-h-32"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.parentElement.innerHTML = '<div class="bg-gray-100 w-full h-32 flex items-center justify-center"><FileImage size={20} class="text-gray-400" /></div>';
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 flex items-center justify-center transition-all">
-                      <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={16} />
-                    </div>
-                  </div>
-                  <div className="text-sm font-medium text-gray-800 text-center truncate">{imageObj.title}</div>
-                  <div className="text-xs text-gray-500 mt-1 text-center">Click to preview</div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <FileImage size={32} className="mx-auto text-gray-300 mb-2" />
-              <p>No legal documents uploaded</p>
-            </div>
-          )}
-        </div>
-
-        {/* Business Registration Image - No dropdown */}
-        <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
-          <div className="flex items-start mb-4">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 mr-3">
-              <CreditCard size={20} />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800">Business Registration</h3>
-              <p className="text-sm text-gray-600">Your Business Registration document</p>
-            </div>
-          </div>
-          
-          {legalData.businessRegistrationImage ? (
-            <div className="max-w-xs mx-auto">
-              <div 
-                className="cursor-pointer relative group rounded-lg overflow-hidden bg-white"
-                onClick={() => openImagePopup(legalData.businessRegistrationImage)}
-              >
-                <img 
-                  src={legalData.businessRegistrationImage} 
-                  alt="Business Registration" 
-                  className="w-full h-auto object-contain max-h-40"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.parentElement.innerHTML = '<div class="bg-gray-100 w-full h-40 flex items-center justify-center"><FileImage size={24} class="text-gray-400" /></div>';
+    <Card sx={{ backgroundColor: COLORS.lightGray }} className="legal-form-card">
+      <CardContent>
+        <Box display="flex" alignItems="center" sx={{ mb: 3 }} className="section-header">
+          <Box 
+            sx={{ 
+              width: 48, 
+              height: 48, 
+              borderRadius: 2, 
+              backgroundColor: COLORS.mediumBlue, 
+              color: 'white',
+              mr: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Shield size={24} />
+          </Box>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+              Legal Information Overview
+            </Typography>
+            <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
+              Complete details of your pharmacy's legal documentation
+            </Typography>
+          </Box>
+        </Box>
+        
+        {/* License Renewal Status Card - Modern Design */}
+        {legalData && (
+          <Paper 
+            sx={{ 
+              mb: 3, 
+              p: 2, 
+              background: 'linear-gradient(to right, #e3f2fd, #f5f5f5)',
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: COLORS.mediumBlue
+            }}
+            elevation={0}
+            className="legal-form-card"
+          >
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { md: 'center' }, justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 2, md: 0 } }}>
+                <Box 
+                  sx={{ 
+                    width: 48, 
+                    height: 48, 
+                    borderRadius: 1, 
+                    backgroundColor: COLORS.mediumBlue, 
+                    color: 'white',
+                    mr: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
+                >
+                  <Calendar size={24} />
+                </Box>
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+                    License Renewal
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
+                    {legalData.licenseRenewalDate 
+                      ? `Next renewal: ${new Date(legalData.licenseRenewalDate).toLocaleDateString()}` 
+                      : "No renewal date set"}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Chip 
+                  label={legalData.licenseReminder ? "Reminder Active" : "Reminder Off"}
+                  color={legalData.licenseReminder ? "success" : "warning"}
+                  size="small"
+                  sx={{ fontWeight: 'medium' }}
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 flex items-center justify-center transition-all">
-                  <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={20} />
-                </div>
-              </div>
-              <div className="mt-2 text-center">
-                <p className="text-sm text-gray-500">Business Registration Document</p>
-                <p className="text-xs text-gray-400 mt-1">Click to preview with zoom</p>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <CreditCard size={32} className="mx-auto text-gray-300 mb-2" />
-              <p>No business registration document uploaded</p>
-            </div>
-          )}
-        </div>
+                
+                {legalData.licenseRenewalDate && (
+                  <Chip 
+                    label={(() => {
+                      const today = new Date();
+                      const renewalDate = new Date(legalData.licenseRenewalDate);
+                      const timeDiff = renewalDate.getTime() - today.getTime();
+                      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                      
+                      if (daysDiff < 0) {
+                        return "Expired";
+                      } else if (daysDiff <= 30) {
+                        return `${daysDiff} days left`;
+                      } else {
+                        return "Active";
+                      }
+                    })()}
+                    color={(() => {
+                      const today = new Date();
+                      const renewalDate = new Date(legalData.licenseRenewalDate);
+                      const timeDiff = renewalDate.getTime() - today.getTime();
+                      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                      
+                      if (daysDiff < 0) {
+                        return "error";
+                      } else if (daysDiff <= 30) {
+                        return "warning";
+                      } else {
+                        return "info";
+                      }
+                    })()}
+                    size="small"
+                    sx={{ ml: 2, fontWeight: 'medium' }}
+                  />
+                )}
+              </Box>
+            </Box>
+            
+            {legalData.licenseRenewalDate && (
+              <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: COLORS.mediumBlue }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Shield size={16} style={{ color: COLORS.mediumBlue, marginRight: 8 }} />
+                  <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
+                    {(() => {
+                      const today = new Date();
+                      const renewalDate = new Date(legalData.licenseRenewalDate);
+                      const timeDiff = renewalDate.getTime() - today.getTime();
+                      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                      
+                      if (daysDiff < 0) {
+                        return `License expired ${Math.abs(daysDiff)} days ago`;
+                      } else if (daysDiff <= 30) {
+                        return `License expires in ${daysDiff} days`;
+                      } else {
+                        return `License is valid for ${daysDiff} more days`;
+                      }
+                    })()}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+          </Paper>
+        )}
+        
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* Legal Documents Section - No dropdown */}
+          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: COLORS.lightGray }} className="legal-form-card">
+            <Box display="flex" alignItems="center" sx={{ mb: 2 }} className="section-header">
+              <Box 
+                sx={{ 
+                  width: 40, 
+                  height: 40, 
+                  borderRadius: 1, 
+                  backgroundColor: COLORS.mediumBlue, 
+                  color: 'white',
+                  mr: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <FileImage size={20} />
+              </Box>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+                  Legal Documents & Certificates
+                </Typography>
+                <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
+                  Medical council registration, pharmacist license, degree certificates, etc.
+                </Typography>
+              </Box>
+            </Box>
+            
+            {legalData.pharmacyImages && legalData.pharmacyImages.length > 0 ? (
+              <Grid container spacing={2}>
+                {legalData.pharmacyImages.map((imageObj, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <Paper variant="outlined" sx={{ p: 2, backgroundColor: 'white' }}>
+                      <Box 
+                        sx={{ 
+                          cursor: 'pointer', 
+                          position: 'relative', 
+                          mb: 1,
+                          borderRadius: 1.5,
+                          overflow: 'hidden'
+                        }}
+                        onClick={() => openImagePopup(imageObj.src)}
+                      >
+                        <img 
+                          src={imageObj.src} 
+                          alt={imageObj.title} 
+                          style={{ width: '100%', height: 128, objectFit: 'contain' }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.parentElement.innerHTML = '<div style="width:100%;height:128px;background-color:#eee;display:flex;align-items:center;justify-content:center;"><FileImage size={20} style="color:' + COLORS.mediumBlue + '" /></div>';
+                          }}
+                        />
+                        <Box 
+                          sx={{ 
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: 'rgba(0, 0, 0, 0)',
+                            transition: 'background-color 0.2s',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                            }
+                          }}
+                        >
+                          <ZoomIn size={16} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
+                        </Box>
+                      </Box>
+                      <Typography variant="body2" sx={{ fontWeight: 'medium', color: COLORS.darkGray, textAlign: 'center', mb: 0.5 }}>
+                        {imageObj.title}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: COLORS.lighterGray, display: 'block', textAlign: 'center' }}>
+                        Click to preview
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            ) : (
+              <Box textAlign="center" sx={{ py: 6, color: COLORS.lighterGray }}>
+                <FileImage size={32} style={{ color: COLORS.mediumBlue, marginBottom: 16 }} />
+                <Typography variant="body1" sx={{ color: COLORS.darkGray }}>
+                  No legal documents uploaded
+                </Typography>
+              </Box>
+            )}
+          </Paper>
 
-        {/* Pharmacy Details - With dropdown */}
-        <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
-          <DropdownSectionHeader 
-            icon={Building2}
-            title="Pharmacy Details"
-            subtitle="Basic information about your pharmacy business"
-            isOpen={openSections.pharmacyDetails}
-            onToggle={() => toggleSection('pharmacyDetails')}
-          />
-          
-          {openSections.pharmacyDetails && (
-            <div className="bg-white rounded-lg p-5 border border-gray-200">
-              <DetailItem label="Name" value={legalData.pharmacyName} icon={Building2} />
-              <DetailItem label="Address" value={legalData.pharmacyAddress} icon={MapPin} />
-              <DetailItem label="Website" value={legalData.pharmacyWebsite} icon={Globe} />
-              <MaskedDetailItem label="BR Number" value={legalData.brNumber} icon={CreditCard} />
-              <DetailItem label="Email" value={legalData.pharmacyEmail} icon={Mail} />
-              <DetailItem label="Mobile" value={legalData.pharmacyMobile} icon={Phone} />
-              <DetailItem label="Landline" value={legalData.pharmacyLandline} icon={Phone} />
-            </div>
-          )}
-        </div>
+          {/* Business Registration Image - No dropdown */}
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
+            <Box display="flex" alignItems="center" sx={{ mb: 3 }}>
+              <Box 
+                sx={{ 
+                  width: 40, 
+                  height: 40, 
+                  borderRadius: 1, 
+                  backgroundColor: COLORS.mediumBlue, 
+                  color: 'white',
+                  mr: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <CreditCard size={20} />
+              </Box>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+                  Business Registration
+                </Typography>
+                <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
+                  Your Business Registration document
+                </Typography>
+              </Box>
+            </Box>
+            
+            {legalData.businessRegistrationImage ? (
+              <Box sx={{ maxWidth: 320, mx: 'auto' }}>
+                <Box 
+                  sx={{ 
+                    cursor: 'pointer', 
+                    position: 'relative', 
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    backgroundColor: 'white'
+                  }}
+                  onClick={() => openImagePopup(legalData.businessRegistrationImage)}
+                >
+                  <img 
+                    src={legalData.businessRegistrationImage} 
+                    alt="Business Registration" 
+                    style={{ width: '100%', height: 'auto', maxHeight: 160, objectFit: 'contain' }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.parentElement.innerHTML = '<div style="width:100%;height:160px;background-color:#eee;display:flex;align-items:center;justify-content:center;"><FileImage size={24} style="color:' + COLORS.mediumBlue + '" /></div>';
+                    }}
+                  />
+                  <Box 
+                    sx={{ 
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: 'rgba(0, 0, 0, 0)',
+                      transition: 'background-color 0.2s',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                      }
+                    }}
+                  >
+                    <ZoomIn size={20} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
+                  </Box>
+                </Box>
+                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                  <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
+                    Business Registration Document
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: COLORS.lighterGray, display: 'block', mt: 0.5 }}>
+                    Click to preview with zoom
+                  </Typography>
+                </Box>
+              </Box>
+            ) : (
+              <Box textAlign="center" sx={{ py: 6, color: COLORS.lighterGray }}>
+                <CreditCard size={32} style={{ color: COLORS.mediumBlue, marginBottom: 16 }} />
+                <Typography variant="body1" sx={{ color: COLORS.darkGray }}>
+                  No business registration document uploaded
+                </Typography>
+              </Box>
+            )}
+          </Paper>
 
-        {/* Owner Information - With dropdown */}
-        <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
-          <DropdownSectionHeader 
-            icon={User}
-            title="Owner Information"
-            subtitle="Details of the pharmacy owner"
-            isOpen={openSections.ownerInfo}
-            onToggle={() => toggleSection('ownerInfo')}
-          />
-          
-          {openSections.ownerInfo && (
-            <div className="bg-white rounded-lg p-5 border border-gray-200">
-              <DetailItem label="Name" value={legalData.ownerName} icon={User} />
-              <MaskedDetailItem label="NIC" value={legalData.ownerNIC} icon={CreditCard} />
-              <DetailItem label="Email" value={legalData.ownerEmail} icon={Mail} />
-              <DetailItem label="Phone" value={legalData.ownerPhone} icon={Phone} />
-            </div>
-          )}
-        </div>
+          {/* Pharmacy Details - With dropdown */}
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
+            <DropdownSectionHeader 
+              icon={Building2}
+              title="Pharmacy Details"
+              subtitle="Basic information about your pharmacy business"
+              isOpen={openSections.pharmacyDetails}
+              onToggle={() => toggleSection('pharmacyDetails')}
+            />
+            
+            <Collapse in={openSections.pharmacyDetails}>
+              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
+                <DetailItem label="Name" value={legalData.pharmacyName} icon={Building2} />
+                <DetailItem label="Address" value={legalData.pharmacyAddress} icon={MapPin} />
+                <DetailItem label="Website" value={legalData.pharmacyWebsite} icon={Globe} />
+                <MaskedDetailItem label="BR Number" value={legalData.brNumber} icon={CreditCard} />
+                <DetailItem label="Email" value={legalData.pharmacyEmail} icon={Mail} />
+                <DetailItem label="Mobile" value={legalData.pharmacyMobile} icon={Phone} />
+                <DetailItem label="Landline" value={legalData.pharmacyLandline} icon={Phone} />
+              </Paper>
+            </Collapse>
+          </Paper>
 
-        {/* Responsible Pharmacist - With dropdown */}
-        <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
-          <DropdownSectionHeader 
-            icon={Award}
-            title="Responsible Pharmacist"
-            subtitle="Details of the licensed pharmacist in charge"
-            isOpen={openSections.pharmacist}
-            onToggle={() => toggleSection('pharmacist')}
-          />
-          
-          {openSections.pharmacist && (
-            <div className="bg-white rounded-lg p-5 border border-gray-200">
-              <DetailItem label="Name" value={legalData.pharmacistName} icon={User} />
-              <MaskedDetailItem label="Registration Number" value={legalData.pharmacistRegNumber} icon={Award} />
-            </div>
-          )}
-        </div>
+          {/* Owner Information - With dropdown */}
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
+            <DropdownSectionHeader 
+              icon={User}
+              title="Owner Information"
+              subtitle="Details of the pharmacy owner"
+              isOpen={openSections.ownerInfo}
+              onToggle={() => toggleSection('ownerInfo')}
+            />
+            
+            <Collapse in={openSections.ownerInfo}>
+              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
+                <DetailItem label="Name" value={legalData.ownerName} icon={User} />
+                <MaskedDetailItem label="NIC" value={legalData.ownerNIC} icon={CreditCard} />
+                <DetailItem label="Email" value={legalData.ownerEmail} icon={Mail} />
+                <DetailItem label="Phone" value={legalData.ownerPhone} icon={Phone} />
+              </Paper>
+            </Collapse>
+          </Paper>
 
-        {/* License & Renewal - With dropdown */}
-        <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
-          <DropdownSectionHeader 
-            icon={Shield}
-            title="License & Renewal"
-            subtitle="License information and renewal settings"
-            isOpen={openSections.license}
-            onToggle={() => toggleSection('license')}
-          />
-          
-          {openSections.license && (
-            <div className="bg-white rounded-lg p-5 border border-gray-200">
-              <DetailItem label="Next Renewal Date" value={legalData.licenseRenewalDate} icon={Calendar} />
-              <div className="flex items-center py-2">
-                <Shield size={16} className="text-gray-400 mt-1 mr-2 flex-shrink-0" />
-                <div>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Reminder</p>
-                  <p className="text-sm font-medium text-gray-900">
-                    {legalData.licenseReminder ? (
-                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                        Enabled
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-                        Disabled
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+          {/* Responsible Pharmacist - With dropdown */}
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
+            <DropdownSectionHeader 
+              icon={Award}
+              title="Responsible Pharmacist"
+              subtitle="Details of the licensed pharmacist in charge"
+              isOpen={openSections.pharmacist}
+              onToggle={() => toggleSection('pharmacist')}
+            />
+            
+            <Collapse in={openSections.pharmacist}>
+              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
+                <DetailItem label="Name" value={legalData.pharmacistName} icon={User} />
+                <MaskedDetailItem label="Registration Number" value={legalData.pharmacistRegNumber} icon={Award} />
+              </Paper>
+            </Collapse>
+          </Paper>
 
-      {/* Image Popup */}
-      {popupImage && (
-        <ImagePopup imageSrc={popupImage} onClose={closeImagePopup} />
-      )}
-    </div>
+          {/* License & Renewal - With dropdown */}
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
+            <DropdownSectionHeader 
+              icon={Shield}
+              title="License & Renewal"
+              subtitle="License information and renewal settings"
+              isOpen={openSections.license}
+              onToggle={() => toggleSection('license')}
+            />
+            
+            <Collapse in={openSections.license}>
+              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
+                <DetailItem label="Next Renewal Date" value={legalData.licenseRenewalDate} icon={Calendar} />
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', py: 1 }}>
+                  <Shield size={16} style={{ color: COLORS.mediumBlue, marginTop: 4, marginRight: 8, flexShrink: 0 }} />
+                  <Box>
+                    <Typography variant="caption" sx={{ fontWeight: 'medium', color: COLORS.lighterGray, textTransform: 'uppercase' }}>
+                      Reminder
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 'medium', color: COLORS.darkGray }}>
+                      {legalData.licenseReminder ? (
+                        <Chip 
+                          label="Enabled" 
+                          color="success" 
+                          size="small" 
+                          sx={{ fontWeight: 'medium' }}
+                        />
+                      ) : (
+                        <Chip 
+                          label="Disabled" 
+                          color="error" 
+                          size="small" 
+                          sx={{ fontWeight: 'medium' }}
+                        />
+                      )}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Collapse>
+          </Paper>
+        </Box>
+
+        {/* Image Popup */}
+        {popupImage && (
+          <ImagePopup imageSrc={popupImage} onClose={closeImagePopup} />
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
 // Dashboard component
 const DashboardPage = () => (
-  <div className="bg-white shadow rounded-xl p-6">
-    <div className="flex items-center mb-6">
-      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600 text-white mr-4">
+  <Card sx={{ p: 3, borderRadius: 3, boxShadow: 3, backgroundColor: COLORS.lightGray }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+      <Box 
+        sx={{ 
+          width: 48, 
+          height: 48, 
+          borderRadius: 3, 
+          backgroundColor: COLORS.mediumBlue, 
+          color: 'white',
+          mr: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
         <Shield size={24} />
-      </div>
-      <div>
-        <h2 className="text-2xl font-bold text-gray-800">Legal Module Dashboard</h2>
-        <p className="text-gray-600">Manage all legal documentation for your pharmacy business</p>
-      </div>
-    </div>
+      </Box>
+      <Box>
+        <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+          Legal Module Dashboard
+        </Typography>
+        <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
+          Manage all legal documentation for your pharmacy business
+        </Typography>
+      </Box>
+    </Box>
     
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-100">
-        <div className="flex items-center mb-4">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-500 text-white mr-3">
-            <FileText size={20} />
-          </div>
-          <h3 className="text-lg font-semibold text-blue-800">Add/Edit Legal Information</h3>
-        </div>
-        <p className="text-blue-700 mb-4">Upload documents and update pharmacy legal details.</p>
-        <ul className="space-y-2 text-blue-600">
-          <li className="flex items-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></div>
-            Upload pharmacy images
-          </li>
-          <li className="flex items-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></div>
-            Add business registration
-          </li>
-          <li className="flex items-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></div>
-            Update pharmacy details
-          </li>
-          <li className="flex items-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></div>
-            Manage license information
-          </li>
-        </ul>
-        <div className="mt-4">
-          <a
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={6}>
+        <Card 
+          sx={{ 
+            p: 3, 
+            borderRadius: 3, 
+            background: 'linear-gradient(to bottom right, #e3f2fd, #bbdefb)',
+            border: '1px solid',
+            borderColor: COLORS.mediumBlue
+          }}
+          elevation={0}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Box 
+              sx={{ 
+                width: 40, 
+                height: 40, 
+                borderRadius: 2, 
+                backgroundColor: COLORS.darkBlue, 
+                color: 'white',
+                mr: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <FileText size={20} />
+            </Box>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+              Add/Edit Legal Information
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ color: COLORS.lighterGray, mb: 3 }}>
+            Upload documents and update pharmacy legal details.
+          </Typography>
+          <Box component="ul" sx={{ pl: 2, mb: 3 }}>
+            <Box component="li" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: COLORS.mediumBlue, mr: 1.5 }} />
+              <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
+                Upload pharmacy images
+              </Typography>
+            </Box>
+            <Box component="li" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: COLORS.mediumBlue, mr: 1.5 }} />
+              <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
+                Add business registration
+              </Typography>
+            </Box>
+            <Box component="li" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: COLORS.mediumBlue, mr: 1.5 }} />
+              <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
+                Update pharmacy details
+              </Typography>
+            </Box>
+            <Box component="li" sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: COLORS.mediumBlue, mr: 1.5 }} />
+              <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
+                Manage license information
+              </Typography>
+            </Box>
+          </Box>
+          <Button 
+            variant="contained" 
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 'medium',
+              backgroundColor: COLORS.darkBlue,
+              color: 'white',
+              '&:hover': {
+                backgroundColor: COLORS.mediumBlue
+              }
+            }}
             href="/form"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Add Legal Info
-          </a>
-        </div>
-      </div>
+          </Button>
+        </Card>
+      </Grid>
       
-      <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-100">
-        <div className="flex items-center mb-4">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-500 text-white mr-3">
-            <Eye size={20} />
-          </div>
-          <h3 className="text-lg font-semibold text-green-800">View All Legal Details</h3>
-        </div>
-        <p className="text-green-700 mb-4">Review all uploaded documents and information.</p>
-        <ul className="space-y-2 text-green-600">
-          <li className="flex items-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2"></div>
-            View all pharmacy images
-          </li>
-          <li className="flex items-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2"></div>
-            Check business registration
-          </li>
-          <li className="flex items-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2"></div>
-            Review pharmacy details
-          </li>
-          <li className="flex items-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2"></div>
-            Monitor license status
-          </li>
-        </ul>
-        <div className="mt-4">
-          <a
+      <Grid item xs={12} md={6}>
+        <Card 
+          sx={{ 
+            p: 3, 
+            borderRadius: 3, 
+            background: 'linear-gradient(to bottom right, #e8f5e9, #c8e6c9)',
+            border: '1px solid',
+            borderColor: '#4caf50'
+          }}
+          elevation={0}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Box 
+              sx={{ 
+                width: 40, 
+                height: 40, 
+                borderRadius: 2, 
+                backgroundColor: '#4caf50', 
+                color: 'white',
+                mr: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Eye size={20} />
+            </Box>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
+              View All Legal Details
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ color: COLORS.lighterGray, mb: 3 }}>
+            Review all uploaded documents and information.
+          </Typography>
+          <Box component="ul" sx={{ pl: 2, mb: 3 }}>
+            <Box component="li" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#4caf50', mr: 1.5 }} />
+              <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
+                View all pharmacy images
+              </Typography>
+            </Box>
+            <Box component="li" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#4caf50', mr: 1.5 }} />
+              <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
+                Check business registration
+              </Typography>
+            </Box>
+            <Box component="li" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#4caf50', mr: 1.5 }} />
+              <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
+                Review pharmacy details
+              </Typography>
+            </Box>
+            <Box component="li" sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#4caf50', mr: 1.5 }} />
+              <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
+                Monitor license status
+              </Typography>
+            </Box>
+          </Box>
+          <Button 
+            variant="contained" 
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 'medium',
+              backgroundColor: '#4caf50',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#43a047'
+              }
+            }}
             href="/view"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             View Details
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
+          </Button>
+        </Card>
+      </Grid>
+    </Grid>
+  </Card>
 );
 
 function App() {

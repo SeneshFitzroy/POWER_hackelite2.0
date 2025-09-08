@@ -22,7 +22,7 @@ function ModuleCard({ icon, title, description, delay, onClick, color }) {
   )
 }
 
-export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onLogout }) {
+export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onLegalAccess, onLogout }) {
   const [headerVisible, setHeaderVisible] = useState(false)
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M2 7C2 6.46957 2.21071 5.96086 2.58579 5.58579C2.96086 5.21071 3.46957 5 4 5H20C20.5304 5 21.0391 5.21071 21.4142 5.58579C21.7893 5.96086 22 6.46957 22 7V17C22 17.5304 21.7893 18.0391 21.4142 18.4142C21.0391 18.7893 20.5304 19 20 19H4C3.46957 19 2.96086 18.7893 2.58579 18.4142C2.21071 18.0391 2 17.5304 2 17V7Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M22 10H2M7 15H7.01M11 15H11.01" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M22 10H2M7 15H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V19C17 19.5523 17.4477 20 18 20C18.5523 20 19 19.5523 19 19V13M9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18C8.32843 18 9 18.6716 9 19.5ZM20 19.5C20 20.3284 19.3284 21 18.5 21C17.6716 21 17 20.3284 17 19.5C17 18.6716 17.6716 18 18.5 18C19.3284 18 20 18.6716 20 19.5Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
       title: "Sales & Finance",
@@ -90,7 +90,7 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M8 21L16 21C17.1046 21 18 20.1046 18 19L18 17C18 15.8954 17.1046 15 16 15L8 15C6.89543 15 6 15.8954 6 17L6 19C6 20.1046 6.89543 21 8 21Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M1 12H3M21 12H23M8 21L16 21C17.1046 21 18 20.1046 18 19L18 17C18 15.8954 17.1046 15 16 15L8 15C6.89543 15 6 15.8954 6 17L6 19C6 20.1046 6.89543 21 8 21Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M12 13V15" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
@@ -119,6 +119,8 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       onSalesAccess()
     } else if (moduleTitle === "HR" && onHRAccess) {
       onHRAccess()
+    } else if (moduleTitle === "Legal" && onLegalAccess) {
+      onLegalAccess()
     }
     // Other module navigation logic will be implemented here
   }
