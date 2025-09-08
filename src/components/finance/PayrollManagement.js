@@ -85,101 +85,24 @@ export default function PayrollManagement({ dateFilter }) {
   const [showEmployeeDialog, setShowEmployeeDialog] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Sample employee data
-  const employees = [
-    {
-      id: 'EMP-001',
-      name: 'Dr. Sarah Johnson',
-      position: 'Senior Pharmacist',
-      department: 'Pharmacy',
-      baseSalary: 85000,
-      allowances: 15000,
-      deductions: 8500,
-      netSalary: 91500,
-      paymentStatus: 'paid',
-      joinDate: '2023-01-15',
-      avatar: '/api/placeholder/40/40'
-    },
-    {
-      id: 'EMP-002',
-      name: 'Mike Chen',
-      position: 'Sales Manager',
-      department: 'Sales',
-      baseSalary: 65000,
-      allowances: 12000,
-      deductions: 6500,
-      netSalary: 70500,
-      paymentStatus: 'pending',
-      joinDate: '2023-03-20',
-      avatar: '/api/placeholder/40/40'
-    },
-    {
-      id: 'EMP-003',
-      name: 'Emily Davis',
-      position: 'Inventory Manager',
-      department: 'Operations',
-      baseSalary: 55000,
-      allowances: 8000,
-      deductions: 5500,
-      netSalary: 57500,
-      paymentStatus: 'paid',
-      joinDate: '2022-11-10',
-      avatar: '/api/placeholder/40/40'
-    },
-    {
-      id: 'EMP-004',
-      name: 'Robert Wilson',
-      position: 'Accountant',
-      department: 'Finance',
-      baseSalary: 48000,
-      allowances: 6000,
-      deductions: 4800,
-      netSalary: 49200,
-      paymentStatus: 'processing',
-      joinDate: '2023-05-08',
-      avatar: '/api/placeholder/40/40'
-    },
-    {
-      id: 'EMP-005',
-      name: 'Lisa Anderson',
-      position: 'Customer Service',
-      department: 'Support',
-      baseSalary: 35000,
-      allowances: 5000,
-      deductions: 3500,
-      netSalary: 36500,
-      paymentStatus: 'paid',
-      joinDate: '2023-07-12',
-      avatar: '/api/placeholder/40/40'
-    }
-  ];
+  // Employee data - will be loaded from Firebase
+  const employees = [];
 
   // Payroll summary data
   const payrollSummary = {
-    totalEmployees: employees.length,
-    totalGrossPay: employees.reduce((sum, emp) => sum + emp.baseSalary + emp.allowances, 0),
-    totalDeductions: employees.reduce((sum, emp) => sum + emp.deductions, 0),
-    totalNetPay: employees.reduce((sum, emp) => sum + emp.netSalary, 0),
-    pendingPayments: employees.filter(emp => emp.paymentStatus === 'pending').length,
-    processedPayments: employees.filter(emp => emp.paymentStatus === 'paid').length
+    totalEmployees: 0,
+    totalGrossPay: 0,
+    totalDeductions: 0,
+    totalNetPay: 0,
+    pendingPayments: 0,
+    processedPayments: 0
   };
 
   // Department-wise salary distribution
-  const departmentSalaryData = [
-    { department: 'Pharmacy', totalSalary: 106500, employees: 1, avgSalary: 106500 },
-    { department: 'Sales', totalSalary: 82500, employees: 1, avgSalary: 82500 },
-    { department: 'Operations', totalSalary: 65500, employees: 1, avgSalary: 65500 },
-    { department: 'Finance', totalSalary: 54000, employees: 1, avgSalary: 54000 },
-    { department: 'Support', totalSalary: 40000, employees: 1, avgSalary: 40000 }
-  ];
+  const departmentSalaryData = [];
 
   // Monthly payroll trends
-  const payrollTrends = [
-    { month: 'Jun', grossPay: 310000, netPay: 275000, deductions: 35000 },
-    { month: 'Jul', grossPay: 325000, netPay: 288000, deductions: 37000 },
-    { month: 'Aug', grossPay: 340000, netPay: 305000, deductions: 35000 },
-    { month: 'Sep', grossPay: 348500, netPay: 308700, deductions: 39800 }
-  ];
+  const payrollTrends = [];
 
   const getStatusColor = (status) => {
     switch (status) {

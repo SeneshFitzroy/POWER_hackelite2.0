@@ -167,7 +167,7 @@ const RecentActivity = () => (
         </ListItemIcon>
         <ListItemText
           primary={<Typography sx={{ color: '#000000', fontWeight: 'bold' }}>New order #1234</Typography>}
-          secondary={<Typography sx={{ color: '#666666' }}>2 minutes ago</Typography>}
+          secondary={<Typography sx={{ color: '#666666' }}>System ready</Typography>}
         />
       </ListItem>
       <Divider sx={{ borderColor: '#e0e0e0' }} />
@@ -176,8 +176,8 @@ const RecentActivity = () => (
           <People sx={{ color: '#000000' }} />
         </ListItemIcon>
         <ListItemText
-          primary={<Typography sx={{ color: '#000000', fontWeight: 'bold' }}>Customer John Doe registered</Typography>}
-          secondary={<Typography sx={{ color: '#666666' }}>15 minutes ago</Typography>}
+          primary={<Typography sx={{ color: '#000000', fontWeight: 'bold' }}>No recent customer activity</Typography>}
+          secondary={<Typography sx={{ color: '#666666' }}>Waiting for first customer</Typography>}
         />
       </ListItem>
       <Divider sx={{ borderColor: '#e0e0e0' }} />
@@ -186,8 +186,8 @@ const RecentActivity = () => (
           <Inventory sx={{ color: '#000000' }} />
         </ListItemIcon>
         <ListItemText
-          primary={<Typography sx={{ color: '#000000', fontWeight: 'bold' }}>Low stock alert: Product ABC</Typography>}
-          secondary={<Typography sx={{ color: '#666666' }}>1 hour ago</Typography>}
+          primary={<Typography sx={{ color: '#000000', fontWeight: 'bold' }}>Stock monitoring active</Typography>}
+          secondary={<Typography sx={{ color: '#666666' }}>No alerts</Typography>}
         />
       </ListItem>
     </List>

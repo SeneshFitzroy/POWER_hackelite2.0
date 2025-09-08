@@ -150,24 +150,8 @@ export default function Finance({ dateFilter }) {
       setSalesData(salesByMonth);
       setSalesTrendData(salesByMonth);
 
-      // Set other data
-      setEmployeesData([
-        {
-          id: 'EMP-001',
-          name: 'System Admin',
-          email: 'admin@coreerp.com',
-          department: 'Administration',
-          position: 'Administrator',
-          salary: 50000,
-          baseSalary: 50000,
-          netSalary: 45000,
-          joinDate: new Date('2024-01-15').toISOString(),
-          paymentStatus: 'paid',
-          status: 'paid'
-        },
-        {
-          id: 'EMP-002',
-          name: 'John Doe',
+      // Set empty employee data - will be loaded from Firebase
+      setEmployeesData([]);
           email: 'john@coreerp.com',
           department: 'Pharmacy',
           position: 'Pharmacist',
