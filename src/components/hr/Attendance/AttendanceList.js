@@ -3,7 +3,7 @@ import {
   Box,
   Typography,
   Paper,
-  Grid2 as Grid,
+  Grid,
   Card,
   CardContent,
   Table,
@@ -225,7 +225,7 @@ const AttendanceList = () => {
       <Box sx={{ space: 4 }}>
         {/* Stats Cards */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Present"
               value={stats.present}
@@ -233,7 +233,7 @@ const AttendanceList = () => {
               color="#10b981"
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Absent"
               value={stats.absent}
@@ -241,7 +241,7 @@ const AttendanceList = () => {
               color="#ef4444"
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Late"
               value={stats.late}
@@ -249,7 +249,7 @@ const AttendanceList = () => {
               color="#f59e0b"
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Total"
               value={stats.total}
