@@ -123,6 +123,7 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       // Navigate to data cleaner
       window.open('/clear-data', '_blank')
     }
+  }
       onHRAccess()
     }
     // Other module navigation logic will be implemented here
