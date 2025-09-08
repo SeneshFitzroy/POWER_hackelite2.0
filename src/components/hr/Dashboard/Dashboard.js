@@ -213,7 +213,7 @@ const Dashboard = () => {
           const Icon = stat.icon;
           
           return (
-            <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={index}>
+            <Grid item xs={12} sm={6} lg={4} key={index}>
               <Card
                 sx={{
                   borderRadius: '16px',
@@ -299,7 +299,7 @@ const Dashboard = () => {
             {quickActions.map((action, index) => {
               const Icon = action.icon;
               return (
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={index}>
+                <Grid item xs={12} sm={6} lg={3} key={index}>
                   <Card
                     sx={{
                       borderRadius: '12px',
