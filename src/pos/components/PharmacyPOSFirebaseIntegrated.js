@@ -42,7 +42,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
     sessionStorage.clear();
     
     // Navigate immediately to login screen
-    navigate('/?screen=login');
+    window.location.href = '/?screen=login';
   };
 
   // State variables
