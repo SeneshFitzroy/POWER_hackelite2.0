@@ -4,7 +4,7 @@ import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/materia
 import SplashScreen from './components/SplashScreen'
 import LoginScreen from './components/LoginScreen'
 import ERPDashboard from './components/ERPDashboard'
-import PharmacyPOSFirebaseIntegrated from './pos/components/PharmacyPOSFirebaseIntegrated'
+import PharmacyPOS from './pos/components/PharmacyPOS'
 import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
 import './App.css'
@@ -213,7 +213,7 @@ function App() {
         <Routes>
           <Route path="/pos" element={
             <Box sx={{ height: '100vh', overflow: 'hidden' }}>
-              <PharmacyPOSFirebaseIntegrated />
+              <PharmacyPOS />
             </Box>
           } />
           <Route path="/sales" element={
