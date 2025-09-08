@@ -19,15 +19,10 @@ const InitializeData = () => {
   };
 
   const handleReset = async () => {
-    if (window.confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
+    if (window.confirm('Reset functionality has been disabled. Please use the Firebase Data Cleaner at /clear-data instead.')) {
       setResetting(true);
       try {
-        const success = await resetFirestore();
-        if (success) {
-          toast.success('Database reset and reinitialized successfully!');
-        } else {
-          toast.error('Failed to reset database');
-        }
+        toast.info('Reset functionality disabled. Use the Firebase Data Cleaner instead.');
       } catch (error) {
         console.error('Reset error:', error);
         toast.error('Error during reset');
