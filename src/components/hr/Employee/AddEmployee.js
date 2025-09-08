@@ -202,7 +202,7 @@ const AddEmployee = ({ onBack, onSave }) => {
 
       <Grid container spacing={3}>
         {/* Personal Information */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -213,7 +213,7 @@ const AddEmployee = ({ onBack, onSave }) => {
               </Box>
               
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="First Name"
@@ -224,7 +224,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Last Name"
@@ -235,7 +235,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <TextField
                     fullWidth
                     label="Email Address"
@@ -250,7 +250,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Phone Number"
@@ -264,7 +264,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="NIC Number"
@@ -275,7 +275,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Date of Birth"
@@ -285,7 +285,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <FormControl fullWidth>
                     <InputLabel>Gender</InputLabel>
                     <Select
@@ -299,7 +299,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <TextField
                     fullWidth
                     label="Address"
@@ -312,7 +312,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <TextField
                     fullWidth
                     label="City"
@@ -326,7 +326,7 @@ const AddEmployee = ({ onBack, onSave }) => {
         </Grid>
 
         {/* Employment Information */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -337,7 +337,7 @@ const AddEmployee = ({ onBack, onSave }) => {
               </Box>
               
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Employee ID"
@@ -346,7 +346,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     placeholder="Auto-generated if empty"
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Start Date"
@@ -359,7 +359,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <FormControl fullWidth required error={!!errors.role}>
                     <InputLabel>Role</InputLabel>
                     <Select
@@ -375,7 +375,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <FormControl fullWidth required error={!!errors.department}>
                     <InputLabel>Department</InputLabel>
                     <Select
@@ -391,7 +391,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <FormControl fullWidth required error={!!errors.employmentType}>
                     <InputLabel>Employment Type</InputLabel>
                     <Select
@@ -407,7 +407,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <FormControl fullWidth>
                     <InputLabel>Work Schedule</InputLabel>
                     <Select
@@ -423,7 +423,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <TextField
                     fullWidth
                     label="Reporting Manager"
@@ -437,12 +437,12 @@ const AddEmployee = ({ onBack, onSave }) => {
         </Grid>
 
         {/* Compensation & Additional Info */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card elevation={3} sx={{ borderRadius: 3 }}>
             <CardContent sx={{ p: 3 }}>
               <Grid container spacing={3}>
                 {/* Compensation */}
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <FileText size={24} color="#1565c0" />
                     <Typography variant="h6" sx={{ ml: 1, fontWeight: 'bold' }}>
@@ -451,7 +451,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                   </Box>
                   
                   <Grid container spacing={2}>
-                    <Grid item xs={8}>
+                    <Grid size={{ xs: 8 }}>
                       <TextField
                         fullWidth
                         label="Base Salary"
@@ -462,7 +462,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                         helperText={errors.baseSalary}
                       />
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid size={{ xs: 4 }}>
                       <FormControl fullWidth>
                         <InputLabel>Currency</InputLabel>
                         <Select
@@ -480,13 +480,13 @@ const AddEmployee = ({ onBack, onSave }) => {
                 </Grid>
 
                 {/* Emergency Contact */}
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>
                     Emergency Contact
                   </Typography>
                   
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <TextField
                         fullWidth
                         label="Emergency Contact Name"
@@ -494,7 +494,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                         onChange={(e) => handleInputChange('emergencyContact', e.target.value)}
                       />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <TextField
                         fullWidth
                         label="Emergency Contact Phone"
@@ -506,7 +506,7 @@ const AddEmployee = ({ onBack, onSave }) => {
                 </Grid>
 
                 {/* Notes */}
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Divider sx={{ my: 2 }} />
                   <TextField
                     fullWidth
@@ -524,7 +524,7 @@ const AddEmployee = ({ onBack, onSave }) => {
         </Grid>
 
         {/* Action Buttons */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Paper elevation={3} sx={{ p: 3, borderRadius: 3, bgcolor: '#f8fafc' }}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
               <Button
