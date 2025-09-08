@@ -49,13 +49,11 @@ const Dashboard = () => {
 
   const initializeAndFetchData = async () => {
     try {
-      // Initialize Firestore collections if they don't exist
-      await initializeFirestore();
-      // Fetch dashboard stats
+      // Fetch dashboard stats directly
       await fetchDashboardStats();
     } catch (error) {
-      console.error('Error initializing data:', error);
-      toast.error('Failed to initialize application data');
+      console.error('Error fetching data:', error);
+      toast.error('Failed to load dashboard data');
     }
   };
 
