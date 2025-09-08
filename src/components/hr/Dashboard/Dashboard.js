@@ -375,98 +375,20 @@ const Dashboard = () => {
             Recent Activity
           </Typography>
           <List sx={{ p: 0 }}>
-            <ListItem
-              sx={{
-                borderRadius: '10px',
-                mb: 1,
-                '&:hover': { backgroundColor: '#f9fafb' },
-                transition: 'background-color 0.2s'
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                <Box
-                  sx={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '50%',
-                    backgroundColor: '#10b981'
-                  }}
-                />
-              </ListItemIcon>
+            <ListItem sx={{ py: 3, justifyContent: 'center' }}>
               <ListItemText
-                primary="New employee John Doe added to system"
-                secondary="2 hours ago"
+                primary="No recent activities"
+                secondary="Activity will appear here as you use the system"
                 primaryTypographyProps={{
                   fontSize: '14px',
                   fontWeight: '500',
-                  color: '#374151'
+                  color: '#6b7280',
+                  textAlign: 'center'
                 }}
                 secondaryTypographyProps={{
                   fontSize: '12px',
-                  color: '#9ca3af'
-                }}
-              />
-            </ListItem>
-            <ListItem
-              sx={{
-                borderRadius: '10px',
-                mb: 1,
-                '&:hover': { backgroundColor: '#f9fafb' },
-                transition: 'background-color 0.2s'
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                <Box
-                  sx={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '50%',
-                    backgroundColor: '#f59e0b'
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="Pharmacist license for Jane Smith expires in 15 days"
-                secondary="1 day ago"
-                primaryTypographyProps={{
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151'
-                }}
-                secondaryTypographyProps={{
-                  fontSize: '12px',
-                  color: '#9ca3af'
-                }}
-              />
-            </ListItem>
-            <ListItem
-              sx={{
-                borderRadius: '10px',
-                '&:hover': { backgroundColor: '#f9fafb' },
-                transition: 'background-color 0.2s'
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                <Box
-                  sx={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '50%',
-                    backgroundColor: '#3b82f6'
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="Monthly payroll processed for 25 employees"
-                secondary="3 days ago"
-                primaryTypographyProps={{
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151'
-                }}
-                secondaryTypographyProps={{
-                  fontSize: '12px',
-                  color: '#9ca3af'
+                  color: '#9ca3af',
+                  textAlign: 'center'
                 }}
               />
             </ListItem>
