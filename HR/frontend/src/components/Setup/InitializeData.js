@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { initializeFirestore, resetFirestore } from '../../utils/initializeFirestore';
 import { Database, RefreshCw, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -10,12 +9,7 @@ const InitializeData = () => {
   const handleInitialize = async () => {
     setInitializing(true);
     try {
-      const success = await initializeFirestore();
-      if (success) {
-        toast.success('Database initialized successfully!');
-      } else {
-        toast.error('Failed to initialize database');
-      }
+      toast.info('Data initialization has been disabled to prevent automatic data creation. Please add data manually through the forms.');
     } catch (error) {
       console.error('Initialization error:', error);
       toast.error('Error during initialization');
