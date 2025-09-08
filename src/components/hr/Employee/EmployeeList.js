@@ -19,6 +19,8 @@ import {
   MenuItem,
   InputLabel
 } from '@mui/material';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../../../firebase/config';
 import toast from 'react-hot-toast';
 import { Plus, Search, Edit, Trash2, Eye, Filter, Users, Mail, Phone } from 'lucide-react';
 
