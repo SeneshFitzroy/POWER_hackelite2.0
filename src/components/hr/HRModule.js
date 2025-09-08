@@ -29,6 +29,7 @@ import EmployeeList from './Employee/EmployeeList';
 import AttendanceList from './Attendance/AttendanceList';
 import PayrollList from './Payroll/PayrollList';
 import LicenseTracking from './License/LicenseTracking';
+import EmployeeTest from '../../test/EmployeeTest';
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -291,7 +292,7 @@ export default function HRModule() {
             <Dashboard />
           </TabPanel>
           <TabPanel value={activeTab} index={1}>
-            <EmployeeList />
+            <EmployeeTest />
           </TabPanel>
           <TabPanel value={activeTab} index={2}>
             <AttendanceList />
