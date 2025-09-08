@@ -21,7 +21,7 @@ import {
   Storage,
   Cancel
 } from '@mui/icons-material';
-import { clearAllFirebaseData, clearCollection } from '../../utils/clearFirebaseData';
+import { clearAllFirebaseData, clearCollection } from '../utils/clearFirebaseData';
 
 const FirebaseDataCleaner = () => {
   const [loading, setLoading] = useState(false);

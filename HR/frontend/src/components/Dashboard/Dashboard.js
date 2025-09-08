@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { initializeFirestore } from '../../utils/initializeFirestore';
 import InitializeData from '../Setup/InitializeData';
 import toast from 'react-hot-toast';
 
@@ -33,13 +32,11 @@ const Dashboard = () => {
 
   const initializeAndFetchData = async () => {
     try {
-      // Initialize Firestore collections if they don't exist
-      await initializeFirestore();
-      // Fetch dashboard stats
+      // Only fetch dashboard stats, don't initialize data
       await fetchDashboardStats();
     } catch (error) {
-      console.error('Error initializing data:', error);
-      toast.error('Failed to initialize application data');
+      console.error('Error fetching data:', error);
+      toast.error('Failed to fetch dashboard data');
     }
   };
 
