@@ -58,30 +58,8 @@ router.get('/stats', async (req, res) => {
     const currentMonthPayroll = payrollSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const totalPayrollAmount = currentMonthPayroll.reduce((sum, p) => sum + (p.netSalary || 0), 0);
     
-    // Recent activities (mock data - in real app, you'd have an activities collection)
-    const recentActivities = [
-      {
-        id: 1,
-        type: 'employee_added',
-        message: 'New employee John Doe added to system',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        severity: 'info'
-      },
-      {
-        id: 2,
-        type: 'license_expiring',
-        message: `${expiringLicenses.length} license(s) expiring within 30 days`,
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        severity: 'warning'
-      },
-      {
-        id: 3,
-        type: 'payroll_processed',
-        message: `Monthly payroll processed for ${currentMonthPayroll.length} employees`,
-        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        severity: 'success'
-      }
-    ];
+    // Recent activities - empty by default
+    const recentActivities = [];
     
     res.status(200).json({
       success: true,

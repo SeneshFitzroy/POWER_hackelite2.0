@@ -12,8 +12,6 @@ import {
 } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { initializeFirestore } from '../../utils/initializeFirestore';
-import InitializeData from '../Setup/InitializeData';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
@@ -33,13 +31,11 @@ const Dashboard = () => {
 
   const initializeAndFetchData = async () => {
     try {
-      // Initialize Firestore collections if they don't exist
-      await initializeFirestore();
-      // Fetch dashboard stats
+      // Only fetch dashboard stats, don't initialize data
       await fetchDashboardStats();
     } catch (error) {
-      console.error('Error initializing data:', error);
-      toast.error('Failed to initialize application data');
+      console.error('Error fetching data:', error);
+      toast.error('Failed to fetch dashboard data');
     }
   };
 
@@ -62,13 +58,35 @@ const Dashboard = () => {
         return expiryDate <= thirtyDaysFromNow && expiryDate >= new Date();
       });
 
+      // Fetch actual payroll data
+      const payrollSnapshot = await getDocs(collection(db, 'payrolls'));
+      const pendingPayrolls = payrollSnapshot.docs.filter(doc => {
+        const payroll = doc.data();
+        return payroll.status === 'pending' || payroll.status === 'draft';
+      });
+
+      // Fetch today's attendance
+      const today = new Date().toISOString().split('T')[0];
+      const attendanceSnapshot = await getDocs(collection(db, 'attendance'));
+      const todayAttendance = attendanceSnapshot.docs.filter(doc => {
+        const attendance = doc.data();
+        return attendance.date === today && attendance.status === 'present';
+      });
+
+      // Fetch pending performance reviews
+      const reviewsSnapshot = await getDocs(collection(db, 'performance_reviews'));
+      const pendingReviews = reviewsSnapshot.docs.filter(doc => {
+        const review = doc.data();
+        return review.status === 'pending' || review.status === 'draft';
+      });
+
       setStats({
         totalEmployees: employees.length,
         activeEmployees: activeEmployees.length,
-        pendingPayroll: 5, // Mock data
+        pendingPayroll: pendingPayrolls.length,
         expiringLicenses: expiringLicenses.length,
-        todayAttendance: Math.floor(activeEmployees.length * 0.85), // Mock 85% attendance
-        pendingReviews: 3 // Mock data
+        todayAttendance: todayAttendance.length,
+        pendingReviews: pendingReviews.length
       });
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
@@ -220,11 +238,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Database Setup */}
-      {stats.totalEmployees === 0 && (
-        <InitializeData />
-      )}
-
       {/* Recent Activity */}
       <div className="bg-white shadow-lg rounded-xl border border-gray-200 mt-8">
         <div className="px-6 py-6">
@@ -233,14 +246,14 @@ const Dashboard = () => {
           </h3>
           <div className="space-y-4">
             <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-3 h-3 bg-green-400 rounded-full mr-4"></div>
-              <span className="text-gray-700 flex-1">New employee John Doe added to system</span>
-              <span className="text-gray-400 text-xs">2 hours ago</span>
+              <div className="w-3 h-3 bg-gray-400 rounded-full mr-4"></div>
+              <span className="text-gray-700 flex-1">No recent activity</span>
+              <span className="text-gray-400 text-xs">System ready</span>
             </div>
             <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-3 h-3 bg-yellow-400 rounded-full mr-4"></div>
-              <span className="text-gray-700 flex-1">Pharmacist license for Jane Smith expires in 15 days</span>
-              <span className="text-gray-400 text-xs">1 day ago</span>
+              <div className="w-3 h-3 bg-gray-400 rounded-full mr-4"></div>
+              <span className="text-gray-700 flex-1">Waiting for employee data</span>
+              <span className="text-gray-400 text-xs">Add employees to see activity</span>
             </div>
             <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
               <div className="w-3 h-3 bg-blue-400 rounded-full mr-4"></div>
