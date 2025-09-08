@@ -1,54 +1,33 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
-  Grid,
   Paper,
   Typography,
   TextField,
   Button,
   List,
   ListItem,
-  ListItemText,
-  IconButton,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Switch,
+  FormControlLabel,
+  Checkbox,
+  RadioGroup,
+  Radio,
+  Dialog,
+  DialogActions,
   Divider,
-  Card,
-  CardContent,
-  Autocomplete,
-  InputAdornment
+  Grid,
+  IconButton
 } from '@mui/material';
-import {
-  Add,
-  Remove,
-  Delete,
-  Search,
-  ShoppingCart,
-  Person,
-  Receipt,
-  Warning,
-  QrCodeScanner,
-  LocalPharmacy
-} from '@mui/icons-material';
-
 import { medicineService } from '../services/medicineService';
-import { patientService } from '../services/patientService';
 import { transactionService } from '../services/transactionService';
-import { employeeService } from '../services/employeeService';
-import { prescriptionService } from '../services/prescriptionService';
-
-import {
-  calculateTransactionTotal,
-  generateTransactionId,
-  generateReceiptNumber,
-  validatePrescriptionSale,
-  checkBasicInteractions,
-  formatCurrency
-} from '../utils/pharmacyUtils';
+import { patientService } from '../services/patientService';
 
 const PharmacyPOS = () => {
   // State management
