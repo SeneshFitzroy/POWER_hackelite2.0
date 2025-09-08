@@ -30,6 +30,13 @@ const EmployeeList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [firebaseError, setFirebaseError] = useState(false);
+
+  // Check if Firebase is configured
+  const isFirebaseConfigured = () => {
+    return db && process.env.REACT_APP_FIREBASE_API_KEY && 
+           process.env.REACT_APP_FIREBASE_API_KEY !== 'your_api_key_here';
+  };
 
   // Fetch employees from Firebase
   const fetchEmployees = useCallback(async () => {
@@ -323,14 +330,14 @@ const EmployeeList = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                     <Mail size={16} color="#666" />
                     <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-                      {employee.email}
+                      {employee.email || 'No email'}
                     </Typography>
                   </Box>
                   
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <Phone size={16} color="#666" />
                     <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-                      {employee.phone}
+                      {employee.phone || 'No phone'}
                     </Typography>
                   </Box>
                   
