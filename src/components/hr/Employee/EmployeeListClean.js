@@ -9,7 +9,6 @@ import {
   Button,
   TextField,
   IconButton,
-  Chip,
   Avatar,
   CircularProgress,
   Container,
@@ -99,6 +98,7 @@ const EmployeeList = () => {
             borderRadius: 2
           }}
           onClick={() => {
+            console.log('Add Employee button clicked');
             toast('Add Employee feature coming soon!');
           }}
         >
@@ -125,7 +125,7 @@ const EmployeeList = () => {
         
         {/* Filters */}
         <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <FormControl fullWidth>
               <InputLabel>Status</InputLabel>
               <Select
@@ -141,7 +141,7 @@ const EmployeeList = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <FormControl fullWidth>
               <InputLabel>Role</InputLabel>
               <Select
@@ -160,7 +160,7 @@ const EmployeeList = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <Paper 
               elevation={1} 
               sx={{ 
