@@ -24,16 +24,7 @@ import { Plus, Search, Edit, Trash2, Eye, Filter, Users, Mail, Phone } from 'luc
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([
-    {
-      id: 1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      phone: '+1234567890',
-      employeeId: 'EMP001',
-      role: 'registered_pharmacist',
-      status: 'active'
-    }
+    // No hardcoded employees - data should be fetched from Firebase
   ]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
