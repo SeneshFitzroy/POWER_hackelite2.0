@@ -99,7 +99,7 @@ const EmployeeList = () => {
             borderRadius: 2
           }}
           onClick={() => {
-            toast.info('Add Employee feature coming soon!');
+            toast('Add Employee feature coming soon!');
           }}
         >
           Add New Employee
@@ -265,7 +265,7 @@ const EmployeeList = () => {
                       '&:hover': { backgroundColor: 'primary.50' }
                     }}
                     onClick={() => {
-                      toast.info('Employee details view coming soon!');
+                      toast('Employee details view coming soon!');
                     }}
                   >
                     <Eye size={18} />
@@ -277,7 +277,7 @@ const EmployeeList = () => {
                       '&:hover': { backgroundColor: 'grey.50' }
                     }}
                     onClick={() => {
-                      toast.info('Employee edit coming soon!');
+                      toast('Employee edit coming soon!');
                     }}
                   >
                     <Edit size={18} />
@@ -318,7 +318,7 @@ const EmployeeList = () => {
                   '&:hover': { backgroundColor: '#0d47a1' }
                 }}
                 onClick={() => {
-                  toast.info('Add Employee feature coming soon!');
+                  toast('Add Employee feature coming soon!');
                 }}
               >
                 Add Your First Employee

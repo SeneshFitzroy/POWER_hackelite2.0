@@ -56,7 +56,7 @@ const EmployeeList = () => {
             borderRadius: 2
           }}
           onClick={() => {
-            toast.info('Add Employee feature coming soon!');
+            toast('Add Employee feature coming soon!');
           }}
         >
           Add New Employee
