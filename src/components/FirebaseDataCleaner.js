@@ -39,8 +39,27 @@ const FirebaseDataCleaner = () => {
     setResult(null);
     
     try {
+      // Clear Firebase data
       const response = await clearAllFirebaseData();
-      setResult(response);
+      
+      // Clear browser storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Clear IndexedDB (Firebase offline persistence)
+      if ('indexedDB' in window) {
+        const databases = await indexedDB.databases();
+        for (const db of databases) {
+          if (db.name && db.name.includes('firebase')) {
+            indexedDB.deleteDatabase(db.name);
+          }
+        }
+      }
+      
+      setResult({
+        ...response,
+        message: response.message + ' Browser cache and storage also cleared.'
+      });
     } catch (error) {
       setResult({
         success: false,
