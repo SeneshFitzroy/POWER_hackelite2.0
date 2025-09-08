@@ -76,13 +76,35 @@ const Dashboard = () => {
         return expiryDate <= thirtyDaysFromNow && expiryDate >= new Date();
       });
 
+      // Fetch actual payroll data
+      const payrollSnapshot = await getDocs(collection(db, 'payrolls'));
+      const pendingPayrolls = payrollSnapshot.docs.filter(doc => {
+        const payroll = doc.data();
+        return payroll.status === 'pending' || payroll.status === 'draft';
+      });
+
+      // Fetch today's attendance
+      const today = new Date().toISOString().split('T')[0];
+      const attendanceSnapshot = await getDocs(collection(db, 'attendance'));
+      const todayAttendance = attendanceSnapshot.docs.filter(doc => {
+        const attendance = doc.data();
+        return attendance.date === today && attendance.status === 'present';
+      });
+
+      // Fetch pending performance reviews
+      const reviewsSnapshot = await getDocs(collection(db, 'performance_reviews'));
+      const pendingReviews = reviewsSnapshot.docs.filter(doc => {
+        const review = doc.data();
+        return review.status === 'pending' || review.status === 'draft';
+      });
+
       setStats({
         totalEmployees: employees.length,
         activeEmployees: activeEmployees.length,
-        pendingPayroll: 5, // Mock data
+        pendingPayroll: pendingPayrolls.length,
         expiringLicenses: expiringLicenses.length,
-        todayAttendance: Math.floor(activeEmployees.length * 0.85), // Mock 85% attendance
-        pendingReviews: 3 // Mock data
+        todayAttendance: todayAttendance.length,
+        pendingReviews: pendingReviews.length
       });
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
