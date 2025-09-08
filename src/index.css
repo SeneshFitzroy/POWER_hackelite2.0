@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Custom CSS Variables for PharmaCore Theme */
 :root {
   --primary-blue: #1e3a8a;
