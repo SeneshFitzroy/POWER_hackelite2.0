@@ -152,30 +152,6 @@ export default function Finance({ dateFilter }) {
 
       // Set empty employee data - will be loaded from Firebase
       setEmployeesData([]);
-          email: 'john@coreerp.com',
-          department: 'Pharmacy',
-          position: 'Pharmacist',
-          salary: 45000,
-          baseSalary: 45000,
-          netSalary: 40500,
-          joinDate: new Date('2024-02-01').toISOString(),
-          paymentStatus: 'pending',
-          status: 'pending'
-        },
-        {
-          id: 'EMP-003',
-          name: 'Jane Smith',
-          email: 'jane@coreerp.com',
-          department: 'Sales',
-          position: 'Sales Manager',
-          salary: 40000,
-          baseSalary: 40000,
-          netSalary: 36000,
-          joinDate: new Date('2024-03-01').toISOString(),
-          paymentStatus: 'paid',
-          status: 'paid'
-        }
-      ]);
 
       setSuppliersData([
         {
