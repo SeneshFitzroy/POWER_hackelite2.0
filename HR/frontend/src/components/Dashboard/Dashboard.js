@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import InitializeData from '../Setup/InitializeData';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
@@ -238,11 +237,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Database Setup */}
-      {stats.totalEmployees === 0 && (
-        <InitializeData />
-      )}
 
       {/* Recent Activity */}
       <div className="bg-white shadow-lg rounded-xl border border-gray-200 mt-8">
