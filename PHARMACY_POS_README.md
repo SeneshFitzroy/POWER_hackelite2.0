@@ -211,11 +211,11 @@ http://localhost:3002/pos
 - **Cough Syrup** (OTC) - Barcode: 5678901234567
 
 ### **Sample Employees:**
-- **EMP001** - Dr. Sarah Johnson (Pharmacist)
+- **EMP001** - Dr. Sarah son (Pharmacist)
 - **EMP002** - Michael Chen (Cashier)
 
 ### **Sample Patients:**
-- **0771111111** - John Doe
+- **0771111111** -  Doe
 - **0773333333** - Mary Smith
 
 ### **Pharmacy Registration:**
@@ -237,7 +237,7 @@ http://localhost:3002/pos
 ```
 1. Enter phone number "0771111111"
 2. Click "Find Patient"
-3. System will load John Doe's information
+3. System will load  Doe's information
 ```
 
 ### **3. Test Checkout Process:**
