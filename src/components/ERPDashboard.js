@@ -119,6 +119,11 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       onSalesAccess()
     } else if (moduleTitle === "HR" && onHRAccess) {
       onHRAccess()
+    } else if (moduleTitle === "Administration") {
+      // Navigate to data cleaner
+      window.open('/clear-data', '_blank')
+    }
+      onHRAccess()
     }
     // Other module navigation logic will be implemented here
   }

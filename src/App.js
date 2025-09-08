@@ -7,6 +7,7 @@ import ERPDashboard from './components/ERPDashboard'
 import PharmacyPOS from './pos/components/PharmacyPOS'
 import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
+import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
@@ -234,6 +235,16 @@ function App() {
               backgroundColor: '#f8fafc'
             }}>
               <HRModule />
+            </Box>
+          } />
+          <Route path="/clear-data" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <FirebaseDataCleaner />
             </Box>
           } />
           <Route path="/" element={
