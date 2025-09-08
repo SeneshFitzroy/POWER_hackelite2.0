@@ -233,14 +233,14 @@ const Dashboard = () => {
           </h3>
           <div className="space-y-4">
             <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-3 h-3 bg-green-400 rounded-full mr-4"></div>
-              <span className="text-gray-700 flex-1">New employee John Doe added to system</span>
-              <span className="text-gray-400 text-xs">2 hours ago</span>
+              <div className="w-3 h-3 bg-gray-400 rounded-full mr-4"></div>
+              <span className="text-gray-700 flex-1">No recent activity</span>
+              <span className="text-gray-400 text-xs">System ready</span>
             </div>
             <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-3 h-3 bg-yellow-400 rounded-full mr-4"></div>
-              <span className="text-gray-700 flex-1">Pharmacist license for Jane Smith expires in 15 days</span>
-              <span className="text-gray-400 text-xs">1 day ago</span>
+              <div className="w-3 h-3 bg-gray-400 rounded-full mr-4"></div>
+              <span className="text-gray-700 flex-1">Waiting for employee data</span>
+              <span className="text-gray-400 text-xs">Add employees to see activity</span>
             </div>
             <div className="flex items-center text-sm p-3 rounded-lg hover:bg-gray-50 transition-colors">
               <div className="w-3 h-3 bg-blue-400 rounded-full mr-4"></div>
