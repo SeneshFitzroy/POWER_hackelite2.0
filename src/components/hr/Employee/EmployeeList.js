@@ -42,10 +42,12 @@ const EmployeeList = () => {
   const fetchEmployees = useCallback(async () => {
     try {
       setLoading(true);
+      setFirebaseError(false);
       
       // Check if Firebase is properly initialized
-      if (!db) {
-        console.warn('Firebase not initialized. Using empty employee list.');
+      if (!isFirebaseConfigured()) {
+        console.warn('Firebase not configured. Please set up your .env file with Firebase credentials.');
+        setFirebaseError(true);
         setEmployees([]);
         return;
       }
@@ -60,6 +62,7 @@ const EmployeeList = () => {
       setEmployees(employeeData);
     } catch (error) {
       console.error('Error fetching employees:', error);
+      setFirebaseError(true);
       toast.error('Failed to fetch employees. Please check Firebase configuration.');
       setEmployees([]);
     } finally {
@@ -73,7 +76,7 @@ const EmployeeList = () => {
   }, [fetchEmployees]);
 
   const handleDelete = useCallback(async (id, name) => {
-    if (!db) {
+    if (!isFirebaseConfigured()) {
       toast.error('Firebase not configured. Cannot delete employee.');
       return;
     }
