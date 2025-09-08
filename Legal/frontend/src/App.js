@@ -21,6 +21,7 @@ import {
   Phone, 
   Mail, 
   Eye,
+  EyeOff,
   FileImage,
   FileText,
   Calendar,
@@ -292,6 +293,52 @@ const ViewAllDetails = () => {
     </div>
   );
 
+  // Masked detail item component for sensitive information
+  const MaskedDetailItem = ({ label, value, icon: Icon }) => {
+    const [showFull, setShowFull] = useState(false);
+    
+    if (!value) {
+      return (
+        <div className="flex items-start py-2">
+          {Icon && <Icon size={16} className="text-gray-400 mt-1 mr-2 flex-shrink-0" />}
+          <div>
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
+            <p className="text-sm font-medium text-gray-900">N/A</p>
+          </div>
+        </div>
+      );
+    }
+    
+    const maskedValue = showFull 
+      ? value 
+      : value.length > 4 
+        ? `${'*'.repeat(Math.max(0, value.length - 4))}${value.slice(-4)}`
+        : '*'.repeat(value.length);
+    
+    return (
+      <div className="flex items-start py-2">
+        {Icon && <Icon size={16} className="text-gray-400 mt-1 mr-2 flex-shrink-0" />}
+        <div className="flex-grow">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
+          <div className="flex items-center">
+            <p className="text-sm font-medium text-gray-900 mr-2">{maskedValue}</p>
+            <button 
+              onClick={() => setShowFull(!showFull)}
+              className="text-blue-600 hover:text-blue-800"
+              aria-label={showFull ? "Hide full number" : "Show full number"}
+            >
+              {showFull ? (
+                <EyeOff size={16} />
+              ) : (
+                <Eye size={16} />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white shadow rounded-xl p-6">
       <div className="flex items-center mb-6">
@@ -484,7 +531,7 @@ const ViewAllDetails = () => {
               <DetailItem label="Name" value={legalData.pharmacyName} icon={Building2} />
               <DetailItem label="Address" value={legalData.pharmacyAddress} icon={MapPin} />
               <DetailItem label="Website" value={legalData.pharmacyWebsite} icon={Globe} />
-              <DetailItem label="BR Number" value={legalData.brNumber} icon={CreditCard} />
+              <MaskedDetailItem label="BR Number" value={legalData.brNumber} icon={CreditCard} />
               <DetailItem label="Email" value={legalData.pharmacyEmail} icon={Mail} />
               <DetailItem label="Mobile" value={legalData.pharmacyMobile} icon={Phone} />
               <DetailItem label="Landline" value={legalData.pharmacyLandline} icon={Phone} />
@@ -505,7 +552,7 @@ const ViewAllDetails = () => {
           {openSections.ownerInfo && (
             <div className="bg-white rounded-lg p-5 border border-gray-200">
               <DetailItem label="Name" value={legalData.ownerName} icon={User} />
-              <DetailItem label="NIC" value={legalData.ownerNIC} icon={CreditCard} />
+              <MaskedDetailItem label="NIC" value={legalData.ownerNIC} icon={CreditCard} />
               <DetailItem label="Email" value={legalData.ownerEmail} icon={Mail} />
               <DetailItem label="Phone" value={legalData.ownerPhone} icon={Phone} />
             </div>
@@ -525,7 +572,7 @@ const ViewAllDetails = () => {
           {openSections.pharmacist && (
             <div className="bg-white rounded-lg p-5 border border-gray-200">
               <DetailItem label="Name" value={legalData.pharmacistName} icon={User} />
-              <DetailItem label="Registration Number" value={legalData.pharmacistRegNumber} icon={Award} />
+              <MaskedDetailItem label="Registration Number" value={legalData.pharmacistRegNumber} icon={Award} />
             </div>
           )}
         </div>
