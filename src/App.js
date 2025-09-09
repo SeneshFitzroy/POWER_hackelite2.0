@@ -273,7 +273,7 @@ function App() {
             <div className="App">
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onLogout={handleLogout} />}
             </div>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
