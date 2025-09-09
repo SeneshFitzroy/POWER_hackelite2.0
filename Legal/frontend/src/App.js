@@ -459,9 +459,9 @@ const ViewAllDetails = () => {
   };
 
   return (
-    <Box sx={{ backgroundColor: COLORS.lightGray, minHeight: '100vh' }} className="legal-form-card">
-      <Container maxWidth="lg" sx={{ py: 3 }}>
-        <Box sx={{ mb: 4 }} className="section-header">
+    <Box sx={{ backgroundColor: COLORS.lightGray, minHeight: '100vh', width: '100%' }} className="legal-form-card">
+      <Box sx={{ maxWidth: '100%', px: 3, py: 3 }}>
+        <Box sx={{ mb: 4, textAlign: 'left' }} className="section-header">
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
             Legal Information Overview
           </Typography>
@@ -596,9 +596,9 @@ const ViewAllDetails = () => {
           </Box>
           
           {legalData.pharmacyImages && legalData.pharmacyImages.length > 0 ? (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'flex-start' }}>
               {legalData.pharmacyImages.map((imageObj, index) => (
-                <Box key={index} sx={{ flex: '0 0 auto', width: { xs: '100%', sm: '300px', md: '280px' } }}>
+                <Box key={index} sx={{ width: { xs: '100%', sm: '300px', md: '280px' } }}>
                   <Paper variant="outlined" sx={{ p: 2, backgroundColor: '#fafafa', border: '1px solid #e0e0e0' }}>
                     <Box 
                       sx={{ 
@@ -637,10 +637,10 @@ const ViewAllDetails = () => {
                         <ZoomIn size={20} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
                       </Box>
                     </Box>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: COLORS.darkGray, mb: 0.5 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: COLORS.darkGray, mb: 0.5, textAlign: 'left' }}>
                       {imageObj.title}
                     </Typography>
-                    <Typography variant="caption" sx={{ color: COLORS.lighterGray }}>
+                    <Typography variant="caption" sx={{ color: COLORS.lighterGray, textAlign: 'left' }}>
                       Click to preview
                     </Typography>
                   </Paper>
@@ -648,7 +648,7 @@ const ViewAllDetails = () => {
               ))}
             </Box>
           ) : (
-            <Box sx={{ py: 6, textAlign: 'center', color: COLORS.lighterGray }}>
+            <Box sx={{ py: 6, textAlign: 'left', color: COLORS.lighterGray }}>
               <Typography variant="body1" sx={{ color: COLORS.darkGray }}>
                 No legal documents uploaded
               </Typography>
@@ -668,7 +668,7 @@ const ViewAllDetails = () => {
           </Box>
           
           {legalData.businessRegistrationImage ? (
-            <Box sx={{ maxWidth: 400 }}>
+            <Box sx={{ maxWidth: 400, textAlign: 'left' }}>
               <Paper variant="outlined" sx={{ p: 2, backgroundColor: '#fafafa' }}>
                 <Box 
                   sx={{ 
@@ -707,16 +707,16 @@ const ViewAllDetails = () => {
                     <ZoomIn size={24} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
                   </Box>
                 </Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: COLORS.darkGray, mb: 0.5 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: COLORS.darkGray, mb: 0.5, textAlign: 'left' }}>
                   Business Registration Document
                 </Typography>
-                <Typography variant="caption" sx={{ color: COLORS.lighterGray }}>
+                <Typography variant="caption" sx={{ color: COLORS.lighterGray, textAlign: 'left' }}>
                   Click to preview with zoom
                 </Typography>
               </Paper>
             </Box>
           ) : (
-            <Box sx={{ py: 6, textAlign: 'center', color: COLORS.lighterGray }}>
+            <Box sx={{ py: 6, textAlign: 'left', color: COLORS.lighterGray }}>
               <Typography variant="body1" sx={{ color: COLORS.darkGray }}>
                 No business registration document uploaded
               </Typography>
@@ -809,7 +809,7 @@ const ViewAllDetails = () => {
         {popupImage && (
           <ImagePopup imageSrc={popupImage} onClose={closeImagePopup} />
         )}
-      </Container>
+      </Box>
     </Box>
   );
 };
