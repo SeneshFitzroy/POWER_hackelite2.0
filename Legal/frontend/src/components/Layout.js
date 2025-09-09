@@ -56,9 +56,11 @@ const DrawerPaper = styled(Paper)(({ theme }) => ({
   width: drawerWidth,
   backgroundColor: COLORS.darkBlue, // Using dark blue for sidebar
   color: 'white',
-  height: '100%',
+  height: '100vh',
   display: 'flex',
   flexDirection: 'column',
+  overflowY: 'auto',
+  overflowX: 'hidden',
 }));
 
 const Main = styled('main')(({ theme }) => ({
@@ -101,20 +103,20 @@ const Layout = ({ children }) => {
   const drawerContent = (
     <DrawerPaper elevation={0}>
       <Box sx={{ p: 2, pb: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, width: '100%', py: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3, width: '100%', py: 3 }}>
           <img 
             src="/images/npk-logo.png" 
             alt="NPK New Pharmacy Kalutara" 
             style={{ 
-              height: '80px', 
+              height: '120px', 
               width: 'auto', 
-              border: '4px solid #000000',
-              borderRadius: '8px',
-              padding: '10px',
+              border: '5px solid #000000',
+              borderRadius: '12px',
+              padding: '15px',
               backgroundColor: 'white',
               objectFit: 'contain',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-              maxWidth: '90%'
+              boxShadow: '0 6px 12px rgba(0,0,0,0.4)',
+              maxWidth: '95%'
             }}
             onError={(e) => {
               e.target.style.display = 'none';
@@ -122,35 +124,58 @@ const Layout = ({ children }) => {
             }}
           />
           <Typography 
-            variant="h5" 
+            variant="h4" 
             sx={{ 
               color: 'white', 
               fontWeight: 'bold',
               display: 'none', // Hidden by default, shows if logo fails
-              fontSize: '1.4rem',
+              fontSize: '1.6rem',
               textAlign: 'center'
             }}
           >
             NPK Pharmacy
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', mb: 2 }}>
           <Box
-            component="span"
             sx={{
-              display: 'inline-flex',
+              display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              px: 2,
-              py: 0.75,
-              borderRadius: 3,
-              fontSize: '0.8rem',
-              fontWeight: 'bold',
-              backgroundColor: COLORS.mediumBlue, // Medium blue for module badge
-              color: 'white',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+              px: 3,
+              py: 2,
+              borderRadius: 2,
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              backdropFilter: 'blur(10px)',
+              width: '100%',
+              maxWidth: '200px'
             }}
           >
-            LEGAL MODULE
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '0.9rem',
+                letterSpacing: '0.5px',
+                textAlign: 'center',
+                mb: 0.5
+              }}
+            >
+              LEGAL COMPLIANCE
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: '0.7rem',
+                textAlign: 'center',
+                lineHeight: 1.2
+              }}
+            >
+              Documentation & Regulations
+            </Typography>
           </Box>
         </Box>
       </Box>
@@ -260,15 +285,15 @@ const Layout = ({ children }) => {
               src="/images/npk-logo.png" 
               alt="NPK New Pharmacy Kalutara" 
               style={{ 
-                height: '50px', 
+                height: '70px', 
                 width: 'auto', 
-                border: '3px solid #000000',
-                borderRadius: '6px',
-                padding: '6px',
+                border: '4px solid #000000',
+                borderRadius: '8px',
+                padding: '8px',
                 backgroundColor: 'white',
                 objectFit: 'contain',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                maxWidth: '80%'
+                boxShadow: '0 3px 6px rgba(0,0,0,0.4)',
+                maxWidth: '85%'
               }}
               onError={(e) => {
                 e.target.style.display = 'none';
@@ -276,12 +301,12 @@ const Layout = ({ children }) => {
               }}
             />
             <Typography 
-              variant="h6" 
+              variant="h5" 
               sx={{ 
                 color: COLORS.darkGray, 
                 fontWeight: 'bold',
                 display: 'none', // Hidden by default, shows if logo fails
-                fontSize: '1.2rem',
+                fontSize: '1.3rem',
                 textAlign: 'center'
               }}
             >
