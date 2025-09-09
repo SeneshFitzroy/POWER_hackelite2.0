@@ -106,10 +106,13 @@ const Layout = ({ children }) => {
             src="/images/npk-logo.png" 
             alt="NPK New Pharmacy Kalutara" 
             style={{ 
-              height: '32px', 
+              height: '40px', 
               width: 'auto', 
-              marginRight: '10px',
-              filter: 'brightness(0) invert(1)', // Make logo white
+              marginRight: '12px',
+              border: '2px solid #000000',
+              borderRadius: '4px',
+              padding: '4px',
+              backgroundColor: 'white',
               objectFit: 'contain'
             }}
             onError={(e) => {
@@ -252,9 +255,13 @@ const Layout = ({ children }) => {
               src="/images/npk-logo.png" 
               alt="NPK New Pharmacy Kalutara" 
               style={{ 
-                height: '24px', 
+                height: '32px', 
                 width: 'auto', 
-                marginRight: '8px',
+                marginRight: '10px',
+                border: '1px solid #000000',
+                borderRadius: '3px',
+                padding: '2px',
+                backgroundColor: 'white',
                 objectFit: 'contain'
               }}
               onError={(e) => {
