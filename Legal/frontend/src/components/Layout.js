@@ -164,25 +164,6 @@ const Layout = ({ children }) => {
       <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', mx: 2 }} />
       
       <Box sx={{ p: 2 }}>
-        <Paper 
-          sx={{ 
-            p: 1.5, 
-            backgroundColor: COLORS.mediumBlue, // Medium blue for date panel
-            borderRadius: 2,
-            mb: 2
-          }}
-          elevation={0}
-        >
-          <Typography variant="caption" sx={{ color: 'white', display: 'block', mb: 0.5 }}>
-            CURRENT DATE & TIME
-          </Typography>
-          <Typography variant="body1" sx={{ color: 'white', fontWeight: 'bold' }}>
-            {currentDate.toLocaleDateString('en-US', dateOptions)}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-            {currentDate.toLocaleTimeString('en-US', timeOptions)}
-          </Typography>
-        </Paper>
         
         {/* Logout Button */}
         <Button

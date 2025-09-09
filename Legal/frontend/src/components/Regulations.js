@@ -212,61 +212,6 @@ const Regulations = () => {
           </Box>
         </Box>
 
-        {/* Key Compliance Reminders */}
-        <Alert 
-          severity="warning" 
-          sx={{ mb: 4, borderRadius: 2 }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Key Compliance Reminders
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 2, backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#dc2626', mb: 1 }}>
-                  License Renewal
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#7f1d1d' }}>
-                  Annual renewal required 30 days before expiration
-                </Typography>
-                <Chip label="HIGH" size="small" sx={{ mt: 1, backgroundColor: '#dc2626', color: 'white' }} />
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 2, backgroundColor: '#faf5ff', border: '1px solid #e9d5ff' }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#9333ea', mb: 1 }}>
-                  Inspection Readiness
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#581c87' }}>
-                  Regular inspections by health authorities
-                </Typography>
-                <Chip label="MEDIUM" size="small" sx={{ mt: 1, backgroundColor: '#9333ea', color: 'white' }} />
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 2, backgroundColor: '#faf5ff', border: '1px solid #e9d5ff' }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#9333ea', mb: 1 }}>
-                  Staff Training
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#581c87' }}>
-                  Continuous education for pharmacy staff
-                </Typography>
-                <Chip label="MEDIUM" size="small" sx={{ mt: 1, backgroundColor: '#9333ea', color: 'white' }} />
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 2, backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#dc2626', mb: 1 }}>
-                  Record Maintenance
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#7f1d1d' }}>
-                  Daily updates and proper documentation
-                </Typography>
-                <Chip label="HIGH" size="small" sx={{ mt: 1, backgroundColor: '#dc2626', color: 'white' }} />
-              </Paper>
-            </Grid>
-          </Grid>
-        </Alert>
 
         {/* Detailed Regulations */}
         <RegulationSection
