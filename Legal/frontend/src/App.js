@@ -461,30 +461,13 @@ const ViewAllDetails = () => {
   return (
     <Card sx={{ backgroundColor: COLORS.lightGray }} className="legal-form-card">
       <CardContent>
-        <Box display="flex" alignItems="center" sx={{ mb: 3 }} className="section-header">
-          <Box 
-            sx={{ 
-              width: 48, 
-              height: 48, 
-              borderRadius: 2, 
-              backgroundColor: COLORS.mediumBlue, 
-              color: 'white',
-              mr: 2,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Shield size={24} />
-          </Box>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
-              Legal Information Overview
-            </Typography>
-            <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
-              Complete details of your pharmacy's legal documentation
-            </Typography>
-          </Box>
+        <Box sx={{ mb: 3 }} className="section-header">
+          <Typography variant="h4" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
+            Legal Information Overview
+          </Typography>
+          <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
+            Complete details of your pharmacy's legal documentation
+          </Typography>
         </Box>
         
         {/* License Renewal Status Card - Modern Design */}
@@ -603,31 +586,14 @@ const ViewAllDetails = () => {
         
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {/* Legal Documents Section - No dropdown */}
-          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: COLORS.lightGray }} className="legal-form-card">
-            <Box display="flex" alignItems="center" sx={{ mb: 2 }} className="section-header">
-              <Box 
-                sx={{ 
-                  width: 40, 
-                  height: 40, 
-                  borderRadius: 1, 
-                  backgroundColor: COLORS.mediumBlue, 
-                  color: 'white',
-                  mr: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <FileImage size={20} />
-              </Box>
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
-                  Legal Documents & Certificates
-                </Typography>
-                <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
-                  Medical council registration, pharmacist license, degree certificates, etc.
-                </Typography>
-              </Box>
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }} className="legal-form-card">
+            <Box sx={{ mb: 3 }} className="section-header">
+              <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
+                Legal Documents & Certificates
+              </Typography>
+              <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
+                Medical council registration, pharmacist license, degree certificates, etc.
+              </Typography>
             </Box>
             
             {legalData.pharmacyImages && legalData.pharmacyImages.length > 0 ? (
@@ -693,34 +659,17 @@ const ViewAllDetails = () => {
 
           {/* Business Registration Image - No dropdown */}
           <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
-            <Box display="flex" alignItems="center" sx={{ mb: 3 }}>
-              <Box 
-                sx={{ 
-                  width: 40, 
-                  height: 40, 
-                  borderRadius: 1, 
-                  backgroundColor: COLORS.mediumBlue, 
-                  color: 'white',
-                  mr: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <CreditCard size={20} />
-              </Box>
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
-                  Business Registration
-                </Typography>
-                <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
-                  Your Business Registration document
-                </Typography>
-              </Box>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
+                Business Registration
+              </Typography>
+              <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
+                Your Business Registration document
+              </Typography>
             </Box>
             
             {legalData.businessRegistrationImage ? (
-              <Box sx={{ maxWidth: 320, mx: 'auto' }}>
+              <Box sx={{ maxWidth: 320 }}>
                 <Box 
                   sx={{ 
                     cursor: 'pointer', 
@@ -757,7 +706,7 @@ const ViewAllDetails = () => {
                     <ZoomIn size={20} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
                   </Box>
                 </Box>
-                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <Box sx={{ mt: 2 }}>
                   <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
                     Business Registration Document
                   </Typography>
@@ -1075,7 +1024,7 @@ function App() {
       <div className="App">
         <Toaster position="top-right" />
         <Routes>
-          <Route path="/" element={<Layout><DashboardPage /></Layout>} />
+          <Route path="/" element={<Layout><ViewAllDetails /></Layout>} />
           <Route path="/view" element={<Layout><ViewAllDetails /></Layout>} />
           <Route path="/regulations" element={<Layout><Regulations /></Layout>} />
           <Route path="/admin" element={<Layout><LegalForm /></Layout>} />

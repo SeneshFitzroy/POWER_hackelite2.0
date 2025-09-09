@@ -185,20 +185,18 @@ const Regulations = () => {
           borderRadius: 3,
           p: 4,
           mb: 4,
-          color: 'white',
-          textAlign: 'center'
+          color: 'white'
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
-            <Scale size={32} style={{ marginRight: 16 }} />
-            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
               Pharmacy Regulations - Sri Lanka
             </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              Comprehensive guide to legal requirements and compliance standards for pharmacy operations
+            </Typography>
           </Box>
-          <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: 800, mx: 'auto' }}>
-            Comprehensive guide to legal requirements and compliance standards for pharmacy operations
-          </Typography>
           
-          <Box sx={{ mt: 3, display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
+          <Box sx={{ mt: 3, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
             <Chip 
               label="Legal Framework: Pharmacy Act No. 17 of 1952" 
               sx={{ backgroundColor: 'rgba(255,255,255,0.2)', color: 'white' }}
@@ -218,7 +216,6 @@ const Regulations = () => {
         <Alert 
           severity="warning" 
           sx={{ mb: 4, borderRadius: 2 }}
-          icon={<AlertTriangle />}
         >
           <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
             Key Compliance Reminders

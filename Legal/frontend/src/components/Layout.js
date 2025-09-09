@@ -85,13 +85,11 @@ const Layout = ({ children }) => {
   const isAdminPath = location.pathname.includes('/admin');
   
   const navigation = isAdminPath ? [
-    { name: 'Legal Dashboard', href: '/', icon: Home },
+    { name: 'Legal Overview', href: '/', icon: Home },
     { name: 'Admin - Edit Legal Info', href: '/admin', icon: FileText },
-    { name: 'View All Details', href: '/view', icon: Eye },
     { name: 'Regulations', href: '/regulations', icon: FileText },
   ] : [
-    { name: 'Legal Dashboard', href: '/', icon: Home },
-    { name: 'View All Details', href: '/view', icon: Eye },
+    { name: 'Legal Overview', href: '/', icon: Home },
     { name: 'Regulations', href: '/regulations', icon: FileText },
   ];
 
@@ -207,7 +205,7 @@ const Layout = ({ children }) => {
             window.location.href = '/';
           }}
         >
-          🚪 LOGOUT
+          LOGOUT
         </Button>
       </Box>
     </DrawerPaper>
