@@ -459,9 +459,9 @@ const ViewAllDetails = () => {
   };
 
   return (
-    <Card sx={{ backgroundColor: COLORS.lightGray }} className="legal-form-card">
-      <CardContent>
-        <Box sx={{ mb: 3 }} className="section-header">
+    <Box sx={{ backgroundColor: COLORS.lightGray, minHeight: '100vh' }} className="legal-form-card">
+      <Container maxWidth="lg" sx={{ py: 3 }}>
+        <Box sx={{ mb: 4 }} className="section-header">
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
             Legal Information Overview
           </Typography>
@@ -474,12 +474,12 @@ const ViewAllDetails = () => {
         {legalData && (
           <Paper 
             sx={{ 
-              mb: 3, 
-              p: 2, 
-              background: 'linear-gradient(to right, #e3f2fd, #f5f5f5)',
+              mb: 4, 
+              p: 3, 
+              backgroundColor: 'white',
               borderRadius: 2,
-              border: '1px solid',
-              borderColor: COLORS.mediumBlue
+              border: '1px solid #e5e7eb',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
             }}
             elevation={0}
             className="legal-form-card"
@@ -584,109 +584,110 @@ const ViewAllDetails = () => {
           </Paper>
         )}
         
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {/* Legal Documents Section - No dropdown */}
-          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }} className="legal-form-card">
-            <Box sx={{ mb: 3 }} className="section-header">
-              <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
-                Legal Documents & Certificates
-              </Typography>
-              <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
-                Medical council registration, pharmacist license, degree certificates, etc.
-              </Typography>
-            </Box>
-            
-            {legalData.pharmacyImages && legalData.pharmacyImages.length > 0 ? (
-              <Grid container spacing={2}>
-                {legalData.pharmacyImages.map((imageObj, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
-                    <Paper variant="outlined" sx={{ p: 2, backgroundColor: 'white' }}>
+        {/* Legal Documents Section */}
+        <Paper sx={{ p: 4, borderRadius: 2, backgroundColor: 'white', mb: 4, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
+              Legal Documents & Certificates
+            </Typography>
+            <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
+              Medical council registration, pharmacist license, degree certificates, etc.
+            </Typography>
+          </Box>
+          
+          {legalData.pharmacyImages && legalData.pharmacyImages.length > 0 ? (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              {legalData.pharmacyImages.map((imageObj, index) => (
+                <Box key={index} sx={{ flex: '0 0 auto', width: { xs: '100%', sm: '300px', md: '280px' } }}>
+                  <Paper variant="outlined" sx={{ p: 2, backgroundColor: '#fafafa', border: '1px solid #e0e0e0' }}>
+                    <Box 
+                      sx={{ 
+                        cursor: 'pointer', 
+                        position: 'relative', 
+                        mb: 2,
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        backgroundColor: 'white'
+                      }}
+                      onClick={() => openImagePopup(imageObj.src)}
+                    >
+                      <img 
+                        src={imageObj.src} 
+                        alt={imageObj.title} 
+                        style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: '4px' }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.parentElement.innerHTML = '<div style="width:100%;height:160px;background-color:#eee;display:flex;align-items:center;justify-content:center;border-radius:4px;"><span style="color:' + COLORS.mediumBlue + ';">Document Preview</span></div>';
+                        }}
+                      />
                       <Box 
                         sx={{ 
-                          cursor: 'pointer', 
-                          position: 'relative', 
-                          mb: 1,
-                          borderRadius: 1.5,
-                          overflow: 'hidden'
+                          position: 'absolute',
+                          inset: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: 'rgba(0, 0, 0, 0)',
+                          transition: 'background-color 0.2s',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                          }
                         }}
-                        onClick={() => openImagePopup(imageObj.src)}
                       >
-                        <img 
-                          src={imageObj.src} 
-                          alt={imageObj.title} 
-                          style={{ width: '100%', height: 128, objectFit: 'contain' }}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.parentElement.innerHTML = '<div style="width:100%;height:128px;background-color:#eee;display:flex;align-items:center;justify-content:center;"><FileImage size={20} style="color:' + COLORS.mediumBlue + '" /></div>';
-                          }}
-                        />
-                        <Box 
-                          sx={{ 
-                            position: 'absolute',
-                            inset: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: 'rgba(0, 0, 0, 0)',
-                            transition: 'background-color 0.2s',
-                            '&:hover': {
-                              backgroundColor: 'rgba(0, 0, 0, 0.1)'
-                            }
-                          }}
-                        >
-                          <ZoomIn size={16} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
-                        </Box>
+                        <ZoomIn size={20} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
                       </Box>
-                      <Typography variant="body2" sx={{ fontWeight: 'medium', color: COLORS.darkGray, textAlign: 'center', mb: 0.5 }}>
-                        {imageObj.title}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: COLORS.lighterGray, display: 'block', textAlign: 'center' }}>
-                        Click to preview
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <Box textAlign="center" sx={{ py: 6, color: COLORS.lighterGray }}>
-                <FileImage size={32} style={{ color: COLORS.mediumBlue, marginBottom: 16 }} />
-                <Typography variant="body1" sx={{ color: COLORS.darkGray }}>
-                  No legal documents uploaded
-                </Typography>
-              </Box>
-            )}
-          </Paper>
-
-          {/* Business Registration Image - No dropdown */}
-          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
-                Business Registration
-              </Typography>
-              <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
-                Your Business Registration document
+                    </Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: COLORS.darkGray, mb: 0.5 }}>
+                      {imageObj.title}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: COLORS.lighterGray }}>
+                      Click to preview
+                    </Typography>
+                  </Paper>
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <Box sx={{ py: 6, textAlign: 'center', color: COLORS.lighterGray }}>
+              <Typography variant="body1" sx={{ color: COLORS.darkGray }}>
+                No legal documents uploaded
               </Typography>
             </Box>
-            
-            {legalData.businessRegistrationImage ? (
-              <Box sx={{ maxWidth: 320 }}>
+          )}
+        </Paper>
+
+        {/* Business Registration Section */}
+        <Paper sx={{ p: 4, borderRadius: 2, backgroundColor: 'white', mb: 4, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
+              Business Registration
+            </Typography>
+            <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
+              Your Business Registration document
+            </Typography>
+          </Box>
+          
+          {legalData.businessRegistrationImage ? (
+            <Box sx={{ maxWidth: 400 }}>
+              <Paper variant="outlined" sx={{ p: 2, backgroundColor: '#fafafa' }}>
                 <Box 
                   sx={{ 
                     cursor: 'pointer', 
                     position: 'relative', 
-                    borderRadius: 2,
+                    borderRadius: 1,
                     overflow: 'hidden',
-                    backgroundColor: 'white'
+                    backgroundColor: 'white',
+                    mb: 2
                   }}
                   onClick={() => openImagePopup(legalData.businessRegistrationImage)}
                 >
                   <img 
                     src={legalData.businessRegistrationImage} 
                     alt="Business Registration" 
-                    style={{ width: '100%', height: 'auto', maxHeight: 160, objectFit: 'contain' }}
+                    style={{ width: '100%', height: 200, objectFit: 'cover', borderRadius: '4px' }}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.parentElement.innerHTML = '<div style="width:100%;height:160px;background-color:#eee;display:flex;align-items:center;justify-content:center;"><FileImage size={24} style="color:' + COLORS.mediumBlue + '" /></div>';
+                      e.target.parentElement.innerHTML = '<div style="width:100%;height:200px;background-color:#eee;display:flex;align-items:center;justify-content:center;border-radius:4px;"><span style="color:' + COLORS.mediumBlue + ';">Business Registration Preview</span></div>';
                     }}
                   />
                   <Box 
@@ -703,129 +704,104 @@ const ViewAllDetails = () => {
                       }
                     }}
                   >
-                    <ZoomIn size={20} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
+                    <ZoomIn size={24} style={{ color: 'white', opacity: 0, transition: 'opacity 0.2s' }} />
                   </Box>
                 </Box>
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
-                    Business Registration Document
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: COLORS.lighterGray, display: 'block', mt: 0.5 }}>
-                    Click to preview with zoom
-                  </Typography>
-                </Box>
-              </Box>
-            ) : (
-              <Box textAlign="center" sx={{ py: 6, color: COLORS.lighterGray }}>
-                <CreditCard size={32} style={{ color: COLORS.mediumBlue, marginBottom: 16 }} />
-                <Typography variant="body1" sx={{ color: COLORS.darkGray }}>
-                  No business registration document uploaded
+                <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: COLORS.darkGray, mb: 0.5 }}>
+                  Business Registration Document
                 </Typography>
-              </Box>
-            )}
-          </Paper>
-
-          {/* Pharmacy Details - With dropdown */}
-          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
-            <DropdownSectionHeader 
-              icon={Building2}
-              title="Pharmacy Details"
-              subtitle="Basic information about your pharmacy business"
-              isOpen={openSections.pharmacyDetails}
-              onToggle={() => toggleSection('pharmacyDetails')}
-            />
-            
-            <Collapse in={openSections.pharmacyDetails}>
-              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
-                <DetailItem label="Name" value={legalData.pharmacyName} icon={Building2} />
-                <DetailItem label="Address" value={legalData.pharmacyAddress} icon={MapPin} />
-                <DetailItem label="Website" value={legalData.pharmacyWebsite} icon={Globe} />
-                <MaskedDetailItem label="BR Number" value={legalData.brNumber} icon={CreditCard} />
-                <DetailItem label="Email" value={legalData.pharmacyEmail} icon={Mail} />
-                <DetailItem label="Mobile" value={legalData.pharmacyMobile} icon={Phone} />
-                <DetailItem label="Landline" value={legalData.pharmacyLandline} icon={Phone} />
+                <Typography variant="caption" sx={{ color: COLORS.lighterGray }}>
+                  Click to preview with zoom
+                </Typography>
               </Paper>
-            </Collapse>
+            </Box>
+          ) : (
+            <Box sx={{ py: 6, textAlign: 'center', color: COLORS.lighterGray }}>
+              <Typography variant="body1" sx={{ color: COLORS.darkGray }}>
+                No business registration document uploaded
+              </Typography>
+            </Box>
+          )}
+        </Paper>
+
+        {/* Pharmacy Information Grid */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 4, mb: 4 }}>
+          {/* Pharmacy Details */}
+          <Paper sx={{ p: 4, borderRadius: 2, backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 3 }}>
+              Pharmacy Details
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <DetailItem label="Name" value={legalData.pharmacyName} icon={Building2} />
+              <DetailItem label="Address" value={legalData.pharmacyAddress} icon={MapPin} />
+              <DetailItem label="Website" value={legalData.pharmacyWebsite} icon={Globe} />
+              <MaskedDetailItem label="BR Number" value={legalData.brNumber} icon={CreditCard} />
+              <DetailItem label="Email" value={legalData.pharmacyEmail} icon={Mail} />
+              <DetailItem label="Mobile" value={legalData.pharmacyMobile} icon={Phone} />
+              <DetailItem label="Landline" value={legalData.pharmacyLandline} icon={Phone} />
+            </Box>
           </Paper>
 
-          {/* Owner Information - With dropdown */}
-          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
-            <DropdownSectionHeader 
-              icon={User}
-              title="Owner Information"
-              subtitle="Details of the pharmacy owner"
-              isOpen={openSections.ownerInfo}
-              onToggle={() => toggleSection('ownerInfo')}
-            />
-            
-            <Collapse in={openSections.ownerInfo}>
-              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
-                <DetailItem label="Name" value={legalData.ownerName} icon={User} />
-                <MaskedDetailItem label="NIC" value={legalData.ownerNIC} icon={CreditCard} />
-                <DetailItem label="Email" value={legalData.ownerEmail} icon={Mail} />
-                <DetailItem label="Phone" value={legalData.ownerPhone} icon={Phone} />
-              </Paper>
-            </Collapse>
+          {/* Owner Information */}
+          <Paper sx={{ p: 4, borderRadius: 2, backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 3 }}>
+              Owner Information
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <DetailItem label="Name" value={legalData.ownerName} icon={User} />
+              <MaskedDetailItem label="NIC" value={legalData.ownerNIC} icon={CreditCard} />
+              <DetailItem label="Email" value={legalData.ownerEmail} icon={Mail} />
+              <DetailItem label="Phone" value={legalData.ownerPhone} icon={Phone} />
+            </Box>
+          </Paper>
+        </Box>
+
+        {/* Additional Information Grid */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 4, mb: 4 }}>
+          {/* Responsible Pharmacist */}
+          <Paper sx={{ p: 4, borderRadius: 2, backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 3 }}>
+              Responsible Pharmacist
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <DetailItem label="Name" value={legalData.pharmacistName} icon={User} />
+              <MaskedDetailItem label="Registration Number" value={legalData.pharmacistRegNumber} icon={Award} />
+            </Box>
           </Paper>
 
-          {/* Responsible Pharmacist - With dropdown */}
-          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
-            <DropdownSectionHeader 
-              icon={Award}
-              title="Responsible Pharmacist"
-              subtitle="Details of the licensed pharmacist in charge"
-              isOpen={openSections.pharmacist}
-              onToggle={() => toggleSection('pharmacist')}
-            />
-            
-            <Collapse in={openSections.pharmacist}>
-              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
-                <DetailItem label="Name" value={legalData.pharmacistName} icon={User} />
-                <MaskedDetailItem label="Registration Number" value={legalData.pharmacistRegNumber} icon={Award} />
-              </Paper>
-            </Collapse>
-          </Paper>
-
-          {/* License & Renewal - With dropdown */}
-          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, backgroundColor: COLORS.lightGray }}>
-            <DropdownSectionHeader 
-              icon={Shield}
-              title="License & Renewal"
-              subtitle="License information and renewal settings"
-              isOpen={openSections.license}
-              onToggle={() => toggleSection('license')}
-            />
-            
-            <Collapse in={openSections.license}>
-              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, backgroundColor: 'white' }}>
-                <DetailItem label="Next Renewal Date" value={legalData.licenseRenewalDate} icon={Calendar} />
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', py: 1 }}>
-                  <Shield size={16} style={{ color: COLORS.mediumBlue, marginTop: 4, marginRight: 8, flexShrink: 0 }} />
-                  <Box>
-                    <Typography variant="caption" sx={{ fontWeight: 'medium', color: COLORS.lighterGray, textTransform: 'uppercase' }}>
-                      Reminder
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 'medium', color: COLORS.darkGray }}>
-                      {legalData.licenseReminder ? (
-                        <Chip 
-                          label="Enabled" 
-                          color="success" 
-                          size="small" 
-                          sx={{ fontWeight: 'medium' }}
-                        />
-                      ) : (
-                        <Chip 
-                          label="Disabled" 
-                          color="error" 
-                          size="small" 
-                          sx={{ fontWeight: 'medium' }}
-                        />
-                      )}
-                    </Typography>
+          {/* License & Renewal */}
+          <Paper sx={{ p: 4, borderRadius: 2, backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 3 }}>
+              License & Renewal
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <DetailItem label="Next Renewal Date" value={legalData.licenseRenewalDate} icon={Calendar} />
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', py: 1 }}>
+                <Shield size={16} style={{ color: COLORS.mediumBlue, marginTop: 4, marginRight: 8, flexShrink: 0 }} />
+                <Box>
+                  <Typography variant="caption" sx={{ fontWeight: 'medium', color: COLORS.lighterGray, textTransform: 'uppercase' }}>
+                    Reminder Status
+                  </Typography>
+                  <Box sx={{ mt: 0.5 }}>
+                    {legalData.licenseReminder ? (
+                      <Chip 
+                        label="Active" 
+                        color="success" 
+                        size="small" 
+                        sx={{ fontWeight: 'medium' }}
+                      />
+                    ) : (
+                      <Chip 
+                        label="Inactive" 
+                        color="error" 
+                        size="small" 
+                        sx={{ fontWeight: 'medium' }}
+                      />
+                    )}
                   </Box>
                 </Box>
-              </Paper>
-            </Collapse>
+              </Box>
+            </Box>
           </Paper>
         </Box>
 
@@ -833,8 +809,8 @@ const ViewAllDetails = () => {
         {popupImage && (
           <ImagePopup imageSrc={popupImage} onClose={closeImagePopup} />
         )}
-      </CardContent>
-    </Card>
+      </Container>
+    </Box>
   );
 };
 
