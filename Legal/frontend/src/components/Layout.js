@@ -101,19 +101,20 @@ const Layout = ({ children }) => {
   const drawerContent = (
     <DrawerPaper elevation={0}>
       <Box sx={{ p: 2, pb: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'flex-start' }}>
           <img 
             src="/images/npk-logo.png" 
-            alt="NPK Logo" 
+            alt="NPK New Pharmacy Kalutara" 
             style={{ 
-              height: '28px', 
+              height: '32px', 
               width: 'auto', 
-              marginRight: '8px',
-              filter: 'brightness(0) invert(1)' // Make logo white
+              marginRight: '10px',
+              filter: 'brightness(0) invert(1)', // Make logo white
+              objectFit: 'contain'
             }}
             onError={(e) => {
               e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'block';
+              e.target.nextSibling.style.display = 'inline-block';
             }}
           />
           <Typography 
@@ -121,10 +122,11 @@ const Layout = ({ children }) => {
             sx={{ 
               color: 'white', 
               fontWeight: 'bold',
-              display: 'none' // Hidden by default, shows if logo fails
+              display: 'none', // Hidden by default, shows if logo fails
+              fontSize: '1.1rem'
             }}
           >
-            NPK ERP
+            NPK Pharmacy
           </Typography>
         </Box>
         <Box
@@ -232,9 +234,47 @@ const Layout = ({ children }) => {
           color: COLORS.darkGray, // Dark gray for text
           boxShadow: 'none',
           borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+          display: { xs: 'block', md: 'none' }
         }}
       >
-      
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2 }}
+          >
+            <Menu />
+          </IconButton>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+            <img 
+              src="/images/npk-logo.png" 
+              alt="NPK New Pharmacy Kalutara" 
+              style={{ 
+                height: '24px', 
+                width: 'auto', 
+                marginRight: '8px',
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'inline-block';
+              }}
+            />
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                color: COLORS.darkGray, 
+                fontWeight: 'bold',
+                display: 'none', // Hidden by default, shows if logo fails
+                fontSize: '1rem'
+              }}
+            >
+              NPK Pharmacy
+            </Typography>
+          </Box>
+        </Toolbar>
       </AppBar>
       
       {/* Mobile Drawer */}
