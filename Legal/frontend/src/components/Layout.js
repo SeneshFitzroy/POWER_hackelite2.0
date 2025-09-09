@@ -83,8 +83,8 @@ const Layout = ({ children }) => {
 
   const navigation = [
     { name: 'Legal Dashboard', href: '/', icon: Home },
-    { name: 'Add/Edit Legal Info', href: '/form', icon: FileText },
     { name: 'View All Details', href: '/view', icon: Eye },
+    { name: 'Regulations', href: '/regulations', icon: FileText },
   ];
 
   const currentDate = new Date();
@@ -162,6 +162,7 @@ const Layout = ({ children }) => {
             p: 1.5, 
             backgroundColor: COLORS.mediumBlue, // Medium blue for date panel
             borderRadius: 2,
+            mb: 2
           }}
           elevation={0}
         >
@@ -175,6 +176,31 @@ const Layout = ({ children }) => {
             {currentDate.toLocaleTimeString('en-US', timeOptions)}
           </Typography>
         </Paper>
+        
+        {/* Logout Button */}
+        <Button
+          variant="contained"
+          fullWidth
+          sx={{
+            backgroundColor: '#dc2626',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#b91c1c'
+            },
+            borderRadius: 2,
+            py: 1.5,
+            fontWeight: 'bold'
+          }}
+          onClick={() => {
+            // Clear any stored auth data
+            localStorage.clear();
+            sessionStorage.clear();
+            // Redirect to main ERP login
+            window.location.href = '/';
+          }}
+        >
+          🚪 LOGOUT
+        </Button>
       </Box>
     </DrawerPaper>
   );

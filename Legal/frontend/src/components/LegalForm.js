@@ -156,24 +156,24 @@ const LegalForm = () => {
     // Pharmacy Details
     pharmacyName: 'New Pharmacy Kalutara',
     pharmacyAddress: '212 Galle Rd, Kalutara 12000',
-    pharmacyWebsite: 'lankanumbers.com',
-    brNumber: '',
-    pharmacyEmail: '',
-    pharmacyMobile: '',
-    pharmacyLandline: '',
+    pharmacyWebsite: 'https://lankanumbers.com/business-directory/the-new-pharmacy-kalutara/',
+    brNumber: 'BR001234567',
+    pharmacyEmail: 'info@newpharmacykalutara.lk',
+    pharmacyMobile: '+94 77 123 4567',
+    pharmacyLandline: '+94 34 223 4567',
     
     // Owner Information
-    ownerName: '',
-    ownerNIC: '',
-    ownerEmail: '',
-    ownerPhone: '',
+    ownerName: 'Dr. Samantha Perera',
+    ownerNIC: '198567123456',
+    ownerEmail: 'samantha.perera@newpharmacykalutara.lk',
+    ownerPhone: '+94 77 987 6543',
     
     // Responsible Pharmacist
-    pharmacistName: '',
-    pharmacistRegNumber: '',
+    pharmacistName: 'Dr. Nimal Fernando',
+    pharmacistRegNumber: 'PHARM/2023/001234',
     
     // License & Renewal
-    licenseRenewalDate: '',
+    licenseRenewalDate: '2025-12-31',
     licenseReminder: true
   });
 

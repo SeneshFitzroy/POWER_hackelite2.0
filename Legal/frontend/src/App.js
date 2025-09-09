@@ -888,7 +888,7 @@ const ViewAllDetails = () => {
   );
 };
 
-// Dashboard component
+// Dashboard component - VIEW ONLY for regular users
 const DashboardPage = () => (
   <Card sx={{ p: 3, borderRadius: 3, boxShadow: 3, backgroundColor: COLORS.lightGray }}>
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
@@ -909,10 +909,10 @@ const DashboardPage = () => (
       </Box>
       <Box>
         <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
-          Legal Module Dashboard
+          Legal Information Dashboard
         </Typography>
         <Typography variant="body2" sx={{ color: COLORS.lighterGray }}>
-          Manage all legal documentation for your pharmacy business
+          View pharmacy legal documentation and compliance information
         </Typography>
       </Box>
     </Box>
@@ -943,57 +943,46 @@ const DashboardPage = () => (
                 justifyContent: 'center'
               }}
             >
-              <FileText size={20} />
+              <Shield size={20} />
             </Box>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
-              Add/Edit Legal Information
+              Legal Information Status
             </Typography>
           </Box>
           <Typography variant="body2" sx={{ color: COLORS.lighterGray, mb: 3 }}>
-            Upload documents and update pharmacy legal details.
+            Current status of your pharmacy's legal documentation.
           </Typography>
           <Box component="ul" sx={{ pl: 2, mb: 3 }}>
             <Box component="li" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: COLORS.mediumBlue, mr: 1.5 }} />
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#10b981', mr: 1.5 }} />
               <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
-                Upload pharmacy images
+                License valid until 2025-12-31
               </Typography>
             </Box>
             <Box component="li" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: COLORS.mediumBlue, mr: 1.5 }} />
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#10b981', mr: 1.5 }} />
               <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
-                Add business registration
+                All documents uploaded
               </Typography>
             </Box>
             <Box component="li" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: COLORS.mediumBlue, mr: 1.5 }} />
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#10b981', mr: 1.5 }} />
               <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
-                Update pharmacy details
+                Business registration current
               </Typography>
             </Box>
             <Box component="li" sx={{ display: 'flex', alignItems: 'center' }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: COLORS.mediumBlue, mr: 1.5 }} />
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#f59e0b', mr: 1.5 }} />
               <Typography variant="body2" sx={{ color: COLORS.darkGray }}>
-                Manage license information
+                Renewal reminder active
               </Typography>
             </Box>
           </Box>
-          <Button 
-            variant="contained" 
-            sx={{ 
-              borderRadius: 2,
-              textTransform: 'none',
-              fontWeight: 'medium',
-              backgroundColor: COLORS.darkBlue,
-              color: 'white',
-              '&:hover': {
-                backgroundColor: COLORS.mediumBlue
-              }
-            }}
-            href="/form"
-          >
-            Add Legal Info
-          </Button>
+          <Chip 
+            label="Compliant" 
+            color="success" 
+            sx={{ fontWeight: 'bold' }}
+          />
         </Card>
       </Grid>
       
