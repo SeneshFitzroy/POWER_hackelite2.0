@@ -125,7 +125,7 @@ export default function LoginScreen({ onLoginSuccess }) {
       </div>
 
       <div className="footer-text">
-        <p>by CoreERP Solutions</p>
+        <p>by NPK New Pharmacy Kalutara</p>
       </div>
     </div>
   )

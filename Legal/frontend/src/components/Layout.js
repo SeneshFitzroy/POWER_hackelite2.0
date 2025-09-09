@@ -101,9 +101,32 @@ const Layout = ({ children }) => {
   const drawerContent = (
     <DrawerPaper elevation={0}>
       <Box sx={{ p: 2, pb: 1 }}>
-        <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
-          COREERP
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <img 
+            src="/images/npk-logo.png" 
+            alt="NPK Logo" 
+            style={{ 
+              height: '28px', 
+              width: 'auto', 
+              marginRight: '8px',
+              filter: 'brightness(0) invert(1)' // Make logo white
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'block';
+            }}
+          />
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              color: 'white', 
+              fontWeight: 'bold',
+              display: 'none' // Hidden by default, shows if logo fails
+            }}
+          >
+            NPK ERP
+          </Typography>
+        </Box>
         <Box
           component="span"
           sx={{
