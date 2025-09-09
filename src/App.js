@@ -4,9 +4,10 @@ import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/materia
 import SplashScreen from './components/SplashScreen'
 import LoginScreen from './components/LoginScreen'
 import ERPDashboard from './components/ERPDashboard'
-import PharmacyPOSFirebaseIntegrated from './pos/components/PharmacyPOSFirebaseIntegrated'
+import PharmacyPOS from './pos/components/PharmacyPOSFirebaseIntegrated'
 import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
+import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
@@ -203,10 +204,6 @@ function App() {
     window.location.href = '/hr'
   }
 
-  const handleLegalAccess = () => {
-    window.location.href = '/legal'
-  }
-
   const handleLogout = () => {
     setCurrentScreen('login')
   }
@@ -217,7 +214,7 @@ function App() {
         <Routes>
           <Route path="/pos" element={
             <Box sx={{ height: '100vh', overflow: 'hidden' }}>
-              <PharmacyPOSFirebaseIntegrated />
+              <PharmacyPOS />
             </Box>
           } />
           <Route path="/sales" element={
@@ -240,29 +237,21 @@ function App() {
               <HRModule />
             </Box>
           } />
-          <Route path="/legal" element={
+          <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
               flexDirection: 'column', 
               minHeight: '100vh',
               backgroundColor: '#f8fafc'
             }}>
-              <iframe 
-                src="/legal/index.html" 
-                title="Legal Module"
-                style={{ 
-                  flex: 1, 
-                  border: 'none',
-                  width: '100%'
-                }}
-              />
+              <FirebaseDataCleaner />
             </Box>
           } />
           <Route path="/" element={
             <div className="App">
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLogout={handleLogout} />}
             </div>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
