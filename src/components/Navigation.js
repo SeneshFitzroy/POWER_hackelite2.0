@@ -52,6 +52,7 @@ export default function Navigation() {
             color="inherit"
             startIcon={<Dashboard />}
             onClick={() => handleNavigation('/dashboard')}
+            sx={{ ml: 8 }}
           >
             Dashboard
           </Button>
@@ -60,57 +61,27 @@ export default function Navigation() {
             color="inherit"
             startIcon={<LocalPharmacy />}
             onClick={() => handleNavigation('/pos')}
+            sx={{ ml: 8 }}
           >
             POS
           </Button>
           
           <Button
             color="inherit"
-            startIcon={<Settings />}
-            onClick={() => handleNavigation('/setup')}
-          >
-            Setup
-            onClick={() => navigate('/dashboard')}
-            sx={{ 
-              mr: 2,
-              color: '#ffffff',
-              backgroundColor: 'transparent',
-              border: '1px solid #333333',
-              borderRadius: '6px',
-              px: 2,
-              py: 1,
-              textTransform: 'none',
-              fontSize: '14px',
-              fontWeight: 500,
-              '&:hover': {
-                backgroundColor: '#333333',
-                borderColor: '#555555'
-              }
-            }}
-          >
-            Dashboard
-          </Button>
-          <Button
             startIcon={<TrendingUp />}
-            onClick={() => navigate('/sales')}
-            sx={{ 
-              mr: 2,
-              color: '#ffffff',
-              backgroundColor: 'transparent',
-              border: '1px solid #333333',
-              borderRadius: '6px',
-              px: 2,
-              py: 1,
-              textTransform: 'none',
-              fontSize: '14px',
-              fontWeight: 500,
-              '&:hover': {
-                backgroundColor: '#333333',
-                borderColor: '#555555'
-              }
-            }}
+            onClick={() => handleNavigation('/sales')}
+            sx={{ ml: 8 }}
           >
             Sales
+          </Button>
+          
+          <Button
+            color="inherit"
+            startIcon={<Settings />}
+            onClick={() => handleNavigation('/setup')}
+            sx={{ ml: 8 }}
+          >
+            Setup
           </Button>
         </Box>
         
