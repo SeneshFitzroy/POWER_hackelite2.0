@@ -22,7 +22,7 @@ function ModuleCard({ icon, title, description, delay, onClick, color }) {
   )
 }
 
-export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onLogout }) {
+export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onInventoryAccess, onLogout }) {
   const [headerVisible, setHeaderVisible] = useState(false)
 
   useEffect(() => {
@@ -119,6 +119,8 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       onSalesAccess()
     } else if (moduleTitle === "HR" && onHRAccess) {
       onHRAccess()
+    } else if (moduleTitle === "Inventory" && onInventoryAccess) {
+      onInventoryAccess()
     } else if (moduleTitle === "Administration") {
       // Navigate to data cleaner
       window.open('/clear-data', '_blank')

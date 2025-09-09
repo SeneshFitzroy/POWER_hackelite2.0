@@ -7,6 +7,8 @@ import ERPDashboard from './components/ERPDashboard'
 import PharmacyPOS from './pos/components/PharmacyPOSFirebaseIntegrated'
 import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
+import InventoryModule from './components/inventory/InventoryModule'
+import ERPApp from './components/ERPApp'
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import './App.css'
 
@@ -204,6 +206,10 @@ function App() {
     window.location.href = '/hr'
   }
 
+  const handleInventoryAccess = () => {
+    window.location.href = '/inventory'
+  }
+
   const handleLogout = () => {
     setCurrentScreen('login')
   }
@@ -237,6 +243,16 @@ function App() {
               <HRModule />
             </Box>
           } />
+          <Route path="/inventory" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <InventoryModule />
+            </Box>
+          } />
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
@@ -251,7 +267,7 @@ function App() {
             <div className="App">
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPApp />}
             </div>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
