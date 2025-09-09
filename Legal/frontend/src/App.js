@@ -459,13 +459,13 @@ const ViewAllDetails = () => {
   };
 
   return (
-    <Box sx={{ backgroundColor: COLORS.lightGray, minHeight: '100vh', width: '100%' }} className="legal-form-card">
-      <Box sx={{ maxWidth: '100%', px: 3, py: 3 }}>
-        <Box sx={{ mb: 4, textAlign: 'left' }} className="section-header">
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1 }}>
+    <Box sx={{ backgroundColor: COLORS.lightGray, minHeight: '100vh', width: '100%', margin: 0, padding: 0 }} className="legal-form-card">
+      <Box sx={{ width: '100%', pl: 2, pr: 3, py: 3, margin: 0 }}>
+        <Box sx={{ mb: 4, textAlign: 'left', width: '100%' }} className="section-header">
+          <Typography variant="h4" sx={{ fontWeight: 'bold', color: COLORS.darkGray, mb: 1, textAlign: 'left' }}>
             Legal Information Overview
           </Typography>
-          <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
+          <Typography variant="body1" sx={{ color: COLORS.lighterGray, textAlign: 'left' }}>
             Complete details of your pharmacy's legal documentation
           </Typography>
         </Box>

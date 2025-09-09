@@ -63,7 +63,8 @@ const DrawerPaper = styled(Paper)(({ theme }) => ({
 
 const Main = styled('main')(({ theme }) => ({
   flexGrow: 1,
-  padding: theme.spacing(2),
+  padding: 0,
+  margin: 0,
   backgroundColor: COLORS.lightGray, // Light gray background for main content
   [theme.breakpoints.up('md')]: {
     width: `calc(100% - ${drawerWidth}px)`,
@@ -263,7 +264,7 @@ const Layout = ({ children }) => {
       {/* Main Content */}
       <Main>
         <Toolbar sx={{ display: { xs: 'block', md: 'none' } }} />
-        <Box sx={{ py: 1, width: '100%' }}>
+        <Box sx={{ width: '100%', margin: 0, padding: 0 }}>
           {children}
         </Box>
       </Main>
