@@ -74,6 +74,7 @@ const ReorderManagement = () => {
     supplier: '',
     notes: ''
   });
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
 
   // Load medicines and purchase orders with real-time updates
   useEffect(() => {
@@ -200,6 +201,11 @@ const ReorderManagement = () => {
     } catch (error) {
       console.error('Error creating bulk purchase orders:', error);
     }
+  };
+
+  const handleViewDetails = (medicine) => {
+    setSelectedMedicine(medicine);
+    setDetailsDialogOpen(true);
   };
 
   const getStockStatus = (medicine) => {
@@ -550,6 +556,7 @@ const ReorderManagement = () => {
                         <Tooltip title="View Details">
                           <IconButton 
                             size="small" 
+                            onClick={() => handleViewDetails(medicine)}
                             sx={{ color: '#6b7280' }}
                           >
                             <ViewIcon />
@@ -667,6 +674,95 @@ const ReorderManagement = () => {
         <DialogActions>
           <Button onClick={() => setPurchaseOrderDialogOpen(false)}>Cancel</Button>
           <Button onClick={handlePurchaseOrderSubmit} variant="contained">Create Order</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Medicine Details Dialog */}
+      <Dialog open={detailsDialogOpen} onClose={() => setDetailsDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Medicine Details</DialogTitle>
+        <DialogContent>
+          {selectedMedicine && (
+            <Box sx={{ pt: 2 }}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary">Medicine Name</Typography>
+                  <Typography variant="h6" sx={{ mb: 2 }}>{selectedMedicine.name}</Typography>
+                  
+                  <Typography variant="subtitle2" color="text.secondary">Manufacturer</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedMedicine.manufacturer || 'N/A'}</Typography>
+                  
+                  <Typography variant="subtitle2" color="text.secondary">Generic Name</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedMedicine.genericName || 'N/A'}</Typography>
+                  
+                  <Typography variant="subtitle2" color="text.secondary">Batch Number</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedMedicine.batchNumber || 'N/A'}</Typography>
+                  
+                  <Typography variant="subtitle2" color="text.secondary">Category</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedMedicine.category || 'N/A'}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary">Current Stock</Typography>
+                  <Typography variant="h6" sx={{ mb: 2, color: getStockStatus(selectedMedicine).color === 'error' ? '#dc2626' : '#059669' }}>
+                    {selectedMedicine.stockQuantity || 0}
+                  </Typography>
+                  
+                  <Typography variant="subtitle2" color="text.secondary">Min Stock Level</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedMedicine.minStockLevel || 'N/A'}</Typography>
+                  
+                  <Typography variant="subtitle2" color="text.secondary">Reorder Point</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedMedicine.reorderPoint || 'N/A'}</Typography>
+                  
+                  <Typography variant="subtitle2" color="text.secondary">Max Stock Level</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedMedicine.maxStockLevel || 'N/A'}</Typography>
+                  
+                  <Typography variant="subtitle2" color="text.secondary">Vendor</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedMedicine.vendor || 'N/A'}</Typography>
+                  
+                  <Typography variant="subtitle2" color="text.secondary">Rack Location</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedMedicine.rackLocation || 'N/A'}</Typography>
+                </Grid>
+              </Grid>
+              
+              {/* Stock Status */}
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>Stock Status</Typography>
+                <Chip 
+                  label={getStockStatus(selectedMedicine).status}
+                  color={getStockStatus(selectedMedicine).color}
+                  sx={{ textTransform: 'capitalize', mb: 2 }}
+                />
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  {getStockStatus(selectedMedicine).message}
+                </Typography>
+              </Box>
+              
+              {/* Additional Details */}
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>Additional Information</Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Cost Price</Typography>
+                    <Typography variant="body1">₹{selectedMedicine.costPrice || 'N/A'}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Selling Price</Typography>
+                    <Typography variant="body1">₹{selectedMedicine.sellingPrice || 'N/A'}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Expiry Date</Typography>
+                    <Typography variant="body1">{selectedMedicine.expiryDate ? format(new Date(selectedMedicine.expiryDate), 'MMM dd, yyyy') : 'N/A'}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Type</Typography>
+                    <Typography variant="body1">{selectedMedicine.type || 'N/A'}</Typography>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetailsDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
     </Box>
