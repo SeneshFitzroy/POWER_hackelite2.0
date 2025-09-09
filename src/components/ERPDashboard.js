@@ -90,7 +90,7 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M1 12H3M21 12H23M8 21L16 21C17.1046 21 18 20.1046 18 19L18 17C18 15.8954 17.1046 15 16 15L8 15C6.89543 15 6 15.8954 6 17L6 19C6 20.1046 6.89543 21 8 21Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M8 21L16 21C17.1046 21 18 20.1046 18 19L18 17C18 15.8954 17.1046 15 16 15L8 15C6.89543 15 6 15.8954 6 17L6 19C6 20.1046 6.89543 21 8 21Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M12 13V15" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
