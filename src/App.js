@@ -205,8 +205,8 @@ function App() {
   }
 
   const handleLegalAccess = () => {
-    // Admin access to legal module with full edit capabilities
-    window.location.href = '/legal/admin'
+    // Access to legal module view (not admin)
+    window.location.href = '/legal'
   }
 
   const handleLogout = () => {
