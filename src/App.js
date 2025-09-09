@@ -204,6 +204,10 @@ function App() {
     window.location.href = '/hr'
   }
 
+  const handleLegalAccess = () => {
+    window.location.href = '/legal'
+  }
+
   const handleLogout = () => {
     setCurrentScreen('login')
   }
@@ -235,6 +239,24 @@ function App() {
               backgroundColor: '#f8fafc'
             }}>
               <HRModule />
+            </Box>
+          } />
+          <Route path="/legal" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <iframe 
+                src="/legal/index.html" 
+                title="Legal Module"
+                style={{ 
+                  flex: 1, 
+                  border: 'none',
+                  width: '100%'
+                }}
+              />
             </Box>
           } />
           <Route path="/clear-data" element={
