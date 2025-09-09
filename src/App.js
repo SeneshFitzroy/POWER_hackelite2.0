@@ -204,6 +204,10 @@ function App() {
     window.location.href = '/hr'
   }
 
+  const handleLegalAccess = () => {
+    window.location.href = '/legal'
+  }
+
   const handleLogout = () => {
     setCurrentScreen('login')
   }
@@ -237,6 +241,24 @@ function App() {
               <HRModule />
             </Box>
           } />
+          <Route path="/legal" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <iframe 
+                src="/legal/index.html" 
+                title="Legal Module"
+                style={{ 
+                  flex: 1, 
+                  border: 'none',
+                  width: '100%'
+                }}
+              />
+            </Box>
+          } />
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
@@ -251,7 +273,7 @@ function App() {
             <div className="App">
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onLogout={handleLogout} />}
             </div>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
