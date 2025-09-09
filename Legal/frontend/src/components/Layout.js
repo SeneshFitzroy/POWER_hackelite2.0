@@ -101,19 +101,19 @@ const Layout = ({ children }) => {
   const drawerContent = (
     <DrawerPaper elevation={0}>
       <Box sx={{ p: 2, pb: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'flex-start' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1, width: '100%' }}>
           <img 
             src="/images/npk-logo.png" 
             alt="NPK New Pharmacy Kalutara" 
             style={{ 
-              height: '40px', 
+              height: '50px', 
               width: 'auto', 
-              marginRight: '12px',
-              border: '2px solid #000000',
-              borderRadius: '4px',
-              padding: '4px',
+              border: '3px solid #000000',
+              borderRadius: '6px',
+              padding: '6px',
               backgroundColor: 'white',
-              objectFit: 'contain'
+              objectFit: 'contain',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
             }}
             onError={(e) => {
               e.target.style.display = 'none';
@@ -126,27 +126,31 @@ const Layout = ({ children }) => {
               color: 'white', 
               fontWeight: 'bold',
               display: 'none', // Hidden by default, shows if logo fails
-              fontSize: '1.1rem'
+              fontSize: '1.2rem',
+              textAlign: 'center'
             }}
           >
             NPK Pharmacy
           </Typography>
         </Box>
-        <Box
-          component="span"
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            px: 1.5,
-            py: 0.5,
-            borderRadius: 2,
-            fontSize: '0.75rem',
-            fontWeight: 'medium',
-            backgroundColor: COLORS.mediumBlue, // Medium blue for module badge
-            color: 'white',
-          }}
-        >
-          LEGAL MODULE
+        <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+          <Box
+            component="span"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              px: 2,
+              py: 0.75,
+              borderRadius: 3,
+              fontSize: '0.8rem',
+              fontWeight: 'bold',
+              backgroundColor: COLORS.mediumBlue, // Medium blue for module badge
+              color: 'white',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+            }}
+          >
+            LEGAL MODULE
+          </Box>
         </Box>
       </Box>
       
@@ -250,19 +254,19 @@ const Layout = ({ children }) => {
           >
             <Menu />
           </IconButton>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>
             <img 
               src="/images/npk-logo.png" 
               alt="NPK New Pharmacy Kalutara" 
               style={{ 
-                height: '32px', 
+                height: '40px', 
                 width: 'auto', 
-                marginRight: '10px',
-                border: '1px solid #000000',
-                borderRadius: '3px',
-                padding: '2px',
+                border: '2px solid #000000',
+                borderRadius: '4px',
+                padding: '4px',
                 backgroundColor: 'white',
-                objectFit: 'contain'
+                objectFit: 'contain',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
               }}
               onError={(e) => {
                 e.target.style.display = 'none';
@@ -275,7 +279,8 @@ const Layout = ({ children }) => {
                 color: COLORS.darkGray, 
                 fontWeight: 'bold',
                 display: 'none', // Hidden by default, shows if logo fails
-                fontSize: '1rem'
+                fontSize: '1.1rem',
+                textAlign: 'center'
               }}
             >
               NPK Pharmacy
