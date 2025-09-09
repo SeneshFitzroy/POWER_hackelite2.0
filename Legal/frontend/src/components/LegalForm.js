@@ -511,10 +511,10 @@ const LegalForm = () => {
             </Box>
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 'bold', color: COLORS.darkGray }}>
-                Legal Documentation
+                Admin - Legal Documentation
               </Typography>
               <Typography variant="body1" sx={{ color: COLORS.lighterGray }}>
-                Manage all legal documents and information for your pharmacy
+                Administrator access: Full edit and management of legal documents and information
               </Typography>
             </Box>
           </Box>

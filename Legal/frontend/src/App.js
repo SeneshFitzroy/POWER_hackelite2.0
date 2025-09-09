@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import toast, { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
 import LegalForm from './components/LegalForm';
+import Regulations from './components/Regulations';
 import { db } from './firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
 import {
@@ -1075,8 +1076,9 @@ function App() {
         <Toaster position="top-right" />
         <Routes>
           <Route path="/" element={<Layout><DashboardPage /></Layout>} />
-          <Route path="/form" element={<Layout><LegalForm /></Layout>} />
           <Route path="/view" element={<Layout><ViewAllDetails /></Layout>} />
+          <Route path="/regulations" element={<Layout><Regulations /></Layout>} />
+          <Route path="/admin" element={<Layout><LegalForm /></Layout>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
