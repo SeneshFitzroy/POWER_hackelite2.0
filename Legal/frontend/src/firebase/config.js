@@ -3,8 +3,6 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 // Log environment variables for debugging (remove in production)
-console.log('Firebase API Key:', process.env.REACT_APP_FIREBASE_API_KEY);
-console.log('Firebase Auth Domain:', process.env.REACT_APP_FIREBASE_AUTH_DOMAIN);
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
