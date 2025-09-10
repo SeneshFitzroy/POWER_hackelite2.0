@@ -140,7 +140,7 @@ export default function InventoryModule({
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+    <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#f8fafc', overflow: 'hidden' }}>
       {/* Left Sidebar Navigation */}
       <Drawer
         variant="permanent"
@@ -336,12 +336,13 @@ export default function InventoryModule({
         sx={{
           flexGrow: 1,
           backgroundColor: '#ffffff',
-          minHeight: '100vh',
+          height: '100vh',
+          overflow: 'auto',
           ml: 0
         }}
       >
         {/* Content Container */}
-        <Container maxWidth="xl" sx={{ py: 3, minHeight: '100vh' }}>
+        <Container maxWidth="xl" sx={{ py: 3, height: '100%', overflow: 'auto' }}>
           <TabPanel value={activeTab} index={0}>
             <InventoryDashboard />
           </TabPanel>
