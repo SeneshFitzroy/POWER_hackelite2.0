@@ -345,56 +345,57 @@ export default function InventoryModule({
       >
         {/* Content Container */}
         <Container maxWidth="xl" sx={{ py: 3, height: '100%', overflow: 'auto' }}>
-          <TabPanel value={activeTab} index={0}>
-            <React.Suspense fallback={<div>Loading Inventory Dashboard...</div>}>
+          {activeTab === 0 && (
+            <div key="dashboard">
               <InventoryDashboard />
-            </React.Suspense>
-          </TabPanel>
-          <TabPanel value={activeTab} index={1}>
-            <React.Suspense fallback={<div>Loading Stock Tracking...</div>}>
+            </div>
+          )}
+          {activeTab === 1 && (
+            <div key="stock">
               <StockTracking />
-            </React.Suspense>
-          </TabPanel>
-          <TabPanel value={activeTab} index={2}>
-            <React.Suspense fallback={<div>Loading Reorder Management...</div>}>
+            </div>
+          )}
+          {activeTab === 2 && (
+            <div key="reorder">
               <ReorderManagement />
-            </React.Suspense>
-          </TabPanel>
-          <TabPanel value={activeTab} index={3}>
-            <React.Suspense fallback={<div>Loading Purchase Orders...</div>}>
+            </div>
+          )}
+          {activeTab === 3 && (
+            <div key="purchase">
               <PurchaseOrderManagement />
-            </React.Suspense>
-          </TabPanel>
-          <TabPanel value={activeTab} index={4}>
-            <React.Suspense fallback={<div>Loading Supplier Management...</div>}>
+            </div>
+          )}
+          {activeTab === 4 && (
+            <div key="supplier">
               <SupplierManagement />
-            </React.Suspense>
-          </TabPanel>
-          <TabPanel value={activeTab} index={5}>
-            <React.Suspense fallback={<div>Loading Purchase History...</div>}>
+            </div>
+          )}
+          {activeTab === 5 && (
+            <div key="history">
               <PurchaseHistory />
-            </React.Suspense>
-          </TabPanel>
-          <TabPanel value={activeTab} index={6}>
-            <React.Suspense fallback={<div>Loading Regulatory Compliance...</div>}>
+            </div>
+          )}
+          {activeTab === 6 && (
+            <div key="compliance">
               <RegulatoryCompliance />
-            </React.Suspense>
-          </TabPanel>
-          <TabPanel value={activeTab} index={7}>
-            <React.Suspense fallback={<div>Loading Quarantined Stock...</div>}>
+            </div>
+          )}
+          {activeTab === 7 && (
+            <div key="quarantine">
               <QuarantinedStock />
-            </React.Suspense>
-          </TabPanel>
-          <TabPanel value={activeTab} index={8}>
-            <React.Suspense fallback={<div>Loading Expiry Monitoring...</div>}>
+            </div>
+          )}
+          {activeTab === 8 && (
+            <div key="expiry">
               <ExpiryMonitoring />
-            </React.Suspense>
-          </TabPanel>
-          <TabPanel value={activeTab} index={9}>
-            <React.Suspense fallback={<div>Loading Low Stock Alerts...</div>}>
+            </div>
+          )}
+          {activeTab === 9 && (
+            <div key="alerts">
               <LowStockAlerts />
-            </React.Suspense>
-          </TabPanel>
+            </div>
+          )}
+        </Container>
           <TabPanel value={activeTab} index={2}>
             <ReorderManagement />
           </TabPanel>
