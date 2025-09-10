@@ -300,7 +300,7 @@ Cold Chain Monitoring System`
     const humidityValid = reading.humidity >= sensor.acceptableHumidityMin && 
                          reading.humidity <= sensor.acceptableHumidityMax;
     
-    if (tempValid && humidityValid) return '#22c55e';
+    if (tempValid && humidityValid) return '#3b82f6';
     if (!tempValid || !humidityValid) return '#ef4444';
     return '#f59e0b';
   };
@@ -366,7 +366,7 @@ Cold Chain Monitoring System`
     
     readings.forEach(reading => {
       const sensor = sensors.find(s => s.id === reading.sensorId);
-      const status = getStatusColor(sensor, reading) === '#22c55e' ? 'Normal' : 'Alert';
+      const status = getStatusColor(sensor, reading) === '#3b82f6' ? 'Normal' : 'Alert';
       const timestamp = new Date(reading.timestamp?.toDate?.() || reading.timestamp).toLocaleString();
       
       csvRows.push([
@@ -773,7 +773,7 @@ startxref
                                     }}
                                   >
                                     {latestReading ? 
-                                      (statusColor === '#22c55e' ? 'Normal' : 
+                                      (statusColor === '#3b82f6' ? 'Normal' : 
                                        statusColor === '#ef4444' ? 'Alert' : 'Warning') : 'No Data'}
                                   </Typography>
                                 </Box>
@@ -1265,8 +1265,8 @@ startxref
                                     <TableCell>{reading.humidity}%</TableCell>
                                     <TableCell>
                                       <Chip
-                                        label={statusColor === '#22c55e' ? 'Normal' : 'Alert'}
-                                        color={statusColor === '#22c55e' ? 'success' : 'error'}
+                                        label={statusColor === '#3b82f6' ? 'Normal' : 'Alert'}
+                                        color={statusColor === '#3b82f6' ? 'primary' : 'error'}
                                         size="small"
                                       />
                                     </TableCell>
