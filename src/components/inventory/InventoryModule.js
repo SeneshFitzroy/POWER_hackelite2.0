@@ -100,12 +100,14 @@ export default function InventoryModule({
       'purchase-orders': 3,
       'supplier-management': 4,
       'purchase-history': 5,
-      'quarantine-management': 6,
-      'expiry-monitoring': 7,
-      'low-stock-alerts': 8
+      'regulatory-compliance': 6,
+      'quarantined-stock': 7,
+      'expiry-monitoring': 8,
+      'low-stock-alerts': 9
     };
     
-    const tabIndex = moduleToTabMap[activeModule] || 0;
+    // Always default to inventory dashboard (index 0)
+    const tabIndex = 0;
     setActiveTab(tabIndex);
   }, [activeModule]);
 
@@ -344,10 +346,17 @@ export default function InventoryModule({
         {/* Content Container */}
         <Container maxWidth="xl" sx={{ py: 3, height: '100%', overflow: 'auto' }}>
           <TabPanel value={activeTab} index={0}>
-            <InventoryDashboard />
+            <div style={{ padding: '20px', background: 'lightgreen' }}>
+              <h1>INVENTORY DASHBOARD - WORKING!</h1>
+              <p>This should show instead of the login form.</p>
+              <p>Active Tab: {activeTab}</p>
+            </div>
           </TabPanel>
           <TabPanel value={activeTab} index={1}>
-            <StockTracking />
+            <div style={{ padding: '20px', background: 'lightblue' }}>
+              <h1>STOCK TRACKING - WORKING!</h1>
+              <p>This should show the stock tracking instead of login form.</p>
+            </div>
           </TabPanel>
           <TabPanel value={activeTab} index={2}>
             <ReorderManagement />
