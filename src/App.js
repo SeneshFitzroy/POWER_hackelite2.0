@@ -254,18 +254,13 @@ function App() {
               <HRModule />
             </Box>
           } />
-<<<<<<< HEAD
           <Route path="/legal" element={
-=======
-          <Route path="/inventory" element={
->>>>>>> origin/INVENTORY
             <Box sx={{ 
               display: 'flex', 
               flexDirection: 'column', 
               minHeight: '100vh',
               backgroundColor: '#f8fafc'
             }}>
-<<<<<<< HEAD
               <iframe 
                 src="/legal/index.html" 
                 title="Legal Module"
@@ -282,11 +277,16 @@ function App() {
               <ColdChainModule />
             </div>
           } />
-=======
+          <Route path="/inventory" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
               <InventoryModule />
             </Box>
           } />
->>>>>>> origin/INVENTORY
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
