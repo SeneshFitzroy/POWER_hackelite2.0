@@ -346,17 +346,34 @@ export default function InventoryModule({
         {/* Content Container */}
         <Container maxWidth="xl" sx={{ py: 3, height: '100%', overflow: 'auto' }}>
           <TabPanel value={activeTab} index={0}>
-            <div style={{ padding: '20px', background: 'lightgreen' }}>
-              <h1>INVENTORY DASHBOARD - WORKING!</h1>
-              <p>This should show instead of the login form.</p>
-              <p>Active Tab: {activeTab}</p>
-            </div>
+            <InventoryDashboard />
           </TabPanel>
           <TabPanel value={activeTab} index={1}>
-            <div style={{ padding: '20px', background: 'lightblue' }}>
-              <h1>STOCK TRACKING - WORKING!</h1>
-              <p>This should show the stock tracking instead of login form.</p>
-            </div>
+            <StockTracking />
+          </TabPanel>
+          <TabPanel value={activeTab} index={2}>
+            <ReorderManagement />
+          </TabPanel>
+          <TabPanel value={activeTab} index={3}>
+            <PurchaseOrderManagement />
+          </TabPanel>
+          <TabPanel value={activeTab} index={4}>
+            <SupplierManagement />
+          </TabPanel>
+          <TabPanel value={activeTab} index={5}>
+            <PurchaseHistory />
+          </TabPanel>
+          <TabPanel value={activeTab} index={6}>
+            <RegulatoryCompliance />
+          </TabPanel>
+          <TabPanel value={activeTab} index={7}>
+            <QuarantinedStock />
+          </TabPanel>
+          <TabPanel value={activeTab} index={8}>
+            <ExpiryMonitoring />
+          </TabPanel>
+          <TabPanel value={activeTab} index={9}>
+            <LowStockAlerts />
           </TabPanel>
           <TabPanel value={activeTab} index={2}>
             <ReorderManagement />
