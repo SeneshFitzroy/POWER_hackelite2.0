@@ -544,7 +544,7 @@ startxref
           '& .MuiDrawer-paper': {
             width: sidebarWidth,
             boxSizing: 'border-box',
-            background: 'linear-gradient(180deg, #0f766e 0%, #134e4a 100%)',
+            background: 'linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%)',
             color: '#ffffff',
             borderRight: 'none',
             boxShadow: '4px 0 12px rgba(0,0,0,0.15)'
@@ -646,7 +646,7 @@ startxref
             <Typography 
               variant="h6" 
               sx={{ 
-                color: '#22c55e', 
+                color: '#3b82f6', 
                 fontWeight: 'bold', 
                 fontSize: '15px',
                 mb: 0.3
@@ -677,10 +677,10 @@ startxref
             startIcon={<ArrowBack />}
             onClick={handleBackToDashboard}
             sx={{
-              backgroundColor: '#0f766e',
+              backgroundColor: '#1e40af',
               color: 'white',
               '&:hover': {
-                backgroundColor: '#134e4a'
+                backgroundColor: '#1e3a8a'
               },
               borderRadius: 2,
               py: 1.5,
@@ -887,7 +887,7 @@ startxref
                   
                   {alerts.length === 0 ? (
                     <Paper sx={{ p: 4, textAlign: 'center' }}>
-                      <CheckCircle sx={{ fontSize: 64, color: '#22c55e', mb: 2 }} />
+                      <CheckCircle sx={{ fontSize: 64, color: '#3b82f6', mb: 2 }} />
                       <Typography variant="h5" sx={{ mb: 1, fontWeight: 'bold' }}>
                         No Active Alerts
                       </Typography>
