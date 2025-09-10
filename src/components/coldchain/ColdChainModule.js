@@ -1,3 +1,4 @@
+// Cold Chain Monitoring Module - Blue Theme (v2.1 - Cache Refresh)
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -544,7 +545,8 @@ startxref
           '& .MuiDrawer-paper': {
             width: sidebarWidth,
             boxSizing: 'border-box',
-            background: 'linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%)',
+            backgroundColor: '#1e40af', // Blue fallback
+            background: 'linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%) !important',
             color: '#ffffff',
             borderRight: 'none',
             boxShadow: '4px 0 12px rgba(0,0,0,0.15)'
