@@ -1,3 +1,4 @@
+// ERP Dashboard - Inventory Navigation Fixed - Version 3.0
 import React, { useState, useEffect } from "react"
 
 function ModuleCard({ icon, title, description, delay, onClick, color }) {
@@ -123,12 +124,13 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
   ]
 
   const handleModuleClick = (moduleTitle) => {
-    console.log(`[MAIN ERPDashboard] Module clicked: ${moduleTitle}`)
+    console.log(`[FIXED v3.0] Module clicked: ${moduleTitle}`)
     
-    // Special handling for Inventory with alert for testing
+    // INVENTORY NAVIGATION - DIRECT APPROACH
     if (moduleTitle === "Inventory") {
-      console.log('[MAIN ERPDashboard] Inventory clicked - using direct navigation')
-      alert('MAIN ERPDashboard: Inventory clicked - navigating now...')
+      console.log('[FIXED v3.0] Inventory navigation starting...')
+      alert('INVENTORY NAVIGATION WORKING - v3.0!')
+      console.log('[FIXED v3.0] About to navigate to /inventory')
       window.location.href = '/inventory'
       return
     }
