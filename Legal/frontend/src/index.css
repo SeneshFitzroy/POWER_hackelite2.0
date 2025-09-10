@@ -22,6 +22,8 @@ code {
 .main-content {
     margin-left: 0;
     padding-left: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Reduce space between side panel and main content */
@@ -30,11 +32,12 @@ code {
     padding-right: 0;
 }
 
-/* Adjust main content spacing */
+/* Remove conflicting margin rules */
 .MuiDrawer-paper + main {
-    margin-left: 280px; /* Match the drawer width */
-    padding-left: 16px; /* Reduce padding for content */
-    padding-right: 16px; /* Add right padding for balance */
+    padding-left: 16px; 
+    padding-right: 16px; 
+    box-sizing: border-box;
+    width: 100%;
 }
 
 /* Mobile responsive adjustments */
@@ -43,6 +46,7 @@ code {
         margin-left: 0;
         padding-left: 16px;
         padding-right: 16px;
+        width: 100%;
     }
 }
 

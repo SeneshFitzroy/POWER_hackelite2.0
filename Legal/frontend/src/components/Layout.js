@@ -72,6 +72,11 @@ const Main = styled('main')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
+    boxSizing: 'border-box',
+  },
+  [theme.breakpoints.down('md')]: {
+    width: '100%',
+    marginLeft: 0,
   },
 }));
 
@@ -311,15 +316,7 @@ const Layout = ({ children }) => {
       {/* Main Content */}
       <Main>
         <Toolbar sx={{ display: { xs: 'block', md: 'none' } }} />
-        <Box sx={{ 
-          width: '100%', 
-          margin: 0, 
-          padding: 0,
-          minHeight: '100vh',
-          backgroundColor: COLORS.lightGray
-        }}>
-          {children}
-        </Box>
+        {children}
       </Main>
     </Box>
   );
