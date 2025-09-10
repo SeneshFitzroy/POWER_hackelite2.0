@@ -7,12 +7,9 @@ import ERPDashboard from './components/ERPDashboard'
 import PharmacyPOS from './pos/components/PharmacyPOSFirebaseIntegrated'
 import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
-<<<<<<< HEAD
 import ColdChainModule from './components/coldchain/ColdChainModule'
-=======
 import InventoryModule from './components/inventory/InventoryModule'
 import ERPApp from './components/ERPApp'
->>>>>>> origin/INVENTORY
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import './App.css'
 
@@ -210,7 +207,6 @@ function App() {
     window.location.href = '/hr'
   }
 
-<<<<<<< HEAD
   const handleLegalAccess = () => {
     // Access to legal module view (not admin)
     window.location.href = '/legal'
@@ -220,8 +216,6 @@ function App() {
     window.location.href = '/coldchain'
   }
 
-
-=======
   const handleInventoryAccess = () => {
     window.location.href = '/inventory'
   }
