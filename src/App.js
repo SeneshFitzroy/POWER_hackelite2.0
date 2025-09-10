@@ -294,16 +294,6 @@ function App() {
               <ColdChainModule />
             </div>
           } />
-          <Route path="/inventory" element={
-            <Box sx={{ 
-              width: '100vw',
-              height: '100vh',
-              overflow: 'hidden',
-              backgroundColor: '#f8fafc'
-            }}>
-              <InventoryModule />
-            </Box>
-          } />
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
