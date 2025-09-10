@@ -118,7 +118,7 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       ),
       title: "Cold Chain",
       description: "IoT monitoring for temperature and humidity control",
-      color: "#0f766e", // Teal for Cold Chain/IoT
+      color: "#1e40af", // Blue for Cold Chain/IoT
     },
   ]
 
