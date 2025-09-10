@@ -14,6 +14,7 @@ This is a modern React application built with Firebase backend, featuring authen
 - 📋 **Bills & Payment Management** with supplier tracking and reminders
 - 👥 **Payroll Management** with employee records and salary processing
 - 💹 **Financial Analytics** with interactive charts and KPIs
+- 🌡️ **Cold Chain Monitoring** with IoT simulation for temperature and humidity control
 - 🏗️ Modular Architecture
 - 📱 Responsive Design
 - 🔥 Firebase Backend Integration
@@ -87,6 +88,13 @@ src/
 │   │   ├── FinancialReports.js # P&L, Balance Sheet, Cash Flow
 │   │   ├── BillsManagement.js  # Supplier bills & payment reminders
 │   │   └── PayrollManagement.js # Employee payroll processing
+│   ├── coldchain/      # Cold Chain Monitoring module
+│   │   ├── ColdChainModule.js      # Main cold chain dashboard
+│   │   ├── ColdChainDashboard.js   # Real-time sensor monitoring
+│   │   ├── AlertsManagement.js     # Alert management system
+│   │   ├── ReportsManagement.js    # Analytics and reporting
+│   │   ├── SettingsManagement.js   # Sensor configuration
+│   │   └── ColdChainInitializer.js # Service initialization
 │   ├── Dashboard.js     # Main dashboard
 │   ├── Login.js         # Authentication component
 │   └── Navigation.js    # Navigation bar
