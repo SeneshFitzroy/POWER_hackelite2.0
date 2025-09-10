@@ -218,7 +218,12 @@ function App() {
 
   const handleInventoryAccess = () => {
     console.log('handleInventoryAccess called - navigating to /inventory')
-    window.location.href = '/inventory'
+    console.log('About to navigate...')
+    try {
+      window.location.href = '/inventory'
+    } catch (error) {
+      console.error('Navigation error:', error)
+    }
   }
   const handleLogout = () => {
     setCurrentScreen('login')
