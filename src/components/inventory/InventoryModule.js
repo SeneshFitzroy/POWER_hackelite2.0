@@ -60,7 +60,7 @@ function TabPanel({ children, value, index, ...other }) {
 }
 
 export default function InventoryModule({ 
-  activeModule = 'stock-tracking', 
+  activeModule = 'inventory', 
   onModuleChange,
   onNotification 
 }) {
@@ -105,7 +105,7 @@ export default function InventoryModule({
       'low-stock-alerts': 8
     };
     
-    const tabIndex = moduleToTabMap[activeModule] || 1;
+    const tabIndex = moduleToTabMap[activeModule] || 0;
     setActiveTab(tabIndex);
   }, [activeModule]);
 
