@@ -1032,7 +1032,7 @@ startxref
                         variant="outlined"
                         startIcon={<TableChart />}
                         onClick={downloadCSV}
-                        sx={{ borderColor: '#22c55e', color: '#22c55e' }}
+                        sx={{ borderColor: '#3b82f6', color: '#3b82f6' }}
                       >
                         Download CSV
                       </Button>
@@ -1152,7 +1152,7 @@ startxref
                       </Grid>
                       <Grid item xs={12} md={3}>
                         <Card sx={{ textAlign: 'center', p: 2 }}>
-                          <Typography variant="h3" sx={{ color: '#22c55e', fontWeight: 'bold' }}>
+                          <Typography variant="h3" sx={{ color: '#3b82f6', fontWeight: 'bold' }}>
                             {getFilteredReadings().length}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
