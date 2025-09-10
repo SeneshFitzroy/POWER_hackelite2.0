@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  FormControl,
-  Select,
-  MenuItem,
   Container,
   Chip,
   List,
@@ -40,24 +37,6 @@ import SupplierManagement from './SupplierManagement';
 import PurchaseHistory from './PurchaseHistory';
 import RegulatoryCompliance from './RegulatoryCompliance';
 import InventoryDashboard from './InventoryDashboard';
-
-function TabPanel({ children, value, index, ...other }) {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`inventory-tabpanel-${index}`}
-      aria-labelledby={`inventory-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ py: 0 }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
 
 export default function InventoryModule({ 
   activeModule = 'inventory', 
@@ -106,8 +85,8 @@ export default function InventoryModule({
       'low-stock-alerts': 9
     };
     
-    // Always default to inventory dashboard (index 0)
-    const tabIndex = 0;
+    // Get the correct tab index based on activeModule, default to 0 if not found
+    const tabIndex = moduleToTabMap[activeModule] || 0;
     setActiveTab(tabIndex);
   }, [activeModule]);
 
@@ -339,63 +318,27 @@ export default function InventoryModule({
           flexGrow: 1,
           backgroundColor: '#ffffff',
           height: '100vh',
-          overflow: 'auto',
-          ml: 0
+          overflow: 'hidden'
         }}
       >
         {/* Content Container */}
-        <Container maxWidth="xl" sx={{ py: 3, height: '100%', overflow: 'auto' }}>
-          {activeTab === 0 && (
-            <div key="dashboard">
-              <InventoryDashboard />
-            </div>
-          )}
-          {activeTab === 1 && (
-            <div key="stock">
-              <StockTracking />
-            </div>
-          )}
-          {activeTab === 2 && (
-            <div key="reorder">
-              <ReorderManagement />
-            </div>
-          )}
-          {activeTab === 3 && (
-            <div key="purchase">
-              <PurchaseOrderManagement />
-            </div>
-          )}
-          {activeTab === 4 && (
-            <div key="supplier">
-              <SupplierManagement />
-            </div>
-          )}
-          {activeTab === 5 && (
-            <div key="history">
-              <PurchaseHistory />
-            </div>
-          )}
-          {activeTab === 6 && (
-            <div key="compliance">
-              <RegulatoryCompliance />
-            </div>
-          )}
-          {activeTab === 7 && (
-            <div key="quarantine">
-              <QuarantinedStock />
-            </div>
-          )}
-          {activeTab === 8 && (
-            <div key="expiry">
-              <ExpiryMonitoring />
-            </div>
-          )}
-          {activeTab === 9 && (
-            <div key="alerts">
-              <LowStockAlerts />
-            </div>
-          )}
-        </Container>
+        <Box sx={{ 
+          py: 3, 
+          px: 3,
+          height: '100%', 
+          overflow: 'auto' 
+        }}>
+          {activeTab === 0 && <InventoryDashboard />}
+          {activeTab === 1 && <StockTracking />}
+          {activeTab === 2 && <ReorderManagement />}
+          {activeTab === 3 && <PurchaseOrderManagement />}
+          {activeTab === 4 && <SupplierManagement />}
+          {activeTab === 5 && <PurchaseHistory />}
+          {activeTab === 6 && <RegulatoryCompliance />}
+          {activeTab === 7 && <QuarantinedStock />}
+          {activeTab === 8 && <ExpiryMonitoring />}
+          {activeTab === 9 && <LowStockAlerts />}
+        </Box>
       </Box>
     </Box>
   );
