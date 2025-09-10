@@ -135,19 +135,8 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
     } else if (moduleTitle === "Cold Chain" && onColdChainAccess) {
       onColdChainAccess()
     } else if (moduleTitle === "Inventory") {
-      console.log('Inventory clicked, onInventoryAccess exists:', !!onInventoryAccess)
-      if (onInventoryAccess) {
-        console.log('About to call onInventoryAccess...')
-        try {
-          onInventoryAccess()
-          console.log('onInventoryAccess called successfully')
-        } catch (error) {
-          console.error('Error calling onInventoryAccess:', error)
-        }
-      } else {
-        console.log('onInventoryAccess not provided, using direct navigation')
-        window.location.href = '/inventory'
-      }
+      console.log('Inventory clicked - using direct navigation')
+      window.location.href = '/inventory'
     } else if (moduleTitle === "Administration") {
       // Navigate to data cleaner
       window.open('/clear-data', '_blank')
