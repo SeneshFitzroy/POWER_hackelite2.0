@@ -175,7 +175,7 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
-  // If we're on the inventory route, render ONLY the inventory module
+  // If we're on specific module routes, render ONLY that module
   if (window.location.pathname === '/inventory') {
     return (
       <ThemeProvider theme={theme}>
@@ -190,6 +190,16 @@ function App() {
           overflow: 'hidden'
         }}>
           <InventoryModule />
+        </div>
+      </ThemeProvider>
+    );
+  }
+
+  if (window.location.pathname === '/coldchain') {
+    return (
+      <ThemeProvider theme={theme}>
+        <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+          <ColdChainModule />
         </div>
       </ThemeProvider>
     );
