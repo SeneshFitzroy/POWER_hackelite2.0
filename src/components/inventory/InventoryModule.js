@@ -14,7 +14,15 @@ import {
   ListItemButton,
   Drawer,
   Divider,
-  Button
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -346,10 +354,84 @@ export default function InventoryModule({
         {/* Content Container */}
         <Container maxWidth="xl" sx={{ py: 3, height: '100%', overflow: 'auto' }}>
           <TabPanel value={activeTab} index={0}>
-            <InventoryDashboard />
+            {activeTab === 0 ? (
+              <Box sx={{ p: 3 }}>
+                <Typography variant="h4" sx={{ mb: 3, color: '#1e40af', fontWeight: 'bold' }}>
+                  Inventory Dashboard
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={3}>
+                    <Card sx={{ background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)', color: 'white' }}>
+                      <CardContent>
+                        <Typography variant="h4">150</Typography>
+                        <Typography variant="body2">Total Medicines</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <Card sx={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)', color: 'white' }}>
+                      <CardContent>
+                        <Typography variant="h4">145</Typography>
+                        <Typography variant="body2">Active Stock</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <Card sx={{ background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)', color: 'white' }}>
+                      <CardContent>
+                        <Typography variant="h4">12</Typography>
+                        <Typography variant="body2">Low Stock</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <Card sx={{ background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)', color: 'white' }}>
+                      <CardContent>
+                        <Typography variant="h4">3</Typography>
+                        <Typography variant="body2">Expiring Soon</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
+              </Box>
+            ) : null}
           </TabPanel>
           <TabPanel value={activeTab} index={1}>
-            <StockTracking />
+            {activeTab === 1 ? (
+              <Box sx={{ p: 3 }}>
+                <Typography variant="h4" sx={{ mb: 3, color: '#1e40af', fontWeight: 'bold' }}>
+                  Stock Tracking
+                </Typography>
+                <Card>
+                  <CardContent>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Medicine Name</TableCell>
+                          <TableCell>Stock Quantity</TableCell>
+                          <TableCell>Expiry Date</TableCell>
+                          <TableCell>Status</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>Paracetamol 500mg</TableCell>
+                          <TableCell>250</TableCell>
+                          <TableCell>Dec 2025</TableCell>
+                          <TableCell><Chip label="Active" color="success" size="small" /></TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Amoxicillin 250mg</TableCell>
+                          <TableCell>180</TableCell>
+                          <TableCell>Nov 2025</TableCell>
+                          <TableCell><Chip label="Active" color="success" size="small" /></TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </Box>
+            ) : null}
           </TabPanel>
           <TabPanel value={activeTab} index={2}>
             <ReorderManagement />
