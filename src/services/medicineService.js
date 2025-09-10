@@ -138,6 +138,20 @@ export const medicineService = {
     }
   },
 
+  // Update medicine information
+  updateMedicine: async (medicineId, updateData) => {
+    try {
+      const medicineRef = doc(db, 'medicines', medicineId);
+      await updateDoc(medicineRef, {
+        ...updateData,
+        updatedAt: serverTimestamp()
+      });
+      return true;
+    } catch (error) {
+      throw new Error(`Error updating medicine: ${error.message}`);
+    }
+  },
+
   // Listen to medicine changes in real-time
   subscribeMedicines: (callback) => {
     const q = query(collection(db, 'medicines'), orderBy('name'));

@@ -7,7 +7,12 @@ import ERPDashboard from './components/ERPDashboard'
 import PharmacyPOS from './pos/components/PharmacyPOSFirebaseIntegrated'
 import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
+<<<<<<< HEAD
 import ColdChainModule from './components/coldchain/ColdChainModule'
+=======
+import InventoryModule from './components/inventory/InventoryModule'
+import ERPApp from './components/ERPApp'
+>>>>>>> origin/INVENTORY
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import './App.css'
 
@@ -205,6 +210,7 @@ function App() {
     window.location.href = '/hr'
   }
 
+<<<<<<< HEAD
   const handleLegalAccess = () => {
     // Access to legal module view (not admin)
     window.location.href = '/legal'
@@ -215,6 +221,12 @@ function App() {
   }
 
 
+=======
+  const handleInventoryAccess = () => {
+    window.location.href = '/inventory'
+  }
+
+>>>>>>> origin/INVENTORY
   const handleLogout = () => {
     setCurrentScreen('login')
   }
@@ -248,13 +260,18 @@ function App() {
               <HRModule />
             </Box>
           } />
+<<<<<<< HEAD
           <Route path="/legal" element={
+=======
+          <Route path="/inventory" element={
+>>>>>>> origin/INVENTORY
             <Box sx={{ 
               display: 'flex', 
               flexDirection: 'column', 
               minHeight: '100vh',
               backgroundColor: '#f8fafc'
             }}>
+<<<<<<< HEAD
               <iframe 
                 src="/legal/index.html" 
                 title="Legal Module"
@@ -271,6 +288,11 @@ function App() {
               <ColdChainModule />
             </div>
           } />
+=======
+              <InventoryModule />
+            </Box>
+          } />
+>>>>>>> origin/INVENTORY
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
@@ -295,7 +317,11 @@ function App() {
             <div className="App">
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
+<<<<<<< HEAD
               {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onLogout={handleLogout} />}
+=======
+              {currentScreen === 'dashboard' && <ERPApp />}
+>>>>>>> origin/INVENTORY
             </div>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
