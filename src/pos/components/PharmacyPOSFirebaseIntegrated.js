@@ -24,7 +24,9 @@ import {
   DialogActions,
   Divider,
   Grid,
-  IconButton
+  IconButton,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { medicineService } from '../services/medicineService';
@@ -34,6 +36,8 @@ import { initializeSampleData } from '../services/dataInitServiceNew';
 
 const PharmacyPOSFirebaseIntegrated = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // Logout function
   const handleLogout = () => {
@@ -674,14 +678,22 @@ const PharmacyPOSFirebaseIntegrated = () => {
       <Box sx={{ 
         flex: 1, 
         display: 'flex', 
+        flexDirection: { xs: 'column', md: 'row' },
         gap: 1.5, 
-        p: 1.5, 
+        p: { xs: 1, md: 1.5 }, 
         overflow: 'hidden',
         backgroundColor: '#ffffff'
       }}>
         
-        {/* LEFT PANEL - INPUT SECTIONS (30%) */}
-        <Box sx={{ width: '30%', display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        {/* LEFT PANEL - INPUT SECTIONS */}
+        <Box sx={{ 
+          width: { xs: '100%', md: '30%' }, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 1.5,
+          maxHeight: { xs: 'none', md: '100%' },
+          overflowY: { xs: 'visible', md: 'auto' }
+        }}>
           
           {/* PATIENT INFORMATION - COMPACT */}
           <Paper sx={{ 
@@ -863,8 +875,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
           </Paper>
         </Box>
 
-        {/* MIDDLE PANEL - AVAILABLE MEDICINES (40%) */}
-        <Box sx={{ width: '40%', display: 'flex', flexDirection: 'column' }}>
+        {/* MIDDLE PANEL - AVAILABLE MEDICINES */}
+        <Box sx={{ 
+          width: { xs: '100%', md: '40%' }, 
+          display: 'flex', 
+          flexDirection: 'column',
+          order: { xs: 2, md: 0 }
+        }}>
           
           {/* MEDICINE SEARCH - COMPACT */}
           <Paper sx={{ 
@@ -1048,8 +1065,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
           </Paper>
         </Box>
 
-        {/* RIGHT PANEL - CART & CHECKOUT (30%) */}
-        <Box sx={{ width: '30%', display: 'flex', flexDirection: 'column' }}>
+        {/* RIGHT PANEL - CART & CHECKOUT */}
+        <Box sx={{ 
+          width: { xs: '100%', md: '30%' }, 
+          display: 'flex', 
+          flexDirection: 'column',
+          order: { xs: 3, md: 0 }
+        }}>
           <Paper sx={{ 
             flex: 1, 
             display: 'flex', 
