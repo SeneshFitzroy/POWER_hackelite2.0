@@ -135,6 +135,7 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
     } else if (moduleTitle === "Cold Chain" && onColdChainAccess) {
       onColdChainAccess()
     } else if (moduleTitle === "Inventory" && onInventoryAccess) {
+      console.log('Inventory clicked, calling onInventoryAccess:', onInventoryAccess)
       onInventoryAccess()
     } else if (moduleTitle === "Administration") {
       // Navigate to data cleaner
