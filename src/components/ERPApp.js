@@ -76,11 +76,42 @@ const ERPApp = () => {
     setNotification(prev => ({ ...prev, open: false }));
   };
 
+  // Handle navigation for different modules
+  const handleInventoryAccess = () => {
+    console.log('ERPApp: Inventory access requested')
+    handleModuleChange('inventory')
+  }
+
+  const handleModuleNavigation = (module) => {
+    console.log(`ERPApp: Navigation to ${module}`)
+    switch (module) {
+      case 'inventory':
+        handleModuleChange('inventory')
+        break
+      case 'dashboard':
+        handleModuleChange('dashboard')
+        break
+      default:
+        console.log(`Module ${module} not handled in ERPApp`)
+    }
+  }
+
   // Render current module
   const renderModule = () => {
     switch (activeModule) {
       case 'dashboard':
-        return <ERPDashboard onModuleChange={handleModuleChange} />;
+        return (
+          <ERPDashboard 
+            onModuleChange={handleModuleChange}
+            onInventoryAccess={handleInventoryAccess}
+            onPOSAccess={() => console.log('POS not available in ERPApp')}
+            onSalesAccess={() => console.log('Sales not available in ERPApp')}
+            onHRAccess={() => console.log('HR not available in ERPApp')}
+            onLegalAccess={() => console.log('Legal not available in ERPApp')}
+            onColdChainAccess={() => console.log('Cold Chain not available in ERPApp')}
+            onLogout={() => console.log('Logout not available in ERPApp')}
+          />
+        );
       
       case 'inventory':
       case 'stock-tracking':
