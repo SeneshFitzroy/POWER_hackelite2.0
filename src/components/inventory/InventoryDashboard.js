@@ -183,21 +183,21 @@ const InventoryDashboard = () => {
       </Box>
 
       {/* Stats Grid */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={2}>
+      <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: 4 }}>
+        <Grid item xs={6} sm={4} md={2}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
             color: 'white',
             boxShadow: '0 4px 12px rgba(30, 64, 175, 0.3)'
           }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <InventoryIcon sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                <InventoryIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
+                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
                     {stats.totalMedicines}
                   </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                     Total Medicines
                   </Typography>
                 </Box>
@@ -206,20 +206,20 @@ const InventoryDashboard = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid item xs={6} sm={4} md={2}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
             color: 'white',
             boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)'
           }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <CheckCircleIcon sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                <CheckCircleIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
+                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
                     {stats.activeMedicines}
                   </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                     Active Stock
                   </Typography>
                 </Box>
@@ -228,20 +228,20 @@ const InventoryDashboard = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid item xs={6} sm={4} md={2}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
             color: 'white',
             boxShadow: '0 4px 12px rgba(217, 119, 6, 0.3)'
           }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <TrendingDownIcon sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                <TrendingDownIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
+                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
                     {stats.lowStockMedicines}
                   </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                     Low Stock
                   </Typography>
                 </Box>
@@ -250,20 +250,20 @@ const InventoryDashboard = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid item xs={6} sm={4} md={2}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
             color: 'white',
             boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)'
           }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <ScheduleIcon sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                <ScheduleIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
+                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
                     {stats.expiringMedicines}
                   </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                     Expiring Soon
                   </Typography>
                 </Box>
@@ -272,20 +272,20 @@ const InventoryDashboard = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid item xs={6} sm={4} md={2}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #7c2d12 0%, #dc2626 100%)',
             color: 'white',
             boxShadow: '0 4px 12px rgba(124, 45, 18, 0.3)'
           }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <ErrorIcon sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                <ErrorIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
+                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
                     {stats.expiredMedicines}
                   </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                     Expired
                   </Typography>
                 </Box>
@@ -294,20 +294,20 @@ const InventoryDashboard = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid item xs={12} sm={8} md={2}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
             color: 'white',
             boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)'
           }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <InventoryIcon sx={{ fontSize: 40, mr: 2 }} />
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                <InventoryIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
+                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
                     LKR {stats.totalStockValue.toLocaleString()}
                   </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                     Stock Value
                   </Typography>
                 </Box>
@@ -318,14 +318,14 @@ const InventoryDashboard = () => {
       </Grid>
 
       {/* Alerts and Quick Actions */}
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 2, md: 3 }}>
         {/* Low Stock Alerts */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} lg={6}>
           <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-            <CardContent>
+            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <WarningIcon sx={{ color: '#d97706', mr: 1 }} />
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '1rem', md: '1.25rem' } }}>
                   Low Stock Alerts
                 </Typography>
               </Box>
@@ -361,12 +361,12 @@ const InventoryDashboard = () => {
         </Grid>
 
         {/* Expiring Medicines */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} lg={6}>
           <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-            <CardContent>
+            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <ScheduleIcon sx={{ color: '#dc2626', mr: 1 }} />
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '1rem', md: '1.25rem' } }}>
                   Expiring Soon
                 </Typography>
               </Box>
@@ -406,7 +406,7 @@ const InventoryDashboard = () => {
       </Grid>
 
       {/* Low Stock Dashboard Widget */}
-      <Grid container spacing={3} sx={{ mt: 2 }}>
+      <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mt: 2 }}>
         <Grid item xs={12}>
           <LowStockDashboardWidget 
             onViewAll={() => {

@@ -1493,3 +1493,83 @@ body {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 767px) {
+  /* Dashboard module cards */
+  .module-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .module-title {
+    font-size: 1.1rem;
+  }
+  
+  .module-description {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  
+  /* Grid adjustments */
+  .modules-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  /* Table responsiveness */
+  .MuiTableContainer-root {
+    overflow-x: auto !important;
+  }
+  
+  .MuiTable-root {
+    min-width: 800px !important;
+  }
+  
+  /* Card content spacing */
+  .MuiCardContent-root {
+    padding: 12px !important;
+  }
+  
+  /* Button sizing */
+  .MuiButton-root {
+    padding: 8px 16px !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Typography adjustments */
+  .MuiTypography-h4 {
+    font-size: 1.5rem !important;
+  }
+  
+  .MuiTypography-h5 {
+    font-size: 1.25rem !important;
+  }
+  
+  .MuiTypography-h6 {
+    font-size: 1.1rem !important;
+  }
+  
+  /* Form controls */
+  .MuiTextField-root {
+    margin-bottom: 8px !important;
+  }
+  
+  /* Drawer adjustments */
+  .MuiDrawer-paperAnchorLeft {
+    width: 100% !important;
+  }
+  
+  /* Navigation items */
+  .MuiListItem-root {
+    padding: 8px 16px !important;
+  }
+  
+  /* Stats cards */
+  .stats-card {
+    padding: 12px !important;
+    margin-bottom: 12px !important;
+  }
+}

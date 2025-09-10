@@ -237,14 +237,15 @@ const StockTracking = () => {
 
       {/* Filters */}
       <Card sx={{ mb: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <CardContent>
-          <Grid container spacing={3} alignItems="center">
+        <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+          <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center">
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                placeholder="Search medicines by name, batch, rack location..."
+                placeholder="Search medicines..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                size="small"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -261,7 +262,7 @@ const StockTracking = () => {
               />
             </Grid>
             <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
+              <FormControl fullWidth size="small">
                 <InputLabel>Status Filter</InputLabel>
                 <Select
                   value={statusFilter}
@@ -276,7 +277,7 @@ const StockTracking = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} md={3}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>
                 Showing {filteredMedicines.length} of {medicines.length} medicines
               </Typography>
             </Grid>
@@ -286,17 +287,17 @@ const StockTracking = () => {
 
       {/* Stock Table */}
       <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <TableContainer>
-          <Table>
+        <TableContainer sx={{ overflowX: 'auto' }}>
+          <Table sx={{ minWidth: { xs: 800, md: 'auto' } }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Medicine Name</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Batch/Lot Number</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Stock Quantity</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Expiry Date</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Rack Location</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '0.875rem', md: '1rem' } }}>Medicine Name</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '0.875rem', md: '1rem' } }}>Batch/Lot Number</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '0.875rem', md: '1rem' } }}>Stock Quantity</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '0.875rem', md: '1rem' } }}>Expiry Date</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '0.875rem', md: '1rem' } }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '0.875rem', md: '1rem' } }}>Rack Location</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '0.875rem', md: '1rem' } }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

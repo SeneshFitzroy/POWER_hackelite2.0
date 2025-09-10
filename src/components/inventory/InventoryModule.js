@@ -11,8 +11,16 @@ import {
   ListItemButton,
   Drawer,
   Divider,
-  Button
+  Button,
+  useMediaQuery,
+  useTheme,
+  AppBar,
+  Toolbar,
+  IconButton
 } from '@mui/material';
+import {
+  Menu as MenuIcon
+} from '@mui/icons-material';
 import {
   Dashboard as DashboardIcon,
   Inventory as InventoryIcon,
@@ -45,8 +53,12 @@ export default function InventoryModule({
 }) {
   const [activeTab, setActiveTab] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [mobileOpen, setMobileOpen] = useState(false);
+  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const sidebarWidth = 280;
+  const sidebarWidth = isMobile ? '100%' : 280;
 
   const navigationItems = [
     { label: 'Inventory Dashboard', icon: <DashboardIcon />, index: 0 },
@@ -92,6 +104,9 @@ export default function InventoryModule({
 
   const handleNavClick = (index) => {
     setActiveTab(index);
+    if (isMobile) {
+      setMobileOpen(false);
+    }
     // Map tab index back to module name for parent navigation
     const tabToModuleMap = {
       0: 'inventory',
@@ -111,6 +126,10 @@ export default function InventoryModule({
     }
   };
 
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
   const handleLogout = () => {
     // Clear any stored data
     localStorage.clear();
@@ -122,14 +141,43 @@ export default function InventoryModule({
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#f8fafc', overflow: 'hidden' }}>
+      
+      {/* Mobile Header */}
+      {isMobile && (
+        <AppBar 
+          position="fixed" 
+          sx={{ 
+            backgroundColor: '#1e3a8a',
+            zIndex: (theme) => theme.zIndex.drawer + 1
+          }}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+              COREERP - Inventory
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
       {/* Left Sidebar Navigation */}
       <Drawer
-        variant="permanent"
+        variant={isMobile ? "temporary" : "permanent"}
+        open={isMobile ? mobileOpen : true}
+        onClose={handleDrawerToggle}
         sx={{
-          width: sidebarWidth,
+          width: isMobile ? '100%' : sidebarWidth,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: sidebarWidth,
+            width: isMobile ? '100%' : sidebarWidth,
             boxSizing: 'border-box',
             background: 'linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%)',
             color: '#ffffff',
@@ -318,14 +366,19 @@ export default function InventoryModule({
           flexGrow: 1,
           backgroundColor: '#ffffff',
           height: '100vh',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          marginLeft: isMobile ? 0 : 0,
+          width: isMobile ? '100%' : `calc(100% - ${sidebarWidth}px)`
         }}
       >
+        {/* Add top spacing for mobile toolbar */}
+        {isMobile && <Toolbar />}
+        
         {/* Content Container */}
         <Box sx={{ 
-          py: 3, 
-          px: 3,
-          height: '100%', 
+          py: isMobile ? 2 : 3, 
+          px: isMobile ? 2 : 3,
+          height: isMobile ? 'calc(100% - 64px)' : '100%', 
           overflow: 'auto' 
         }}>
           {activeTab === 0 && <InventoryDashboard />}
