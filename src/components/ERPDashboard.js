@@ -129,7 +129,6 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
     // INVENTORY NAVIGATION - DIRECT APPROACH
     if (moduleTitle === "Inventory") {
       console.log('[FIXED v3.0] Inventory navigation starting...')
-      alert('INVENTORY NAVIGATION WORKING - v3.0!')
       console.log('[FIXED v3.0] About to navigate to /inventory')
       window.location.href = '/inventory'
       return
