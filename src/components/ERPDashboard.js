@@ -124,6 +124,15 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
 
   const handleModuleClick = (moduleTitle) => {
     console.log(`Module clicked: ${moduleTitle}`)
+    
+    // Special handling for Inventory with alert for testing
+    if (moduleTitle === "Inventory") {
+      console.log('Inventory clicked - using direct navigation')
+      alert('Inventory clicked - navigating now...')
+      window.location.href = '/inventory'
+      return
+    }
+    
     if (moduleTitle === "POS" && onPOSAccess) {
       onPOSAccess()
     } else if (moduleTitle === "Sales & Finance" && onSalesAccess) {
@@ -134,9 +143,6 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       onLegalAccess()
     } else if (moduleTitle === "Cold Chain" && onColdChainAccess) {
       onColdChainAccess()
-    } else if (moduleTitle === "Inventory") {
-      console.log('Inventory clicked - using direct navigation')
-      window.location.href = '/inventory'
     } else if (moduleTitle === "Administration") {
       // Navigate to data cleaner
       window.open('/clear-data', '_blank')
@@ -171,7 +177,10 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
               description={module.description}
               color={module.color}
               delay={400 + index * 100}
-              onClick={() => handleModuleClick(module.title)}
+              onClick={() => {
+                console.log(`ModuleCard clicked: ${module.title}`)
+                handleModuleClick(module.title)
+              }}
             />
           ))}
         </div>
