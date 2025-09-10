@@ -67,10 +67,11 @@ const Main = styled('main')(({ theme }) => ({
   flexGrow: 1,
   padding: 0,
   margin: 0,
-  backgroundColor: COLORS.lightGray, // Light gray background for main content
+  backgroundColor: COLORS.lightGray,
+  minHeight: '100vh',
   [theme.breakpoints.up('md')]: {
-    width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
   },
 }));
 
@@ -210,22 +211,19 @@ const Layout = ({ children }) => {
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <CssBaseline />
       
       {/* Mobile AppBar */}
       <AppBar
         position="fixed"
         sx={{
-          [theme.breakpoints.up('md')]: {
-            width: `calc(100% - ${drawerWidth}px)`,
-            marginLeft: drawerWidth,
-          },
           backgroundColor: 'white',
-          color: COLORS.darkGray, // Dark gray for text
+          color: COLORS.darkGray,
           boxShadow: 'none',
           borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-          display: { xs: 'block', md: 'none' }
+          display: { xs: 'block', md: 'none' },
+          zIndex: 1201
         }}
       >
         <Toolbar>
@@ -263,7 +261,7 @@ const Layout = ({ children }) => {
               sx={{ 
                 color: COLORS.darkGray, 
                 fontWeight: 'bold',
-                display: 'none', // Hidden by default, shows if logo fails
+                display: 'none',
                 fontSize: '1.3rem',
                 textAlign: 'center'
               }}
@@ -280,7 +278,7 @@ const Layout = ({ children }) => {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
+          keepMounted: true,
         }}
         sx={{
           display: { xs: 'block', md: 'none' },
@@ -295,7 +293,15 @@ const Layout = ({ children }) => {
         variant="permanent"
         sx={{
           display: { xs: 'none', md: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': { 
+            boxSizing: 'border-box', 
+            width: drawerWidth,
+            position: 'fixed',
+            height: '100vh',
+            top: 0,
+            left: 0,
+            zIndex: 1200
+          },
         }}
         open
       >
@@ -305,7 +311,13 @@ const Layout = ({ children }) => {
       {/* Main Content */}
       <Main>
         <Toolbar sx={{ display: { xs: 'block', md: 'none' } }} />
-        <Box sx={{ width: '100%', margin: 0, padding: 0 }}>
+        <Box sx={{ 
+          width: '100%', 
+          margin: 0, 
+          padding: 0,
+          minHeight: '100vh',
+          backgroundColor: COLORS.lightGray
+        }}>
           {children}
         </Box>
       </Main>
