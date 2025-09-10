@@ -7,6 +7,7 @@ import ERPDashboard from './components/ERPDashboard'
 import PharmacyPOS from './pos/components/PharmacyPOSFirebaseIntegrated'
 import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
+import ColdChainModule from './components/coldchain/ColdChainModule'
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import './App.css'
 
@@ -209,6 +210,11 @@ function App() {
     window.location.href = '/legal'
   }
 
+  const handleColdChainAccess = () => {
+    window.location.href = '/coldchain'
+  }
+
+
   const handleLogout = () => {
     setCurrentScreen('login')
   }
@@ -260,6 +266,11 @@ function App() {
               />
             </Box>
           } />
+          <Route path="/coldchain" element={
+            <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+              <ColdChainModule />
+            </div>
+          } />
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
@@ -270,11 +281,21 @@ function App() {
               <FirebaseDataCleaner />
             </Box>
           } />
+          <Route path="/dashboard" element={
+            <div className="App">
+              <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onLogout={handleLogout} />
+            </div>
+          } />
+          <Route path="/login" element={
+            <div className="App">
+              <LoginScreen onLoginSuccess={handleLoginSuccess} />
+            </div>
+          } />
           <Route path="/" element={
             <div className="App">
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onLogout={handleLogout} />}
             </div>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
