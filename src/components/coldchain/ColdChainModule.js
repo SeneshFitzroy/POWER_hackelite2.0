@@ -176,7 +176,7 @@ export default function ColdChainModule() {
 
   const handleBackToDashboard = () => {
     coldChainService.stop();
-    window.location.href = '/dashboard';
+    window.location.href = '/';
   };
 
   const handleStartStop = () => {

@@ -51,7 +51,7 @@ export default function Navigation() {
           <Button
             color="inherit"
             startIcon={<Dashboard />}
-            onClick={() => handleNavigation('/dashboard')}
+            onClick={() => handleNavigation('/')}
             sx={{ ml: 8 }}
           >
             Dashboard

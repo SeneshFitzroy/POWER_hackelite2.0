@@ -296,11 +296,6 @@ function App() {
               <FirebaseDataCleaner />
             </Box>
           } />
-          <Route path="/dashboard" element={
-            <div className="App">
-              <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />
-            </div>
-          } />
           <Route path="/login" element={
             <div className="App">
               <LoginScreen onLoginSuccess={handleLoginSuccess} />
