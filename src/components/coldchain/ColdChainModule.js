@@ -1202,7 +1202,7 @@ startxref
                                 </Grid>
                                 <Grid item xs={6}>
                                   <Box sx={{ textAlign: 'center', p: 1, backgroundColor: '#f0fdf4', borderRadius: 1 }}>
-                                    <Typography variant="h6" sx={{ color: '#22c55e' }}>
+                                    <Typography variant="h6" sx={{ color: '#3b82f6' }}>
                                       {stats.avgHumidity}%
                                     </Typography>
                                     <Typography variant="caption">Avg Humidity</Typography>
