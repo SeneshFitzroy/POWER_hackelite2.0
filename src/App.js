@@ -311,11 +311,7 @@ function App() {
             <div className="App">
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-<<<<<<< HEAD
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onLogout={handleLogout} />}
-=======
-              {currentScreen === 'dashboard' && <ERPApp />}
->>>>>>> origin/INVENTORY
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
             </div>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
