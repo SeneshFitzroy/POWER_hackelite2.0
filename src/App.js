@@ -175,6 +175,26 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
+  // If we're on the inventory route, render ONLY the inventory module
+  if (window.location.pathname === '/inventory') {
+    return (
+      <ThemeProvider theme={theme}>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: '#f8fafc',
+          zIndex: 10000,
+          overflow: 'hidden'
+        }}>
+          <InventoryModule />
+        </div>
+      </ThemeProvider>
+    );
+  }
+
   const [currentScreen, setCurrentScreen] = useState('splash')
 
   // Check URL parameters on component mount
@@ -233,18 +253,18 @@ function App() {
       <ErrorBoundary>
         <Routes>
           <Route path="/inventory" element={
-            <Box sx={{ 
-              width: '100vw',
-              height: '100vh',
-              overflow: 'hidden',
-              backgroundColor: '#f8fafc',
+            <div style={{
               position: 'fixed',
               top: 0,
               left: 0,
-              zIndex: 9999
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: '#f8fafc',
+              zIndex: 10000,
+              overflow: 'hidden'
             }}>
               <InventoryModule />
-            </Box>
+            </div>
           } />
           <Route path="/pos" element={
             <Box sx={{ height: '100vh', overflow: 'hidden' }}>
