@@ -123,12 +123,12 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
   ]
 
   const handleModuleClick = (moduleTitle) => {
-    console.log(`Module clicked: ${moduleTitle}`)
+    console.log(`[MAIN ERPDashboard] Module clicked: ${moduleTitle}`)
     
     // Special handling for Inventory with alert for testing
     if (moduleTitle === "Inventory") {
-      console.log('Inventory clicked - using direct navigation')
-      alert('Inventory clicked - navigating now...')
+      console.log('[MAIN ERPDashboard] Inventory clicked - using direct navigation')
+      alert('MAIN ERPDashboard: Inventory clicked - navigating now...')
       window.location.href = '/inventory'
       return
     }

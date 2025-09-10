@@ -9,7 +9,6 @@ import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
 import ColdChainModule from './components/coldchain/ColdChainModule'
 import InventoryModule from './components/inventory/InventoryModule'
-import ERPApp from './components/ERPApp'
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import './App.css'
 
@@ -300,11 +299,6 @@ function App() {
             }}>
               <FirebaseDataCleaner />
             </Box>
-          } />
-          <Route path="/login" element={
-            <div className="App">
-              <LoginScreen onLoginSuccess={handleLoginSuccess} />
-            </div>
           } />
           <Route path="/" element={
             <div className="App">
