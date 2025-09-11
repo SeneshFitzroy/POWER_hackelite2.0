@@ -124,13 +124,12 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
   ]
 
   const handleModuleClick = (moduleTitle) => {
-    console.log(`[FIXED v3.0] Module clicked: ${moduleTitle}`)
+    console.log(`[FIXED v3.1] Module clicked: ${moduleTitle}`)
     
-    // INVENTORY NAVIGATION - DIRECT APPROACH
-    if (moduleTitle === "Inventory") {
-      console.log('[FIXED v3.0] Inventory navigation starting...')
-      console.log('[FIXED v3.0] About to navigate to /inventory')
-      window.location.href = '/inventory'
+    // INVENTORY NAVIGATION - USING PROPER CALLBACK
+    if (moduleTitle === "Inventory" && onInventoryAccess) {
+      console.log('[FIXED v3.1] Inventory navigation using proper callback...')
+      onInventoryAccess()
       return
     }
     
