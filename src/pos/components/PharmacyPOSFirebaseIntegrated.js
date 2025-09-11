@@ -276,16 +276,18 @@ const PharmacyPOSFirebaseIntegrated = () => {
     }
   };
 
-  // Debounced patient search function - now includes customers
+  // Debounced patient search function - Enhanced with smart identification
   const debouncedPatientSearch = async (searchTerm) => {
     if (searchTerm.length >= 3) {
       try {
         setSearchingPatients(true);
         
+        console.log('🔍 SMART PATIENT/CUSTOMER SEARCH - Term:', searchTerm);
+        
         // Search for patients from patients collection
         const allPatients = await patientService.getAllPatients();
         
-        // Search for customers from customers collection
+        // Search for customers from customers collection with enhanced query
         const customersSnapshot = await getDocs(collection(db, 'customers'));
         const allCustomers = customersSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -297,58 +299,128 @@ const PharmacyPOSFirebaseIntegrated = () => {
           nic: doc.data().nic,
           age: doc.data().age,
           address: doc.data().address,
-          isCustomer: true // Flag to identify customers
+          isCustomer: true, // Flag to identify customers
+          totalPurchases: doc.data().totalPurchases || 0,
+          lastVisit: doc.data().lastVisit,
+          primaryIdentifier: doc.data().primaryIdentifier || 'Unknown'
         }));
         
         // Combine patients and customers
         const allPeople = [...allPatients, ...allCustomers];
         const searchTermLower = searchTerm.toLowerCase();
         
+        console.log(`📊 Searching in ${allPatients.length} patients + ${allCustomers.length} customers = ${allPeople.length} total records`);
+        
         const suggestions = allPeople.filter(person => {
-          // Search by NIC (exact or partial match)
-          if (person.nic && person.nic.toLowerCase().includes(searchTermLower)) {
+          let matches = false;
+          let matchType = '';
+          
+          // 🎯 Priority 1: Exact NIC match (most reliable)
+          if (person.nic && person.nic.toLowerCase() === searchTermLower) {
+            matches = true;
+            matchType = 'Exact NIC';
+            person.matchPriority = 1;
+            person.matchType = matchType;
             return true;
           }
-          // Search by contact/phone number
-          if (person.contact && person.contact.includes(searchTerm)) {
+          
+          // 🎯 Priority 2: Exact phone number match
+          if ((person.contact && person.contact === searchTerm) || 
+              (person.phoneNumber && person.phoneNumber === searchTerm)) {
+            matches = true;
+            matchType = 'Exact Phone';
+            person.matchPriority = 2;
+            person.matchType = matchType;
             return true;
           }
-          if (person.phoneNumber && person.phoneNumber.includes(searchTerm)) {
+          
+          // 🎯 Priority 3: Partial NIC match (for progressive typing)
+          if (person.nic && searchTerm.length >= 6 && person.nic.toLowerCase().includes(searchTermLower)) {
+            matches = true;
+            matchType = 'Partial NIC';
+            person.matchPriority = 3;
+            person.matchType = matchType;
             return true;
           }
-          // Search by name (partial match)
+          
+          // 🎯 Priority 4: Partial phone number match
+          if (searchTerm.length >= 6 && 
+              ((person.contact && person.contact.includes(searchTerm)) || 
+               (person.phoneNumber && person.phoneNumber.includes(searchTerm)))) {
+            matches = true;
+            matchType = 'Partial Phone';
+            person.matchPriority = 4;
+            person.matchType = matchType;
+            return true;
+          }
+          
+          // 🎯 Priority 5: Name match (least reliable due to duplicates)
           if (person.name && person.name.toLowerCase().includes(searchTermLower)) {
+            matches = true;
+            matchType = 'Name';
+            person.matchPriority = 5;
+            person.matchType = matchType;
             return true;
           }
+          
           return false;
-        }).slice(0, 8); // Limit to 8 suggestions for better UI
+        });
         
-        setPatientSuggestions(suggestions);
-        setShowPatientDropdown(suggestions.length > 0);
+        // Sort by match priority and reliability
+        suggestions.sort((a, b) => {
+          // First by match priority (lower number = higher priority)
+          if (a.matchPriority !== b.matchPriority) {
+            return a.matchPriority - b.matchPriority;
+          }
+          
+          // Then by customer status (existing customers first)
+          if (a.isCustomer && !b.isCustomer) return -1;
+          if (!a.isCustomer && b.isCustomer) return 1;
+          
+          // Then by recent visits (if available)
+          if (a.lastVisit && b.lastVisit) {
+            return new Date(b.lastVisit) - new Date(a.lastVisit);
+          }
+          if (a.lastVisit && !b.lastVisit) return -1;
+          if (!a.lastVisit && b.lastVisit) return 1;
+          
+          // Finally by name
+          return (a.name || '').localeCompare(b.name || '');
+        });
         
-        // If we have an exact NIC match (10+ characters), auto-select
+        // Limit results and add match information
+        const limitedSuggestions = suggestions.slice(0, 8);
+        
+        console.log('🎯 SEARCH RESULTS:');
+        limitedSuggestions.forEach((person, index) => {
+          console.log(`  ${index + 1}. ${person.name} - ${person.matchType} - Priority ${person.matchPriority}`);
+        });
+        
+        setPatientSuggestions(limitedSuggestions);
+        setShowPatientDropdown(limitedSuggestions.length > 0);
+        
+        // Auto-select for high-confidence exact matches
         if (searchTerm.length >= 10) {
-          const exactMatch = suggestions.find(p => 
-            (p.nic && p.nic === searchTerm) || 
-            (p.contact && p.contact === searchTerm) || 
-            (p.phoneNumber && p.phoneNumber === searchTerm)
+          const exactMatch = limitedSuggestions.find(p => 
+            p.matchPriority <= 2 // Exact NIC or Phone match
           );
           
           if (exactMatch) {
+            console.log('🎯 Auto-selecting high-confidence match:', exactMatch.name);
             selectPatientFromDropdown(exactMatch);
             return; // Exit early for exact match
           }
         }
         
-        // Clear current patient if no exact match and less than 10 characters
-        if (searchTerm.length < 10 && suggestions.length === 0) {
+        // Clear current patient if no high-confidence match and search is too short
+        if (searchTerm.length < 6 && limitedSuggestions.length === 0) {
           setCurrentPatient(null);
           setCustomerName('');
           setCustomerContact('');
         }
         
       } catch (error) {
-        console.error('Error searching patients/customers:', error);
+        console.error('❌ Error in enhanced patient/customer search:', error);
         setPatientSuggestions([]);
         setShowPatientDropdown(false);
         setCurrentPatient(null);
@@ -716,55 +788,215 @@ const PharmacyPOSFirebaseIntegrated = () => {
             alert('Error validating patient data. Please select a different patient or create a new one.');
             return; // Exit the sale process
           }
-        } else if (patientNIC.trim() || customerName.trim()) {
-        console.log('Creating/finding customer and patient records...');
+        } else if (patientNIC.trim() || customerName.trim() || customerContact.trim()) {
+        console.log('🔍 SMART CUSTOMER IDENTIFICATION - Starting customer lookup...');
         
         try {
-          // First, check if customer already exists by NIC
           let existingCustomer = null;
-          if (patientNIC.trim()) {
-            console.log('Searching for existing customer with NIC:', patientNIC);
-            const customersSnapshot = await getDocs(query(
-              collection(db, 'customers'),
-              where('nic', '==', patientNIC)
-            ));
-            if (!customersSnapshot.empty) {
-              existingCustomer = { id: customersSnapshot.docs[0].id, ...customersSnapshot.docs[0].data() };
-              customerId = existingCustomer.id;
-              console.log('Found existing customer:', customerId, existingCustomer);
-            } else {
-              console.log('No existing customer found with NIC:', patientNIC);
+          let customerFound = false;
+          let searchMethod = '';
+          
+          // 🎯 STRATEGY 1: Search by NIC (Primary unique identifier)
+          if (patientNIC.trim() && patientNIC.length >= 9) {
+            console.log('🆔 Searching by NIC (Primary):', patientNIC);
+            try {
+              const nicQuery = query(
+                collection(db, 'customers'),
+                where('nic', '==', patientNIC.trim())
+              );
+              const nicSnapshot = await getDocs(nicQuery);
+              
+              if (!nicSnapshot.empty) {
+                existingCustomer = { id: nicSnapshot.docs[0].id, ...nicSnapshot.docs[0].data() };
+                customerId = existingCustomer.id;
+                customerFound = true;
+                searchMethod = 'NIC';
+                console.log('✅ Found existing customer by NIC:', customerId, existingCustomer);
+                
+                // Update customer info if name or phone has changed
+                if (customerName.trim() && customerName.trim() !== existingCustomer.name) {
+                  console.log('📝 Updating customer name from:', existingCustomer.name, 'to:', customerName);
+                  await updateDoc(doc(db, 'customers', customerId), {
+                    name: customerName.trim(),
+                    updatedAt: new Date(),
+                    lastUpdatedBy: 'POS_SYSTEM'
+                  });
+                }
+                if (customerContact.trim() && customerContact.trim() !== existingCustomer.phoneNumber) {
+                  console.log('📞 Updating customer phone from:', existingCustomer.phoneNumber, 'to:', customerContact);
+                  await updateDoc(doc(db, 'customers', customerId), {
+                    phoneNumber: customerContact.trim(),
+                    updatedAt: new Date(),
+                    lastUpdatedBy: 'POS_SYSTEM'
+                  });
+                }
+              }
+            } catch (nicError) {
+              console.warn('⚠️ NIC search failed:', nicError.message);
             }
           }
           
-          // Create customer if doesn't exist and we have required data
-          if (!existingCustomer && patientNIC.trim() && customerName.trim()) {
-            console.log('Creating new customer...');
+          // 🎯 STRATEGY 2: Search by Phone Number (Secondary unique identifier)
+          if (!customerFound && customerContact.trim() && customerContact.length >= 9) {
+            console.log('📱 Searching by Phone (Secondary):', customerContact);
+            try {
+              const phoneQuery = query(
+                collection(db, 'customers'),
+                where('phoneNumber', '==', customerContact.trim())
+              );
+              const phoneSnapshot = await getDocs(phoneQuery);
+              
+              if (!phoneSnapshot.empty) {
+                existingCustomer = { id: phoneSnapshot.docs[0].id, ...phoneSnapshot.docs[0].data() };
+                customerId = existingCustomer.id;
+                customerFound = true;
+                searchMethod = 'Phone';
+                console.log('✅ Found existing customer by Phone:', customerId, existingCustomer);
+                
+                // Update NIC if provided and different
+                if (patientNIC.trim() && patientNIC.trim() !== existingCustomer.nic) {
+                  console.log('🆔 Updating customer NIC from:', existingCustomer.nic, 'to:', patientNIC);
+                  
+                  // Check if this NIC is already used by another customer
+                  const nicConflictQuery = query(
+                    collection(db, 'customers'),
+                    where('nic', '==', patientNIC.trim())
+                  );
+                  const nicConflictSnapshot = await getDocs(nicConflictQuery);
+                  
+                  if (nicConflictSnapshot.empty) {
+                    await updateDoc(doc(db, 'customers', customerId), {
+                      nic: patientNIC.trim(),
+                      updatedAt: new Date(),
+                      lastUpdatedBy: 'POS_SYSTEM'
+                    });
+                    console.log('✅ NIC updated successfully');
+                  } else {
+                    console.warn('⚠️ NIC conflict detected - another customer already has this NIC');
+                    alert(`⚠️ Warning: NIC ${patientNIC} is already registered to another customer. Using phone number identification.`);
+                  }
+                }
+              }
+            } catch (phoneError) {
+              console.warn('⚠️ Phone search failed:', phoneError.message);
+            }
+          }
+          
+          // 🎯 STRATEGY 3: Create new customer (if no matches found)
+          if (!customerFound && (patientNIC.trim() || customerContact.trim()) && customerName.trim()) {
+            console.log('🆕 Creating new customer - no existing match found');
+            
+            // Validate uniqueness before creating
+            let canCreate = true;
+            let conflictMessage = '';
+            
+            // Check NIC uniqueness if provided
+            if (patientNIC.trim() && patientNIC.length >= 9) {
+              const nicCheck = await getDocs(query(
+                collection(db, 'customers'),
+                where('nic', '==', patientNIC.trim())
+              ));
+              if (!nicCheck.empty) {
+                canCreate = false;
+                conflictMessage += `NIC ${patientNIC} already exists. `;
+              }
+            }
+            
+            // Check phone uniqueness if provided
+            if (customerContact.trim() && customerContact.length >= 9) {
+              const phoneCheck = await getDocs(query(
+                collection(db, 'customers'),
+                where('phoneNumber', '==', customerContact.trim())
+              ));
+              if (!phoneCheck.empty) {
+                canCreate = false;
+                conflictMessage += `Phone ${customerContact} already exists. `;
+              }
+            }
+            
+            if (!canCreate) {
+              console.warn('❌ Cannot create customer due to conflicts:', conflictMessage);
+              alert(`❌ Customer already exists: ${conflictMessage}\nPlease check the customer information and try again.`);
+              return; // Exit the sale process
+            }
+            
+            // Create unique customer identifier
+            const uniqueCustomerId = `${patientNIC || customerContact || Date.now()}_${Date.now()}`;
+            
             const customerData = {
-              name: customerName,
-              phoneNumber: customerContact || '',
-              nic: patientNIC,
-              age: 23, // Default age, can be updated later
+              name: customerName.trim(),
+              phoneNumber: customerContact.trim() || '',
+              nic: patientNIC.trim() || '',
+              age: null, // Will be updated when more info is available
               email: '',
               address: '',
               status: 'Active',
               createdAt: new Date(),
               createdBy: 'POS_SYSTEM',
-              totalPurchases: 0
+              totalPurchases: 0,
+              // Add metadata for better tracking
+              primaryIdentifier: patientNIC.trim() ? 'NIC' : 'Phone',
+              uniqueId: uniqueCustomerId,
+              lastVisit: new Date(),
+              visitCount: 1
             };
             
             try {
               // Add to customers collection for Customer Management
               const customerRef = await addDoc(collection(db, 'customers'), customerData);
               customerId = customerRef.id;
+              existingCustomer = { id: customerId, ...customerData };
+              customerFound = true;
+              searchMethod = 'Created';
               console.log('✅ Successfully created new customer:', customerId, customerData);
               
-              // Enhanced success message with more details
-              alert(`✅ New customer "${customerName}" added to system!\nCustomer ID: ${customerId}\nNIC: ${patientNIC}\n\nThis customer will now appear in Customer Management.`);
+              // Enhanced success message with unique identification
+              const identifier = patientNIC.trim() ? `NIC: ${patientNIC}` : `Phone: ${customerContact}`;
+              alert(`✅ NEW CUSTOMER CREATED!\n👤 Name: ${customerName}\n🆔 ${identifier}\n📝 Customer ID: ${customerId}\n\n🎯 This customer is now in the system and future transactions will be linked automatically.`);
+              
             } catch (customerError) {
               console.error('❌ Error creating customer:', customerError);
+              alert(`❌ Failed to create customer: ${customerError.message}`);
             }
           }
+          
+          // 🎯 STRATEGY 4: Handle edge cases
+          if (!customerFound && customerName.trim()) {
+            console.log('⚠️ No unique identifier provided (NIC/Phone), creating walk-in record');
+            const walkInData = {
+              name: customerName.trim(),
+              phoneNumber: customerContact.trim() || '',
+              nic: patientNIC.trim() || '',
+              age: null,
+              email: '',
+              address: '',
+              status: 'Walk-in',
+              createdAt: new Date(),
+              createdBy: 'POS_SYSTEM',
+              totalPurchases: 0,
+              isWalkIn: true,
+              walkInId: `WALKIN_${Date.now()}`
+            };
+            
+            try {
+              const walkInRef = await addDoc(collection(db, 'customers'), walkInData);
+              customerId = walkInRef.id;
+              existingCustomer = { id: customerId, ...walkInData };
+              customerFound = true;
+              searchMethod = 'Walk-in';
+              console.log('✅ Created walk-in customer record:', customerId);
+            } catch (walkInError) {
+              console.error('❌ Error creating walk-in customer:', walkInError);
+            }
+          }
+          
+          // Log final customer identification result
+          console.log('🎯 CUSTOMER IDENTIFICATION COMPLETE:');
+          console.log('  Method:', searchMethod);
+          console.log('  Customer Found:', customerFound);
+          console.log('  Customer ID:', customerId);
+          console.log('  Customer Data:', existingCustomer);
+          console.log('===========================================');
           
           // Check if patient already exists
           let existingPatient = null;
@@ -1190,7 +1422,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                     textAlign: 'center'
                   }}>
                     <Typography variant="caption" fontWeight="bold">
-                      {patientSuggestions.length} Patient{patientSuggestions.length > 1 ? 's' : ''} Found - Click to Select
+                      🎯 {patientSuggestions.length} Match{patientSuggestions.length > 1 ? 'es' : ''} Found - Sorted by Accuracy
                     </Typography>
                   </Box>
                   
@@ -1214,17 +1446,39 @@ const PharmacyPOSFirebaseIntegrated = () => {
                       }
                     }
 
+                    // Determine match type colors and icons
+                    const getMatchBadge = (patient) => {
+                      switch (patient.matchType) {
+                        case 'Exact NIC':
+                          return { color: '#d32f2f', bg: '#ffebee', icon: '🆔', text: 'EXACT NIC' };
+                        case 'Exact Phone':
+                          return { color: '#1976d2', bg: '#e3f2fd', icon: '📱', text: 'EXACT PHONE' };
+                        case 'Partial NIC':
+                          return { color: '#7b1fa2', bg: '#f3e5f5', icon: '🔍', text: 'NIC MATCH' };
+                        case 'Partial Phone':
+                          return { color: '#1976d2', bg: '#e8f5ff', icon: '📞', text: 'PHONE MATCH' };
+                        case 'Name':
+                          return { color: '#ff9800', bg: '#fff3e0', icon: '👤', text: 'NAME MATCH' };
+                        default:
+                          return { color: '#666', bg: '#f5f5f5', icon: '❓', text: 'MATCH' };
+                      }
+                    };
+
+                    const matchBadge = getMatchBadge(patient);
+
                     return (
                       <Box
                         key={patient.id}
                         onClick={() => {
-                          console.log('Dropdown item clicked:', patient);
+                          console.log('🎯 Dropdown item clicked:', patient.name, '- Match:', patient.matchType);
                           selectPatientFromDropdown(patient);
                         }}
                         sx={{
                           p: 2,
                           cursor: 'pointer',
                           borderBottom: index < patientSuggestions.length - 1 ? '1px solid #e5e7eb' : 'none',
+                          backgroundColor: index === 0 && patient.matchPriority <= 2 ? '#f8fff8' : 'white', // Highlight best matches
+                          borderLeft: index === 0 && patient.matchPriority <= 2 ? '4px solid #4caf50' : 'none',
                           '&:hover': {
                             backgroundColor: '#e3f2fd',
                             transform: 'translateX(4px)',
@@ -1233,19 +1487,55 @@ const PharmacyPOSFirebaseIntegrated = () => {
                           transition: 'all 0.2s ease'
                         }}
                       >
+                        {/* Priority indicator for top match */}
+                        {index === 0 && patient.matchPriority <= 2 && (
+                          <Box sx={{ 
+                            position: 'absolute', 
+                            top: 8, 
+                            right: 8,
+                            backgroundColor: '#4caf50',
+                            color: 'white',
+                            px: 1,
+                            py: 0.25,
+                            borderRadius: 1,
+                            fontSize: '0.65rem',
+                            fontWeight: 'bold'
+                          }}>
+                            ⭐ BEST MATCH
+                          </Box>
+                        )}
+
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
                           <Typography variant="subtitle1" fontWeight="bold" color="#1976d2" sx={{ fontSize: '0.95rem' }}>
                             {patient.name || 'Unknown Name'}
                           </Typography>
+                          <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            <Chip 
+                              label={ageText}
+                              size="small"
+                              sx={{
+                                backgroundColor: '#e8f5e8',
+                                color: '#2e7d32',
+                                fontWeight: 'bold',
+                                fontSize: '0.7rem',
+                                height: '20px'
+                              }}
+                            />
+                          </Box>
+                        </Box>
+                        
+                        {/* Match Type Badge */}
+                        <Box sx={{ mb: 1 }}>
                           <Chip 
-                            label={ageText}
+                            label={`${matchBadge.icon} ${matchBadge.text}`}
                             size="small"
                             sx={{
-                              backgroundColor: '#e8f5e8',
-                              color: '#2e7d32',
+                              backgroundColor: matchBadge.bg,
+                              color: matchBadge.color,
+                              fontSize: '0.6rem',
+                              height: '18px',
                               fontWeight: 'bold',
-                              fontSize: '0.7rem',
-                              height: '20px'
+                              border: `1px solid ${matchBadge.color}`
                             }}
                           />
                         </Box>
@@ -1256,10 +1546,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
                               label={`NIC: ${patient.nic}`}
                               size="small"
                               sx={{
-                                backgroundColor: '#f3e5f5',
-                                color: '#7b1fa2',
+                                backgroundColor: patient.matchType?.includes('NIC') ? '#ffebee' : '#f3e5f5',
+                                color: patient.matchType?.includes('NIC') ? '#d32f2f' : '#7b1fa2',
                                 fontSize: '0.65rem',
-                                height: '18px'
+                                height: '18px',
+                                fontWeight: patient.matchType?.includes('NIC') ? 'bold' : 'normal'
                               }}
                             />
                           )}
@@ -1268,10 +1559,24 @@ const PharmacyPOSFirebaseIntegrated = () => {
                               label={`Phone: ${patient.contact || patient.phoneNumber}`}
                               size="small"
                               sx={{
-                                backgroundColor: '#e3f2fd',
-                                color: '#1976d2',
+                                backgroundColor: patient.matchType?.includes('Phone') ? '#e3f2fd' : '#e8f5ff',
+                                color: patient.matchType?.includes('Phone') ? '#1976d2' : '#1976d2',
                                 fontSize: '0.65rem',
-                                height: '18px'
+                                height: '18px',
+                                fontWeight: patient.matchType?.includes('Phone') ? 'bold' : 'normal'
+                              }}
+                            />
+                          )}
+                          {patient.isCustomer && (
+                            <Chip 
+                              label={`💰 LKR ${patient.totalPurchases || 0}`}
+                              size="small"
+                              sx={{
+                                backgroundColor: '#e8f5e8',
+                                color: '#2e7d32',
+                                fontSize: '0.65rem',
+                                height: '18px',
+                                fontWeight: 'bold'
                               }}
                             />
                           )}
@@ -1283,7 +1588,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                             display: 'block',
                             fontStyle: 'italic'
                           }}>
-                            Address: {patient.address}
+                            📍 {patient.address}
                           </Typography>
                         )}
                         
@@ -1293,7 +1598,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                             display: 'block',
                             mt: 0.5
                           }}>
-                            Last Visit: {new Date(patient.lastVisit.toDate ? patient.lastVisit.toDate() : patient.lastVisit).toLocaleDateString()}
+                            🕒 Last Visit: {new Date(patient.lastVisit.toDate ? patient.lastVisit.toDate() : patient.lastVisit).toLocaleDateString()}
                           </Typography>
                         )}
                       </Box>

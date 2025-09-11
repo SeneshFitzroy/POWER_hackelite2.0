@@ -251,36 +251,104 @@ export default function CustomerManagement({ dateFilter }) {
     setEditingCustomer(null);
   };
 
-  // Save customer
+  // Save customer with enhanced duplicate prevention
   const handleSaveCustomer = async () => {
     try {
+      // Validation
+      if (!customerName.trim()) {
+        alert('Customer name is required');
+        return;
+      }
+
+      // Enhanced duplicate prevention
+      const duplicateChecks = [];
+      
+      // Check for NIC duplicates (if NIC provided)
+      if (nic.trim() && nic.length >= 9) {
+        const nicQuery = query(
+          collection(db, 'customers'),
+          where('nic', '==', nic.trim())
+        );
+        duplicateChecks.push(
+          getDocs(nicQuery).then(snapshot => ({
+            type: 'NIC',
+            value: nic.trim(),
+            exists: !snapshot.empty,
+            existingId: snapshot.empty ? null : snapshot.docs[0].id
+          }))
+        );
+      }
+
+      // Check for phone duplicates (if phone provided)
+      if (phoneNumber.trim() && phoneNumber.length >= 9) {
+        const phoneQuery = query(
+          collection(db, 'customers'),
+          where('phoneNumber', '==', phoneNumber.trim())
+        );
+        duplicateChecks.push(
+          getDocs(phoneQuery).then(snapshot => ({
+            type: 'Phone',
+            value: phoneNumber.trim(),
+            exists: !snapshot.empty,
+            existingId: snapshot.empty ? null : snapshot.docs[0].id
+          }))
+        );
+      }
+
+      // Perform duplicate checks
+      const duplicateResults = await Promise.all(duplicateChecks);
+      const conflicts = duplicateResults.filter(result => 
+        result.exists && result.existingId !== editingCustomer?.id
+      );
+
+      if (conflicts.length > 0) {
+        const conflictMessages = conflicts.map(conflict => 
+          `${conflict.type}: ${conflict.value} already exists`
+        ).join('\n');
+        
+        const shouldContinue = confirm(
+          `⚠️ DUPLICATE CUSTOMER DETECTED:\n\n${conflictMessages}\n\nThis may create duplicate records. Do you want to continue anyway?`
+        );
+        
+        if (!shouldContinue) {
+          return;
+        }
+      }
+
       const customerData = {
-        name: customerName,
-        phoneNumber,
-        email,
-        address,
-        nic,
+        name: customerName.trim(),
+        phoneNumber: phoneNumber.trim(),
+        email: email.trim(),
+        address: address.trim(),
+        nic: nic.trim(),
         age: age ? parseInt(age) : null,
         dateOfBirth: dateOfBirth || null,
         status,
         totalPurchases: editingCustomer?.totalPurchases || 0,
         createdAt: editingCustomer?.createdAt || new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        // Enhanced tracking
+        primaryIdentifier: nic.trim() ? 'NIC' : (phoneNumber.trim() ? 'Phone' : 'Name'),
+        lastUpdatedBy: 'CUSTOMER_MANAGEMENT',
+        visitCount: editingCustomer?.visitCount || 0
       };
 
       if (editingCustomer) {
         await updateDoc(doc(db, 'customers', editingCustomer.id), customerData);
-        console.log('Customer updated:', editingCustomer.id);
+        console.log('✅ Customer updated:', editingCustomer.id);
+        alert(`✅ Customer "${customerName}" updated successfully!`);
       } else {
-        await addDoc(collection(db, 'customers'), customerData);
-        console.log('New customer created');
+        const customerRef = await addDoc(collection(db, 'customers'), customerData);
+        console.log('✅ New customer created:', customerRef.id);
+        alert(`✅ Customer "${customerName}" created successfully!\nID: ${customerRef.id}\nIdentifier: ${customerData.primaryIdentifier}`);
       }
 
       setShowCustomerDialog(false);
       resetForm();
       loadCustomers();
     } catch (error) {
-      console.error('Error saving customer:', error);
+      console.error('❌ Error saving customer:', error);
+      alert(`❌ Error saving customer: ${error.message}`);
     }
   };
 
@@ -383,7 +451,7 @@ export default function CustomerManagement({ dateFilter }) {
 
         <TextField
           fullWidth
-          placeholder="Search customers by name, phone, NIC, or email..."
+          placeholder="🔍 Smart Search: Enter NIC, phone number, name, or email to find customers..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -399,6 +467,28 @@ export default function CustomerManagement({ dateFilter }) {
             }
           }}
         />
+        
+        {/* Search Help Text */}
+        <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          <Typography variant="caption" color="text.secondary">
+            💡 Search Tips:
+          </Typography>
+          <Chip 
+            label="NIC: Exact or partial match" 
+            size="small" 
+            sx={{ fontSize: '0.65rem', height: '20px' }}
+          />
+          <Chip 
+            label="Phone: Full or partial number" 
+            size="small" 
+            sx={{ fontSize: '0.65rem', height: '20px' }}
+          />
+          <Chip 
+            label="Name: Any part of the name" 
+            size="small" 
+            sx={{ fontSize: '0.65rem', height: '20px' }}
+          />
+        </Box>
       </Paper>
 
       {/* Customers Table */}
@@ -434,21 +524,74 @@ export default function CustomerManagement({ dateFilter }) {
               {filteredCustomers.map((customer) => (
                 <TableRow key={customer.id} hover>
                   <TableCell>
-                    <Typography fontWeight="bold">{customer.name}</Typography>
+                    <Box>
+                      <Typography fontWeight="bold">{customer.name}</Typography>
+                      {customer.primaryIdentifier && (
+                        <Chip 
+                          label={`ID: ${customer.primaryIdentifier}`}
+                          size="small"
+                          sx={{
+                            backgroundColor: customer.primaryIdentifier === 'NIC' ? '#e8f5e8' : '#e3f2fd',
+                            color: customer.primaryIdentifier === 'NIC' ? '#2e7d32' : '#1976d2',
+                            fontSize: '0.65rem',
+                            height: '18px',
+                            mt: 0.5
+                          }}
+                        />
+                      )}
+                    </Box>
                   </TableCell>
-                  <TableCell>{customer.phoneNumber}</TableCell>
-                  <TableCell>{customer.nic}</TableCell>
                   <TableCell>
-                    <Typography fontWeight="bold" color="primary">
-                      LKR {customer.totalPurchases || 0}
-                    </Typography>
+                    <Box>
+                      <Typography>{customer.phoneNumber}</Typography>
+                      {customer.visitCount > 0 && (
+                        <Typography variant="caption" color="text.secondary">
+                          {customer.visitCount} visit{customer.visitCount > 1 ? 's' : ''}
+                        </Typography>
+                      )}
+                    </Box>
                   </TableCell>
                   <TableCell>
-                    <Chip
-                      label={customer.status}
-                      color={customer.status === 'Active' ? 'success' : 'default'}
-                      size="small"
-                    />
+                    <Box>
+                      <Typography>{customer.nic}</Typography>
+                      {customer.lastVisit && (
+                        <Typography variant="caption" color="text.secondary">
+                          Last: {new Date(customer.lastVisit.toDate ? customer.lastVisit.toDate() : customer.lastVisit).toLocaleDateString()}
+                        </Typography>
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box>
+                      <Typography fontWeight="bold" color="primary">
+                        LKR {(customer.totalPurchases || 0).toLocaleString()}
+                      </Typography>
+                      {customer.totalPurchases > 0 && (
+                        <Typography variant="caption" color="text.secondary">
+                          Avg: LKR {Math.round((customer.totalPurchases || 0) / Math.max(customer.visitCount || 1, 1)).toLocaleString()}
+                        </Typography>
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                      <Chip
+                        label={customer.status}
+                        color={customer.status === 'Active' ? 'success' : 'default'}
+                        size="small"
+                      />
+                      {customer.isWalkIn && (
+                        <Chip
+                          label="Walk-in"
+                          size="small"
+                          sx={{
+                            backgroundColor: '#fff3e0',
+                            color: '#ff9800',
+                            fontSize: '0.65rem'
+                          }}
+                        />
+                      )}
+                    </Box>
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
@@ -456,6 +599,7 @@ export default function CustomerManagement({ dateFilter }) {
                         size="small"
                         onClick={() => handleEditCustomer(customer)}
                         sx={{ color: '#1976d2' }}
+                        title="Edit Customer"
                       >
                         <Edit />
                       </IconButton>
@@ -463,6 +607,7 @@ export default function CustomerManagement({ dateFilter }) {
                         size="small"
                         onClick={() => loadCustomerHistory(customer.id)}
                         sx={{ color: '#ff9800' }}
+                        title="View Purchase History"
                       >
                         <History />
                       </IconButton>
