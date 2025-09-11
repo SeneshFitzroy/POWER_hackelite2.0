@@ -49,7 +49,6 @@ import {
   Warning,
   Assessment,
   Settings,
-  ArrowBack,
   WaterDrop,
   CheckCircle,
   Error,
@@ -187,11 +186,6 @@ export default function ColdChainModule() {
     } else {
       setActiveTab(index);
     }
-  };
-
-  const handleBackToDashboard = () => {
-    coldChainService.stop();
-    window.location.href = '/';
   };
 
   const handleStartStop = () => {
@@ -686,26 +680,6 @@ startxref
               })}
             </Typography>
           </Box>
-          
-          {/* Back to Dashboard Button */}
-          <Button
-            fullWidth
-            variant="contained"
-            startIcon={<ArrowBack />}
-            onClick={handleBackToDashboard}
-            sx={{
-              backgroundColor: '#1e40af',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: '#1e3a8a'
-              },
-              borderRadius: 2,
-              py: 1.5,
-              fontWeight: 'bold'
-            }}
-          >
-            ← BACK TO DASHBOARD
-          </Button>
         </Box>
       </Drawer>
 

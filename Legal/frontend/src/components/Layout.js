@@ -205,8 +205,8 @@ const Layout = ({ children }) => {
             // Clear any stored auth data
             localStorage.clear();
             sessionStorage.clear();
-            // Redirect to main ERP login
-            window.location.href = '/';
+            // Redirect to main ERP login screen
+            window.location.href = '/?screen=login';
           }}
         >
           LOGOUT
