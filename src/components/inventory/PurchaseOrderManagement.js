@@ -69,14 +69,21 @@ const PurchaseOrderManagement = () => {
 
   // Load purchase orders with real-time updates
   useEffect(() => {
-    const unsubscribe = purchaseOrderService.subscribePurchaseOrders((ordersData) => {
-      setPurchaseOrders(ordersData);
-      setFilteredOrders(ordersData);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    loadPurchaseOrders();
   }, []);
+
+  const loadPurchaseOrders = async () => {
+    try {
+      setLoading(true);
+      const orders = await purchaseOrderService.getAllPurchaseOrders();
+      setPurchaseOrders(orders);
+      setFilteredOrders(orders);
+    } catch (error) {
+      console.error('Error loading purchase orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter orders based on search and status
   useEffect(() => {
@@ -236,7 +243,10 @@ const PurchaseOrderManagement = () => {
         <Button
           variant="contained"
           startIcon={<RefreshIcon />}
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            setLoading(true);
+            loadPurchaseOrders();
+          }}
           sx={{
             background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
             color: 'white',
@@ -361,19 +371,19 @@ const PurchaseOrderManagement = () => {
 
       {/* Purchase Orders Table */}
       <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <TableContainer>
-          <Table>
+        <TableContainer sx={{ overflowX: 'auto' }}>
+          <Table sx={{ minWidth: { xs: 1000, md: 'auto' } }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Order ID</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Medicine</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Quantity</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Supplier</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Total Cost</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Priority</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Created</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Order ID</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Medicine</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Quantity</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Supplier</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Total Cost</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Priority</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Created</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -386,12 +396,12 @@ const PurchaseOrderManagement = () => {
                     }
                   }}
                 >
-                  <TableCell>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                       #{order.id.slice(-8).toUpperCase()}
                     </Typography>
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                     <Box>
                       <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
                         {order.medicineName}
@@ -401,22 +411,22 @@ const PurchaseOrderManagement = () => {
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                       {order.quantityOrdered}
                     </Typography>
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                     <Typography variant="body2">
                       {order.supplier}
                     </Typography>
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                       LKR {order.totalCost?.toLocaleString() || 0}
                     </Typography>
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                     <Chip
                       icon={getStatusIcon(order.status)}
                       label={order.status}
@@ -425,7 +435,7 @@ const PurchaseOrderManagement = () => {
                       sx={{ textTransform: 'capitalize' }}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                     <Chip
                       label={order.priority}
                       color={getPriorityColor(order.priority)}
@@ -433,17 +443,20 @@ const PurchaseOrderManagement = () => {
                       sx={{ textTransform: 'capitalize' }}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                     <Typography variant="body2">
                       {safeFormatDate(order.createdAt)}
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                       <Tooltip title="View Details">
                         <IconButton 
                           size="small" 
-                          onClick={() => handleViewDetails(order)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewDetails(order);
+                          }}
                           sx={{ color: '#1e40af' }}
                         >
                           <ViewIcon />
@@ -452,7 +465,10 @@ const PurchaseOrderManagement = () => {
                       <Tooltip title="Edit Status">
                         <IconButton 
                           size="small" 
-                          onClick={() => handleEditClick(order)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditClick(order);
+                          }}
                           sx={{ color: '#6b7280' }}
                         >
                           <EditIcon />
@@ -465,6 +481,18 @@ const PurchaseOrderManagement = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {filteredOrders.length === 0 && (
+          <Box sx={{ textAlign: 'center', py: 6 }}>
+            <ShoppingCartIcon sx={{ fontSize: 64, color: '#9ca3af', mb: 2 }} />
+            <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+              No Purchase Orders Found
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              No purchase orders match your current filters
+            </Typography>
+          </Box>
+        )}
       </Card>
 
       {/* Order Details Dialog */}

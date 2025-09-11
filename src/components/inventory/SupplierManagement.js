@@ -83,16 +83,21 @@ const SupplierManagement = () => {
 
   // Load suppliers with real-time updates
   useEffect(() => {
-    const unsubscribe = supplierService.subscribeSuppliers((suppliersData) => {
-      setSuppliers(suppliersData);
-      setLoading(false);
-    });
-
-    // Load statistics
+    loadSuppliers();
     loadStats();
-
-    return () => unsubscribe();
   }, []);
+
+  const loadSuppliers = async () => {
+    try {
+      setLoading(true);
+      const suppliersData = await supplierService.getAllSuppliers();
+      setSuppliers(suppliersData);
+    } catch (error) {
+      console.error('Error loading suppliers:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter suppliers based on search term
   useEffect(() => {
@@ -248,7 +253,11 @@ const SupplierManagement = () => {
           <Button
             variant="outlined"
             startIcon={<RefreshIcon />}
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              setLoading(true);
+              loadSuppliers();
+              loadStats();
+            }}
             sx={{
               borderColor: '#1e40af',
               color: '#1e40af',
@@ -398,22 +407,22 @@ const SupplierManagement = () => {
 
       {/* Suppliers Table */}
       <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <TableContainer>
-          <Table>
+        <TableContainer sx={{ overflowX: 'auto' }}>
+          <Table sx={{ minWidth: { xs: 900, md: 'auto' } }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-                <TableCell sx={{ fontWeight: 'bold' }}>Supplier Name</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Contact Info</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Rating</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Created</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Supplier Name</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Contact Info</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Rating</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Created</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedSuppliers.map((supplier) => (
                 <TableRow key={supplier.id} hover>
-                  <TableCell>
+                  <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                     <Box>
                       <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
                         {supplier.name}
@@ -478,11 +487,14 @@ const SupplierManagement = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                       <Tooltip title="View Details">
                         <IconButton 
                           size="small" 
-                          onClick={() => handleViewSupplier(supplier)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewSupplier(supplier);
+                          }}
                           sx={{ color: '#3b82f6' }}
                         >
                           <ViewIcon />
@@ -491,7 +503,10 @@ const SupplierManagement = () => {
                       <Tooltip title="View Performance">
                         <IconButton 
                           size="small" 
-                          onClick={() => handleViewPerformance(supplier)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewPerformance(supplier);
+                          }}
                           sx={{ color: '#059669' }}
                         >
                           <TrendingUpIcon />
@@ -500,7 +515,10 @@ const SupplierManagement = () => {
                       <Tooltip title="Edit">
                         <IconButton 
                           size="small" 
-                          onClick={() => handleEditSupplier(supplier)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditSupplier(supplier);
+                          }}
                           sx={{ color: '#d97706' }}
                         >
                           <EditIcon />
@@ -509,7 +527,10 @@ const SupplierManagement = () => {
                       <Tooltip title="Deactivate">
                         <IconButton 
                           size="small" 
-                          onClick={() => handleDeleteSupplier(supplier)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteSupplier(supplier);
+                          }}
                           sx={{ color: '#dc2626' }}
                         >
                           <DeleteIcon />

@@ -303,7 +303,13 @@ const ReorderManagement = () => {
           <Button
             variant="contained"
             startIcon={<RefreshIcon />}
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              setLoading(true);
+              // Force reload of data
+              setTimeout(() => {
+                window.location.reload();
+              }, 100);
+            }}
             sx={{
               background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
               color: 'white',
@@ -417,15 +423,16 @@ const ReorderManagement = () => {
       </Grid>
 
       {/* Filters */}
-      <Card sx={{ mb: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <CardContent>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={6}>
+      <Card sx={{ mb: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+        <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+          <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center">
+            <Grid item xs={12} md={8}>
               <TextField
                 fullWidth
                 placeholder="Search medicines..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                size="small"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -441,10 +448,21 @@ const ReorderManagement = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2" color="text.secondary">
-                Showing {filteredMedicines.length} items needing reorder
-              </Typography>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ display: 'flex', gap: 2, justifyContent: { xs: 'center', md: 'flex-end' } }}>
+                <Chip 
+                  icon={<WarningIcon />}
+                  label={`${filteredMedicines.length} Need Reorder`}
+                  color="warning"
+                  sx={{ fontWeight: 'bold' }}
+                />
+                <Chip 
+                  icon={<TrendingDownIcon />}
+                  label={`${filteredMedicines.filter(m => (m.stockQuantity || 0) === 0).length} Out of Stock`}
+                  color="error"
+                  sx={{ fontWeight: 'bold' }}
+                />
+              </Box>
             </Grid>
           </Grid>
         </CardContent>
@@ -452,17 +470,17 @@ const ReorderManagement = () => {
 
       {/* Low Stock Table */}
       <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <TableContainer>
-          <Table>
+        <TableContainer sx={{ overflowX: 'auto' }}>
+          <Table sx={{ minWidth: { xs: 800, md: 'auto' } }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Medicine Name</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Current Stock</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Min Stock</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Reorder Point</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Vendor</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Medicine Name</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Current Stock</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Min Stock</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Reorder Point</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Vendor</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a', p: { xs: 1, md: 2 } }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -480,7 +498,7 @@ const ReorderManagement = () => {
                                      stockStatus.status === 'reorder' ? '#fffbeb' : 'transparent'
                     }}
                   >
-                    <TableCell>
+                    <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                       <Box>
                         <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
                           {medicine.name}
@@ -490,7 +508,7 @@ const ReorderManagement = () => {
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography 
                           variant="body2" 
@@ -505,17 +523,17 @@ const ReorderManagement = () => {
                         {getStatusIcon(stockStatus.status)}
                       </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                       <Typography variant="body2">
                         {medicine.minStockLevel || 10}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                       <Typography variant="body2">
                         {medicine.reorderPoint || 20}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                       <Box>
                         <Chip
                           label={stockStatus.status.replace('_', ' ')}
@@ -528,17 +546,20 @@ const ReorderManagement = () => {
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                       <Typography variant="body2">
                         {medicine.vendor || 'N/A'}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+                    <TableCell sx={{ p: { xs: 1, md: 2 } }}>
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                         <Tooltip title="Edit Stock Levels">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleEditClick(medicine)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditClick(medicine);
+                            }}
                             sx={{ color: '#1e40af' }}
                           >
                             <EditIcon />
@@ -547,7 +568,10 @@ const ReorderManagement = () => {
                         <Tooltip title="Create Purchase Order">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleCreatePurchaseOrder(medicine)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCreatePurchaseOrder(medicine);
+                            }}
                             sx={{ color: '#059669' }}
                           >
                             <AddIcon />
@@ -556,7 +580,10 @@ const ReorderManagement = () => {
                         <Tooltip title="View Details">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleViewDetails(medicine)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewDetails(medicine);
+                            }}
                             sx={{ color: '#6b7280' }}
                           >
                             <ViewIcon />
@@ -570,6 +597,18 @@ const ReorderManagement = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {filteredMedicines.length === 0 && (
+          <Box sx={{ textAlign: 'center', py: 6 }}>
+            <WarningIcon sx={{ fontSize: 64, color: '#9ca3af', mb: 2 }} />
+            <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+              No Low Stock Items Found
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              All medicines are adequately stocked or check your search filters
+            </Typography>
+          </Box>
+        )}
       </Card>
 
       {/* Edit Stock Levels Dialog */}

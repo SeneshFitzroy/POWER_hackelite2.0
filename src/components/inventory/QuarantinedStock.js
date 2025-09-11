@@ -79,28 +79,27 @@ const QuarantinedStock = () => {
 
   // Load data with real-time updates
   useEffect(() => {
-    const unsubscribeQuarantined = quarantineService.subscribeQuarantinedMedicines((medicines) => {
-      setQuarantinedMedicines(medicines);
-      setLoading(false);
-    });
-
-    const unsubscribeExpired = quarantineService.subscribeExpiredMedicines((medicines) => {
-      setExpiredMedicines(medicines);
-    });
-
-    const unsubscribeLogs = quarantineService.subscribeQuarantineLogs((logs) => {
-      setQuarantineLogs(logs);
-    });
-
-    // Load statistics
+    loadQuarantinedData();
     loadStats();
-
-    return () => {
-      unsubscribeQuarantined();
-      unsubscribeExpired();
-      unsubscribeLogs();
-    };
   }, []);
+
+  const loadQuarantinedData = async () => {
+    try {
+      setLoading(true);
+      const [quarantined, expired, logs] = await Promise.all([
+        quarantineService.getQuarantinedMedicines(),
+        quarantineService.getExpiredMedicines(),
+        quarantineService.getQuarantineLogs()
+      ]);
+      setQuarantinedMedicines(quarantined);
+      setExpiredMedicines(expired);
+      setQuarantineLogs(logs);
+    } catch (error) {
+      console.error('Error loading quarantined data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadStats = async () => {
     try {
@@ -248,7 +247,11 @@ const QuarantinedStock = () => {
         <Button
           variant="contained"
           startIcon={<RefreshIcon />}
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            setLoading(true);
+            loadQuarantinedData();
+            loadStats();
+          }}
           sx={{
             background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
             color: 'white',
@@ -482,11 +485,14 @@ const QuarantinedStock = () => {
                   </TableCell>
                   {activeTab === 0 && (
                     <TableCell>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                         <Tooltip title="Release">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleActionClick(medicine, 'release')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleActionClick(medicine, 'release');
+                            }}
                             sx={{ color: '#059669' }}
                           >
                             <CheckCircleIcon />
@@ -495,7 +501,10 @@ const QuarantinedStock = () => {
                         <Tooltip title="Mark Expired">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleActionClick(medicine, 'expire')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleActionClick(medicine, 'expire');
+                            }}
                             sx={{ color: '#dc2626' }}
                           >
                             <CancelIcon />
@@ -504,7 +513,10 @@ const QuarantinedStock = () => {
                         <Tooltip title="View Logs">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleViewLogs(medicine)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewLogs(medicine);
+                            }}
                             sx={{ color: '#3b82f6' }}
                           >
                             <HistoryIcon />

@@ -53,14 +53,21 @@ const ExpiryMonitoring = () => {
 
   // Load medicines with real-time updates
   useEffect(() => {
-    const unsubscribe = inventoryService.subscribeMedicines((medicinesData) => {
+    loadMedicines();
+  }, []);
+
+  const loadMedicines = async () => {
+    try {
+      setLoading(true);
+      const medicinesData = await inventoryService.getAllMedicines();
       setMedicines(medicinesData);
       setFilteredMedicines(medicinesData);
+    } catch (error) {
+      console.error('Error loading medicines:', error);
+    } finally {
       setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+    }
+  };
 
   // Filter medicines based on search and expiry status
   useEffect(() => {
@@ -214,7 +221,10 @@ const ExpiryMonitoring = () => {
         <Button
           variant="contained"
           startIcon={<RefreshIcon />}
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            setLoading(true);
+            loadMedicines();
+          }}
           sx={{
             background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
             color: 'white',
@@ -495,11 +505,14 @@ const ExpiryMonitoring = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                         <Tooltip title="View Details">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleViewDetails(medicine)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewDetails(medicine);
+                            }}
                             sx={{ color: '#1e40af' }}
                           >
                             <ViewIcon />
@@ -508,6 +521,10 @@ const ExpiryMonitoring = () => {
                         <Tooltip title="Edit">
                           <IconButton 
                             size="small" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Add edit functionality here
+                            }}
                             sx={{ color: '#6b7280' }}
                           >
                             <EditIcon />
