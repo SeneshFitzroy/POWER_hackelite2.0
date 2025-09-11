@@ -150,14 +150,14 @@ const LowStockDashboardWidget = ({ onViewAll, onCreateOrder }) => {
       const orderData = {
         medicineId: medicine.id,
         medicineName: medicine.name,
-        quantityOrdered: medicine.maxStockLevel || 100,
+        quantityOrdered: medicine.maxStockLevel || (medicine.reorderPoint ? medicine.reorderPoint * 2 : 50),
         supplier: medicine.vendor || 'Unknown Supplier',
-        minStockLevel: medicine.minStockLevel || 10,
-        reorderPoint: medicine.reorderPoint || 20,
+        minStockLevel: medicine.minStockLevel || 5,
+        reorderPoint: medicine.reorderPoint || (medicine.minStockLevel ? medicine.minStockLevel * 2 : 10),
         currentStock: medicine.stockQuantity || 0,
         unitCost: medicine.costPrice || 0,
-        totalCost: (medicine.costPrice || 0) * (medicine.maxStockLevel || 100),
-        priority: medicine.stockQuantity <= (medicine.minStockLevel || 10) ? 'high' : 'medium',
+        totalCost: (medicine.costPrice || 0) * (medicine.maxStockLevel || (medicine.reorderPoint ? medicine.reorderPoint * 2 : 50)),
+        priority: medicine.stockQuantity <= (medicine.minStockLevel || 5) ? 'high' : 'medium',
         notes: `Quick reorder for ${medicine.name} - Current stock: ${medicine.stockQuantity || 0}`
       };
 
