@@ -343,17 +343,29 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
   // Select patient from dropdown
   const selectPatientFromDropdown = (patient) => {
+    console.log('Selecting patient:', patient);
+    
+    // Set current patient
     setCurrentPatient(patient);
-    setCustomerName(patient.name || '');
-    setCustomerContact(patient.contact || patient.phoneNumber || '');
-    setPatientNIC(patient.nic || patient.contact || patient.phoneNumber || '');
+    
+    // Set customer name and contact
+    const name = patient.name || '';
+    const contact = patient.contact || patient.phoneNumber || '';
+    const nic = patient.nic || '';
+    
+    setCustomerName(name);
+    setCustomerContact(contact);
+    setPatientNIC(nic || contact || patientNIC); // Keep original search term if no NIC
+    
+    // Close dropdown
     setShowPatientDropdown(false);
     setPatientSuggestions([]);
-    console.log('Patient selected:', {
-      name: patient.name,
-      age: patient.age,
-      nic: patient.nic,
-      contact: patient.contact || patient.phoneNumber
+    
+    console.log('Patient selected successfully:', {
+      name: name,
+      contact: contact,
+      nic: nic,
+      age: patient.age
     });
   };
 
@@ -1024,6 +1036,42 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 </Box>
               </Box>
             )}
+
+            {/* Customer Name and Contact Fields */}
+            <Box sx={{ display: 'flex', gap: 1, mt: 1.5 }}>
+              <TextField
+                fullWidth
+                label="Customer Name"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="Customer name (auto-filled from patient selection)"
+                size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1,
+                    backgroundColor: currentPatient ? '#f0f9ff' : '#ffffff',
+                    '&:hover fieldset': { borderColor: '#1976d2' },
+                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  }
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Contact Number"
+                value={customerContact}
+                onChange={(e) => setCustomerContact(e.target.value)}
+                placeholder="Contact number (auto-filled from patient selection)"
+                size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1,
+                    backgroundColor: currentPatient ? '#f0f9ff' : '#ffffff',
+                    '&:hover fieldset': { borderColor: '#1976d2' },
+                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  }
+                }}
+              />
+            </Box>
 
             {/* SLMC REG NUMBER - COMPACT */}
             <TextField
