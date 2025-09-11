@@ -447,24 +447,42 @@ export default function CustomerManagement({ dateFilter }) {
           <Typography variant="h5" fontWeight="bold" color="#000000">
             Customer Management
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={() => {
-              resetForm();
-              setShowCustomerDialog(true);
-            }}
-            sx={{
-              backgroundColor: '#000000',
-              color: 'white',
-              fontWeight: 'bold',
-              '&:hover': {
-                backgroundColor: '#333333'
-              }
-            }}
-          >
-            Add New Customer
-          </Button>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="outlined"
+              startIcon={<Search />}
+              onClick={loadCustomers}
+              sx={{
+                borderColor: '#1976d2',
+                color: '#1976d2',
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#e3f2fd',
+                  borderColor: '#1976d2'
+                }
+              }}
+            >
+              Refresh
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => {
+                resetForm();
+                setShowCustomerDialog(true);
+              }}
+              sx={{
+                backgroundColor: '#000000',
+                color: 'white',
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#333333'
+                }
+              }}
+            >
+              Add New Customer
+            </Button>
+          </Box>
           
           {/* Debug Button */}
           <Button
