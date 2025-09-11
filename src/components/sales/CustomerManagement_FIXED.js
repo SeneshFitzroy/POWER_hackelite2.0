@@ -112,88 +112,41 @@ export default function CustomerManagement({ dateFilter }) {
       console.log('Loading history for customer:', customer);
       console.log('Customer NIC:', customer.nic);
       console.log('Customer Name:', customer.name);
-      console.log('Customer Phone:', customer.phoneNumber);
       
-      // Create multiple query strategies to find transactions
-      const searchStrategies = [
-        // Strategy 1: Search by NIC in customerNIC field
-        {
-          name: 'customerNIC',
-          field: 'customerNIC',
-          value: customer.nic
-        },
-        // Strategy 2: Search by NIC in patientNIC field
-        {
-          name: 'patientNIC', 
-          field: 'patientNIC',
-          value: customer.nic
-        },
-        // Strategy 3: Search by customer name
-        {
-          name: 'customerName',
-          field: 'customerName', 
-          value: customer.name
-        },
-        // Strategy 4: Search by customer contact/phone
-        {
-          name: 'customerContact',
-          field: 'customerContact',
-          value: customer.phoneNumber
-        }
+      // Query transactions by customer NIC
+      const queries = [
+        query(
+          collection(db, 'transactions'),
+          where('customerNIC', '==', customer.nic),
+          orderBy('createdAt', 'desc')
+        ),
+        query(
+          collection(db, 'transactions'),
+          where('patientNIC', '==', customer.nic),
+          orderBy('createdAt', 'desc')
+        ),
+        query(
+          collection(db, 'transactions'),
+          where('customerName', '==', customer.name),
+          orderBy('createdAt', 'desc')
+        )
       ];
       
       let allTransactions = [];
       
-      for (const strategy of searchStrategies) {
-        if (!strategy.value) continue; // Skip if value is empty
-        
+      for (const [index, transactionQuery] of queries.entries()) {
         try {
-          console.log(`🔍 Searching by ${strategy.name}: "${strategy.value}"`);
-          
-          const transactionQuery = query(
-            collection(db, 'transactions'),
-            where(strategy.field, '==', strategy.value),
-            orderBy('createdAt', 'desc')
-          );
-          
+          console.log(`Executing query ${index + 1}...`);
           const snapshot = await getDocs(transactionQuery);
           const transactions = snapshot.docs.map(doc => ({ 
             id: doc.id, 
             ...doc.data(),
-            searchStrategy: strategy.name
+            querySource: `Query ${index + 1}`
           }));
-          
-          console.log(`✅ ${strategy.name} search found ${transactions.length} transactions`);
-          if (transactions.length > 0) {
-            console.log('Sample transaction:', transactions[0]);
-          }
-          
           allTransactions = [...allTransactions, ...transactions];
-          
+          console.log(`Query ${index + 1} returned ${transactions.length} transactions`);
         } catch (queryError) {
-          console.warn(`❌ ${strategy.name} search failed:`, queryError.message);
-          
-          // Try without orderBy if it fails
-          try {
-            console.log(`🔄 Retrying ${strategy.name} without orderBy...`);
-            const simpleQuery = query(
-              collection(db, 'transactions'),
-              where(strategy.field, '==', strategy.value)
-            );
-            
-            const snapshot = await getDocs(simpleQuery);
-            const transactions = snapshot.docs.map(doc => ({ 
-              id: doc.id, 
-              ...doc.data(),
-              searchStrategy: strategy.name + '_simple'
-            }));
-            
-            console.log(`✅ ${strategy.name} simple search found ${transactions.length} transactions`);
-            allTransactions = [...allTransactions, ...transactions];
-            
-          } catch (simpleError) {
-            console.warn(`❌ ${strategy.name} simple search also failed:`, simpleError.message);
-          }
+          console.warn(`Query ${index + 1} failed:`, queryError.message);
         }
       }
       
@@ -206,25 +159,8 @@ export default function CustomerManagement({ dateFilter }) {
         return acc;
       }, []);
       
-      // Sort by date (newest first)
-      uniqueTransactions.sort((a, b) => {
-        if (!a.createdAt && !b.createdAt) return 0;
-        if (!a.createdAt) return 1;
-        if (!b.createdAt) return -1;
-        return b.createdAt.toDate() - a.createdAt.toDate();
-      });
-      
-      console.log('📊 SEARCH RESULTS SUMMARY:');
-      console.log(`Total transactions found: ${uniqueTransactions.length}`);
-      console.log('Search strategies used:', searchStrategies.map(s => s.name).join(', '));
-      console.log('Unique transactions:', uniqueTransactions.map(t => ({
-        id: t.id.substring(0, 8),
-        strategy: t.searchStrategy,
-        customer: t.customerName,
-        total: t.total,
-        date: t.createdAt ? new Date(t.createdAt.toDate()).toLocaleDateString() : 'No date'
-      })));
-      console.log('================================');
+      console.log('Total unique transactions found:', uniqueTransactions.length);
+      console.log('Transactions:', uniqueTransactions);
       
       setCustomerOrders(uniqueTransactions);
       setSelectedCustomerHistory(customer);
@@ -322,43 +258,6 @@ export default function CustomerManagement({ dateFilter }) {
               }}
             >
               Refresh
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={async () => {
-                try {
-                  console.log('=== DEBUG ALL TRANSACTIONS ===');
-                  const allTransactions = await getDocs(collection(db, 'transactions'));
-                  console.log(`Total transactions in database: ${allTransactions.size}`);
-                  
-                  allTransactions.docs.forEach((doc, index) => {
-                    const data = doc.data();
-                    console.log(`Transaction ${index + 1}:`, {
-                      id: doc.id.substring(0, 8),
-                      customerName: data.customerName,
-                      customerNIC: data.customerNIC,
-                      patientNIC: data.patientNIC,
-                      customerContact: data.customerContact,
-                      total: data.total,
-                      date: data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : 'No date'
-                    });
-                  });
-                  console.log('============================');
-                } catch (error) {
-                  console.error('Debug failed:', error);
-                }
-              }}
-              sx={{
-                borderColor: '#ff9800',
-                color: '#ff9800',
-                fontWeight: 'bold',
-                '&:hover': {
-                  backgroundColor: '#fff3e0',
-                  borderColor: '#ff9800'
-                }
-              }}
-            >
-              Debug Transactions
             </Button>
             <Button
               variant="contained"
@@ -555,169 +454,55 @@ export default function CustomerManagement({ dateFilter }) {
         <DialogContent>
           {customerOrders.length > 0 ? (
             customerOrders.map((order, index) => (
-              <Paper key={order.id} sx={{ p: 3, mb: 3, border: '2px solid #1976d2', borderRadius: 2, backgroundColor: '#f8f9ff' }}>
-                {/* Header Section - Exact same as POS Receipt */}
-                <Box sx={{ textAlign: 'center', mb: 3, pb: 2, borderBottom: '2px solid #1976d2' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
-                    🏥 CORE ERP PHARMACY
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>
-                    📍 Main Branch | 📞 Contact: +94-XX-XXXX-XXX
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#000' }}>
-                    📋 PHARMACY RECEIPT
-                  </Typography>
-                </Box>
-
-                {/* Receipt Details */}
-                <Grid container spacing={2} sx={{ mb: 2 }}>
+              <Paper key={order.id} sx={{ p: 2, mb: 2, border: '1px solid #e0e0e0' }}>
+                <Grid container spacing={2}>
                   <Grid item xs={6}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                      🧾 Receipt No: {order.receiptNumber || `RCP-${order.invoiceNumber}`}
+                      Receipt No: {order.receiptNumber || order.orderId}
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                      📄 Invoice No: {order.invoiceNumber}
+                    <Typography variant="body2">
+                      Invoice No: {order.invoiceNumber || order.orderId}
                     </Typography>
                   </Grid>
                   <Grid item xs={6} sx={{ textAlign: 'right' }}>
                     <Typography variant="body2">
-                      📅 Date: {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB')}
+                      Date: {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString('en-GB') : 'N/A'}
                     </Typography>
                     <Typography variant="body2">
-                      ⏰ Time: {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleTimeString('en-GB') : new Date().toLocaleTimeString('en-GB')}
+                      Time: {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleTimeString('en-GB') : 'N/A'}
                     </Typography>
                   </Grid>
                 </Grid>
 
-                {/* Staff and Customer Info */}
-                <Box sx={{ mb: 2, p: 2, backgroundColor: '#e3f2fd', borderRadius: 1 }}>
-                  <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 1 }}>
-                    👨‍⚕️ Served By: {order.staffName || 'Staff'}
+                <Box sx={{ mb: 2, borderBottom: '1px dashed #ccc', pb: 1 }}>
+                  <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
+                    👨‍⚕️ Staff: {order.staffName || 'Staff'}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#4caf50', fontWeight: 'bold', mb: 1 }}>
-                    👤 Customer: {order.customerName || 'Walk-in Customer'}
+                  <Typography variant="body2" sx={{ color: '#4caf50', fontWeight: 'bold' }}>
+                    👤 Customer: {order.customerName || 'N/A'}
                   </Typography>
-                  {order.customerContact && (
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      📞 Contact: {order.customerContact}
+                  <Typography variant="body2">
+                    📞 Contact: {order.customerContact || 'N/A'}
+                  </Typography>
+                </Box>
+
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  Items Purchased:
+                </Typography>
+                {order.items?.map((item, itemIndex) => (
+                  <Box key={itemIndex} sx={{ ml: 2, mb: 1 }}>
+                    <Typography variant="body2">
+                      • {item.name} - Qty: {item.quantity} - LKR {item.totalPrice}
                     </Typography>
-                  )}
-                  {order.prescriptionType && (
-                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#ff9800' }}>
-                      💊 Prescription: {order.prescriptionInfo || order.prescriptionType}
-                    </Typography>
-                  )}
-                </Box>
+                  </Box>
+                ))}
 
-                {/* Items Table - Exact same format as POS */}
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, borderBottom: '1px dashed #ccc', pb: 1 }}>
-                    📦 ITEMS PURCHASED
+                <Box sx={{ mt: 2, pt: 1, borderTop: '1px solid #eee' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 'bold', textAlign: 'right' }}>
+                    Total: LKR {order.total}
                   </Typography>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.8rem' }}>Item</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.8rem', textAlign: 'center' }}>Qty</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.8rem', textAlign: 'center' }}>Unit Price</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.8rem', textAlign: 'right' }}>Total</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {order.items?.map((item, itemIndex) => (
-                        <TableRow key={itemIndex}>
-                          <TableCell sx={{ fontSize: '0.85rem' }}>
-                            <Box>
-                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                                {item.name}
-                              </Typography>
-                              {item.activeIngredient && (
-                                <Typography variant="caption" color="text.secondary">
-                                  {item.activeIngredient}
-                                </Typography>
-                              )}
-                            </Box>
-                          </TableCell>
-                          <TableCell sx={{ textAlign: 'center', fontSize: '0.85rem' }}>
-                            {item.quantity}
-                          </TableCell>
-                          <TableCell sx={{ textAlign: 'center', fontSize: '0.85rem' }}>
-                            LKR {Number(item.price || 0).toFixed(2)}
-                          </TableCell>
-                          <TableCell sx={{ textAlign: 'right', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                            LKR {Number(item.totalPrice || (item.price * item.quantity)).toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </Box>
-
-                {/* Payment Summary - Exact same as POS */}
-                <Box sx={{ mt: 3, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
-                  <Grid container spacing={1}>
-                    <Grid item xs={8}>
-                      <Typography variant="body2">Subtotal:</Typography>
-                    </Grid>
-                    <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                      <Typography variant="body2">LKR {Number(order.netTotal || order.total || 0).toFixed(2)}</Typography>
-                    </Grid>
-                    
-                    <Grid item xs={8}>
-                      <Typography variant="body2">Discount:</Typography>
-                    </Grid>
-                    <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                      <Typography variant="body2">LKR {Number(order.discount || 0).toFixed(2)}</Typography>
-                    </Grid>
-                    
-                    <Grid item xs={8}>
-                      <Typography variant="body1" sx={{ fontWeight: 'bold', borderTop: '1px solid #ccc', pt: 1 }}>
-                        TOTAL:
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                      <Typography variant="body1" sx={{ fontWeight: 'bold', borderTop: '1px solid #ccc', pt: 1 }}>
-                        LKR {Number(order.total || 0).toFixed(2)}
-                      </Typography>
-                    </Grid>
-                    
-                    <Grid item xs={8}>
-                      <Typography variant="body2">Payment Method:</Typography>
-                    </Grid>
-                    <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                      <Typography variant="body2" sx={{ textTransform: 'uppercase' }}>
-                        {order.paymentMethod || 'CASH'}
-                      </Typography>
-                    </Grid>
-                    
-                    {order.paymentMethod === 'cash' && order.amountPaid && (
-                      <>
-                        <Grid item xs={8}>
-                          <Typography variant="body2">Amount Paid:</Typography>
-                        </Grid>
-                        <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                          <Typography variant="body2">LKR {Number(order.amountPaid).toFixed(2)}</Typography>
-                        </Grid>
-                        
-                        <Grid item xs={8}>
-                          <Typography variant="body2">Balance:</Typography>
-                        </Grid>
-                        <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                          <Typography variant="body2">LKR {Number(order.balance || 0).toFixed(2)}</Typography>
-                        </Grid>
-                      </>
-                    )}
-                  </Grid>
-                </Box>
-
-                {/* Footer */}
-                <Box sx={{ textAlign: 'center', mt: 2, pt: 2, borderTop: '1px dashed #ccc' }}>
-                  <Typography variant="caption" color="text.secondary">
-                    Thank you for choosing Core ERP Pharmacy!
-                  </Typography>
-                  <br />
-                  <Typography variant="caption" color="text.secondary">
-                    🌿 Your health is our priority 🌿
+                  <Typography variant="body2" sx={{ textAlign: 'right' }}>
+                    Payment: {order.paymentMethod || 'N/A'}
                   </Typography>
                 </Box>
               </Paper>
