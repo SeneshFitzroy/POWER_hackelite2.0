@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { Box, Typography, Paper, createTheme, ThemeProvider } from '@mui/material'
 import SplashScreen from './components/SplashScreen'
 import LoginScreen from './components/LoginScreen'
@@ -176,6 +176,7 @@ class ErrorBoundary extends React.Component {
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('splash')
+  const navigate = useNavigate()
 
   // Check URL parameters and current path on component mount
   useEffect(() => {
@@ -202,29 +203,29 @@ function App() {
   }
 
   const handlePOSAccess = () => {
-    window.location.href = '/pos'
+    navigate('/pos')
   }
 
   const handleSalesAccess = () => {
-    window.location.href = '/sales'
+    navigate('/sales')
   }
 
   const handleHRAccess = () => {
-    window.location.href = '/hr'
+    navigate('/hr')
   }
 
   const handleLegalAccess = () => {
-    // Access to legal module view (not admin)
-    window.location.href = '/legal'
+    navigate('/legal')
   }
 
   const handleColdChainAccess = () => {
-    window.location.href = '/coldchain'
+    navigate('/coldchain')
   }
 
   const handleInventoryAccess = () => {
-    window.location.href = '/inventory'
+    navigate('/inventory')
   }
+  
   const handleLogout = () => {
     // Clear any stored user data (if any)
     // localStorage.removeItem('userToken') // Uncomment if you store user data
@@ -234,7 +235,7 @@ function App() {
     
     // If we're not on the main route, redirect to main route with login screen
     if (window.location.pathname !== '/') {
-      window.location.href = '/?screen=login'
+      navigate('/?screen=login')
     }
   }
 
@@ -242,20 +243,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <ErrorBoundary>
         <Routes>
-          <Route path="/inventory" element={
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              backgroundColor: '#f8fafc',
-              zIndex: 10000,
-              overflow: 'hidden'
-            }}>
-              <InventoryModule />
-            </div>
-          } />
+          <Route path="/inventory" element={<InventoryModule />} />
           <Route path="/pos" element={
             <Box sx={{ height: '100vh', overflow: 'hidden' }}>
               <PharmacyPOS />
@@ -299,11 +287,7 @@ function App() {
               />
             </Box>
           } />
-          <Route path="/coldchain" element={
-            <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
-              <ColdChainModule />
-            </div>
-          } />
+          <Route path="/coldchain" element={<ColdChainModule />} />
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
@@ -321,7 +305,6 @@ function App() {
               {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
             </>
           } />
-          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </ErrorBoundary>
     </ThemeProvider>
