@@ -112,6 +112,20 @@ const PharmacyPOSFirebaseIntegrated = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Close patient dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.patient-search-container')) {
+        setShowPatientDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Load initial data with guaranteed stock
   useEffect(() => {
     loadInitialData();
@@ -761,7 +775,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               </Button>
             </Box>
             
-            <Box sx={{ position: 'relative' }}>
+            <Box sx={{ position: 'relative' }} className="patient-search-container">
               <TextField
                 fullWidth
                 label="Patient NIC / Phone Number"
