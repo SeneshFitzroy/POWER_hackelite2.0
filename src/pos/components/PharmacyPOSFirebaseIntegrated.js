@@ -688,20 +688,31 @@ const PharmacyPOSFirebaseIntegrated = () => {
         
         // Handle patient/customer creation and linking
         let patientId = null;
-        let customerId = null;      if (currentPatient) {
-        patientId = currentPatient.id;
-        customerId = currentPatient.isCustomer ? currentPatient.id : null;
-        // Only update if patient exists in database
-        try {
-          await patientService.updatePurchaseHistory(patientId, total);
-        } catch (error) {
-          console.warn('Could not update patient purchase history, clearing invalid patient:', error.message);
-          // Clear invalid patient data
-          setCurrentPatient(null);
-          patientId = null;
-          customerId = null;
-        }
-      } else if (patientNIC.trim() || customerName.trim()) {
+        let customerId = null;
+        
+        if (currentPatient) {
+          // First validate that the current patient actually exists in the database
+          try {
+            const patientRef = doc(db, 'patients', currentPatient.id);
+            const patientDoc = await getDoc(patientRef);
+            
+            if (patientDoc.exists()) {
+              patientId = currentPatient.id;
+              customerId = currentPatient.isCustomer ? currentPatient.id : null;
+              console.log('✅ Validated existing patient:', patientId);
+            } else {
+              console.warn('⚠️ Current patient document does not exist in database, clearing selection');
+              setCurrentPatient(null);
+              alert('The selected patient no longer exists in the system. Please select a different patient or create a new one.');
+              return; // Exit the sale process
+            }
+          } catch (error) {
+            console.warn('❌ Error validating patient, clearing selection:', error.message);
+            setCurrentPatient(null);
+            alert('Error validating patient data. Please select a different patient or create a new one.');
+            return; // Exit the sale process
+          }
+        } else if (patientNIC.trim() || customerName.trim()) {
         console.log('Creating/finding customer and patient records...');
         
         try {
