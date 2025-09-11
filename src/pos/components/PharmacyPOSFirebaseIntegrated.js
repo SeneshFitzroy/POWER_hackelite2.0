@@ -35,7 +35,7 @@ import { patientService } from '../services/patientService';
 import { employeeService } from '../../services/employeeService';
 import { initializeSampleData } from '../services/dataInitServiceNew';
 import { db } from '../../firebase/config';
-import { collection, getDocs, addDoc, query, where, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, query, where, doc, getDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 
 const PharmacyPOSFirebaseIntegrated = () => {
   const navigate = useNavigate();
@@ -759,8 +759,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
               customerId = customerRef.id;
               console.log('✅ Successfully created new customer:', customerId, customerData);
               
-              // Show success message
-              alert(`✅ New customer "${customerName}" added to system!`);
+              // Enhanced success message with more details
+              alert(`✅ New customer "${customerName}" added to system!\nCustomer ID: ${customerId}\nNIC: ${patientNIC}\n\nThis customer will now appear in Customer Management.`);
             } catch (customerError) {
               console.error('❌ Error creating customer:', customerError);
             }
@@ -846,11 +846,65 @@ const PharmacyPOSFirebaseIntegrated = () => {
       };
 
       console.log('About to process sale with saleData:', saleData);
+      
+      // Enhanced logging for Customer Management integration
+      console.log('=== CUSTOMER MANAGEMENT INTEGRATION ===');
+      console.log('Customer Name:', saleData.customerName);
+      console.log('Customer NIC (both fields):', saleData.customerNIC, '/', saleData.patientNIC);
+      console.log('Customer ID:', saleData.customerId);
+      console.log('Patient ID:', saleData.patientId);
+      console.log('Transaction will be searchable by these fields in Customer Management');
+      console.log('==========================================');
 
       // Process the sale transaction with stock updates
       const transaction = await transactionService.processSale(saleData);
       
       console.log('Transaction completed successfully:', transaction);
+      
+      // Update customer total purchases if we have a customerId
+      if (customerId) {
+        try {
+          console.log('Updating customer purchase total for customerId:', customerId);
+          const customerRef = doc(db, 'customers', customerId);
+          const customerDoc = await getDoc(customerRef);
+          
+          if (customerDoc.exists()) {
+            await updateDoc(customerRef, {
+              totalPurchases: increment(total),
+              lastVisit: serverTimestamp(),
+              updatedAt: serverTimestamp()
+            });
+            console.log('✅ Successfully updated customer purchase total');
+            
+            // Verification check
+            const updatedCustomerDoc = await getDoc(customerRef);
+            if (updatedCustomerDoc.exists()) {
+              const updatedData = updatedCustomerDoc.data();
+              console.log('✅ CUSTOMER VERIFICATION - Customer exists in database:');
+              console.log('  - Name:', updatedData.name);
+              console.log('  - NIC:', updatedData.nic);
+              console.log('  - Total Purchases:', updatedData.totalPurchases);
+              console.log('  - Last Visit:', updatedData.lastVisit);
+              console.log('🎯 This customer should now be visible in Customer Management!');
+            }
+          } else {
+            console.warn('⚠️ Customer document not found:', customerId);
+          }
+        } catch (customerUpdateError) {
+          console.error('❌ Error updating customer purchase total:', customerUpdateError);
+        }
+      }
+      
+      // Transaction verification for Customer Management
+      console.log('=== TRANSACTION VERIFICATION ===');
+      console.log('Transaction ID:', transaction.id);
+      console.log('Receipt Number:', transaction.receiptNumber);
+      console.log('Customer Name in Transaction:', transaction.customerName);
+      console.log('Customer NIC in Transaction:', transaction.customerNIC);
+      console.log('Patient NIC in Transaction:', transaction.patientNIC);
+      console.log('🔍 Customer Management should find this transaction by NIC:', patientNIC || 'N/A');
+      console.log('🔍 Or by Customer Name:', customerName || 'Walk-in Customer');
+      console.log('===============================');
       
       // Update local cash balance for cash payments
       if (paymentMethod === 'cash') {
