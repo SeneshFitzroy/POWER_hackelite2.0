@@ -272,13 +272,13 @@ export default function SalesOrders({ dateFilter }) {
               }
             }}
           >
-            Create New Order
+            Create New Sales Order
           </Button>
         </Box>
         
         <TextField
           fullWidth
-          placeholder="Search orders by customer name, employee ID, or status..."
+          placeholder="Search sales orders by customer name, employee ID, or status..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -411,7 +411,7 @@ export default function SalesOrders({ dateFilter }) {
                 <TableRow>
                   <TableCell colSpan={7} sx={{ textAlign: 'center', py: 4 }}>
                     <Typography color="textSecondary">
-                      {searchTerm ? 'No orders found matching your search.' : 'No orders found. Create your first order!'}
+                      {searchTerm ? 'No sales orders found matching your search.' : 'No sales orders found. Create your first sales order!'}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -429,7 +429,7 @@ export default function SalesOrders({ dateFilter }) {
         fullWidth
       >
         <DialogTitle sx={{ backgroundColor: '#000000', color: 'white', fontWeight: 'bold' }}>
-          {editingOrder ? 'Edit Order' : 'Create New Order'}
+          {editingOrder ? 'Edit Sales Order' : 'Create New Sales Order'}
         </DialogTitle>
         <DialogContent sx={{ p: 3 }}>
           <Grid container spacing={3} sx={{ mt: 1 }}>
@@ -549,7 +549,7 @@ export default function SalesOrders({ dateFilter }) {
               }
             }}
           >
-            {editingOrder ? 'Update Order' : 'Create Order'}
+            {editingOrder ? 'Update Sales Order' : 'Create Sales Order'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -562,7 +562,7 @@ export default function SalesOrders({ dateFilter }) {
         fullWidth
       >
         <DialogTitle sx={{ backgroundColor: '#000000', color: 'white', fontWeight: 'bold' }}>
-          Order Details
+          Sales Order Details
         </DialogTitle>
         <DialogContent sx={{ p: 3 }}>
           {selectedOrder && (
@@ -571,7 +571,7 @@ export default function SalesOrders({ dateFilter }) {
                 <Card variant="outlined">
                   <CardContent>
                     <Typography variant="h6" fontWeight="bold" gutterBottom>
-                      Order Information
+                      Sales Order Information
                     </Typography>
                     <Typography><strong>Order Number:</strong> {selectedOrder.orderNumber}</Typography>
                     <Typography><strong>Status:</strong> 
@@ -602,7 +602,7 @@ export default function SalesOrders({ dateFilter }) {
                 <Card variant="outlined">
                   <CardContent>
                     <Typography variant="h6" fontWeight="bold" gutterBottom>
-                      Order Summary
+                      Sales Order Summary
                     </Typography>
                     <Typography><strong>Total Amount:</strong> {formatCurrency(selectedOrder.total)}</Typography>
                     {selectedOrder.notes && (

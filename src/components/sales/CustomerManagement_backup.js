@@ -36,8 +36,7 @@ import {
   Receipt,
   CheckCircle,
   Cancel,
-  ChildCare,
-  Close
+  ChildCare
 } from '@mui/icons-material';
 import { db } from '../../firebase/config';
 import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, Timestamp } from 'firebase/firestore';
@@ -46,13 +45,9 @@ export default function CustomerManagement({ dateFilter }) {
   const [customers, setCustomers] = useState([]);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [showCustomerDialog, setShowCustomerDialog] = useState(false);
-  const [showHistoryDialog, setShowHistoryDialog] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
-  const [selectedCustomerHistory, setSelectedCustomerHistory] = useState(null);
-  const [customerOrders, setCustomerOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [validationErrors, setValidationErrors] = useState({});
   const [newCustomer, setNewCustomer] = useState({
     name: '',
     phoneNumber: '',
@@ -62,6 +57,10 @@ export default function CustomerManagement({ dateFilter }) {
     email: '',
     isChild: false
   });
+  const [showHistoryDialog, setShowHistoryDialog] = useState(false);
+  const [selectedCustomerHistory, setSelectedCustomerHistory] = useState(null);
+  const [customerOrders, setCustomerOrders] = useState([]);
+  const [validationErrors, setValidationErrors] = useState({});
 
   useEffect(() => {
     loadCustomers();
@@ -72,8 +71,8 @@ export default function CustomerManagement({ dateFilter }) {
     const filtered = customers.filter(customer =>
       customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.phoneNumber.includes(searchTerm) ||
-      (customer.nic && customer.nic.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (customer.email && customer.email.toLowerCase().includes(searchTerm.toLowerCase()))
+      customer.nic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCustomers(filtered);
   }, [customers, searchTerm]);
@@ -93,36 +92,6 @@ export default function CustomerManagement({ dateFilter }) {
     return age;
   };
 
-  // Enhanced NIC validation for Sri Lanka
-  const validateNIC = (nic) => {
-    if (!nic) return true; // Allow empty for children
-    
-    // Remove any spaces and convert to uppercase
-    const cleanNIC = nic.replace(/\s+/g, '').toUpperCase();
-    
-    // Old format: 9 digits + V/X
-    const oldFormatPattern = /^[0-9]{9}[VX]$/;
-    // New format: 12 digits
-    const newFormatPattern = /^[0-9]{12}$/;
-    
-    return oldFormatPattern.test(cleanNIC) || newFormatPattern.test(cleanNIC);
-  };
-
-  // Enhanced phone validation for Sri Lanka
-  const validatePhoneNumber = (phone) => {
-    const cleanPhone = phone.replace(/\s+/g, '').replace(/[^\d]/g, '');
-    
-    // Should be exactly 10 digits and start with 0
-    const phonePattern = /^0[0-9]{9}$/;
-    return phonePattern.test(cleanPhone);
-  };
-
-  // Basic email validation
-  const validateEmail = (email) => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-  };
-
   // Validate form fields
   const validateForm = () => {
     const errors = {};
@@ -138,7 +107,7 @@ export default function CustomerManagement({ dateFilter }) {
     if (!newCustomer.phoneNumber.trim()) {
       errors.phoneNumber = 'Phone number is required';
     } else if (!validatePhoneNumber(newCustomer.phoneNumber)) {
-      errors.phoneNumber = 'Please enter a valid 10-digit phone number starting with 0';
+      errors.phoneNumber = 'Please enter a valid 10-digit phone number';
     }
     
     // Date of birth validation
@@ -150,13 +119,6 @@ export default function CustomerManagement({ dateFilter }) {
       if (birthDate > today) {
         errors.dateOfBirth = 'Date of birth cannot be in the future';
       }
-      
-      // Check if older than 120 years
-      const maxAge = new Date();
-      maxAge.setFullYear(maxAge.getFullYear() - 120);
-      if (birthDate < maxAge) {
-        errors.dateOfBirth = 'Please enter a valid date of birth';
-      }
     }
     
     // NIC validation for adults (16 years and above)
@@ -165,7 +127,7 @@ export default function CustomerManagement({ dateFilter }) {
       if (!newCustomer.nic.trim()) {
         errors.nic = 'NIC is required for customers 16 years and above';
       } else if (!validateNIC(newCustomer.nic)) {
-        errors.nic = 'Please enter a valid NIC number (9 digits + V/X or 12 digits)';
+        errors.nic = 'Please enter a valid NIC number';
       }
     }
     
@@ -177,8 +139,6 @@ export default function CustomerManagement({ dateFilter }) {
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
-  const loadCustomers = async () => {
     try {
       setLoading(true);
       const customersQuery = query(
@@ -195,31 +155,6 @@ export default function CustomerManagement({ dateFilter }) {
       setCustomers(customerData);
     } catch (error) {
       console.error('Error loading customers:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load customer order history
-  const loadCustomerHistory = async (customerId) => {
-    try {
-      setLoading(true);
-      const ordersQuery = query(
-        collection(db, 'salesOrders'),
-        where('customerId', '==', customerId),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const snapshot = await getDocs(ordersQuery);
-      const orderData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      
-      setCustomerOrders(orderData);
-    } catch (error) {
-      console.error('Error loading customer history:', error);
-      setCustomerOrders([]);
     } finally {
       setLoading(false);
     }
@@ -242,7 +177,7 @@ export default function CustomerManagement({ dateFilter }) {
         phoneNumber: newCustomer.phoneNumber.trim(),
         dateOfBirth: newCustomer.dateOfBirth,
         age: age,
-        nic: isChild ? '' : newCustomer.nic.trim().toUpperCase(),
+        nic: isChild ? '' : newCustomer.nic.trim(),
         email: newCustomer.email.trim(),
         isChild: isChild,
         createdAt: Timestamp.now(),
@@ -264,7 +199,16 @@ export default function CustomerManagement({ dateFilter }) {
 
       setShowCustomerDialog(false);
       setEditingCustomer(null);
-      resetForm();
+      setNewCustomer({
+        name: '',
+        phoneNumber: '',
+        dateOfBirth: '',
+        age: '',
+        nic: '',
+        email: '',
+        isChild: false
+      });
+      setValidationErrors({});
       
       loadCustomers();
     } catch (error) {
@@ -281,7 +225,7 @@ export default function CustomerManagement({ dateFilter }) {
       name: customer.name,
       phoneNumber: customer.phoneNumber,
       dateOfBirth: customer.dateOfBirth || '',
-      age: customer.age ? customer.age.toString() : '',
+      age: customer.age.toString(),
       nic: customer.nic || '',
       email: customer.email || '',
       isChild: customer.isChild || false
@@ -320,38 +264,34 @@ export default function CustomerManagement({ dateFilter }) {
     // Example: navigate('/sales/invoicing', { state: { customer: invoiceCustomer } });
   };
 
-  const resetForm = () => {
-    setNewCustomer({
-      name: '',
-      phoneNumber: '',
-      dateOfBirth: '',
-      age: '',
-      nic: '',
-      email: '',
-      isChild: false
-    });
-    setValidationErrors({});
+  const validateNIC = (nic) => {
+    // Enhanced NIC validation for Sri Lanka
+    if (!nic) return true; // Allow empty for children
+    
+    // Remove any spaces and convert to uppercase
+    const cleanNIC = nic.replace(/\s+/g, '').toUpperCase();
+    
+    // Old format: 9 digits + V/X
+    const oldFormatPattern = /^[0-9]{9}[VX]$/;
+    // New format: 12 digits
+    const newFormatPattern = /^[0-9]{12}$/;
+    
+    return oldFormatPattern.test(cleanNIC) || newFormatPattern.test(cleanNIC);
   };
 
-  const handleDateOfBirthChange = (date) => {
-    const age = calculateAge(date);
-    const isChild = age < 16;
+  const validatePhoneNumber = (phone) => {
+    // Enhanced phone validation for Sri Lanka
+    const cleanPhone = phone.replace(/\s+/g, '').replace(/[^\d]/g, '');
     
-    setNewCustomer({
-      ...newCustomer,
-      dateOfBirth: date,
-      age: age.toString(),
-      isChild: isChild,
-      // Clear NIC if it's a child
-      nic: isChild ? '' : newCustomer.nic
-    });
-    
-    // Clear validation errors for date and NIC when date changes
-    setValidationErrors({
-      ...validationErrors,
-      dateOfBirth: '',
-      nic: ''
-    });
+    // Should be exactly 10 digits and start with 0
+    const phonePattern = /^0[0-9]{9}$/;
+    return phonePattern.test(cleanPhone);
+  };
+
+  const validateEmail = (email) => {
+    // Basic email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
   };
 
   const formatCurrency = (amount) => {
@@ -369,10 +309,7 @@ export default function CustomerManagement({ dateFilter }) {
           <Button
             variant="contained"
             startIcon={<Add />}
-            onClick={() => {
-              resetForm();
-              setShowCustomerDialog(true);
-            }}
+            onClick={() => setShowCustomerDialog(true)}
             sx={{
               backgroundColor: '#000000',
               color: 'white',
@@ -420,7 +357,6 @@ export default function CustomerManagement({ dateFilter }) {
                   <Phone sx={{ mr: 1, verticalAlign: 'middle' }} />
                   Phone Number
                 </TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date of Birth</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>
                   <Badge sx={{ mr: 1, verticalAlign: 'middle' }} />
@@ -447,9 +383,6 @@ export default function CustomerManagement({ dateFilter }) {
                     <Typography fontWeight="bold">{customer.name}</Typography>
                   </TableCell>
                   <TableCell>{customer.phoneNumber}</TableCell>
-                  <TableCell>
-                    {customer.dateOfBirth ? new Date(customer.dateOfBirth).toLocaleDateString() : 'N/A'}
-                  </TableCell>
                   <TableCell>{customer.age}</TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -542,7 +475,7 @@ export default function CustomerManagement({ dateFilter }) {
               ))}
               {filteredCustomers.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} sx={{ textAlign: 'center', py: 4 }}>
+                  <TableCell colSpan={7} sx={{ textAlign: 'center', py: 4 }}>
                     <Typography color="textSecondary">
                       {searchTerm ? 'No customers found matching your search.' : 'No customers found. Add your first customer!'}
                     </Typography>
@@ -557,11 +490,7 @@ export default function CustomerManagement({ dateFilter }) {
       {/* Add/Edit Customer Dialog */}
       <Dialog 
         open={showCustomerDialog} 
-        onClose={() => {
-          setShowCustomerDialog(false);
-          setEditingCustomer(null);
-          resetForm();
-        }}
+        onClose={() => setShowCustomerDialog(false)}
         maxWidth="md"
         fullWidth
       >
@@ -575,14 +504,9 @@ export default function CustomerManagement({ dateFilter }) {
                 fullWidth
                 label="Customer Name *"
                 value={newCustomer.name}
-                onChange={(e) => {
-                  setNewCustomer({ ...newCustomer, name: e.target.value });
-                  if (validationErrors.name) {
-                    setValidationErrors({ ...validationErrors, name: '' });
-                  }
-                }}
-                error={!!validationErrors.name}
-                helperText={validationErrors.name}
+                onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                error={!newCustomer.name}
+                helperText={!newCustomer.name ? 'Name is required' : ''}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -590,82 +514,74 @@ export default function CustomerManagement({ dateFilter }) {
                 fullWidth
                 label="Phone Number *"
                 value={newCustomer.phoneNumber}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^\d]/g, '');
-                  setNewCustomer({ ...newCustomer, phoneNumber: value });
-                  if (validationErrors.phoneNumber) {
-                    setValidationErrors({ ...validationErrors, phoneNumber: '' });
-                  }
-                }}
-                error={!!validationErrors.phoneNumber}
-                helperText={validationErrors.phoneNumber || 'Enter 10-digit phone number starting with 0'}
-                inputProps={{ maxLength: 10 }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Date of Birth *"
-                type="date"
-                value={newCustomer.dateOfBirth}
-                onChange={(e) => handleDateOfBirthChange(e.target.value)}
-                error={!!validationErrors.dateOfBirth}
-                helperText={validationErrors.dateOfBirth}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                inputProps={{
-                  max: new Date().toISOString().split('T')[0]
-                }}
+                onChange={(e) => setNewCustomer({ ...newCustomer, phoneNumber: e.target.value })}
+                error={!newCustomer.phoneNumber || !validatePhoneNumber(newCustomer.phoneNumber)}
+                helperText={
+                  !newCustomer.phoneNumber 
+                    ? 'Phone number is required' 
+                    : !validatePhoneNumber(newCustomer.phoneNumber) 
+                    ? 'Please enter a valid 10-digit phone number' 
+                    : ''
+                }
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Age"
+                type="number"
                 value={newCustomer.age}
-                disabled
-                helperText="Automatically calculated from date of birth"
+                onChange={(e) => {
+                  const age = parseInt(e.target.value);
+                  setNewCustomer({ 
+                    ...newCustomer, 
+                    age: e.target.value,
+                    isChild: age < 15
+                  });
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label={newCustomer.isChild ? "NIC (Not required for children)" : "NIC *"}
+                label={newCustomer.isChild ? "NIC (Optional for children)" : "NIC *"}
                 value={newCustomer.nic}
-                onChange={(e) => {
-                  const value = e.target.value.toUpperCase();
-                  setNewCustomer({ ...newCustomer, nic: value });
-                  if (validationErrors.nic) {
-                    setValidationErrors({ ...validationErrors, nic: '' });
-                  }
-                }}
+                onChange={(e) => setNewCustomer({ ...newCustomer, nic: e.target.value })}
                 disabled={newCustomer.isChild}
-                error={!!validationErrors.nic}
-                helperText={validationErrors.nic || (newCustomer.isChild ? 'NIC not required for children under 16' : '9 digits + V/X or 12 digits')}
+                error={!newCustomer.isChild && !newCustomer.nic}
+                helperText={
+                  !newCustomer.isChild && !newCustomer.nic 
+                    ? 'NIC is required for customers 15 years and above' 
+                    : !validateNIC(newCustomer.nic) && newCustomer.nic
+                    ? 'Please enter a valid NIC number' 
+                    : ''
+                }
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Email (Optional)"
                 type="email"
                 value={newCustomer.email}
-                onChange={(e) => {
-                  setNewCustomer({ ...newCustomer, email: e.target.value });
-                  if (validationErrors.email) {
-                    setValidationErrors({ ...validationErrors, email: '' });
-                  }
-                }}
-                error={!!validationErrors.email}
-                helperText={validationErrors.email}
+                onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={newCustomer.isChild}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, isChild: e.target.checked })}
+                  />
+                }
+                label="Customer is under 15 years old (NIC not required)"
               />
             </Grid>
             {newCustomer.isChild && (
               <Grid item xs={12}>
-                <Alert severity="info" sx={{ display: 'flex', alignItems: 'center' }}>
-                  <ChildCare sx={{ mr: 1 }} />
-                  This customer is under 16 years old. NIC is not required for children.
+                <Alert severity="info">
+                  NIC is not required for customers under 15 years old.
                 </Alert>
               </Grid>
             )}
@@ -676,7 +592,14 @@ export default function CustomerManagement({ dateFilter }) {
             onClick={() => {
               setShowCustomerDialog(false);
               setEditingCustomer(null);
-              resetForm();
+              setNewCustomer({
+                name: '',
+                phoneNumber: '',
+                age: '',
+                nic: '',
+                email: '',
+                isChild: false
+              });
             }}
             sx={{ color: '#666666' }}
           >
@@ -685,7 +608,14 @@ export default function CustomerManagement({ dateFilter }) {
           <Button
             variant="contained"
             onClick={handleAddCustomer}
-            disabled={loading}
+            disabled={
+              loading || 
+              !newCustomer.name || 
+              !newCustomer.phoneNumber ||
+              !validatePhoneNumber(newCustomer.phoneNumber) ||
+              (!newCustomer.isChild && !newCustomer.nic) ||
+              (newCustomer.nic && !validateNIC(newCustomer.nic))
+            }
             sx={{
               backgroundColor: '#000000',
               color: 'white',
@@ -698,73 +628,6 @@ export default function CustomerManagement({ dateFilter }) {
             {editingCustomer ? 'Update Customer' : 'Add Customer'}
           </Button>
         </DialogActions>
-      </Dialog>
-
-      {/* Customer History Dialog */}
-      <Dialog 
-        open={showHistoryDialog} 
-        onClose={() => setShowHistoryDialog(false)}
-        maxWidth="lg"
-        fullWidth
-      >
-        <DialogTitle sx={{ backgroundColor: '#000000', color: 'white', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <History sx={{ mr: 1 }} />
-            Order History - {selectedCustomerHistory?.name}
-          </Box>
-          <IconButton
-            onClick={() => setShowHistoryDialog(false)}
-            sx={{ color: 'white' }}
-          >
-            <Close />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
-          {customerOrders.length > 0 ? (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Order #</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Date</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Total Amount</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Payment Method</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {customerOrders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell>{order.orderNumber}</TableCell>
-                      <TableCell>
-                        {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString() : 'N/A'}
-                      </TableCell>
-                      <TableCell>{formatCurrency(order.total)}</TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={order.status} 
-                          color={order.status === 'completed' ? 'success' : order.status === 'pending' ? 'warning' : 'info'}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>{order.paymentMethod || 'Cash'}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-              <History sx={{ fontSize: 64, color: '#ccc', mb: 2 }} />
-              <Typography variant="h6" color="textSecondary">
-                No order history found
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                This customer hasn't placed any orders yet.
-              </Typography>
-            </Box>
-          )}
-        </DialogContent>
       </Dialog>
     </Box>
   );
