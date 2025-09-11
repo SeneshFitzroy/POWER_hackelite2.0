@@ -56,6 +56,13 @@ export default function InventoryModule({
 
   // Update time every second
   useEffect(() => {
+    // Expose inventory module controls globally
+    window.inventoryModule = {
+      setActiveTab: (tabIndex) => {
+        setActiveTab(tabIndex);
+      }
+    };
+
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -67,9 +74,11 @@ export default function InventoryModule({
         if (module === 'stock-tracking') {
           setActiveTab(1); // Stock Management tab
           // Set the internal tab for StockTrackingEnhanced
-          if (window.stockTrackingRef && window.stockTrackingRef.setActiveTab) {
-            window.stockTrackingRef.setActiveTab(tab || 1); // Default to Low Stock tab
-          }
+          setTimeout(() => {
+            if (window.stockTrackingRef && window.stockTrackingRef.setActiveTab) {
+              window.stockTrackingRef.setActiveTab(tab || 1); // Default to Low Stock tab
+            }
+          }, 100);
           if (onModuleChange) {
             onModuleChange('stock-tracking');
           }
@@ -87,6 +96,7 @@ export default function InventoryModule({
     return () => {
       clearInterval(timer);
       window.removeEventListener('message', handleMessage);
+      delete window.inventoryModule;
     };
   }, [onModuleChange]);
 

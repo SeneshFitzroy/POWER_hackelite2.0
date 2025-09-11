@@ -231,13 +231,41 @@ const LowStockDashboardWidget = ({ onViewAll, onCreateOrder }) => {
                 if (onViewAll) {
                   onViewAll();
                 } else {
-                  // Fallback navigation using module change
+                  // Enhanced navigation - try multiple approaches
+                  
+                  // 1. Direct window reference approach
+                  if (window.stockTrackingRef && window.stockTrackingRef.setActiveTab) {
+                    window.stockTrackingRef.setActiveTab(1); // Low Stock tab
+                  }
+                  
+                  // 2. Post message to parent for route navigation
                   if (window.parent && window.parent.postMessage) {
                     window.parent.postMessage({ 
                       type: 'navigate', 
                       module: 'stock-tracking',
                       tab: 1 // Low Stock tab
                     }, '*');
+                  }
+                  
+                  // 3. Direct route navigation if we're in the same app
+                  if (window.location.pathname.includes('/inventory')) {
+                    // We're already in inventory module, just switch tab
+                    if (window.inventoryModule && window.inventoryModule.setActiveTab) {
+                      window.inventoryModule.setActiveTab(1); // Stock Tracking tab
+                      setTimeout(() => {
+                        if (window.stockTrackingRef && window.stockTrackingRef.setActiveTab) {
+                          window.stockTrackingRef.setActiveTab(1); // Low Stock tab
+                        }
+                      }, 100);
+                    }
+                  } else {
+                    // Navigate to inventory first, then set tab
+                    window.location.hash = '#inventory';
+                    setTimeout(() => {
+                      if (window.stockTrackingRef && window.stockTrackingRef.setActiveTab) {
+                        window.stockTrackingRef.setActiveTab(1); // Low Stock tab
+                      }
+                    }, 500);
                   }
                 }
               }}
