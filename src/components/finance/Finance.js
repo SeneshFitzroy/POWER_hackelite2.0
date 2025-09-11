@@ -293,31 +293,106 @@ export default function Finance({ dateFilter }) {
     return Object.values(monthData).slice(-6); // Last 6 months
   };
 
-  // PayPal Sandbox Integration
-  const processPayPalPayment = async (amount, recipient, type = 'employee') => {
+  // PayPal Sandbox Integration with Website Redirection
+  const processPayPalPayment = async (amount, recipient, type = 'employee', recipientName = '') => {
     try {
       setPaymentProcessing(true);
       
-      // Simulate PayPal API call (in real implementation, this would be actual PayPal API)
+      // Show notification that PayPal is opening
+      setSnackbar({
+        open: true,
+        message: `Opening PayPal Sandbox for ${type} payment of LKR ${amount.toLocaleString()} to ${recipientName}...`,
+        severity: 'info'
+      });
+
+      // Create PayPal payment data
       const paymentData = {
         amount: amount,
-        currency: 'LKR',
+        currency: 'USD', // PayPal sandbox typically uses USD
         recipient: recipient,
+        recipientName: recipientName,
         type: type,
         timestamp: new Date().toISOString(),
         paypal_transaction_id: `PP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        status: 'completed'
+        status: 'initiated'
       };
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Convert LKR to USD for PayPal (approximate rate: 1 USD = 300 LKR)
+      const usdAmount = (amount / 300).toFixed(2);
 
-      // In real implementation, you would make actual PayPal API call here
-      console.log('PayPal Payment Processed:', paymentData);
+      // PayPal Sandbox URL with payment parameters
+      const paypalSandboxUrl = new URL('https://www.sandbox.paypal.com/cgi-bin/webscr');
+      paypalSandboxUrl.searchParams.append('cmd', '_xclick');
+      paypalSandboxUrl.searchParams.append('business', 'sb-merchant@sandbox.paypal.com'); // Sandbox merchant email
+      paypalSandboxUrl.searchParams.append('item_name', `${type === 'employee' ? 'Salary Payment' : 'Bill Payment'} - ${recipientName}`);
+      paypalSandboxUrl.searchParams.append('amount', usdAmount);
+      paypalSandboxUrl.searchParams.append('currency_code', 'USD');
+      paypalSandboxUrl.searchParams.append('return', window.location.origin + '/payment-success');
+      paypalSandboxUrl.searchParams.append('cancel_return', window.location.origin + '/payment-cancelled');
+      paypalSandboxUrl.searchParams.append('notify_url', window.location.origin + '/paypal-ipn');
+      paypalSandboxUrl.searchParams.append('custom', JSON.stringify({
+        originalAmount: amount,
+        currency: 'LKR',
+        type: type,
+        recipient: recipient,
+        transactionId: paymentData.paypal_transaction_id
+      }));
+
+      // Open PayPal in new window/tab
+      const paypalWindow = window.open(
+        paypalSandboxUrl.toString(),
+        'paypal_payment',
+        'width=800,height=600,scrollbars=yes,resizable=yes'
+      );
+
+      // Check if popup was blocked
+      if (!paypalWindow) {
+        setSnackbar({
+          open: true,
+          message: 'Popup blocked! Please allow popups and try again, or manually navigate to PayPal.',
+          severity: 'warning'
+        });
+        
+        // Fallback: redirect in the same window
+        setTimeout(() => {
+          if (window.confirm('Popup was blocked. Redirect to PayPal in this window?')) {
+            window.location.href = paypalSandboxUrl.toString();
+          }
+        }, 2000);
+      } else {
+        // Monitor the popup window
+        const checkClosed = setInterval(() => {
+          if (paypalWindow.closed) {
+            clearInterval(checkClosed);
+            setSnackbar({
+              open: true,
+              message: 'PayPal window closed. If payment was completed, it may take a few minutes to reflect.',
+              severity: 'info'
+            });
+          }
+        }, 1000);
+      }
+
+      // Simulate payment completion after 5 seconds (in real app, this would be handled by PayPal IPN)
+      setTimeout(() => {
+        paymentData.status = 'completed';
+        console.log('PayPal Payment Completed:', paymentData);
+        
+        setSnackbar({
+          open: true,
+          message: `PayPal payment simulation completed for ${recipientName}`,
+          severity: 'success'
+        });
+      }, 5000);
       
       return paymentData;
     } catch (error) {
       console.error('PayPal payment failed:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to open PayPal. Please try again.',
+        severity: 'error'
+      });
       throw error;
     } finally {
       setPaymentProcessing(false);
@@ -339,7 +414,8 @@ export default function Finance({ dateFilter }) {
       const paymentResult = await processPayPalPayment(
         employee.netSalary,
         employee.email,
-        'employee'
+        'employee',
+        employee.name
       );
 
       // Update employee status
@@ -351,7 +427,7 @@ export default function Finance({ dateFilter }) {
 
       setSnackbar({
         open: true,
-        message: `Payment of LKR ${employee.netSalary.toLocaleString()} successfully sent to ${employee.name} via PayPal`,
+        message: `PayPal payment initiated for ${employee.name} - LKR ${employee.netSalary.toLocaleString()}`,
         severity: 'success'
       });
     } catch (error) {
@@ -380,28 +456,45 @@ export default function Finance({ dateFilter }) {
 
     const totalAmount = employeesToPay.reduce((sum, emp) => sum + emp.netSalary, 0);
     
-    if (window.confirm(`Process bulk payment of LKR ${totalAmount.toLocaleString()} for ${employeesToPay.length} employees?`)) {
+    if (window.confirm(`Process bulk payment of LKR ${totalAmount.toLocaleString()} for ${employeesToPay.length} employees via PayPal?`)) {
       try {
         setPaymentProcessing(true);
         
-        // Process payments in parallel
-        const paymentPromises = employeesToPay.map(emp => 
-          processPayPalPayment(emp.netSalary, emp.email, 'employee')
-        );
-        
-        await Promise.all(paymentPromises);
+        setSnackbar({
+          open: true,
+          message: `Opening PayPal for bulk payment of ${employeesToPay.length} employees...`,
+          severity: 'info'
+        });
 
-        // Update all employee statuses
-        setEmployeesData(prev => prev.map(emp => 
-          employeesToPay.find(e => e.id === emp.id)
-            ? { ...emp, status: 'paid', paymentStatus: 'paid', lastPaid: new Date() }
-            : emp
-        ));
+        // For bulk payments, we'll process them sequentially with a delay
+        for (let i = 0; i < employeesToPay.length; i++) {
+          const emp = employeesToPay[i];
+          
+          setSnackbar({
+            open: true,
+            message: `Processing payment ${i + 1}/${employeesToPay.length} for ${emp.name}...`,
+            severity: 'info'
+          });
+
+          await processPayPalPayment(emp.netSalary, emp.email, 'employee', emp.name);
+          
+          // Update employee status
+          setEmployeesData(prev => prev.map(employee => 
+            employee.id === emp.id
+              ? { ...employee, status: 'paid', paymentStatus: 'paid', lastPaid: new Date() }
+              : employee
+          ));
+
+          // Wait 2 seconds between payments to avoid overwhelming
+          if (i < employeesToPay.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        }
 
         setSelectedEmployees([]);
         setSnackbar({
           open: true,
-          message: `Bulk payment successful! LKR ${totalAmount.toLocaleString()} paid to ${employeesToPay.length} employees`,
+          message: `Bulk payment initiated for ${employeesToPay.length} employees! Total: LKR ${totalAmount.toLocaleString()}`,
           severity: 'success'
         });
       } catch (error) {
@@ -454,7 +547,8 @@ export default function Finance({ dateFilter }) {
       const paymentResult = await processPayPalPayment(
         bill.amount,
         `${bill.supplier.toLowerCase().replace(/\s+/g, '')}@company.com`,
-        'supplier'
+        'supplier',
+        bill.supplier
       );
 
       // Update bill status
@@ -466,7 +560,7 @@ export default function Finance({ dateFilter }) {
 
       setSnackbar({
         open: true,
-        message: `Payment of LKR ${bill.amount.toLocaleString()} successfully sent to ${bill.supplier} via PayPal`,
+        message: `PayPal payment initiated for ${bill.supplier} - LKR ${bill.amount.toLocaleString()}`,
         severity: 'success'
       });
     } catch (error) {
@@ -867,6 +961,51 @@ export default function Finance({ dateFilter }) {
 
   const renderBills = () => (
     <Box>
+      {/* PayPal Integration Info */}
+      <Paper
+        sx={{
+          borderRadius: '16px',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          mb: 4
+        }}
+      >
+        <Box sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Payment sx={{ fontSize: '24px', color: '#1e3a8a', mr: 2 }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+              PayPal Sandbox Integration
+            </Typography>
+          </Box>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            <Typography variant="body2">
+              <strong>PayPal Sandbox Mode:</strong> All payments will redirect to PayPal Sandbox for testing. 
+              Use PayPal sandbox test accounts for transactions. Currency conversion: LKR to USD (1 USD ≈ 300 LKR)
+            </Typography>
+          </Alert>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Chip 
+              label="Sandbox Environment" 
+              color="warning" 
+              variant="outlined"
+              sx={{ fontWeight: 'bold' }}
+            />
+            <Chip 
+              label="Test Payments Only" 
+              color="info" 
+              variant="outlined"
+              sx={{ fontWeight: 'bold' }}
+            />
+            <Chip 
+              label="Auto Currency Conversion" 
+              color="success" 
+              variant="outlined"
+              sx={{ fontWeight: 'bold' }}
+            />
+          </Box>
+        </Box>
+      </Paper>
+
       {/* Bills Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={4}>
@@ -1046,6 +1185,51 @@ export default function Finance({ dateFilter }) {
 
   const renderPayroll = () => (
     <Box>
+      {/* PayPal Integration Info for Payroll */}
+      <Paper
+        sx={{
+          borderRadius: '16px',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          mb: 4
+        }}
+      >
+        <Box sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <PaymentsOutlined sx={{ fontSize: '24px', color: '#10b981', mr: 2 }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+              Employee Payroll - PayPal Integration
+            </Typography>
+          </Box>
+          <Alert severity="success" sx={{ mb: 2 }}>
+            <Typography variant="body2">
+              <strong>Secure Payroll Processing:</strong> All salary payments are processed through PayPal Sandbox. 
+              Employees can receive payments directly to their PayPal accounts or bank accounts linked to PayPal.
+            </Typography>
+          </Alert>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Chip 
+              label="Individual Payments" 
+              color="primary" 
+              variant="outlined"
+              sx={{ fontWeight: 'bold' }}
+            />
+            <Chip 
+              label="Bulk Payment Support" 
+              color="success" 
+              variant="outlined"
+              sx={{ fontWeight: 'bold' }}
+            />
+            <Chip 
+              label="Payment Blocking" 
+              color="warning" 
+              variant="outlined"
+              sx={{ fontWeight: 'bold' }}
+            />
+          </Box>
+        </Box>
+      </Paper>
+
       {/* Payroll Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={3}>
@@ -1542,16 +1726,29 @@ export default function Finance({ dateFilter }) {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar for notifications */}
+      {/* Snackbar for notifications with enhanced PayPal messaging */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={6000}
+        autoHideDuration={8000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <Alert 
           onClose={() => setSnackbar({ ...snackbar, open: false })} 
           severity={snackbar.severity}
-          sx={{ width: '100%' }}
+          sx={{ 
+            width: '100%',
+            '& .MuiAlert-message': {
+              fontSize: '14px',
+              fontWeight: 'medium'
+            }
+          }}
+          iconMapping={{
+            info: <Payment sx={{ fontSize: '20px' }} />,
+            success: <CheckCircle sx={{ fontSize: '20px' }} />,
+            warning: <Warning sx={{ fontSize: '20px' }} />,
+            error: <Warning sx={{ fontSize: '20px' }} />
+          }}
         >
           {snackbar.message}
         </Alert>
