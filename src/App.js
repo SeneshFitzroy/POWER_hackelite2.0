@@ -177,10 +177,17 @@ class ErrorBoundary extends React.Component {
 function App() {
   const [currentScreen, setCurrentScreen] = useState('splash')
 
-  // Check URL parameters on component mount
+  // Check URL parameters and current path on component mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const screenParam = urlParams.get('screen');
+    const currentPath = window.location.pathname;
+    
+    // If we're on a module route, don't interfere with routing
+    if (currentPath !== '/') {
+      return;
+    }
+    
     if (screenParam === 'login') {
       setCurrentScreen('login');
     }
@@ -216,13 +223,7 @@ function App() {
   }
 
   const handleInventoryAccess = () => {
-    console.log('handleInventoryAccess called - navigating to /inventory')
-    console.log('About to navigate...')
-    try {
-      window.location.href = '/inventory'
-    } catch (error) {
-      console.error('Navigation error:', error)
-    }
+    window.location.href = '/inventory'
   }
   const handleLogout = () => {
     // Clear any stored user data (if any)
@@ -314,11 +315,11 @@ function App() {
             </Box>
           } />
           <Route path="/" element={
-            <div className="App">
+            <>
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
               {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
-            </div>
+            </>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
