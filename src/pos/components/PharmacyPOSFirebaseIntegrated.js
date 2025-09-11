@@ -70,6 +70,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
   const [cashBalance, setCashBalance] = useState(0);
   const [discountRate, setDiscountRate] = useState(0);
   const [slmcRegNumber, setSlmcRegNumber] = useState('');
+  const [prescriptionType, setPrescriptionType] = useState('OTC'); // 'SLMC' or 'OTC'
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showReceipt, setShowReceipt] = useState(false);
   const [lastTransaction, setLastTransaction] = useState(null);
@@ -612,6 +613,14 @@ const PharmacyPOSFirebaseIntegrated = () => {
       return;
     }
 
+    // Validate SLMC requirements
+    if (prescriptionType === 'SLMC') {
+      if (!slmcRegNumber.trim() || slmcRegNumber.length !== 6) {
+        alert('SLMC prescription requires a valid 6-digit SLMC registration number.');
+        return;
+      }
+    }
+
       try {
         setLoading(true);
         
@@ -758,6 +767,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
         staffType: 'employee',
         employeeId: employeeId,
         slmcRegNumber: slmcRegNumber,
+        prescriptionType: prescriptionType,
+        prescriptionInfo: prescriptionType === 'SLMC' ? `SLMC Prescription - Reg: ${slmcRegNumber}` : 'Over The Counter (OTC)',
         invoiceNumber: invoiceNumber,
         branchId: 'MAIN-BRANCH',
         location: 'Main Pharmacy',
@@ -1233,24 +1244,88 @@ const PharmacyPOSFirebaseIntegrated = () => {
               </Box>
             )}
 
+            {/* PRESCRIPTION TYPE SELECTOR */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1, color: '#1976d2' }}>
+                PRESCRIPTION TYPE
+              </Typography>
+              <RadioGroup
+                row
+                value={prescriptionType}
+                onChange={(e) => {
+                  setPrescriptionType(e.target.value);
+                  // Clear SLMC number when switching to OTC
+                  if (e.target.value === 'OTC') {
+                    setSlmcRegNumber('');
+                  }
+                }}
+                sx={{ gap: 2 }}
+              >
+                <FormControlLabel
+                  value="OTC"
+                  control={<Radio />}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Typography variant="body2" fontWeight="bold" sx={{ color: '#2e7d32' }}>
+                        Over The Counter (OTC)
+                      </Typography>
+                    </Box>
+                  }
+                />
+                <FormControlLabel
+                  value="SLMC"
+                  control={<Radio />}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Typography variant="body2" fontWeight="bold" sx={{ color: '#d32f2f' }}>
+                        SLMC Prescription
+                      </Typography>
+                    </Box>
+                  }
+                />
+              </RadioGroup>
+            </Box>
 
+            {/* SLMC REG NUMBER - Only show when prescription type is SLMC */}
+            {prescriptionType === 'SLMC' && (
+              <TextField
+                fullWidth
+                label="SLMC REG NUMBER (6 digits) *REQUIRED*"
+                value={slmcRegNumber}
+                onChange={(e) => setSlmcRegNumber(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="Enter 6-digit SLMC number"
+                size="small"
+                required
+                sx={{
+                  mb: 2,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1,
+                    borderColor: '#d32f2f',
+                    '&:hover fieldset': { borderColor: '#d32f2f' },
+                    '&.Mui-focused fieldset': { borderColor: '#d32f2f' }
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#d32f2f',
+                    '&.Mui-focused': { color: '#d32f2f' }
+                  }
+                }}
+              />
+            )}
 
-            {/* SLMC REG NUMBER - COMPACT */}
-            <TextField
-              fullWidth
-              label="SLMC REG NUMBER (6 digits)"
-              value={slmcRegNumber}
-              onChange={(e) => setSlmcRegNumber(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="Enter 6-digit SLMC number"
-              size="small"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 1,
-                  '&:hover fieldset': { borderColor: '#1976d2' },
-                  '&.Mui-focused fieldset': { borderColor: '#1976d2' }
-                }
-              }}
-            />
+            {prescriptionType === 'OTC' && (
+              <Box sx={{ 
+                p: 1.5, 
+                backgroundColor: '#e8f5e8', 
+                borderRadius: 1, 
+                border: '1px solid #4caf50',
+                mb: 2
+              }}>
+                <Typography variant="body2" sx={{ color: '#2e7d32', fontWeight: 'bold' }}>
+                  ✅ Over The Counter Sale - No prescription required
+                </Typography>
+              </Box>
+            )}
+
           </Paper>
 
           {/* STAFF INFORMATION - COMPACT */}
@@ -1562,20 +1637,33 @@ const PharmacyPOSFirebaseIntegrated = () => {
               color: 'white',
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center'
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 1
             }}>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 SHOPPING CART
               </Typography>
-              <Chip 
-                label={`${totals.totalItems} items`} 
-                size="small" 
-                sx={{ 
-                  backgroundColor: 'rgba(255,255,255,0.2)', 
-                  color: 'white',
-                  fontWeight: 'bold'
-                }} 
-              />
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Chip 
+                  label={`${totals.totalItems} items`} 
+                  size="small" 
+                  sx={{ 
+                    backgroundColor: 'rgba(255,255,255,0.2)', 
+                    color: 'white',
+                    fontWeight: 'bold'
+                  }} 
+                />
+                <Chip 
+                  label={prescriptionType === 'SLMC' ? '💊 SLMC' : '🏪 OTC'} 
+                  size="small" 
+                  sx={{ 
+                    backgroundColor: prescriptionType === 'SLMC' ? '#d32f2f' : '#4caf50', 
+                    color: 'white',
+                    fontWeight: 'bold'
+                  }} 
+                />
+              </Box>
             </Box>
 
             {/* CART ITEMS - COMPACT */}
@@ -1856,7 +1944,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 variant="contained"
                 size="medium"
                 onClick={processSale}
-                disabled={cart.length === 0 || loading || !employeeId.trim()}
+                disabled={
+                  cart.length === 0 || 
+                  loading || 
+                  !employeeId.trim() || 
+                  (prescriptionType === 'SLMC' && (!slmcRegNumber.trim() || slmcRegNumber.length !== 6))
+                }
                 sx={{
                   backgroundColor: '#4caf50',
                   color: 'white',
@@ -2151,6 +2244,35 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   </Typography>
                 </Grid>
               </Grid>
+            </Box>
+
+            {/* PRESCRIPTION TYPE INFO */}
+            <Box sx={{ 
+              mb: 2, 
+              p: 2, 
+              backgroundColor: prescriptionType === 'SLMC' ? '#ffebee' : '#e8f5e8',
+              border: `2px solid ${prescriptionType === 'SLMC' ? '#d32f2f' : '#4caf50'}`,
+              borderRadius: 2
+            }}>
+              <Typography variant="body2" sx={{ 
+                fontWeight: 'bold', 
+                color: prescriptionType === 'SLMC' ? '#d32f2f' : '#2e7d32',
+                textAlign: 'center',
+                fontSize: '0.9rem'
+              }}>
+                {prescriptionType === 'SLMC' ? '💊 PRESCRIPTION SALE' : '🏪 OVER THE COUNTER SALE'}
+              </Typography>
+              <Typography variant="body2" sx={{ 
+                color: prescriptionType === 'SLMC' ? '#d32f2f' : '#2e7d32',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                mt: 0.5
+              }}>
+                {prescriptionType === 'SLMC' 
+                  ? `SLMC Reg. Number: ${slmcRegNumber}`
+                  : 'No prescription required'
+                }
+              </Typography>
             </Box>
 
             {/* STAFF AND PATIENT INFO */}
