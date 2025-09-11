@@ -53,6 +53,7 @@ import {
 import { inventoryService } from '../../services/inventoryService';
 import { purchaseOrderService } from '../../services/purchaseOrderService';
 import { format } from 'date-fns';
+import { safeFormatDate } from '../../utils/dateUtils';
 
 const ReorderManagement = () => {
   const [medicines, setMedicines] = useState([]);
@@ -493,11 +494,16 @@ const ReorderManagement = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredMedicines.map((medicine) => {
+              {filteredMedicines && filteredMedicines.length > 0 ? filteredMedicines.map((medicine, index) => {
+                if (!medicine || !medicine.id) {
+                  console.warn('Invalid medicine data at index:', index, medicine);
+                  return null;
+                }
+                
                 const stockStatus = getStockStatus(medicine);
                 return (
                   <TableRow 
-                    key={medicine.id}
+                    key={medicine.id || `medicine-${index}`}
                     sx={{ 
                       '&:hover': { 
                         backgroundColor: '#f8fafc' 
@@ -605,12 +611,12 @@ const ReorderManagement = () => {
                     </TableCell>
                   </TableRow>
                 );
-              })}
+              }).filter(Boolean) : []}
             </TableBody>
           </Table>
         </TableContainer>
 
-        {filteredMedicines.length === 0 && (
+        {(!filteredMedicines || filteredMedicines.length === 0) && (
           <Box sx={{ textAlign: 'center', py: 6 }}>
             <WarningIcon sx={{ fontSize: 64, color: '#9ca3af', mb: 2 }} />
             <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
@@ -801,7 +807,7 @@ const ReorderManagement = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle2" color="text.secondary">Expiry Date</Typography>
-                    <Typography variant="body1">{selectedMedicine.expiryDate ? format(new Date(selectedMedicine.expiryDate), 'MMM dd, yyyy') : 'N/A'}</Typography>
+                    <Typography variant="body1">{safeFormatDate(selectedMedicine.expiryDate)}</Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle2" color="text.secondary">Type</Typography>
