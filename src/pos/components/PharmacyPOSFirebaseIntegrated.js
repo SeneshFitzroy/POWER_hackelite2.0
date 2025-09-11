@@ -32,6 +32,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { medicineService } from '../services/medicineService';
 import { transactionService } from '../services/transactionService';
 import { patientService } from '../services/patientService';
+import { employeeService } from '../../services/employeeService';
 import { initializeSampleData } from '../services/dataInitServiceNew';
 import { db } from '../../firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
@@ -60,6 +61,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
   const [customerName, setCustomerName] = useState('');
   const [customerContact, setCustomerContact] = useState('');
   const [employeeId, setEmployeeId] = useState('');
+  const [employeeName, setEmployeeName] = useState('');
   const [staffType, setStaffType] = useState('employee');
   const [cashReceived, setCashReceived] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('cash');
@@ -252,6 +254,26 @@ const PharmacyPOSFirebaseIntegrated = () => {
       setSearchResults([]);
     }
   }, [medicines]);
+
+  // Handle employee ID change and fetch employee name
+  const handleEmployeeIdChange = async (id) => {
+    setEmployeeId(id);
+    setEmployeeName(''); // Clear previous name
+    
+    if (id.trim().length >= 3) { // Start searching after 3 characters
+      try {
+        const employee = await employeeService.verifyEmployee(id.trim());
+        if (employee) {
+          setEmployeeName(employee.name);
+        } else {
+          setEmployeeName('');
+        }
+      } catch (error) {
+        console.error('Error fetching employee:', error);
+        setEmployeeName('');
+      }
+    }
+  };
 
   // Debounced patient search function - now includes customers
   const debouncedPatientSearch = async (searchTerm) => {
@@ -645,7 +667,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         customerContact: customerContact,
         patientNIC: patientNIC,
         patientId: patientId,
-        staffName: `EMPLOYEE: ${employeeId}`,
+        staffName: employeeName ? `${employeeName} (${employeeId})` : `EMPLOYEE: ${employeeId}`,
         staffType: 'employee',
         employeeId: employeeId,
         slmcRegNumber: slmcRegNumber,
@@ -1118,14 +1140,16 @@ const PharmacyPOSFirebaseIntegrated = () => {
               fullWidth
               label="Authorized Person - Employee ID"
               value={employeeId}
-              onChange={(e) => setEmployeeId(e.target.value)}
+              onChange={(e) => handleEmployeeIdChange(e.target.value)}
               required
               error={!employeeId.trim()}
+              helperText={employeeName ? `Employee: ${employeeName}` : (!employeeId.trim() ? 'Employee ID is required' : '')}
               size="small"
               sx={{ 
                 mb: 1.5,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 1,
+                  backgroundColor: employeeName ? '#f0f9ff' : '#ffffff',
                   '&:hover fieldset': { borderColor: '#1976d2' },
                   '&.Mui-focused fieldset': { borderColor: '#1976d2' }
                 }
@@ -1896,54 +1920,178 @@ const PharmacyPOSFirebaseIntegrated = () => {
       {/* RECEIPT DIALOG */}
       <Dialog open={showReceipt} onClose={() => setShowReceipt(false)} maxWidth="sm" fullWidth>
         {lastTransaction && (
-          <Box sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight="bold" color="#1f2937" sx={{ mb: 2, textAlign: 'center' }}>
-              SALE RECEIPT
-            </Typography>
+          <Box sx={{ p: 4, fontFamily: 'monospace' }}>
+            {/* PHARMACY HEADER WITH LOGO */}
+            <Box sx={{ textAlign: 'center', mb: 3, borderBottom: '2px solid #1976d2', pb: 2 }}>
+              <img 
+                src="/images/npk-logo.png" 
+                alt="NPK Logo" 
+                style={{ height: '60px', marginBottom: '10px' }}
+                onError={(e) => { e.target.style.display = 'none' }}
+              />
+              <Typography variant="h5" fontWeight="bold" sx={{ color: '#1976d2', letterSpacing: '1px' }}>
+                MEDICARE PHARMACY SYSTEM
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666', mt: 0.5 }}>
+                Authorized Pharmacy & Medical Supplies
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666' }}>
+                📍 123 Main Street, Colombo 01, Sri Lanka
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666' }}>
+                📞 +94 11 234 5678 | 📧 info@medicare.lk
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666', fontWeight: 'bold' }}>
+                Pharmacy Reg: PH/2024/001 | License: LIC/2024/001
+              </Typography>
+            </Box>
+
+            {/* RECEIPT HEADER */}
+            <Box sx={{ textAlign: 'center', mb: 2 }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ 
+                backgroundColor: '#1976d2', 
+                color: 'white', 
+                p: 1, 
+                borderRadius: 1,
+                letterSpacing: '1px'
+              }}>
+                PHARMACY SALES RECEIPT
+              </Typography>
+            </Box>
             
-            <Typography variant="body2" sx={{ mb: 1 }}>
-              Invoice: {lastTransaction.invoiceNumber}
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 1 }}>
-              Date: {new Date().toLocaleDateString()}
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
-              Staff: {lastTransaction.staffName}
-            </Typography>
+            {/* TRANSACTION DETAILS */}
+            <Box sx={{ mb: 2, borderBottom: '1px dashed #ccc', pb: 2 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                    Receipt No: {lastTransaction.receiptNumber || `RCP-${lastTransaction.invoiceNumber}`}
+                  </Typography>
+                  <Typography variant="body2">
+                    Invoice No: {lastTransaction.invoiceNumber}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sx={{ textAlign: 'right' }}>
+                  <Typography variant="body2">
+                    Date: {new Date().toLocaleDateString('en-GB')}
+                  </Typography>
+                  <Typography variant="body2">
+                    Time: {new Date().toLocaleTimeString('en-GB')}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
 
-            {lastTransaction.items && lastTransaction.items.map((item, index) => (
-              <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <Typography variant="body2">{item.name} x{item.quantity}</Typography>
-                <Typography variant="body2">{formatCurrency(item.totalPrice)}</Typography>
+            {/* STAFF AND PATIENT INFO */}
+            <Box sx={{ mb: 2, borderBottom: '1px dashed #ccc', pb: 2 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                👨‍⚕️ Served By: {lastTransaction.staffName}
+              </Typography>
+              {(currentPatient || customerName) && (
+                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
+                  👤 Patient: {currentPatient?.name || customerName || 'Walk-in Customer'}
+                  {currentPatient?.nic && ` (NIC: ${currentPatient.nic})`}
+                </Typography>
+              )}
+              {(currentPatient?.contact || customerContact) && (
+                <Typography variant="body2" sx={{ color: '#666' }}>
+                  📞 Contact: {currentPatient?.contact || customerContact}
+                </Typography>
+              )}
+            </Box>
+
+            {/* ITEMS SECTION */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="body2" fontWeight="bold" sx={{ 
+                backgroundColor: '#f5f5f5', 
+                p: 1, 
+                borderRadius: 1,
+                mb: 1,
+                textAlign: 'center'
+              }}>
+                ITEMS PURCHASED
+              </Typography>
+              
+              {/* Items Header */}
+              <Box sx={{ display: 'flex', fontWeight: 'bold', borderBottom: '1px solid #ccc', pb: 0.5, mb: 1 }}>
+                <Typography variant="body2" sx={{ flex: 3, fontSize: '0.8rem' }}>MEDICINE</Typography>
+                <Typography variant="body2" sx={{ flex: 1, textAlign: 'center', fontSize: '0.8rem' }}>QTY</Typography>
+                <Typography variant="body2" sx={{ flex: 1, textAlign: 'center', fontSize: '0.8rem' }}>RATE</Typography>
+                <Typography variant="body2" sx={{ flex: 1, textAlign: 'right', fontSize: '0.8rem' }}>TOTAL</Typography>
               </Box>
-            ))}
 
-            <Divider sx={{ my: 2 }} />
-            
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography>Subtotal:</Typography>
-              <Typography>{formatCurrency(lastTransaction.subtotal)}</Typography>
+              {/* Items List */}
+              {lastTransaction.items && lastTransaction.items.map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', mb: 0.5, fontSize: '0.85rem' }}>
+                  <Typography variant="body2" sx={{ flex: 3, fontSize: '0.8rem' }}>
+                    {item.name}
+                    {item.batchNumber && <br />}<span style={{ color: '#666', fontSize: '0.7rem' }}>Batch: {item.batchNumber}</span>
+                  </Typography>
+                  <Typography variant="body2" sx={{ flex: 1, textAlign: 'center', fontSize: '0.8rem' }}>
+                    {item.quantity}
+                  </Typography>
+                  <Typography variant="body2" sx={{ flex: 1, textAlign: 'center', fontSize: '0.8rem' }}>
+                    {formatCurrency(item.price || (item.totalPrice / item.quantity))}
+                  </Typography>
+                  <Typography variant="body2" sx={{ flex: 1, textAlign: 'right', fontSize: '0.8rem' }}>
+                    {formatCurrency(item.totalPrice)}
+                  </Typography>
+                </Box>
+              ))}
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography>Discount ({lastTransaction.discountRate || 0}%):</Typography>
-              <Typography color="error">-{formatCurrency(lastTransaction.discountAmount || 0)}</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="h6" fontWeight="bold">NET TOTAL:</Typography>
-              <Typography variant="h6" fontWeight="bold">{formatCurrency(lastTransaction.netTotal || lastTransaction.total)}</Typography>
-            </Box>
-            {lastTransaction.balance > 0 && (
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <Typography fontWeight="bold">BALANCE:</Typography>
-                <Typography fontWeight="bold">{formatCurrency(lastTransaction.balance)}</Typography>
+
+            {/* TOTALS SECTION */}
+            <Box sx={{ borderTop: '2px solid #1976d2', pt: 1, mb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                <Typography variant="body2">Subtotal:</Typography>
+                <Typography variant="body2">{formatCurrency(lastTransaction.subtotal)}</Typography>
               </Box>
-            )}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography variant="h6" fontWeight="bold">BILL:</Typography>
-              <Typography variant="h6" fontWeight="bold">{formatCurrency(lastTransaction.total)}</Typography>
+              {lastTransaction.discountAmount > 0 && (
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                  <Typography variant="body2" color="error">Discount ({lastTransaction.discountRate || 0}%):</Typography>
+                  <Typography variant="body2" color="error">-{formatCurrency(lastTransaction.discountAmount || 0)}</Typography>
+                </Box>
+              )}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, borderTop: '1px dashed #ccc', pt: 1 }}>
+                <Typography variant="h6" fontWeight="bold">NET TOTAL:</Typography>
+                <Typography variant="h6" fontWeight="bold">{formatCurrency(lastTransaction.netTotal || lastTransaction.total)}</Typography>
+              </Box>
+              
+              {/* Payment Method */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                <Typography variant="body2" fontWeight="bold">Payment Method:</Typography>
+                <Typography variant="body2" fontWeight="bold" sx={{ textTransform: 'uppercase' }}>
+                  {lastTransaction.paymentMethod || 'CASH'}
+                </Typography>
+              </Box>
+              
+              {lastTransaction.balance > 0 && (
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                  <Typography variant="body2" fontWeight="bold" color="success">BALANCE:</Typography>
+                  <Typography variant="body2" fontWeight="bold" color="success">
+                    {formatCurrency(lastTransaction.balance)}
+                  </Typography>
+                </Box>
+              )}
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 3 }}>
+            {/* FOOTER */}
+            <Box sx={{ textAlign: 'center', borderTop: '1px dashed #ccc', pt: 2, mt: 2 }}>
+              <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem' }}>
+                Thank you for choosing Medicare Pharmacy!
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem' }}>
+                For any queries, please contact us within 7 days
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666', fontSize: '0.7rem', mt: 1 }}>
+                This is a computer-generated receipt
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666', fontSize: '0.7rem' }}>
+                Visit us at: www.medicare.lk
+              </Typography>
+            </Box>
+
+            {/* ACTION BUTTONS */}
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 3, pt: 2, borderTop: '1px solid #eee' }}>
               <Button
                 variant="outlined"
                 onClick={() => setShowReceipt(false)}
@@ -1954,7 +2102,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               <Button
                 variant="contained"
                 onClick={() => window.print()}
-                sx={{ background: '#1e40af', color: 'white' }}
+                sx={{ background: '#1976d2', color: 'white' }}
               >
                 Print Receipt
               </Button>
