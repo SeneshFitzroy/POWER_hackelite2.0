@@ -1,8 +1,17 @@
 import React, { useState } from "react"
-import { sendPasswordResetEmail } from 'firebase/auth'
-import { auth } from '../firebase/config'
 // Uncomment the line below if you put the logo in src/assets/images/
 // import npkLogo from "../assets/images/npk-logo.png"
+
+// Safely import Firebase auth
+let sendPasswordResetEmail, auth
+try {
+  const firebaseAuth = require('firebase/auth')
+  const firebaseConfig = require('../firebase/config')
+  sendPasswordResetEmail = firebaseAuth.sendPasswordResetEmail
+  auth = firebaseConfig.auth
+} catch (error) {
+  console.warn('Firebase not available:', error)
+}
 
 export default function LoginScreen({ onLoginSuccess }) {
   const [email, setEmail] = useState("")
@@ -38,6 +47,12 @@ export default function LoginScreen({ onLoginSuccess }) {
 
     if (!/\S+@\S+\.\S+/.test(email)) {
       setErrors({ email: "Please enter a valid email" })
+      return
+    }
+
+    // Check if Firebase auth is available
+    if (!auth) {
+      setErrors({ general: "Authentication service is not available" })
       return
     }
 
