@@ -1,10 +1,4 @@
-import   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState({})
-  const [resetEmailSent, setResetEmailSent] = useState(false)
-  const [resetLoading, setResetLoading] = useState(false), { useState } from "react"
+import React, { useState } from "react"
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../firebase/config'
 // Uncomment the line below if you put the logo in src/assets/images/
@@ -16,6 +10,8 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
+  const [resetEmailSent, setResetEmailSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
 
   const validateForm = () => {
     const newErrors = {}
