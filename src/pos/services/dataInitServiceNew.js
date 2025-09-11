@@ -850,6 +850,97 @@ export const initializeSampleData = async () => {
     }
     console.log(`Added ${sampleMedicines.length} medicines`);
 
+    // Sample Patients - Sri Lankan example data
+    const samplePatients = [
+      {
+        name: 'Kumara Perera',
+        nic: '200123456789',
+        contact: '0771234567',
+        phoneNumber: '0771234567',
+        age: '23',
+        address: 'No. 45, Galle Road, Colombo 03',
+        gender: 'Male',
+        bloodGroup: 'O+',
+        medicalNotes: 'No known allergies',
+        dateOfBirth: '2001-05-15',
+        totalPurchases: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastVisit: serverTimestamp()
+      },
+      {
+        name: 'Sunethra Silva',
+        nic: '198567890123',
+        contact: '0712345678',
+        phoneNumber: '0712345678',
+        age: '39',
+        address: 'No. 78, Kandy Road, Kegalle',
+        gender: 'Female',
+        bloodGroup: 'A+',
+        medicalNotes: 'Allergic to penicillin',
+        dateOfBirth: '1985-12-08',
+        totalPurchases: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastVisit: serverTimestamp()
+      },
+      {
+        name: 'Ranil Fernando',
+        nic: '197234567890',
+        contact: '0763456789',
+        phoneNumber: '0763456789',
+        age: '52',
+        address: 'No. 123, Main Street, Matara',
+        gender: 'Male',
+        bloodGroup: 'B+',
+        medicalNotes: 'Diabetic patient',
+        dateOfBirth: '1972-08-22',
+        totalPurchases: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastVisit: serverTimestamp()
+      },
+      {
+        name: 'Nishani Jayawardena',
+        nic: '199678901234',
+        contact: '0754567890',
+        phoneNumber: '0754567890',
+        age: '28',
+        address: 'No. 56, Temple Road, Nugegoda',
+        gender: 'Female',
+        bloodGroup: 'AB+',
+        medicalNotes: 'Hypertension',
+        dateOfBirth: '1996-03-10',
+        totalPurchases: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastVisit: serverTimestamp()
+      },
+      {
+        name: 'Chaminda Rathnayake',
+        nic: '198856789012',
+        contact: '0745678901',
+        phoneNumber: '0745678901',
+        age: '36',
+        address: 'No. 89, Hill Street, Badulla',
+        gender: 'Male',
+        bloodGroup: 'O-',
+        medicalNotes: 'No known conditions',
+        dateOfBirth: '1988-11-05',
+        totalPurchases: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastVisit: serverTimestamp()
+      }
+    ];
+
+    // Add patients to Firestore
+    console.log('Adding sample patients to Firestore...');
+    for (const patient of samplePatients) {
+      await addDoc(collection(db, 'patients'), patient);
+    }
+    console.log(`Added ${samplePatients.length} sample patients`);
+
     return { success: true, message: 'Sample data initialized successfully' };
   } catch (error) {
     console.error('Error initializing sample data:', error);

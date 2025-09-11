@@ -1005,9 +1005,31 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 borderRadius: 1,
                 border: '1px solid #4caf50'
               }}>
-                <Typography variant="body2" fontWeight="bold" color="#2e7d32" sx={{ mb: 0.5 }}>
-                  ✓ Patient Selected: {currentPatient.name}
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                  <Typography variant="body2" fontWeight="bold" color="#2e7d32">
+                    ✓ Patient Selected: {currentPatient.name}
+                  </Typography>
+                  <Button
+                    size="small"
+                    onClick={() => {
+                      setCurrentPatient(null);
+                      setCustomerName('');
+                      setCustomerContact('');
+                      setPatientNIC('');
+                    }}
+                    sx={{
+                      color: '#f44336',
+                      fontSize: '0.7rem',
+                      minWidth: 'auto',
+                      p: 0.5,
+                      '&:hover': {
+                        backgroundColor: 'rgba(244, 67, 54, 0.1)'
+                      }
+                    }}
+                  >
+                    Clear
+                  </Button>
+                </Box>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {currentPatient.age && (
                     <Chip 
@@ -1046,6 +1068,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Customer name (auto-filled from patient selection)"
                 size="small"
+                InputProps={{
+                  endAdornment: customerName && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+                      <Typography variant="caption" color="#4caf50">✓</Typography>
+                    </Box>
+                  )
+                }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 1,
@@ -1062,6 +1091,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 onChange={(e) => setCustomerContact(e.target.value)}
                 placeholder="Contact number (auto-filled from patient selection)"
                 size="small"
+                InputProps={{
+                  endAdornment: customerContact && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+                      <Typography variant="caption" color="#4caf50">✓</Typography>
+                    </Box>
+                  )
+                }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 1,
