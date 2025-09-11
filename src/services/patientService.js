@@ -5,6 +5,7 @@ import {
   getDoc, 
   addDoc, 
   updateDoc, 
+  deleteDoc,
   query, 
   where, 
   orderBy, 
@@ -32,12 +33,49 @@ export const patientService = {
     }
   },
 
+  // Get all patients
+  getAllPatients: async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'patients'));
+      return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    } catch (error) {
+      throw new Error(`Error getting patients: ${error.message}`);
+    }
+  },
+
+  // Find patient by NIC
+  findPatientByNIC: async (nic) => {
+    try {
+      const q = query(
+        collection(db, 'patients'),
+        where('nic', '==', nic),
+        limit(1)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        return null;
+      }
+      
+      const patientDoc = querySnapshot.docs[0];
+      return {
+        id: patientDoc.id,
+        ...patientDoc.data()
+      };
+    } catch (error) {
+      throw new Error(`Error finding patient by NIC: ${error.message}`);
+    }
+  },
+
   // Find patient by phone number
   findPatientByPhone: async (phoneNumber) => {
     try {
       const q = query(
         collection(db, 'patients'),
-        where('phoneNumber', '==', phoneNumber),
+        where('contact', '==', phoneNumber),
         limit(1)
       );
       const querySnapshot = await getDocs(q);
@@ -53,6 +91,16 @@ export const patientService = {
       };
     } catch (error) {
       throw new Error(`Error finding patient: ${error.message}`);
+    }
+  },
+
+  // Delete patient
+  deletePatient: async (patientId) => {
+    try {
+      await deleteDoc(doc(db, 'patients', patientId));
+      return true;
+    } catch (error) {
+      throw new Error(`Error deleting patient: ${error.message}`);
     }
   },
 
@@ -122,8 +170,8 @@ export const patientService = {
         // Search by phone
         query(
           collection(db, 'patients'),
-          where('phoneNumber', '>=', searchTerm),
-          where('phoneNumber', '<=', searchTerm + '\uf8ff'),
+          where('contact', '>=', searchTerm),
+          where('contact', '<=', searchTerm + '\uf8ff'),
           limit(10)
         )
       ];

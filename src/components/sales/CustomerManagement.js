@@ -22,7 +22,11 @@ import {
   Checkbox,
   Alert,
   InputAdornment,
-  Fab
+  Fab,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import {
   Add,
@@ -37,10 +41,13 @@ import {
   CheckCircle,
   Cancel,
   ChildCare,
-  Close
+  Close,
+  Delete,
+  PersonAdd
 } from '@mui/icons-material';
 import { db } from '../../firebase/config';
-import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, deleteDoc, Timestamp } from 'firebase/firestore';
+import { patientService } from '../../services/patientService';
 
 export default function CustomerManagement({ dateFilter }) {
   const [customers, setCustomers] = useState([]);
@@ -61,6 +68,9 @@ export default function CustomerManagement({ dateFilter }) {
   const [nic, setNic] = useState('');
   const [age, setAge] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
+  const [gender, setGender] = useState('');
+  const [bloodGroup, setBloodGroup] = useState('');
+  const [medicalNotes, setMedicalNotes] = useState('');
   const [status, setStatus] = useState('Active');
 
   // Load customers from Firebase
@@ -247,6 +257,9 @@ export default function CustomerManagement({ dateFilter }) {
     setNic('');
     setAge('');
     setDateOfBirth('');
+    setGender('');
+    setBloodGroup('');
+    setMedicalNotes('');
     setStatus('Active');
     setEditingCustomer(null);
   };
@@ -323,6 +336,9 @@ export default function CustomerManagement({ dateFilter }) {
         nic: nic.trim(),
         age: age ? parseInt(age) : null,
         dateOfBirth: dateOfBirth || null,
+        gender: gender || null,
+        bloodGroup: bloodGroup || null,
+        medicalNotes: medicalNotes.trim() || null,
         status,
         totalPurchases: editingCustomer?.totalPurchases || 0,
         createdAt: editingCustomer?.createdAt || new Date(),
@@ -333,14 +349,53 @@ export default function CustomerManagement({ dateFilter }) {
         visitCount: editingCustomer?.visitCount || 0
       };
 
+      let savedCustomerId = null;
+
       if (editingCustomer) {
         await updateDoc(doc(db, 'customers', editingCustomer.id), customerData);
+        savedCustomerId = editingCustomer.id;
         console.log('✅ Customer updated:', editingCustomer.id);
         alert(`✅ Customer "${customerName}" updated successfully!`);
       } else {
         const customerRef = await addDoc(collection(db, 'customers'), customerData);
+        savedCustomerId = customerRef.id;
         console.log('✅ New customer created:', customerRef.id);
         alert(`✅ Customer "${customerName}" created successfully!\nID: ${customerRef.id}\nIdentifier: ${customerData.primaryIdentifier}`);
+      }
+
+      // Also create/update patient record if we have medical info or if this is a new customer
+      if (savedCustomerId && (medicalNotes.trim() || gender || bloodGroup || !editingCustomer)) {
+        try {
+          const patientData = {
+            name: customerName.trim(),
+            contact: phoneNumber.trim(),
+            nic: nic.trim(),
+            age: age || '',
+            address: address.trim(),
+            gender: gender || '',
+            bloodGroup: bloodGroup || '',
+            medicalNotes: medicalNotes.trim() || 'Customer record from Customer Management',
+            customerId: savedCustomerId,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+
+          // Check if patient already exists
+          const existingPatient = nic.trim() ? await patientService.findPatientByNIC(nic.trim()) : null;
+          
+          if (existingPatient) {
+            // Update existing patient
+            await patientService.updatePatient(existingPatient.id, patientData);
+            console.log('✅ Updated existing patient record');
+          } else {
+            // Create new patient
+            await patientService.addPatient(patientData);
+            console.log('✅ Created new patient record');
+          }
+        } catch (patientError) {
+          console.warn('⚠️ Could not create/update patient record:', patientError.message);
+          // Don't fail the customer creation for this
+        }
       }
 
       setShowCustomerDialog(false);
@@ -362,9 +417,62 @@ export default function CustomerManagement({ dateFilter }) {
     setNic(customer.nic);
     setAge(customer.age?.toString() || '');
     setDateOfBirth(customer.dateOfBirth || '');
+    setGender(customer.gender || '');
+    setBloodGroup(customer.bloodGroup || '');
+    setMedicalNotes(customer.medicalNotes || '');
     setStatus(customer.status);
     setShowCustomerDialog(true);
   };
+
+  // Delete customer
+  const handleDeleteCustomer = async (customer) => {
+    const confirmed = window.confirm(
+      `🗑️ DELETE CUSTOMER\n\n` +
+      `Are you sure you want to delete "${customer.name}"?\n\n` +
+      `This will:\n` +
+      `• Remove the customer record\n` +
+      `• Keep transaction history (for audit purposes)\n` +
+      `• This action cannot be undone\n\n` +
+      `Continue with deletion?`
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+      setLoading(true);
+      
+      // Delete customer record
+      await deleteDoc(doc(db, 'customers', customer.id));
+      
+      // Also delete associated patient record if it exists
+      try {
+        if (customer.nic) {
+          const existingPatient = await patientService.findPatientByNIC(customer.nic);
+          if (existingPatient) {
+            await patientService.deletePatient(existingPatient.id);
+            console.log('✅ Deleted associated patient record');
+          }
+        }
+      } catch (patientError) {
+        console.warn('⚠️ Could not delete patient record:', patientError.message);
+        // Continue with customer deletion even if patient deletion fails
+      }
+      
+      console.log('✅ Customer deleted:', customer.id);
+      alert(`✅ Customer "${customer.name}" deleted successfully!`);
+      
+      // Reload customer list
+      await loadCustomers();
+      
+    } catch (error) {
+      console.error('❌ Error deleting customer:', error);
+      alert(`❌ Error deleting customer: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   return (
     <Box>
@@ -392,59 +500,22 @@ export default function CustomerManagement({ dateFilter }) {
               Refresh
             </Button>
             <Button
-              variant="outlined"
-              onClick={async () => {
-                try {
-                  console.log('=== DEBUG ALL TRANSACTIONS ===');
-                  const allTransactions = await getDocs(collection(db, 'transactions'));
-                  console.log(`Total transactions in database: ${allTransactions.size}`);
-                  
-                  allTransactions.docs.forEach((doc, index) => {
-                    const data = doc.data();
-                    console.log(`Transaction ${index + 1}:`, {
-                      id: doc.id.substring(0, 8),
-                      customerName: data.customerName,
-                      customerNIC: data.customerNIC,
-                      patientNIC: data.patientNIC,
-                      customerContact: data.customerContact,
-                      total: data.total,
-                      date: data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : 'No date'
-                    });
-                  });
-                  console.log('============================');
-                } catch (error) {
-                  console.error('Debug failed:', error);
-                }
-              }}
-              sx={{
-                borderColor: '#ff9800',
-                color: '#ff9800',
-                fontWeight: 'bold',
-                '&:hover': {
-                  backgroundColor: '#fff3e0',
-                  borderColor: '#ff9800'
-                }
-              }}
-            >
-              Debug Transactions
-            </Button>
-            <Button
               variant="contained"
-              startIcon={<Add />}
+              startIcon={<PersonAdd />}
               onClick={() => {
                 resetForm();
                 setShowCustomerDialog(true);
               }}
               sx={{
-                backgroundColor: '#000000',
+                backgroundColor: '#1976d2',
                 color: 'white',
                 fontWeight: 'bold',
                 '&:hover': {
-                  backgroundColor: '#333333'
+                  backgroundColor: '#1565c0'
                 }
               }}
             >
-              Add New Customer
+              Add Customer / Patient
             </Button>
           </Box>
         </Box>
@@ -599,7 +670,7 @@ export default function CustomerManagement({ dateFilter }) {
                         size="small"
                         onClick={() => handleEditCustomer(customer)}
                         sx={{ color: '#1976d2' }}
-                        title="Edit Customer"
+                        title="Edit Customer/Patient"
                       >
                         <Edit />
                       </IconButton>
@@ -610,6 +681,14 @@ export default function CustomerManagement({ dateFilter }) {
                         title="View Purchase History"
                       >
                         <History />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDeleteCustomer(customer)}
+                        sx={{ color: '#f44336' }}
+                        title="Delete Customer"
+                      >
+                        <Delete />
                       </IconButton>
                     </Box>
                   </TableCell>
@@ -628,19 +707,37 @@ export default function CustomerManagement({ dateFilter }) {
         )}
       </Paper>
 
-      {/* Customer Dialog */}
-      <Dialog open={showCustomerDialog} onClose={() => setShowCustomerDialog(false)} maxWidth="sm" fullWidth>
+      {/* Customer/Patient Dialog */}
+      <Dialog open={showCustomerDialog} onClose={() => setShowCustomerDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle>
-          {editingCustomer ? 'Update Customer' : 'Add Customer'}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <PersonAdd />
+            {editingCustomer ? 'Update Customer / Patient' : 'Add Customer / Patient'}
+          </Box>
         </DialogTitle>
         <DialogContent>
+          <Alert severity="info" sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              💡 This form creates both a <strong>Customer</strong> (for sales tracking) and a <strong>Patient</strong> (for medical records). 
+              Fill in as much information as available.
+            </Typography>
+          </Alert>
+          
           <Grid container spacing={2} sx={{ mt: 1 }}>
+            {/* Basic Information */}
             <Grid item xs={12}>
+              <Typography variant="h6" sx={{ color: '#1976d2', mb: 2, fontWeight: 'bold' }}>
+                👤 Basic Information
+              </Typography>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Customer Name *"
+                label="Full Name *"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -649,24 +746,53 @@ export default function CustomerManagement({ dateFilter }) {
                 label="Phone Number"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="0771234567"
+              />
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="NIC Number"
+                value={nic}
+                onChange={(e) => setNic(e.target.value)}
+                placeholder="123456789V or 199812345678"
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="NIC"
-                value={nic}
-                onChange={(e) => setNic(e.target.value)}
+                label="Age"
+                type="number"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                inputProps={{ min: 0, max: 120 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Email"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="customer@email.com"
               />
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Date of Birth"
+                type="date"
+                value={dateOfBirth}
+                onChange={(e) => setDateOfBirth(e.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -675,14 +801,85 @@ export default function CustomerManagement({ dateFilter }) {
                 rows={2}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                placeholder="Street address, city, postal code"
               />
+            </Grid>
+
+            {/* Medical Information */}
+            <Grid item xs={12}>
+              <Typography variant="h6" sx={{ color: '#2e7d32', mb: 2, fontWeight: 'bold', mt: 2 }}>
+                🏥 Medical Information (Optional)
+              </Typography>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Gender</InputLabel>
+                <Select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  label="Gender"
+                >
+                  <MenuItem value="">Not Specified</MenuItem>
+                  <MenuItem value="Male">Male</MenuItem>
+                  <MenuItem value="Female">Female</MenuItem>
+                  <MenuItem value="Other">Other</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Blood Group</InputLabel>
+                <Select
+                  value={bloodGroup}
+                  onChange={(e) => setBloodGroup(e.target.value)}
+                  label="Blood Group"
+                >
+                  <MenuItem value="">Unknown</MenuItem>
+                  <MenuItem value="A+">A+</MenuItem>
+                  <MenuItem value="A-">A-</MenuItem>
+                  <MenuItem value="B+">B+</MenuItem>
+                  <MenuItem value="B-">B-</MenuItem>
+                  <MenuItem value="AB+">AB+</MenuItem>
+                  <MenuItem value="AB-">AB-</MenuItem>
+                  <MenuItem value="O+">O+</MenuItem>
+                  <MenuItem value="O-">O-</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Medical Notes / Allergies"
+                multiline
+                rows={3}
+                value={medicalNotes}
+                onChange={(e) => setMedicalNotes(e.target.value)}
+                placeholder="Any medical conditions, allergies, or special notes..."
+              />
+            </Grid>
+
+            {/* Status */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  label="Status"
+                >
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Inactive">Inactive</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowCustomerDialog(false)}>Cancel</Button>
-          <Button onClick={handleSaveCustomer} variant="contained">
-            {editingCustomer ? 'Update' : 'Add'} Customer
+          <Button onClick={handleSaveCustomer} variant="contained" sx={{ backgroundColor: '#1976d2' }}>
+            {editingCustomer ? 'Update' : 'Add'} Customer / Patient
           </Button>
         </DialogActions>
       </Dialog>
