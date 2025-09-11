@@ -175,36 +175,6 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
-  // If we're on specific module routes, render ONLY that module
-  if (window.location.pathname === '/inventory') {
-    return (
-      <ThemeProvider theme={theme}>
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: '#f8fafc',
-          zIndex: 10000,
-          overflow: 'hidden'
-        }}>
-          <InventoryModule />
-        </div>
-      </ThemeProvider>
-    );
-  }
-
-  if (window.location.pathname === '/coldchain') {
-    return (
-      <ThemeProvider theme={theme}>
-        <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
-          <ColdChainModule />
-        </div>
-      </ThemeProvider>
-    );
-  }
-
   const [currentScreen, setCurrentScreen] = useState('splash')
 
   // Check URL parameters on component mount
