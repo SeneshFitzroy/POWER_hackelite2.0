@@ -83,6 +83,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
     isUnder15: false
   });
 
+  // Patient dropdown search functionality
+  const [patientSuggestions, setPatientSuggestions] = useState([]);
+  const [showPatientDropdown, setShowPatientDropdown] = useState(false);
+  const [searchingPatients, setSearchingPatients] = useState(false);
+
   // Cart item unit types for tablets/capsules
   const [cartItemUnits, setCartItemUnits] = useState({}); // { medicineId: 'tablets' | 'cards' }
 
@@ -231,33 +236,61 @@ const PharmacyPOSFirebaseIntegrated = () => {
     }
   }, [medicines]);
 
-  // Handle patient NIC lookup from Firebase
-  const handlePatientNICChange = async (nic) => {
-    setPatientNIC(nic);
+  // Handle patient NIC lookup from Firebase with dropdown suggestions
+  const handlePatientNICChange = async (nicOrPhone) => {
+    setPatientNIC(nicOrPhone);
     
-    if (nic.length >= 10) {
+    if (nicOrPhone.length >= 3) {
       try {
-        const patient = await patientService.findPatientByNIC(nic);
-        if (patient) {
-          setCurrentPatient(patient);
-          setCustomerName(patient.name || '');
-          setCustomerContact(patient.contact || patient.phoneNumber || '');
-          console.log('Patient found:', patient.name);
-        } else {
-          setCurrentPatient(null);
-          setCustomerName('');
-          setCustomerContact('');
-          console.log('Patient not found for NIC:', nic);
+        setSearchingPatients(true);
+        
+        // Search for patients by NIC or phone number
+        const allPatients = await patientService.getAllPatients();
+        const suggestions = allPatients.filter(patient => 
+          (patient.nic && patient.nic.toLowerCase().includes(nicOrPhone.toLowerCase())) ||
+          (patient.contact && patient.contact.includes(nicOrPhone)) ||
+          (patient.phoneNumber && patient.phoneNumber.includes(nicOrPhone))
+        ).slice(0, 5); // Limit to 5 suggestions
+        
+        setPatientSuggestions(suggestions);
+        setShowPatientDropdown(suggestions.length > 0);
+        
+        // If exact match, auto-select
+        if (nicOrPhone.length >= 10) {
+          const exactMatch = suggestions.find(p => 
+            p.nic === nicOrPhone || p.contact === nicOrPhone || p.phoneNumber === nicOrPhone
+          );
+          
+          if (exactMatch) {
+            selectPatientFromDropdown(exactMatch);
+          }
         }
+        
       } catch (error) {
-        console.error('Error looking up patient:', error);
-        setCurrentPatient(null);
+        console.error('Error searching patients:', error);
+        setPatientSuggestions([]);
+        setShowPatientDropdown(false);
+      } finally {
+        setSearchingPatients(false);
       }
     } else {
+      setPatientSuggestions([]);
+      setShowPatientDropdown(false);
       setCurrentPatient(null);
       setCustomerName('');
       setCustomerContact('');
     }
+  };
+
+  // Select patient from dropdown
+  const selectPatientFromDropdown = (patient) => {
+    setCurrentPatient(patient);
+    setCustomerName(patient.name || '');
+    setCustomerContact(patient.contact || patient.phoneNumber || '');
+    setPatientNIC(patient.nic || patient.contact || patient.phoneNumber || '');
+    setShowPatientDropdown(false);
+    setPatientSuggestions([]);
+    console.log('Patient selected:', patient.name);
   };
 
   // Open unit selection modal for medicine
@@ -446,7 +479,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
   // Format currency
   const formatCurrency = (amount) => {
-    return `Rs. ${amount.toFixed(2)}`;
+    return `LKR ${amount.toFixed(2)}`;
   };
 
   // Process sale - FULL FIREBASE INTEGRATION
@@ -728,22 +761,73 @@ const PharmacyPOSFirebaseIntegrated = () => {
               </Button>
             </Box>
             
-            <TextField
-              fullWidth
-              label="Patient NIC"
-              value={patientNIC}
-              onChange={(e) => handlePatientNICChange(e.target.value)}
-              placeholder="Enter NIC to auto-load patient info"
-              size="small"
-              sx={{
-                mb: 1.5,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 1,
-                  '&:hover fieldset': { borderColor: '#1976d2' },
-                  '&.Mui-focused fieldset': { borderColor: '#1976d2' }
-                }
-              }}
-            />
+            <Box sx={{ position: 'relative' }}>
+              <TextField
+                fullWidth
+                label="Patient NIC / Phone Number"
+                value={patientNIC}
+                onChange={(e) => handlePatientNICChange(e.target.value)}
+                placeholder="Enter NIC or Phone number to auto-load patient info"
+                size="small"
+                sx={{
+                  mb: 1.5,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1,
+                    '&:hover fieldset': { borderColor: '#1976d2' },
+                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  }
+                }}
+                InputProps={{
+                  endAdornment: searchingPatients && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+                      <Typography variant="caption" color="#1976d2">Searching...</Typography>
+                    </Box>
+                  )
+                }}
+              />
+              
+              {/* Patient Suggestions Dropdown */}
+              {showPatientDropdown && patientSuggestions.length > 0 && (
+                <Paper
+                  sx={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    zIndex: 1000,
+                    maxHeight: 200,
+                    overflow: 'auto',
+                    border: '1px solid #1976d2',
+                    borderRadius: 1,
+                    mt: 0.5
+                  }}
+                >
+                  {patientSuggestions.map((patient, index) => (
+                    <Box
+                      key={patient.id}
+                      onClick={() => selectPatientFromDropdown(patient)}
+                      sx={{
+                        p: 1.5,
+                        cursor: 'pointer',
+                        borderBottom: index < patientSuggestions.length - 1 ? '1px solid #e5e7eb' : 'none',
+                        '&:hover': {
+                          backgroundColor: '#f0f9ff'
+                        }
+                      }}
+                    >
+                      <Typography variant="body2" fontWeight="bold" color="#1976d2">
+                        {patient.name}
+                      </Typography>
+                      <Typography variant="caption" color="#666">
+                        {patient.age ? `Age: ${patient.age}` : 'Age: N/A'} • 
+                        NIC: {patient.nic || 'N/A'} • 
+                        Phone: {patient.contact || patient.phoneNumber || 'N/A'}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Paper>
+              )}
+            </Box>
 
             {/* SLMC REG NUMBER - COMPACT */}
             <TextField

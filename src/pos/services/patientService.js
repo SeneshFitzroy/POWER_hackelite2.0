@@ -183,5 +183,28 @@ export const patientService = {
     } catch (error) {
       throw new Error(`Error searching patients: ${error.message}`);
     }
+  },
+
+  // Update patient purchase history
+  updatePurchaseHistory: async (patientId, purchaseAmount) => {
+    try {
+      const patientRef = doc(db, 'patients', patientId);
+      const patientDoc = await getDoc(patientRef);
+      
+      if (patientDoc.exists()) {
+        const currentData = patientDoc.data();
+        const currentTotal = currentData.totalPurchases || 0;
+        
+        await updateDoc(patientRef, {
+          totalPurchases: currentTotal + purchaseAmount,
+          lastVisit: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      }
+      
+      return true;
+    } catch (error) {
+      throw new Error(`Error updating purchase history: ${error.message}`);
+    }
   }
 };
