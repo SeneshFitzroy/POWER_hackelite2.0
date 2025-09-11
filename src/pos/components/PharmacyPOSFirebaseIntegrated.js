@@ -692,6 +692,9 @@ const PharmacyPOSFirebaseIntegrated = () => {
       // Reload medicines to reflect updated stock
       await loadInitialData();
       
+      console.log('Transaction completed:', transaction);
+      console.log('Setting lastTransaction and showing receipt...');
+      
       setLastTransaction(transaction);
       setShowReceipt(true);
       
@@ -1922,7 +1925,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
       {/* RECEIPT DIALOG */}
       <Dialog open={showReceipt} onClose={() => setShowReceipt(false)} maxWidth="sm" fullWidth>
-        {lastTransaction && (
+        {lastTransaction ? (
           <Box sx={{ p: 4, fontFamily: 'monospace' }}>
             {/* PHARMACY HEADER WITH LOGO */}
             <Box sx={{ textAlign: 'center', mb: 3, borderBottom: '2px solid #1976d2', pb: 2 }}>
@@ -2110,6 +2113,10 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 Print Receipt
               </Button>
             </Box>
+          </Box>
+        ) : (
+          <Box sx={{ p: 4, textAlign: 'center' }}>
+            <Typography>Loading receipt...</Typography>
           </Box>
         )}
       </Dialog>

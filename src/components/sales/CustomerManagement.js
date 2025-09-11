@@ -208,9 +208,12 @@ export default function CustomerManagement({ dateFilter }) {
       // Get the customer details first
       const customer = customers.find(c => c.id === customerId);
       if (!customer) {
+        console.log('Customer not found for ID:', customerId);
         setCustomerOrders([]);
         return;
       }
+      
+      console.log('Loading history for customer:', customer.name, 'NIC:', customer.nic);
       
       // Query transactions by customer NIC (which is more reliable than customerId)
       const transactionsQuery = query(
@@ -220,8 +223,11 @@ export default function CustomerManagement({ dateFilter }) {
       );
       
       const snapshot = await getDocs(transactionsQuery);
+      console.log('Found', snapshot.docs.length, 'transactions for NIC:', customer.nic);
+      
       const orderData = snapshot.docs.map(doc => {
         const data = doc.data();
+        console.log('Transaction data:', data);
         return {
           id: doc.id,
           ...data,
@@ -235,6 +241,7 @@ export default function CustomerManagement({ dateFilter }) {
         };
       });
       
+      console.log('Processed order data:', orderData);
       setCustomerOrders(orderData);
     } catch (error) {
       console.error('Error loading customer history:', error);
