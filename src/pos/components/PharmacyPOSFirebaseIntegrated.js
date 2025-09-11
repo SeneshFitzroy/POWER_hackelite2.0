@@ -1254,6 +1254,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                       setCustomerName('');
                       setCustomerContact('');
                       setPatientNIC('');
+                      console.log('✅ Patient selection cleared - ready for new transaction');
                     }}
                     sx={{
                       color: '#f44336',

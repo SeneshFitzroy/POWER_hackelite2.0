@@ -47,30 +47,7 @@ export const transactionService = {
         });
       }
 
-      // 3. Update patient purchase history only if patient document exists
-      if (saleData.patientId && saleData.patientId.trim()) {
-        try {
-          const patientRef = doc(db, 'patients', saleData.patientId);
-          const patientDoc = await getDoc(patientRef);
-          
-          if (patientDoc.exists()) {
-            // Use set with merge instead of batch.update to handle edge cases
-            await setDoc(patientRef, {
-              totalPurchases: increment(saleData.total || saleData.totalAmount || 0),
-              lastVisit: serverTimestamp(),
-              updatedAt: serverTimestamp()
-            }, { merge: true });
-            console.log('Updated patient purchase history for:', saleData.patientId);
-          } else {
-            console.warn('Skipping patient update - document does not exist:', saleData.patientId);
-          }
-        } catch (patientError) {
-          console.error('Error updating patient document, continuing with sale:', patientError);
-          // Continue processing the sale even if patient update fails
-        }
-      }
-
-      // 4. Update daily sales summary
+      // 3. Update daily sales summary
       const today = new Date().toISOString().split('T')[0];
       const dailySalesRef = doc(db, 'dailySales', today);
       batch.set(dailySalesRef, {
@@ -80,13 +57,38 @@ export const transactionService = {
         updatedAt: serverTimestamp()
       }, { merge: true });
 
-      // Execute all operations
+      // Execute batch operations (transaction and medicine updates)
       await batch.commit();
+      console.log('✅ Transaction and medicine updates completed');
+
+      // 4. Update patient purchase history separately (outside batch)
+      if (saleData.patientId && saleData.patientId.trim()) {
+        try {
+          const patientRef = doc(db, 'patients', saleData.patientId);
+          const patientDoc = await getDoc(patientRef);
+          
+          if (patientDoc.exists()) {
+            await setDoc(patientRef, {
+              totalPurchases: increment(saleData.total || saleData.totalAmount || 0),
+              lastVisit: serverTimestamp(),
+              updatedAt: serverTimestamp()
+            }, { merge: true });
+            console.log('✅ Updated patient purchase history for:', saleData.patientId);
+          } else {
+            console.warn('⚠️ Skipping patient update - document does not exist:', saleData.patientId);
+          }
+        } catch (patientError) {
+          console.error('❌ Error updating patient document (sale still processed):', patientError);
+          // Continue - sale is already processed successfully
+        }
+      }
       
-      console.log('Transaction batch committed successfully');
-      console.log('Returning transaction:', {
+      console.log('✅ Transaction processing completed successfully');
+      console.log('Returning transaction data:', {
         id: transactionRef.id,
-        ...transactionData
+        receiptNumber: transactionData.receiptNumber,
+        total: transactionData.total,
+        customerName: transactionData.customerName
       });
       
       return {
