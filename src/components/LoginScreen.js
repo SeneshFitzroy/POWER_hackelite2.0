@@ -1,4 +1,12 @@
-import React, { useState } from "react"
+import   const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [resetEmailSent, setResetEmailSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false), { useState } from "react"
+import { sendPasswordResetEmail } from 'firebase/auth'
+import { auth } from '../firebase/config'
 // Uncomment the line below if you put the logo in src/assets/images/
 // import npkLogo from "../assets/images/npk-logo.png"
 
@@ -20,12 +28,36 @@ export default function LoginScreen({ onLoginSuccess }) {
 
     if (!password) {
       newErrors.password = "Password is required"
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
     }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
+  }
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setErrors({ email: "Please enter your email first" })
+      return
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setErrors({ email: "Please enter a valid email" })
+      return
+    }
+
+    setResetLoading(true)
+    setErrors({})
+
+    try {
+      await sendPasswordResetEmail(auth, email)
+      setResetEmailSent(true)
+      setErrors({})
+    } catch (error) {
+      console.error("Password reset error:", error)
+      setErrors({ general: "Failed to send reset email. Please try again." })
+    } finally {
+      setResetLoading(false)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -99,11 +131,38 @@ export default function LoginScreen({ onLoginSuccess }) {
                   onClick={() => setShowPassword(!showPassword)}
                   className="password-toggle"
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  {showPassword ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1 1l22 22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
                 </button>
               </div>
-              {errors.password && <p className="error-text">{errors.password}</p>}
             </div>
+
+            {/* Error Messages */}
+            {errors.general && <p className="error-text" style={{textAlign: 'center', marginBottom: '1rem'}}>{errors.general}</p>}
+            
+            {/* Success Message for Password Reset */}
+            {resetEmailSent && (
+              <div style={{
+                backgroundColor: '#d4edda',
+                color: '#155724',
+                padding: '0.75rem',
+                borderRadius: '6px',
+                marginBottom: '1rem',
+                textAlign: 'center',
+                border: '1px solid #c3e6cb'
+              }}>
+                Password reset email sent! Check your inbox.
+              </div>
+            )}
 
             {/* Login Button */}
             <button
@@ -116,9 +175,20 @@ export default function LoginScreen({ onLoginSuccess }) {
 
             {/* Forgot Password Link */}
             <div className="forgot-password-container">
-              <a href="#" className="forgot-link">
-                Forgot Password?
-              </a>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={resetLoading}
+                className="forgot-link"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                {resetLoading ? "Sending..." : "Forgot Password?"}
+              </button>
             </div>
           </form>
         </div>
