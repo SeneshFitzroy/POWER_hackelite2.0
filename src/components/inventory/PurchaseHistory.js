@@ -340,7 +340,7 @@ const PurchaseHistory = () => {
                 <TrendingUpIcon sx={{ fontSize: 40, mr: 2 }} />
                 <Box>
                   <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                    ${stats.totalValue.toLocaleString()}
+                    LKR {stats.totalValue.toLocaleString()}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
                     Total Value
@@ -459,7 +459,7 @@ const PurchaseHistory = () => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                      ${(order.totalCost || 0).toLocaleString()}
+                      LKR {(order.totalCost || 0).toLocaleString()}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -544,7 +544,7 @@ const PurchaseHistory = () => {
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="body2" color="text.secondary">Total Cost</Typography>
                     <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                      ${(selectedOrder.totalCost || 0).toLocaleString()}
+                      LKR {(selectedOrder.totalCost || 0).toLocaleString()}
                     </Typography>
                   </Box>
                 </Grid>
