@@ -101,7 +101,7 @@ export default function LoginScreen({ onLoginSuccess }) {
 
           <div className="text-center mb-6">
             <h2 className="login-title">ආයුබෝවන්</h2>
-            <p className="login-subtitle">Access your PharmaCore ERP System</p>
+            <p className="login-subtitle">Login to your PharmaCore ERP System</p>
           </div>
         </div>
 
