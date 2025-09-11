@@ -131,8 +131,7 @@ export default function ColdChainModule() {
     { label: 'Cold Chain Dashboard', icon: <DashboardIcon />, index: 0 },
     { label: 'Alerts & Notifications', icon: <Warning />, index: 1 },
     { label: 'Reports & Analytics', icon: <Assessment />, index: 2 },
-    { label: 'Settings', icon: <Settings />, index: 3 },
-    { label: 'Logout', icon: <Logout />, index: 'logout', action: handleLogout }
+    { label: 'Settings', icon: <Settings />, index: 3 }
   ];
 
   // Update time every second
@@ -680,6 +679,39 @@ startxref
               })}
             </Typography>
           </Box>
+          
+          {/* Red Logout Button */}
+          <Button
+            fullWidth
+            variant="contained"
+            startIcon={<Logout />}
+            onClick={handleLogout}
+            sx={{
+              backgroundColor: '#dc2626',
+              color: '#ffffff',
+              fontWeight: 'bold',
+              fontSize: '13px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              borderRadius: '10px',
+              py: 1.5,
+              mt: 2,
+              boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
+              border: '1px solid rgba(220, 38, 38, 0.8)',
+              '&:hover': {
+                backgroundColor: '#b91c1c',
+                boxShadow: '0 6px 16px rgba(220, 38, 38, 0.4)',
+                transform: 'translateY(-1px)',
+              },
+              '&:active': {
+                transform: 'translateY(0px)',
+                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.4)',
+              },
+              transition: 'all 0.2s ease-in-out'
+            }}
+          >
+            Logout
+          </Button>
         </Box>
       </Drawer>
 
