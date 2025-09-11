@@ -607,11 +607,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
       return;
     }
 
-    if (paymentMethod === 'cash' && cashReceived < total) {
-      alert('Insufficient cash received.');
-      return;
-    }
-
     if (!employeeId.trim()) {
       alert('Please enter Employee ID.');
       return;
@@ -695,7 +690,25 @@ const PharmacyPOSFirebaseIntegrated = () => {
       console.log('Transaction completed:', transaction);
       console.log('Setting lastTransaction and showing receipt...');
       
-      setLastTransaction(transaction);
+      // Ensure transaction has all required fields for receipt
+      const enrichedTransaction = {
+        ...transaction,
+        items: transaction.items || cart.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          totalPrice: item.quantity * item.sellingPrice,
+          unitPrice: item.sellingPrice,
+          price: item.sellingPrice,
+          batchNumber: item.batchNumber
+        })),
+        customerName: customerName || currentPatient?.name || 'Walk-in Customer',
+        staffName: employeeName ? `${employeeName} (${employeeId})` : `EMPLOYEE: ${employeeId}`,
+        receiptNumber: transaction.receiptNumber || `RCP-${transaction.invoiceNumber}`,
+        createdAt: new Date()
+      };
+      
+      console.log('Enriched transaction:', enrichedTransaction);
+      setLastTransaction(enrichedTransaction);
       setShowReceipt(true);
       
       // Clear cart and reset form
@@ -712,7 +725,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
       console.log('Sale completed successfully:', transaction.id);
     } catch (error) {
       console.error('Error processing sale:', error);
-      alert('Error processing sale. Please try again.');
+      console.error('Error details:', error.message, error.stack);
+      alert(`Error processing sale: ${error.message}. Please check console for details.`);
     } finally {
       setLoading(false);
     }
@@ -1222,25 +1236,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
               </Box>
             </Box>
 
-            {paymentMethod === 'cash' && (
-              <TextField
-                fullWidth
-                label="Cash Received"
-                type="number"
-                value={cashReceived}
-                onChange={(e) => setCashReceived(parseFloat(e.target.value) || 0)}
-                size="small"
-                sx={{
-                  mb: 2,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 1,
-                    '&:hover fieldset': { borderColor: '#1976d2' },
-                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
-                  }
-                }}
-              />
-            )}
-
           </Paper>
         </Box>
 
@@ -1596,22 +1591,39 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         >
                           -
                         </Button>
-                        <Box sx={{ 
-                          px: 1.5, 
-                          py: 0.5, 
-                          backgroundColor: '#e3f2fd', 
-                          borderRadius: 1,
-                          minWidth: '50px',
-                          textAlign: 'center',
-                          border: '1px solid #1976d2'
-                        }}>
-                          <Typography sx={{ fontWeight: 'bold', fontSize: '0.8rem', color: '#1976d2' }}>
-                            {displayQty}
-                          </Typography>
-                          <Typography sx={{ fontSize: '0.6rem', color: '#666' }}>
-                            {displayUnit}
-                          </Typography>
-                        </Box>
+                        <TextField
+                          size="small"
+                          value={displayQty}
+                          onChange={(e) => {
+                            const newValue = parseInt(e.target.value) || 0;
+                            if (newValue > 0) {
+                              const actualQuantity = cartItemUnits[item.id] === 'cards' ? newValue * 10 : newValue;
+                              updateCartQuantity(item.id, actualQuantity);
+                            }
+                          }}
+                          inputProps={{
+                            min: 1,
+                            style: {
+                              textAlign: 'center',
+                              fontWeight: 'bold',
+                              fontSize: '0.8rem',
+                              padding: '4px'
+                            }
+                          }}
+                          sx={{ 
+                            width: '60px',
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#e3f2fd',
+                              borderColor: '#1976d2',
+                              '&:hover fieldset': {
+                                borderColor: '#1976d2',
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#1976d2',
+                              }
+                            }
+                          }}
+                        />
                         <Button
                           size="small"
                           onClick={() => updateCartQuantity(item.id, item.quantity + (cartItemUnits[item.id] === 'cards' ? 10 : 1))}
@@ -1735,7 +1747,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 variant="contained"
                 size="medium"
                 onClick={processSale}
-                disabled={cart.length === 0 || loading || !employeeId.trim() || (paymentMethod === 'cash' && cashReceived < total)}
+                disabled={cart.length === 0 || loading || !employeeId.trim()}
                 sx={{
                   backgroundColor: '#4caf50',
                   color: 'white',
