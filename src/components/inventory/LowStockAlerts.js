@@ -56,13 +56,20 @@ const LowStockAlerts = () => {
 
   // Load medicines with real-time updates
   useEffect(() => {
-    const unsubscribe = inventoryService.subscribeMedicines((medicinesData) => {
-      setMedicines(medicinesData);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    loadMedicines();
   }, []);
+
+  const loadMedicines = async () => {
+    try {
+      setLoading(true);
+      const medicinesData = await inventoryService.getAllMedicines();
+      setMedicines(medicinesData);
+    } catch (error) {
+      console.error('Error loading medicines:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter low stock medicines based on threshold
   useEffect(() => {
@@ -205,7 +212,10 @@ const LowStockAlerts = () => {
         <Button
           variant="contained"
           startIcon={<RefreshIcon />}
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            setLoading(true);
+            loadMedicines();
+          }}
           sx={{
             background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
             color: 'white',
@@ -464,11 +474,14 @@ const LowStockAlerts = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                         <Tooltip title="View Details">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleViewDetails(medicine)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewDetails(medicine);
+                            }}
                             sx={{ color: '#1e40af' }}
                           >
                             <ViewIcon />
@@ -477,7 +490,10 @@ const LowStockAlerts = () => {
                         <Tooltip title="Reorder">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleReorder(medicine)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleReorder(medicine);
+                            }}
                             sx={{ color: '#059669' }}
                           >
                             <AddIcon />
@@ -486,6 +502,10 @@ const LowStockAlerts = () => {
                         <Tooltip title="Edit">
                           <IconButton 
                             size="small" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Add edit functionality here
+                            }}
                             sx={{ color: '#6b7280' }}
                           >
                             <EditIcon />
