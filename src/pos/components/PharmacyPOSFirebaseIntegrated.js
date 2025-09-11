@@ -667,6 +667,9 @@ const PharmacyPOSFirebaseIntegrated = () => {
         customerContact: customerContact,
         patientNIC: patientNIC,
         patientId: patientId,
+        // Add customer linking information
+        customerId: currentPatient?.isCustomer ? currentPatient.id : null,
+        customerNIC: currentPatient?.nic || patientNIC,
         staffName: employeeName ? `${employeeName} (${employeeId})` : `EMPLOYEE: ${employeeId}`,
         staffType: 'employee',
         employeeId: employeeId,

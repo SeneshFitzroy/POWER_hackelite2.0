@@ -204,17 +204,36 @@ export default function CustomerManagement({ dateFilter }) {
   const loadCustomerHistory = async (customerId) => {
     try {
       setLoading(true);
-      const ordersQuery = query(
-        collection(db, 'salesOrders'),
-        where('customerId', '==', customerId),
+      
+      // Get the customer details first
+      const customer = customers.find(c => c.id === customerId);
+      if (!customer) {
+        setCustomerOrders([]);
+        return;
+      }
+      
+      // Query transactions by customer NIC (which is more reliable than customerId)
+      const transactionsQuery = query(
+        collection(db, 'transactions'),
+        where('customerNIC', '==', customer.nic),
         orderBy('createdAt', 'desc')
       );
       
-      const snapshot = await getDocs(ordersQuery);
-      const orderData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const snapshot = await getDocs(transactionsQuery);
+      const orderData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          // Transform transaction data to order format for compatibility
+          orderId: data.invoiceNumber || data.receiptNumber || doc.id,
+          orderDate: data.createdAt,
+          totalAmount: data.total || data.netTotal,
+          status: data.status || 'completed',
+          items: data.items || [],
+          paymentMethod: data.paymentMethod || 'cash'
+        };
+      });
       
       setCustomerOrders(orderData);
     } catch (error) {
@@ -667,10 +686,10 @@ export default function CustomerManagement({ dateFilter }) {
         maxWidth="lg"
         fullWidth
       >
-        <DialogTitle sx={{ backgroundColor: '#000000', color: 'white', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <DialogTitle sx={{ backgroundColor: '#1976d2', color: 'white', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <History sx={{ mr: 1 }} />
-            Order History - {selectedCustomerHistory?.name}
+            Purchase History - {selectedCustomerHistory?.name}
           </Box>
           <IconButton
             onClick={() => setShowHistoryDialog(false)}
@@ -681,46 +700,163 @@ export default function CustomerManagement({ dateFilter }) {
         </DialogTitle>
         <DialogContent sx={{ p: 3 }}>
           {customerOrders.length > 0 ? (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Order #</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Date</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Total Amount</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Payment Method</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {customerOrders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell>{order.orderNumber}</TableCell>
-                      <TableCell>
-                        {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString() : 'N/A'}
-                      </TableCell>
-                      <TableCell>{formatCurrency(order.total)}</TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={order.status} 
-                          color={order.status === 'completed' ? 'success' : order.status === 'pending' ? 'warning' : 'info'}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>{order.paymentMethod || 'Cash'}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <Box>
+              {customerOrders.map((order, index) => (
+                <Paper key={order.id} sx={{ mb: 3, p: 3, border: '1px solid #e0e0e0' }}>
+                  {/* PHARMACY HEADER FOR EACH RECEIPT */}
+                  <Box sx={{ textAlign: 'center', mb: 2, borderBottom: '2px solid #1976d2', pb: 2 }}>
+                    <img 
+                      src="/images/npk-logo.png" 
+                      alt="NPK Logo" 
+                      style={{ height: '40px', marginBottom: '8px' }}
+                      onError={(e) => { e.target.style.display = 'none' }}
+                    />
+                    <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2', letterSpacing: '1px' }}>
+                      MEDICARE PHARMACY SYSTEM
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#666' }}>
+                      📍 123 Main Street, Colombo 01, Sri Lanka | 📞 +94 11 234 5678
+                    </Typography>
+                  </Box>
+
+                  {/* RECEIPT HEADER */}
+                  <Box sx={{ textAlign: 'center', mb: 2 }}>
+                    <Typography variant="h6" fontWeight="bold" sx={{ 
+                      backgroundColor: '#1976d2', 
+                      color: 'white', 
+                      p: 1, 
+                      borderRadius: 1 
+                    }}>
+                      SALES RECEIPT #{order.orderId}
+                    </Typography>
+                  </Box>
+
+                  {/* TRANSACTION DETAILS */}
+                  <Grid container spacing={2} sx={{ mb: 2 }}>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        Receipt No: {order.receiptNumber || order.orderId}
+                      </Typography>
+                      <Typography variant="body2">
+                        Invoice No: {order.invoiceNumber || order.orderId}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6} sx={{ textAlign: 'right' }}>
+                      <Typography variant="body2">
+                        Date: {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString('en-GB') : 'N/A'}
+                      </Typography>
+                      <Typography variant="body2">
+                        Time: {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleTimeString('en-GB') : 'N/A'}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  {/* STAFF AND CUSTOMER INFO */}
+                  <Box sx={{ mb: 2, borderBottom: '1px dashed #ccc', pb: 1 }}>
+                    <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
+                      👨‍⚕️ Staff: {order.staffName || 'Staff'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#2e7d32', fontWeight: 'bold' }}>
+                      👤 Customer: {selectedCustomerHistory?.name} (NIC: {selectedCustomerHistory?.nic})
+                    </Typography>
+                    {selectedCustomerHistory?.phoneNumber && (
+                      <Typography variant="body2" sx={{ color: '#666' }}>
+                        📞 Contact: {selectedCustomerHistory.phoneNumber}
+                      </Typography>
+                    )}
+                  </Box>
+
+                  {/* ITEMS SECTION */}
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="body2" fontWeight="bold" sx={{ 
+                      backgroundColor: '#f5f5f5', 
+                      p: 1, 
+                      borderRadius: 1,
+                      mb: 1 
+                    }}>
+                      ITEMS PURCHASED
+                    </Typography>
+                    
+                    {/* Items Header */}
+                    <Box sx={{ display: 'flex', fontWeight: 'bold', borderBottom: '1px solid #ccc', pb: 0.5, mb: 1 }}>
+                      <Typography variant="body2" sx={{ flex: 3, fontSize: '0.8rem' }}>MEDICINE</Typography>
+                      <Typography variant="body2" sx={{ flex: 1, textAlign: 'center', fontSize: '0.8rem' }}>QTY</Typography>
+                      <Typography variant="body2" sx={{ flex: 1, textAlign: 'center', fontSize: '0.8rem' }}>RATE</Typography>
+                      <Typography variant="body2" sx={{ flex: 1, textAlign: 'right', fontSize: '0.8rem' }}>TOTAL</Typography>
+                    </Box>
+
+                    {/* Items List */}
+                    {order.items && order.items.map((item, itemIndex) => (
+                      <Box key={itemIndex} sx={{ display: 'flex', mb: 0.5, fontSize: '0.85rem' }}>
+                        <Typography variant="body2" sx={{ flex: 3, fontSize: '0.8rem' }}>
+                          {item.name}
+                          {item.batchNumber && <><br /><span style={{ color: '#666', fontSize: '0.7rem' }}>Batch: {item.batchNumber}</span></>}
+                        </Typography>
+                        <Typography variant="body2" sx={{ flex: 1, textAlign: 'center', fontSize: '0.8rem' }}>
+                          {item.quantity}
+                        </Typography>
+                        <Typography variant="body2" sx={{ flex: 1, textAlign: 'center', fontSize: '0.8rem' }}>
+                          {formatCurrency(item.unitPrice || (item.totalPrice / item.quantity))}
+                        </Typography>
+                        <Typography variant="body2" sx={{ flex: 1, textAlign: 'right', fontSize: '0.8rem' }}>
+                          {formatCurrency(item.totalPrice)}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+
+                  {/* TOTALS SECTION */}
+                  <Box sx={{ borderTop: '2px solid #1976d2', pt: 1 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                      <Typography variant="body2">Subtotal:</Typography>
+                      <Typography variant="body2">{formatCurrency(order.subtotal || order.totalAmount)}</Typography>
+                    </Box>
+                    {order.discountAmount > 0 && (
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                        <Typography variant="body2" color="error">Discount ({order.discountRate || 0}%):</Typography>
+                        <Typography variant="body2" color="error">-{formatCurrency(order.discountAmount || 0)}</Typography>
+                      </Box>
+                    )}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, borderTop: '1px dashed #ccc', pt: 1 }}>
+                      <Typography variant="h6" fontWeight="bold">NET TOTAL:</Typography>
+                      <Typography variant="h6" fontWeight="bold">{formatCurrency(order.totalAmount)}</Typography>
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                      <Typography variant="body2" fontWeight="bold">Payment:</Typography>
+                      <Chip 
+                        label={order.paymentMethod?.toUpperCase() || 'CASH'} 
+                        color={order.status === 'completed' ? 'success' : 'default'}
+                        size="small"
+                      />
+                    </Box>
+                    
+                    {order.balance > 0 && (
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" fontWeight="bold" color="success.main">Balance:</Typography>
+                        <Typography variant="body2" fontWeight="bold" color="success.main">
+                          {formatCurrency(order.balance)}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+
+                  <Box sx={{ textAlign: 'center', mt: 2, pt: 2, borderTop: '1px dashed #ccc' }}>
+                    <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem' }}>
+                      Thank you for choosing Medicare Pharmacy!
+                    </Typography>
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
           ) : (
             <Box sx={{ textAlign: 'center', py: 4 }}>
               <History sx={{ fontSize: 64, color: '#ccc', mb: 2 }} />
               <Typography variant="h6" color="textSecondary">
-                No order history found
+                No purchase history found
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                This customer hasn't placed any orders yet.
+                This customer hasn't made any purchases yet.
               </Typography>
             </Box>
           )}
