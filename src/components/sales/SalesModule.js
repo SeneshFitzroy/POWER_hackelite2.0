@@ -66,7 +66,7 @@ export default function SalesModule() {
   const navigationItems = [
     { label: 'Sales Dashboard', icon: <Assessment />, index: 0 },
     { label: 'Cust. Management', icon: <People />, index: 1 },
-    { label: 'Sales Orders', icon: <ShoppingCart />, index: 2 },
+    { label: 'Sales', icon: <ShoppingCart />, index: 2 },
     { label: 'Finance', icon: <Receipt />, index: 3 }
   ];
 
