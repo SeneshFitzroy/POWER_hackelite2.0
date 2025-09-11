@@ -21,7 +21,21 @@ import {
   Avatar,
   Tabs,
   Tab,
-  CircularProgress
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+  Snackbar,
+  Switch,
+  Tooltip
 } from '@mui/material';
 import {
   Dashboard,
@@ -43,7 +57,13 @@ import {
   Add,
   Download,
   Print,
-  DateRange
+  DateRange,
+  Block,
+  Delete,
+  PersonOff,
+  PaymentsOutlined,
+  Close,
+  Edit
 } from '@mui/icons-material';
 import {
   LineChart,
@@ -95,6 +115,29 @@ export default function Finance({ dateFilter }) {
     totalExpenses: 0,
     netProfit: 0,
     cashBalance: 0
+  });
+  
+  // New state for enhanced functionality
+  const [showAddBillDialog, setShowAddBillDialog] = useState(false);
+  const [showEmployeeDialog, setShowEmployeeDialog] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState(null);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [newBill, setNewBill] = useState({
+    supplier: '',
+    amount: '',
+    dueDate: '',
+    description: '',
+    status: 'pending'
+  });
+  const [newEmployee, setNewEmployee] = useState({
+    name: '',
+    position: '',
+    baseSalary: '',
+    email: '',
+    paymentBlocked: false,
+    status: 'active'
   });
 
   useEffect(() => {
@@ -150,8 +193,57 @@ export default function Finance({ dateFilter }) {
       setSalesData(salesByMonth);
       setSalesTrendData(salesByMonth);
 
-      // Set empty employee data - will be loaded from Firebase
-      setEmployeesData([]);
+      // Set sample employee data with enhanced properties
+      setEmployeesData([
+        {
+          id: 'EMP-001',
+          name: 'John Silva',
+          position: 'Pharmacist',
+          baseSalary: 75000,
+          netSalary: 67500,
+          email: 'john.silva@example.com',
+          status: 'pending',
+          paymentStatus: 'pending',
+          paymentBlocked: false,
+          lastPaid: null
+        },
+        {
+          id: 'EMP-002',
+          name: 'Sarah Fernando',
+          position: 'Sales Assistant',
+          baseSalary: 45000,
+          netSalary: 40500,
+          email: 'sarah.fernando@example.com',
+          status: 'pending',
+          paymentStatus: 'pending',
+          paymentBlocked: false,
+          lastPaid: null
+        },
+        {
+          id: 'EMP-003',
+          name: 'Mike Perera',
+          position: 'Store Manager',
+          baseSalary: 65000,
+          netSalary: 58500,
+          email: 'mike.perera@example.com',
+          status: 'paid',
+          paymentStatus: 'paid',
+          paymentBlocked: false,
+          lastPaid: new Date()
+        },
+        {
+          id: 'EMP-004',
+          name: 'Lisa Jayasinghe',
+          position: 'Accountant',
+          baseSalary: 55000,
+          netSalary: 49500,
+          email: 'lisa.jayasinghe@example.com',
+          status: 'resigned',
+          paymentStatus: 'blocked',
+          paymentBlocked: true,
+          lastPaid: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        }
+      ]);
 
       setSuppliersData([
         {
@@ -201,8 +293,244 @@ export default function Finance({ dateFilter }) {
     return Object.values(monthData).slice(-6); // Last 6 months
   };
 
+  // PayPal Sandbox Integration
+  const processPayPalPayment = async (amount, recipient, type = 'employee') => {
+    try {
+      setPaymentProcessing(true);
+      
+      // Simulate PayPal API call (in real implementation, this would be actual PayPal API)
+      const paymentData = {
+        amount: amount,
+        currency: 'LKR',
+        recipient: recipient,
+        type: type,
+        timestamp: new Date().toISOString(),
+        paypal_transaction_id: `PP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        status: 'completed'
+      };
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // In real implementation, you would make actual PayPal API call here
+      console.log('PayPal Payment Processed:', paymentData);
+      
+      return paymentData;
+    } catch (error) {
+      console.error('PayPal payment failed:', error);
+      throw error;
+    } finally {
+      setPaymentProcessing(false);
+    }
+  };
+
+  // Pay individual employee
+  const handlePayEmployee = async (employee) => {
+    if (employee.paymentBlocked) {
+      setSnackbar({
+        open: true,
+        message: `Payment blocked for ${employee.name}. Cannot process payment.`,
+        severity: 'error'
+      });
+      return;
+    }
+
+    try {
+      const paymentResult = await processPayPalPayment(
+        employee.netSalary,
+        employee.email,
+        'employee'
+      );
+
+      // Update employee status
+      setEmployeesData(prev => prev.map(emp => 
+        emp.id === employee.id 
+          ? { ...emp, status: 'paid', paymentStatus: 'paid', lastPaid: new Date() }
+          : emp
+      ));
+
+      setSnackbar({
+        open: true,
+        message: `Payment of LKR ${employee.netSalary.toLocaleString()} successfully sent to ${employee.name} via PayPal`,
+        severity: 'success'
+      });
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: `Failed to process payment for ${employee.name}`,
+        severity: 'error'
+      });
+    }
+  };
+
+  // Pay all selected employees in bulk
+  const handlePayAllEmployees = async () => {
+    const employeesToPay = selectedEmployees.length > 0 
+      ? employeesData.filter(emp => selectedEmployees.includes(emp.id))
+      : employeesData.filter(emp => emp.status === 'pending' && !emp.paymentBlocked);
+
+    if (employeesToPay.length === 0) {
+      setSnackbar({
+        open: true,
+        message: 'No employees eligible for payment',
+        severity: 'warning'
+      });
+      return;
+    }
+
+    const totalAmount = employeesToPay.reduce((sum, emp) => sum + emp.netSalary, 0);
+    
+    if (window.confirm(`Process bulk payment of LKR ${totalAmount.toLocaleString()} for ${employeesToPay.length} employees?`)) {
+      try {
+        setPaymentProcessing(true);
+        
+        // Process payments in parallel
+        const paymentPromises = employeesToPay.map(emp => 
+          processPayPalPayment(emp.netSalary, emp.email, 'employee')
+        );
+        
+        await Promise.all(paymentPromises);
+
+        // Update all employee statuses
+        setEmployeesData(prev => prev.map(emp => 
+          employeesToPay.find(e => e.id === emp.id)
+            ? { ...emp, status: 'paid', paymentStatus: 'paid', lastPaid: new Date() }
+            : emp
+        ));
+
+        setSelectedEmployees([]);
+        setSnackbar({
+          open: true,
+          message: `Bulk payment successful! LKR ${totalAmount.toLocaleString()} paid to ${employeesToPay.length} employees`,
+          severity: 'success'
+        });
+      } catch (error) {
+        setSnackbar({
+          open: true,
+          message: 'Bulk payment failed. Please try again.',
+          severity: 'error'
+        });
+      }
+    }
+  };
+
+  // Block/Unblock employee payment
+  const handleTogglePaymentBlock = (employeeId) => {
+    setEmployeesData(prev => prev.map(emp => 
+      emp.id === employeeId 
+        ? { ...emp, paymentBlocked: !emp.paymentBlocked }
+        : emp
+    ));
+    
+    const employee = employeesData.find(emp => emp.id === employeeId);
+    setSnackbar({
+      open: true,
+      message: `Payment ${employee.paymentBlocked ? 'unblocked' : 'blocked'} for ${employee.name}`,
+      severity: 'info'
+    });
+  };
+
+  // Remove employee (soft delete)
+  const handleRemoveEmployee = (employeeId) => {
+    if (window.confirm('Are you sure you want to remove this employee?')) {
+      setEmployeesData(prev => prev.map(emp => 
+        emp.id === employeeId 
+          ? { ...emp, status: 'resigned', paymentBlocked: true }
+          : emp
+      ));
+      
+      const employee = employeesData.find(emp => emp.id === employeeId);
+      setSnackbar({
+        open: true,
+        message: `${employee.name} has been marked as resigned`,
+        severity: 'info'
+      });
+    }
+  };
+
+  // Pay supplier bill
+  const handlePaySupplier = async (bill) => {
+    try {
+      const paymentResult = await processPayPalPayment(
+        bill.amount,
+        `${bill.supplier.toLowerCase().replace(/\s+/g, '')}@company.com`,
+        'supplier'
+      );
+
+      // Update bill status
+      setSuppliersData(prev => prev.map(b => 
+        b.id === bill.id 
+          ? { ...b, status: 'paid', paidAt: new Date() }
+          : b
+      ));
+
+      setSnackbar({
+        open: true,
+        message: `Payment of LKR ${bill.amount.toLocaleString()} successfully sent to ${bill.supplier} via PayPal`,
+        severity: 'success'
+      });
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: `Failed to process payment to ${bill.supplier}`,
+        severity: 'error'
+      });
+    }
+  };
+
+  // Add new bill
+  const handleAddBill = () => {
+    if (!newBill.supplier || !newBill.amount || !newBill.dueDate) {
+      setSnackbar({
+        open: true,
+        message: 'Please fill in all required fields',
+        severity: 'error'
+      });
+      return;
+    }
+
+    const bill = {
+      id: `BILL-${Date.now()}`,
+      supplier: newBill.supplier,
+      amount: parseFloat(newBill.amount),
+      dueDate: newBill.dueDate,
+      description: newBill.description,
+      status: 'pending',
+      daysOverdue: 0,
+      createdAt: new Date()
+    };
+
+    setSuppliersData(prev => [...prev, bill]);
+    setNewBill({ supplier: '', amount: '', dueDate: '', description: '', status: 'pending' });
+    setShowAddBillDialog(false);
+    
+    setSnackbar({
+      open: true,
+      message: `Bill for ${bill.supplier} added successfully`,
+      severity: 'success'
+    });
+  };
+
+  // Handle employee selection for bulk operations
+  const handleEmployeeSelection = (employeeId) => {
+    setSelectedEmployees(prev => 
+      prev.includes(employeeId) 
+        ? prev.filter(id => id !== employeeId)
+        : [...prev, employeeId]
+    );
+  };
+
+  const handleSelectAllEmployees = () => {
+    const eligibleEmployees = employeesData.filter(emp => emp.status === 'pending' && !emp.paymentBlocked);
+    setSelectedEmployees(
+      selectedEmployees.length === eligibleEmployees.length 
+        ? [] 
+        : eligibleEmployees.map(emp => emp.id)
+    );
+  };
+
   const formatCurrency = (amount) => {
-    return `₹${amount.toLocaleString()}`;
+    return `LKR ${amount.toLocaleString()}`;
   };
 
   const getStatusColor = (status) => {
@@ -235,7 +563,7 @@ export default function Finance({ dateFilter }) {
               variant="body2"
               sx={{ color: item.color, fontSize: '12px' }}
             >
-              {item.name}: ₹{item.value?.toLocaleString()}
+              {item.name}: LKR {item.value?.toLocaleString()}
             </Typography>
           ))}
         </Box>
@@ -409,7 +737,7 @@ export default function Finance({ dateFilter }) {
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12, fill: '#64748b' }}
-                  tickFormatter={(value) => `₹${(value/1000).toFixed(0)}K`}
+                  tickFormatter={(value) => `LKR ${(value/1000).toFixed(0)}K`}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Area
@@ -521,7 +849,7 @@ export default function Finance({ dateFilter }) {
                 />
                 <YAxis hide />
                 <Tooltip 
-                  formatter={(value) => [`₹${value.toLocaleString()}`, '']}
+                  formatter={(value) => [`LKR ${value.toLocaleString()}`, '']}
                   labelStyle={{ color: '#1e3a8a' }}
                 />
                 <Bar 
@@ -633,6 +961,7 @@ export default function Finance({ dateFilter }) {
             <Button
               startIcon={<Add />}
               variant="contained"
+              onClick={() => setShowAddBillDialog(true)}
               sx={{
                 backgroundColor: '#1e3a8a',
                 '&:hover': { backgroundColor: '#1e40af' }
@@ -695,13 +1024,15 @@ export default function Finance({ dateFilter }) {
                       size="small"
                       startIcon={<Payment />}
                       variant="outlined"
+                      onClick={() => handlePaySupplier(bill)}
+                      disabled={paymentProcessing || bill.status === 'paid'}
                       sx={{
                         borderColor: '#1e3a8a',
                         color: '#1e3a8a',
                         fontSize: '12px'
                       }}
                     >
-                      Pay Now
+                      {bill.status === 'paid' ? 'Paid' : 'Pay via PayPal'}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -807,23 +1138,52 @@ export default function Finance({ dateFilter }) {
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
               Employee Payroll Management
             </Typography>
-            <Button
-              startIcon={<Add />}
-              variant="contained"
-              sx={{
-                backgroundColor: '#1e3a8a',
-                '&:hover': { backgroundColor: '#1e40af' }
-              }}
-            >
-              Process Payroll
-            </Button>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                startIcon={<PaymentsOutlined />}
+                variant="contained"
+                onClick={handlePayAllEmployees}
+                disabled={paymentProcessing || employeesData.filter(emp => emp.status === 'pending' && !emp.paymentBlocked).length === 0}
+                sx={{
+                  backgroundColor: '#10b981',
+                  '&:hover': { backgroundColor: '#059669' }
+                }}
+              >
+                {paymentProcessing ? 'Processing...' : `Pay All (${employeesData.filter(emp => emp.status === 'pending' && !emp.paymentBlocked).length})`}
+              </Button>
+              <Button
+                startIcon={<Add />}
+                variant="contained"
+                onClick={() => setShowEmployeeDialog(true)}
+                sx={{
+                  backgroundColor: '#1e3a8a',
+                  '&:hover': { backgroundColor: '#1e40af' }
+                }}
+              >
+                Add Employee
+              </Button>
+            </Box>
           </Box>
+          
+          {selectedEmployees.length > 0 && (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              {selectedEmployees.length} employee(s) selected for bulk payment. 
+              Total: LKR {employeesData.filter(emp => selectedEmployees.includes(emp.id)).reduce((sum, emp) => sum + emp.netSalary, 0).toLocaleString()}
+            </Alert>
+          )}
         </Box>
 
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8fafc' }}>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+                  <Checkbox
+                    checked={selectedEmployees.length === employeesData.filter(emp => emp.status === 'pending' && !emp.paymentBlocked).length && employeesData.filter(emp => emp.status === 'pending' && !emp.paymentBlocked).length > 0}
+                    indeterminate={selectedEmployees.length > 0 && selectedEmployees.length < employeesData.filter(emp => emp.status === 'pending' && !emp.paymentBlocked).length}
+                    onChange={handleSelectAllEmployees}
+                  />
+                </TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Employee</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Position</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>Base Salary</TableCell>
@@ -834,7 +1194,17 @@ export default function Finance({ dateFilter }) {
             </TableHead>
             <TableBody>
               {employeesData.map((employee) => (
-                <TableRow key={employee.id} sx={{ '&:hover': { backgroundColor: '#f8fafc' } }}>
+                <TableRow key={employee.id} sx={{ 
+                  '&:hover': { backgroundColor: '#f8fafc' },
+                  opacity: employee.status === 'resigned' ? 0.6 : 1
+                }}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedEmployees.includes(employee.id)}
+                      onChange={() => handleEmployeeSelection(employee.id)}
+                      disabled={employee.status !== 'pending' || employee.paymentBlocked}
+                    />
+                  </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <Avatar
@@ -842,7 +1212,7 @@ export default function Finance({ dateFilter }) {
                           width: 32,
                           height: 32,
                           mr: 2,
-                          backgroundColor: '#1e3a8a',
+                          backgroundColor: employee.status === 'resigned' ? '#64748b' : '#1e3a8a',
                           fontSize: '12px'
                         }}
                       >
@@ -851,6 +1221,9 @@ export default function Finance({ dateFilter }) {
                       <Box>
                         <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                           {employee.name}
+                          {employee.paymentBlocked && (
+                            <Block sx={{ fontSize: '16px', color: '#ef4444', ml: 1, verticalAlign: 'middle' }} />
+                          )}
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#64748b' }}>
                           {employee.id}
@@ -870,32 +1243,73 @@ export default function Finance({ dateFilter }) {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Chip
-                      label={employee.status.toUpperCase()}
-                      size="small"
-                      sx={{
-                        backgroundColor: `${getStatusColor(employee.status)}15`,
-                        color: getStatusColor(employee.status),
-                        fontWeight: 'bold',
-                        fontSize: '11px'
-                      }}
-                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                      <Chip
+                        label={employee.status.toUpperCase()}
+                        size="small"
+                        sx={{
+                          backgroundColor: `${getStatusColor(employee.status)}15`,
+                          color: getStatusColor(employee.status),
+                          fontWeight: 'bold',
+                          fontSize: '11px'
+                        }}
+                      />
+                      {employee.paymentBlocked && (
+                        <Chip
+                          label="BLOCKED"
+                          size="small"
+                          sx={{
+                            backgroundColor: '#fee2e2',
+                            color: '#dc2626',
+                            fontWeight: 'bold',
+                            fontSize: '10px'
+                          }}
+                        />
+                      )}
+                    </Box>
                   </TableCell>
                   <TableCell>
-                    {employee.status !== 'paid' && (
-                      <Button
-                        size="small"
-                        startIcon={<Payment />}
-                        variant="outlined"
-                        sx={{
-                          borderColor: '#1e3a8a',
-                          color: '#1e3a8a',
-                          fontSize: '12px'
-                        }}
-                      >
-                        Pay
-                      </Button>
-                    )}
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      {employee.status === 'pending' && !employee.paymentBlocked && (
+                        <Button
+                          size="small"
+                          startIcon={<Payment />}
+                          variant="outlined"
+                          onClick={() => handlePayEmployee(employee)}
+                          disabled={paymentProcessing}
+                          sx={{
+                            borderColor: '#1e3a8a',
+                            color: '#1e3a8a',
+                            fontSize: '12px'
+                          }}
+                        >
+                          Pay via PayPal
+                        </Button>
+                      )}
+                      
+                      {employee.status !== 'resigned' && (
+                        <Tooltip title={employee.paymentBlocked ? 'Unblock Payment' : 'Block Payment'}>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleTogglePaymentBlock(employee.id)}
+                            sx={{ color: employee.paymentBlocked ? '#10b981' : '#ef4444' }}
+                          >
+                            {employee.paymentBlocked ? <CheckCircle /> : <Block />}
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      
+                      <Tooltip title="Remove Employee">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleRemoveEmployee(employee.id)}
+                          sx={{ color: '#ef4444' }}
+                          disabled={employee.status === 'resigned'}
+                        >
+                          <PersonOff />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
@@ -959,6 +1373,189 @@ export default function Finance({ dateFilter }) {
       <TabPanel value={activeTab} index={2}>
         {renderPayroll()}
       </TabPanel>
+
+      {/* Add Bill Dialog */}
+      <Dialog 
+        open={showAddBillDialog} 
+        onClose={() => setShowAddBillDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ backgroundColor: '#1e3a8a', color: 'white', fontWeight: 'bold' }}>
+          Add New Bill
+        </DialogTitle>
+        <DialogContent sx={{ p: 3 }}>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Supplier Name *"
+                value={newBill.supplier}
+                onChange={(e) => setNewBill({ ...newBill, supplier: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Amount (LKR) *"
+                type="number"
+                value={newBill.amount}
+                onChange={(e) => setNewBill({ ...newBill, amount: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Due Date *"
+                type="date"
+                value={newBill.dueDate}
+                onChange={(e) => setNewBill({ ...newBill, dueDate: e.target.value })}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                multiline
+                rows={3}
+                value={newBill.description}
+                onChange={(e) => setNewBill({ ...newBill, description: e.target.value })}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setShowAddBillDialog(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleAddBill}
+            sx={{
+              backgroundColor: '#1e3a8a',
+              '&:hover': { backgroundColor: '#1e40af' }
+            }}
+          >
+            Add Bill
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Add Employee Dialog */}
+      <Dialog 
+        open={showEmployeeDialog} 
+        onClose={() => setShowEmployeeDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ backgroundColor: '#1e3a8a', color: 'white', fontWeight: 'bold' }}>
+          Add New Employee
+        </DialogTitle>
+        <DialogContent sx={{ p: 3 }}>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Employee Name *"
+                value={newEmployee.name}
+                onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Position *"
+                value={newEmployee.position}
+                onChange={(e) => setNewEmployee({ ...newEmployee, position: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Base Salary (LKR) *"
+                type="number"
+                value={newEmployee.baseSalary}
+                onChange={(e) => setNewEmployee({ ...newEmployee, baseSalary: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Email *"
+                type="email"
+                value={newEmployee.email}
+                onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={newEmployee.paymentBlocked}
+                    onChange={(e) => setNewEmployee({ ...newEmployee, paymentBlocked: e.target.checked })}
+                  />
+                }
+                label="Block Payments"
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setShowEmployeeDialog(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              // Add employee logic here
+              const employee = {
+                id: `EMP-${Date.now()}`,
+                name: newEmployee.name,
+                position: newEmployee.position,
+                baseSalary: parseFloat(newEmployee.baseSalary),
+                netSalary: parseFloat(newEmployee.baseSalary) * 0.9, // 10% deduction for taxes
+                email: newEmployee.email,
+                status: 'pending',
+                paymentStatus: 'pending',
+                paymentBlocked: newEmployee.paymentBlocked,
+                lastPaid: null
+              };
+              
+              setEmployeesData(prev => [...prev, employee]);
+              setNewEmployee({ name: '', position: '', baseSalary: '', email: '', paymentBlocked: false, status: 'active' });
+              setShowEmployeeDialog(false);
+              
+              setSnackbar({
+                open: true,
+                message: `Employee ${employee.name} added successfully`,
+                severity: 'success'
+              });
+            }}
+            sx={{
+              backgroundColor: '#1e3a8a',
+              '&:hover': { backgroundColor: '#1e40af' }
+            }}
+          >
+            Add Employee
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
