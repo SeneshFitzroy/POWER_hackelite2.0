@@ -601,7 +601,67 @@ const PharmacyPOSFirebaseIntegrated = () => {
     return `LKR ${amount.toFixed(2)}`;
   };
 
-  // Process sale - FULL FIREBASE INTEGRATION
+  // Print receipt function
+  const printReceipt = () => {
+    const printWindow = window.open('', '_blank');
+    const receiptContent = document.getElementById('receipt-content');
+    
+    if (receiptContent && printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Pharmacy Receipt - ${lastTransaction?.receiptNumber}</title>
+            <style>
+              body { 
+                font-family: 'Courier New', monospace; 
+                margin: 20px; 
+                background: white;
+                color: black;
+              }
+              .receipt-container { 
+                max-width: 400px; 
+                margin: 0 auto; 
+              }
+              .prescription-info {
+                margin: 15px 0;
+                padding: 10px;
+                border: 2px solid;
+                border-radius: 5px;
+                text-align: center;
+                font-weight: bold;
+              }
+              .slmc-prescription {
+                background: #ffebee;
+                border-color: #d32f2f;
+                color: #d32f2f;
+              }
+              .otc-prescription {
+                background: #e8f5e8;
+                border-color: #4caf50;
+                color: #2e7d32;
+              }
+              @media print {
+                body { margin: 0; }
+                .no-print { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="receipt-container">
+              ${receiptContent.innerHTML}
+            </div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    } else {
+      // Fallback to regular print
+      window.print();
+    }
+  };
   const processSale = async () => {
     if (cart.length === 0) {
       alert('Cart is empty. Please add medicines before completing the sale.');
@@ -624,9 +684,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
       try {
         setLoading(true);
         
-        console.log('=== PROCESSING SALE ===');
-        console.log('Cart items:', cart.length);
-        console.log('Total amount:', total);
+        console.log('Processing sale with', cart.length, 'items, total:', total);
         
         // Handle patient/customer creation and linking
         let patientId = null;
@@ -637,12 +695,14 @@ const PharmacyPOSFirebaseIntegrated = () => {
         try {
           await patientService.updatePurchaseHistory(patientId, total);
         } catch (error) {
-          console.warn('Could not update patient purchase history:', error.message);
+          console.warn('Could not update patient purchase history, clearing invalid patient:', error.message);
+          // Clear invalid patient data
+          setCurrentPatient(null);
+          patientId = null;
+          customerId = null;
         }
       } else if (patientNIC.trim() || customerName.trim()) {
-        console.log('=== CREATING/FINDING CUSTOMER ===');
-        console.log('NIC:', patientNIC);
-        console.log('Name:', customerName);
+        console.log('Creating/finding customer and patient records...');
         
         try {
           // First, check if customer already exists by NIC
@@ -726,14 +786,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         }
       }
       
-      console.log('Creating transaction with:', {
-        patientId,
-        customerId,
-        customerName: customerName || 'Walk-in Customer',
-        customerNIC: patientNIC,
-        patientNIC: patientNIC,
-        total
-      });
+      console.log('Processing transaction for customer:', customerName || 'Walk-in Customer');
       
       const saleData = {
         receiptNumber: `RCP-${invoiceNumber}`,
@@ -1968,51 +2021,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
               >
                 {loading ? 'PROCESSING...' : 'COMPLETE SALE'}
               </Button>
-              
-              {/* DEBUG: Test Receipt Button */}
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  console.log('Force showing receipt. Current states:', {
-                    showReceipt,
-                    lastTransaction,
-                    cart: cart.length
-                  });
-                  
-                  // Create a test transaction for testing receipt
-                  const testTransaction = {
-                    id: 'test-123',
-                    receiptNumber: 'RCP-TEST-001',
-                    items: cart.length > 0 ? cart.map(item => ({
-                      name: item.name,
-                      quantity: item.quantity,
-                      totalPrice: item.quantity * item.sellingPrice,
-                      unitPrice: item.sellingPrice,
-                      batchNumber: item.batchNumber
-                    })) : [{
-                      name: 'Test Medicine',
-                      quantity: 1,
-                      totalPrice: 100,
-                      unitPrice: 100,
-                      batchNumber: 'TEST001'
-                    }],
-                    customerName: customerName || 'Test Customer',
-                    staffName: employeeName ? `${employeeName} (${employeeId})` : `EMPLOYEE: ${employeeId}`,
-                    total: cart.length > 0 ? total : 100,
-                    subtotal: cart.length > 0 ? totals.subtotal : 100,
-                    paymentMethod: paymentMethod || 'cash',
-                    createdAt: new Date(),
-                    invoiceNumber: invoiceNumber || 'TEST001'
-                  };
-                  
-                  console.log('Setting test transaction:', testTransaction);
-                  setLastTransaction(testTransaction);
-                  setShowReceipt(true);
-                }}
-                sx={{ ml: 1 }}
-              >
-                Test Receipt
-              </Button>
             </Box>
           </Paper>
         </Box>
@@ -2185,7 +2193,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
       {/* RECEIPT DIALOG */}
       <Dialog open={showReceipt} onClose={() => setShowReceipt(false)} maxWidth="sm" fullWidth>
         {lastTransaction ? (
-          <Box sx={{ p: 4, fontFamily: 'monospace' }}>
+          <Box id="receipt-content" sx={{ p: 4, fontFamily: 'monospace' }}>
             {/* PHARMACY HEADER WITH LOGO */}
             <Box sx={{ textAlign: 'center', mb: 3, borderBottom: '2px solid #1976d2', pb: 2 }}>
               <img 
@@ -2395,10 +2403,10 @@ const PharmacyPOSFirebaseIntegrated = () => {
               </Button>
               <Button
                 variant="contained"
-                onClick={() => window.print()}
+                onClick={printReceipt}
                 sx={{ background: '#1976d2', color: 'white' }}
               >
-                Print Receipt
+                🖨️ Print Receipt
               </Button>
             </Box>
           </Box>

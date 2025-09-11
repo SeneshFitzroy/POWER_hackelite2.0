@@ -5,6 +5,7 @@ import {
   getDoc, 
   addDoc, 
   updateDoc, 
+  setDoc,
   query, 
   where, 
   orderBy, 
@@ -53,17 +54,18 @@ export const transactionService = {
           const patientDoc = await getDoc(patientRef);
           
           if (patientDoc.exists()) {
-            batch.update(patientRef, {
+            // Use set with merge instead of batch.update to handle edge cases
+            await setDoc(patientRef, {
               totalPurchases: increment(saleData.total || saleData.totalAmount || 0),
               lastVisit: serverTimestamp(),
               updatedAt: serverTimestamp()
-            });
+            }, { merge: true });
             console.log('Updated patient purchase history for:', saleData.patientId);
           } else {
-            console.warn('Patient document does not exist for ID:', saleData.patientId);
+            console.warn('Skipping patient update - document does not exist:', saleData.patientId);
           }
         } catch (patientError) {
-          console.error('Error updating patient document:', patientError);
+          console.error('Error updating patient document, continuing with sale:', patientError);
           // Continue processing the sale even if patient update fails
         }
       }
