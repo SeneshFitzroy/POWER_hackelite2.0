@@ -189,7 +189,7 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
 
       {/* Footer */}
       <div className="footer-text">
-        <p>by NPK New Pharmacy Kalutara</p>
+        <p>by CoreERP Systems</p>
       </div>
     </div>
   )
