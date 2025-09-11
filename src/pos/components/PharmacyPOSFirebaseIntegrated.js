@@ -258,36 +258,65 @@ const PharmacyPOSFirebaseIntegrated = () => {
       try {
         setSearchingPatients(true);
         
-        // Search for patients by NIC or phone number
+        // Search for patients by NIC, phone number, or name
         const allPatients = await patientService.getAllPatients();
-        const suggestions = allPatients.filter(patient => 
-          (patient.nic && patient.nic.toLowerCase().includes(nicOrPhone.toLowerCase())) ||
-          (patient.contact && patient.contact.includes(nicOrPhone)) ||
-          (patient.phoneNumber && patient.phoneNumber.includes(nicOrPhone))
-        ).slice(0, 5); // Limit to 5 suggestions
+        const searchTerm = nicOrPhone.toLowerCase();
+        
+        const suggestions = allPatients.filter(patient => {
+          // Search by NIC (exact or partial match)
+          if (patient.nic && patient.nic.toLowerCase().includes(searchTerm)) {
+            return true;
+          }
+          // Search by contact/phone number
+          if (patient.contact && patient.contact.includes(nicOrPhone)) {
+            return true;
+          }
+          if (patient.phoneNumber && patient.phoneNumber.includes(nicOrPhone)) {
+            return true;
+          }
+          // Search by name (partial match)
+          if (patient.name && patient.name.toLowerCase().includes(searchTerm)) {
+            return true;
+          }
+          return false;
+        }).slice(0, 8); // Limit to 8 suggestions for better UI
         
         setPatientSuggestions(suggestions);
         setShowPatientDropdown(suggestions.length > 0);
         
-        // If exact match, auto-select
+        // If we have an exact NIC match (10+ characters), auto-select
         if (nicOrPhone.length >= 10) {
           const exactMatch = suggestions.find(p => 
-            p.nic === nicOrPhone || p.contact === nicOrPhone || p.phoneNumber === nicOrPhone
+            (p.nic && p.nic === nicOrPhone) || 
+            (p.contact && p.contact === nicOrPhone) || 
+            (p.phoneNumber && p.phoneNumber === nicOrPhone)
           );
           
           if (exactMatch) {
             selectPatientFromDropdown(exactMatch);
+            return; // Exit early for exact match
           }
+        }
+        
+        // Clear current patient if no exact match and less than 10 characters
+        if (nicOrPhone.length < 10 && suggestions.length === 0) {
+          setCurrentPatient(null);
+          setCustomerName('');
+          setCustomerContact('');
         }
         
       } catch (error) {
         console.error('Error searching patients:', error);
         setPatientSuggestions([]);
         setShowPatientDropdown(false);
+        setCurrentPatient(null);
+        setCustomerName('');
+        setCustomerContact('');
       } finally {
         setSearchingPatients(false);
       }
     } else {
+      // Clear everything if search term is too short
       setPatientSuggestions([]);
       setShowPatientDropdown(false);
       setCurrentPatient(null);
@@ -304,7 +333,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
     setPatientNIC(patient.nic || patient.contact || patient.phoneNumber || '');
     setShowPatientDropdown(false);
     setPatientSuggestions([]);
-    console.log('Patient selected:', patient.name);
+    console.log('Patient selected:', {
+      name: patient.name,
+      age: patient.age,
+      nic: patient.nic,
+      contact: patient.contact || patient.phoneNumber
+    });
   };
 
   // Open unit selection modal for medicine
@@ -809,39 +843,171 @@ const PharmacyPOSFirebaseIntegrated = () => {
                     left: 0,
                     right: 0,
                     zIndex: 1000,
-                    maxHeight: 200,
+                    maxHeight: 300,
                     overflow: 'auto',
-                    border: '1px solid #1976d2',
-                    borderRadius: 1,
-                    mt: 0.5
+                    border: '2px solid #1976d2',
+                    borderRadius: 2,
+                    mt: 0.5,
+                    boxShadow: '0 8px 24px rgba(25, 118, 210, 0.15)'
                   }}
                 >
-                  {patientSuggestions.map((patient, index) => (
-                    <Box
-                      key={patient.id}
-                      onClick={() => selectPatientFromDropdown(patient)}
-                      sx={{
-                        p: 1.5,
-                        cursor: 'pointer',
-                        borderBottom: index < patientSuggestions.length - 1 ? '1px solid #e5e7eb' : 'none',
-                        '&:hover': {
-                          backgroundColor: '#f0f9ff'
+                  <Box sx={{ 
+                    p: 1, 
+                    backgroundColor: '#1976d2', 
+                    color: 'white',
+                    textAlign: 'center'
+                  }}>
+                    <Typography variant="caption" fontWeight="bold">
+                      {patientSuggestions.length} Patient{patientSuggestions.length > 1 ? 's' : ''} Found - Click to Select
+                    </Typography>
+                  </Box>
+                  
+                  {patientSuggestions.map((patient, index) => {
+                    // Calculate age from date of birth if available
+                    let ageText = 'Age: N/A';
+                    if (patient.age) {
+                      ageText = `Age: ${patient.age}`;
+                    } else if (patient.dateOfBirth) {
+                      try {
+                        const birthDate = new Date(patient.dateOfBirth);
+                        const today = new Date();
+                        const age = today.getFullYear() - birthDate.getFullYear();
+                        const monthDiff = today.getMonth() - birthDate.getMonth();
+                        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                          age--;
                         }
-                      }}
-                    >
-                      <Typography variant="body2" fontWeight="bold" color="#1976d2">
-                        {patient.name}
-                      </Typography>
-                      <Typography variant="caption" color="#666">
-                        {patient.age ? `Age: ${patient.age}` : 'Age: N/A'} • 
-                        NIC: {patient.nic || 'N/A'} • 
-                        Phone: {patient.contact || patient.phoneNumber || 'N/A'}
-                      </Typography>
-                    </Box>
-                  ))}
+                        ageText = `Age: ${age}`;
+                      } catch (e) {
+                        ageText = 'Age: N/A';
+                      }
+                    }
+
+                    return (
+                      <Box
+                        key={patient.id}
+                        onClick={() => selectPatientFromDropdown(patient)}
+                        sx={{
+                          p: 2,
+                          cursor: 'pointer',
+                          borderBottom: index < patientSuggestions.length - 1 ? '1px solid #e5e7eb' : 'none',
+                          '&:hover': {
+                            backgroundColor: '#e3f2fd',
+                            transform: 'translateX(4px)',
+                            transition: 'all 0.2s ease'
+                          },
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
+                          <Typography variant="subtitle1" fontWeight="bold" color="#1976d2" sx={{ fontSize: '0.95rem' }}>
+                            {patient.name || 'Unknown Name'}
+                          </Typography>
+                          <Chip 
+                            label={ageText}
+                            size="small"
+                            sx={{
+                              backgroundColor: '#e8f5e8',
+                              color: '#2e7d32',
+                              fontWeight: 'bold',
+                              fontSize: '0.7rem',
+                              height: '20px'
+                            }}
+                          />
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
+                          {patient.nic && (
+                            <Chip 
+                              label={`NIC: ${patient.nic}`}
+                              size="small"
+                              sx={{
+                                backgroundColor: '#f3e5f5',
+                                color: '#7b1fa2',
+                                fontSize: '0.65rem',
+                                height: '18px'
+                              }}
+                            />
+                          )}
+                          {(patient.contact || patient.phoneNumber) && (
+                            <Chip 
+                              label={`Phone: ${patient.contact || patient.phoneNumber}`}
+                              size="small"
+                              sx={{
+                                backgroundColor: '#e3f2fd',
+                                color: '#1976d2',
+                                fontSize: '0.65rem',
+                                height: '18px'
+                              }}
+                            />
+                          )}
+                        </Box>
+                        
+                        {patient.address && (
+                          <Typography variant="caption" color="#666" sx={{ 
+                            fontSize: '0.7rem',
+                            display: 'block',
+                            fontStyle: 'italic'
+                          }}>
+                            Address: {patient.address}
+                          </Typography>
+                        )}
+                        
+                        {patient.lastVisit && (
+                          <Typography variant="caption" color="#999" sx={{ 
+                            fontSize: '0.65rem',
+                            display: 'block',
+                            mt: 0.5
+                          }}>
+                            Last Visit: {new Date(patient.lastVisit.toDate ? patient.lastVisit.toDate() : patient.lastVisit).toLocaleDateString()}
+                          </Typography>
+                        )}
+                      </Box>
+                    );
+                  })}
                 </Paper>
               )}
             </Box>
+
+            {/* Current Patient Display */}
+            {currentPatient && (
+              <Box sx={{ 
+                mt: 1, 
+                p: 1.5, 
+                backgroundColor: '#e8f5e8', 
+                borderRadius: 1,
+                border: '1px solid #4caf50'
+              }}>
+                <Typography variant="body2" fontWeight="bold" color="#2e7d32" sx={{ mb: 0.5 }}>
+                  ✓ Patient Selected: {currentPatient.name}
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {currentPatient.age && (
+                    <Chip 
+                      label={`Age: ${currentPatient.age}`}
+                      size="small"
+                      sx={{
+                        backgroundColor: '#ffffff',
+                        color: '#2e7d32',
+                        fontSize: '0.7rem',
+                        height: '18px'
+                      }}
+                    />
+                  )}
+                  {currentPatient.nic && (
+                    <Chip 
+                      label={`NIC: ${currentPatient.nic}`}
+                      size="small"
+                      sx={{
+                        backgroundColor: '#ffffff',
+                        color: '#2e7d32',
+                        fontSize: '0.7rem',
+                        height: '18px'
+                      }}
+                    />
+                  )}
+                </Box>
+              </Box>
+            )}
 
             {/* SLMC REG NUMBER - COMPACT */}
             <TextField

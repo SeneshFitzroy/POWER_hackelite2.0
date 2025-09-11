@@ -146,6 +146,46 @@ export const patientService = {
     }
   },
 
+  // Search patients with improved partial matching
+  searchPatientsAdvanced: async (searchTerm) => {
+    try {
+      if (!searchTerm || searchTerm.length < 2) {
+        return [];
+      }
+
+      const allPatients = await patientService.getAllPatients();
+      const searchLower = searchTerm.toLowerCase();
+      
+      return allPatients.filter(patient => {
+        // Search by name (partial match)
+        if (patient.name && patient.name.toLowerCase().includes(searchLower)) {
+          return true;
+        }
+        // Search by NIC (exact or partial match)
+        if (patient.nic && patient.nic.toLowerCase().includes(searchLower)) {
+          return true;
+        }
+        // Search by phone/contact (partial match)
+        if (patient.contact && patient.contact.includes(searchTerm)) {
+          return true;
+        }
+        if (patient.phoneNumber && patient.phoneNumber.includes(searchTerm)) {
+          return true;
+        }
+        // Search by address (partial match)
+        if (patient.address && patient.address.toLowerCase().includes(searchLower)) {
+          return true;
+        }
+        return false;
+      }).sort((a, b) => {
+        // Sort by name for consistent ordering
+        return (a.name || '').localeCompare(b.name || '');
+      });
+    } catch (error) {
+      throw new Error(`Error searching patients: ${error.message}`);
+    }
+  },
+
   // Search patients
   searchPatients: async (searchTerm) => {
     try {

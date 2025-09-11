@@ -331,7 +331,7 @@ export default function CustomerManagement({ dateFilter }) {
   };
 
   const formatCurrency = (amount) => {
-    return `Rs. ${amount?.toLocaleString() || '0.00'}`;
+    return `LKR ${amount?.toLocaleString() || '0.00'}`;
   };
 
   return (
