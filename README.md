@@ -1,157 +1,329 @@
-# CoreERP
+# 🏢 PharmaCore ERP System
 
-**A smart, affordable, and modular ERP system designed to empower Small and Medium-sized Businesses (SMBs) in growing economies.**
+**A comprehensive, modular ERP platform designed for pharmaceutical and healthcare businesses with role-based access control and real-time monitoring capabilities.**
 
-## React App with Firebase Integration
+![License](https://img.shields.io/badge/license-ISC-blue.svg)
+![React](https://img.shields.io/badge/React-19.1.1-blue.svg)
+![Firebase](https://img.shields.io/badge/Firebase-12.2.1-orange.svg)
+![Status](https://img.shields.io/badge/Status-Active%20Development-green.svg)
 
-This is a modern React application built with Firebase backend, featuring authentication, real-time database, and Material-UI components.
+## 🎯 Overview
 
-## Features
+POWER Hackelite ERP is a modern, cloud-native Enterprise Resource Planning system specifically designed for pharmaceutical businesses and healthcare providers. Built with React 19 and Firebase, it offers a scalable, secure, and user-friendly platform for managing all aspects of your business operations.
 
-- 🔐 Firebase Authentication (Email/Password)
-- 📊 Modern Dashboard with Material-UI
-- 💰 **Comprehensive Finance Module** with P&L, Balance Sheet, Cash Flow
-- 📋 **Bills & Payment Management** with supplier tracking and reminders
-- 👥 **Payroll Management** with employee records and salary processing
-- 💹 **Financial Analytics** with interactive charts and KPIs
-- 🌡️ **Cold Chain Monitoring** with IoT simulation for temperature and humidity control
-- 🏗️ Modular Architecture
-- 📱 Responsive Design
-- 🔥 Firebase Backend Integration
-- ⚛️ React 19 with Hooks
-- 🎨 Material-UI Components
-- 📈 Recharts Integration for Data Visualization
+## ✨ Key Features
 
-## Getting Started
+### 🔐 **Advanced Authentication System**
+- **Hybrid Authentication**: Firebase Authentication with fallback mechanisms
+- **Role-Based Access Control**: CEO, Regional Manager, Assistant, and Cashier roles
+- **Secure User Management**: Automatic user provisioning and role assignment
+- **Multi-Module Permissions**: Granular access control per business module
+
+### � **Comprehensive Business Modules**
+
+#### 💰 **Finance Module**
+- Real-time financial dashboards and KPIs
+- Profit & Loss, Balance Sheet, Cash Flow statements
+- Bills management with supplier tracking
+- Automated payment reminders
+- Payroll management system
+- Interactive financial analytics with charts
+
+#### 🛒 **Sales & POS System**
+- Complete Point-of-Sale functionality
+- Customer database management
+- Sales order processing and tracking
+- Sales analytics and performance metrics
+- Inventory integration
+- Real-time transaction monitoring
+
+#### � **Inventory Management**
+- Real-time stock tracking
+- Automated reorder points and alerts
+- Supplier management
+- Batch tracking for pharmaceutical compliance
+- Expiry date monitoring
+- Purchase order management
+
+#### 👥 **Human Resources**
+- Employee database and profiles
+- Attendance tracking
+- Leave management
+- Performance evaluations
+- Salary and benefits administration
+- Compliance reporting
+
+#### 🌡️ **Cold Chain Monitoring**
+- Real-time temperature and humidity monitoring
+- Automated alert system for threshold breaches
+- IoT sensor integration simulation
+- Compliance reporting for pharmaceutical storage
+- Historical data analytics
+- Customizable monitoring parameters
+
+#### ⚖️ **Legal & Compliance**
+- Regulatory compliance tracking
+- Document management
+- Audit trail maintenance
+- License and certification tracking
+- Compliance reporting
+
+#### 🚚 **Delivery & Logistics**
+- Delivery route optimization
+- Real-time tracking
+- Driver management
+- Vehicle maintenance tracking
+- Customer delivery history
+
+#### 🏛️ **Administration**
+- System configuration and settings
+- User management and permissions
+- Backup and recovery
+- System monitoring and performance
+- Audit logs and security
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- npm or yarn
-- Firebase account
+- **Node.js** (v16 or higher)
+- **npm** or **yarn**
+- **Firebase account** (optional - system includes demo mode)
+- **Modern web browser** (Chrome, Firefox, Safari, Edge)
 
-### Installation
+### Quick Start
 
-1. Clone the repository:
+1. **Clone the repository:**
 ```bash
-git clone https://github.com/SeneshFitzroy/CoreERP.git
-cd CoreERP
+git clone https://github.com/SeneshFitzroy/POWER_hackelite2.0.git
+cd POWER_hackelite2.0
 ```
 
-2. Install dependencies:
+2. **Install dependencies:**
 ```bash
 npm install
 ```
 
-3. Set up Firebase:
-   - Create a new Firebase project at https://console.firebase.google.com
-   - Enable Authentication with Email/Password provider
-   - Create a Firestore database
-   - Get your Firebase configuration
-
-4. Create environment file:
-```bash
-cp .env.example .env.local
-```
-
-5. Update `.env.local` with your Firebase configuration:
-```
-REACT_APP_FIREBASE_API_KEY=your_api_key_here
-REACT_APP_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-REACT_APP_FIREBASE_PROJECT_ID=your_project_id
-REACT_APP_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-REACT_APP_FIREBASE_APP_ID=your_app_id
-REACT_APP_FIREBASE_MEASUREMENT_ID=your_measurement_id
-```
-
-6. Start the development server:
+3. **Start development server:**
 ```bash
 npm start
 ```
 
-The application will open at `http://localhost:3000`.
+4. **Access the application:**
+   - Open `http://localhost:3000`
+   - Use demo credentials or configure Firebase
 
-### Project Structure
+### 🔧 Firebase Configuration (Optional)
+
+The system works in **Demo Mode** by default. For production use:
+
+1. **Create Firebase Project:**
+   - Go to [Firebase Console](https://console.firebase.google.com)
+   - Create new project
+   - Enable Authentication (Email/Password)
+   - Set up Firestore Database
+
+2. **Configure Environment:**
+   - Copy `.env.example` to `.env`
+   - Update with your Firebase credentials:
+
+```env
+REACT_APP_FIREBASE_API_KEY=your_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_domain.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+```
+
+## 👤 Demo Accounts
+
+The system includes pre-configured demo accounts for testing:
+
+| Role | Email | Password | Access Level |
+|------|-------|----------|--------------|
+| **CEO** | `john.ceo.pharma@gmail.com` | `JohnCEO2002` | Full System Access |
+| **Regional Manager** | `john.reg.pharma@gmail.com` | `JohnReg2002c` | Sales, POS, Inventory, Delivery, Legal |
+| **Assistant** | `john.assit.pharma@gmail.com` | `JohnAssit2002` | POS, Inventory, Delivery |
+| **Cashier** | `john.cashier.pharma@gmail.com` | `JohnCash2002` | POS Only |
+
+## 📁 Project Structure
 
 ```
 src/
-├── components/          # React components
-│   ├── sales/          # Sales module components
-│   │   ├── SalesModule.js      # Main sales dashboard with navigation
-│   │   ├── CustomerManagement.js  # Customer database management
-│   │   ├── SalesOrders.js      # Sales order processing
-│   │   └── SalesDashboard.js   # Sales analytics & metrics
-│   ├── finance/        # Finance module components
-│   │   ├── FinanceModule.js    # Main finance dashboard with navigation
-│   │   ├── FinanceDashboard.js # Financial KPIs & charts
-│   │   ├── FinancialReports.js # P&L, Balance Sheet, Cash Flow
-│   │   ├── BillsManagement.js  # Supplier bills & payment reminders
-│   │   └── PayrollManagement.js # Employee payroll processing
-│   ├── coldchain/      # Cold Chain Monitoring module
-│   │   ├── ColdChainModule.js      # Main cold chain dashboard
-│   │   ├── ColdChainDashboard.js   # Real-time sensor monitoring
-│   │   ├── AlertsManagement.js     # Alert management system
-│   │   ├── ReportsManagement.js    # Analytics and reporting
-│   │   ├── SettingsManagement.js   # Sensor configuration
-│   │   └── ColdChainInitializer.js # Service initialization
-│   ├── Dashboard.js     # Main dashboard
-│   ├── Login.js         # Authentication component
-│   └── Navigation.js    # Navigation bar
-├── contexts/            # React contexts
-│   └── AuthContext.js   # Authentication context
-├── firebase/            # Firebase configuration
-│   └── config.js        # Firebase setup
-├── App.js              # Main app component
-├── App.css             # App styles
-├── index.js            # Entry point
-└── index.css           # Global styles
+├── components/              # React components
+│   ├── sales/              # Sales & POS module
+│   │   ├── SalesModule.js
+│   │   ├── POSSystem.js
+│   │   ├── CustomerManagement.js
+│   │   └── SalesOrders.js
+│   ├── finance/            # Finance module
+│   │   ├── FinanceModule.js
+│   │   ├── FinanceDashboard.js
+│   │   ├── FinancialReports.js
+│   │   ├── BillsManagement.js
+│   │   └── PayrollManagement.js
+│   ├── inventory/          # Inventory management
+│   │   ├── InventoryModule.js
+│   │   ├── StockManagement.js
+│   │   └── PurchaseOrders.js
+│   ├── hr/                 # Human resources
+│   │   ├── HRModule.js
+│   │   ├── EmployeeManagement.js
+│   │   └── AttendanceTracking.js
+│   ├── coldchain/          # Cold chain monitoring
+│   │   ├── ColdChainModule.js
+│   │   ├── SensorMonitoring.js
+│   │   └── AlertsManagement.js
+│   ├── shared/             # Shared components
+│   │   ├── charts/
+│   │   ├── forms/
+│   │   └── ui/
+│   ├── ERPApp.js           # Main application
+│   ├── ERPDashboard.js     # Main dashboard
+│   ├── ERPNavigation.js    # Navigation system
+│   ├── LoginScreen.js      # Authentication
+│   └── SplashScreen.js     # Loading screen
+├── contexts/               # React contexts
+│   ├── AuthContext.js      # Authentication state
+│   └── RoleContext.js      # Role management
+├── services/               # Business logic
+│   ├── authService.js      # Authentication service
+│   ├── dataService.js      # Data management
+│   └── coldChainService.js # IoT monitoring
+├── firebase/               # Firebase configuration
+│   └── config.js
+├── utils/                  # Utility functions
+├── App.js                  # App component
+└── index.js                # Entry point
 ```
 
-### Available Scripts
+## 🛠️ Available Scripts
 
-- `npm start` - Runs the app in development mode
-- `npm run build` - Builds the app for production
-- `npm test` - Launches the test runner
-- `npm run eject` - Ejects from Create React App
+| Command | Description |
+|---------|-------------|
+| `npm start` | Start development server |
+| `npm run build` | Create production build |
+| `npm test` | Run test suite |
+| `npm run deploy` | Deploy to production |
+| `npm run deploy-hr` | Deploy HR module only |
+| `npm run deploy-sales` | Deploy Sales module only |
+| `npm run deploy-legal` | Deploy Legal module only |
 
-### Firebase Setup
+## 🔧 Technology Stack
 
-1. **Authentication Setup:**
-   - Go to Firebase Console > Authentication > Sign-in method
-   - Enable Email/Password provider
+### Frontend
+- **React 19.1.1** - Modern UI framework
+- **Material-UI 7.3.2** - Component library
+- **TailwindCSS 4.1.13** - Utility-first CSS
+- **Recharts 3.1.2** - Data visualization
+- **Lucide React** - Icon library
 
-2. **Firestore Database:**
-   - Go to Firebase Console > Firestore Database
-   - Create database in test mode (or production mode with proper rules)
+### Backend & Services
+- **Firebase 12.2.1** - Backend-as-a-Service
+- **Firebase Auth** - User authentication
+- **Firestore** - NoSQL database
+- **Firebase Storage** - File storage
 
-3. **Storage (Optional):**
-   - Go to Firebase Console > Storage
-   - Set up Cloud Storage bucket
+### Development Tools
+- **CRACO** - Create React App Configuration Override
+- **PostCSS** - CSS processing
+- **Autoprefixer** - CSS vendor prefixing
 
-### ERP Features (Future Development)
+## 🏗️ Architecture
 
-Traditional ERP systems are often too costly, complex, and rigid for SMBs. CoreERP solves this by providing an AI-powered, cloud-native solution that automates repetitive tasks, provides clear business insights, and enables data-driven decisions without the enterprise-level overhead.
+### Authentication Flow
+```
+Login → Firebase Auth → Role Verification → Module Access Control → Dashboard
+```
 
-#### ✨ Key Features (Planned)
-*   **📦 AI-Powered Inventory Management:** Predictive alerts for stockouts and intelligent restocking suggestions.
-*   **🚚 Real-Time Order Tracking:** A centralized dashboard to manage orders from placement to delivery.
-*   **📊 Simplified Accounting:** Easy expense tracking and automated financial summaries.
-*   **📈 Analytics & Insights Dashboard:** Clear, AI-generated insights and growth suggestions.
-*   **🔒 Secure Role-Based Access:** Manage permissions for Owners, Accountants, and Staff.
+### Module System
+- **Modular Design**: Independent modules with shared components
+- **Role-Based Routing**: Dynamic navigation based on user permissions
+- **Data Integration**: Centralized data services across modules
+- **Real-time Updates**: Live data synchronization
 
-### Contributing
+### Security Features
+- **JWT Authentication**: Secure token-based authentication
+- **Role-based Access Control**: Granular permissions system
+- **Data Encryption**: Secure data transmission and storage
+- **Audit Logging**: Complete user action tracking
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## 📈 Performance Features
 
-### License
+- **Code Splitting**: Module-based lazy loading
+- **Optimized Bundle**: Tree shaking and minification
+- **Caching Strategy**: Intelligent data caching
+- **Real-time Sync**: Efficient data synchronization
+- **Mobile Responsive**: Optimized for all devices
 
-This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
+## 🔒 Security
 
-### Support
+- **Firebase Security Rules**: Backend data protection
+- **HTTPS Enforcement**: Secure data transmission
+- **Input Validation**: XSS and injection prevention
+- **Session Management**: Secure user sessions
+- **Regular Security Updates**: Up-to-date dependencies
 
-For support and questions, please open an issue on GitHub.
+## 🚀 Deployment
+
+### Production Deployment
+```bash
+npm run build
+npm run deploy
+```
+
+### Module-specific Deployment
+```bash
+npm run deploy-hr      # HR module only
+npm run deploy-sales   # Sales module only
+npm run deploy-legal   # Legal module only
+```
+
+## 🤝 Contributing
+
+1. **Fork** the repository
+2. **Create** your feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your changes (`git commit -m 'Add AmazingFeature'`)
+4. **Push** to the branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
+
+### Development Guidelines
+- Follow React best practices
+- Write comprehensive tests
+- Update documentation
+- Maintain code quality standards
+
+## 📝 License
+
+This project is licensed under the **ISC License** - see the [LICENSE](LICENSE) file for details.
+
+## 💬 Support & Community
+
+- **GitHub Issues**: [Report bugs or request features](https://github.com/SeneshFitzroy/POWER_hackelite2.0/issues)
+- **Documentation**: Comprehensive guides and API docs
+- **Community**: Join our developer community
+
+## 🎯 Roadmap
+
+### Upcoming Features
+- [ ] **AI-Powered Analytics**: Machine learning insights
+- [ ] **Mobile App**: Native iOS/Android applications
+- [ ] **API Gateway**: RESTful API for third-party integrations
+- [ ] **Advanced Reporting**: Customizable business reports
+- [ ] **Multi-language Support**: Internationalization
+- [ ] **Blockchain Integration**: Supply chain transparency
+
+### Completed ✅
+- [x] Role-based authentication system
+- [x] Modular ERP architecture
+- [x] Cold chain monitoring
+- [x] Real-time dashboards
+- [x] Firebase integration
+- [x] Mobile-responsive design
+
+---
+
+**Built with ❤️ by CoreERP Systems**
+
+*Empowering businesses with intelligent, affordable ERP solutions.*
