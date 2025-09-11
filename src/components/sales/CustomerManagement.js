@@ -200,6 +200,35 @@ export default function CustomerManagement({ dateFilter }) {
     }
   };
 
+  // Debug function to list all transactions
+  const debugAllTransactions = async () => {
+    try {
+      console.log('=== DEBUG: LISTING ALL TRANSACTIONS ===');
+      const allTransactionsQuery = query(
+        collection(db, 'transactions'),
+        orderBy('createdAt', 'desc'),
+        limit(10) // Limit to last 10 for debugging
+      );
+      
+      const snapshot = await getDocs(allTransactionsQuery);
+      console.log(`Found ${snapshot.docs.length} transactions in database:`);
+      
+      snapshot.docs.forEach((doc, index) => {
+        const data = doc.data();
+        console.log(`${index + 1}. Transaction ${doc.id}:`, {
+          customerName: data.customerName,
+          customerNIC: data.customerNIC,
+          patientNIC: data.patientNIC,
+          total: data.total,
+          receiptNumber: data.receiptNumber,
+          createdAt: data.createdAt?.toDate?.() || data.createdAt
+        });
+      });
+    } catch (error) {
+      console.error('Error listing transactions:', error);
+    }
+  };
+
   // Load customer order history
   const loadCustomerHistory = async (customerId) => {
     try {
@@ -213,7 +242,10 @@ export default function CustomerManagement({ dateFilter }) {
         return;
       }
       
-      console.log('Loading history for customer:', customer.name, 'NIC:', customer.nic);
+      console.log('=== CUSTOMER HISTORY DEBUG ===');
+      console.log('Loading history for customer:', customer);
+      console.log('Customer NIC:', customer.nic);
+      console.log('Customer Name:', customer.name);
       
       // Query transactions by customer NIC and also by patientNIC as backup
       const queries = [
@@ -239,30 +271,43 @@ export default function CustomerManagement({ dateFilter }) {
       
       let allTransactions = [];
       
+      console.log('Executing queries for NIC:', customer.nic, 'and Name:', customer.name);
+      
       // Execute all queries and combine results
-      for (const transactionQuery of queries) {
+      for (const [index, transactionQuery] of queries.entries()) {
         try {
+          console.log(`Executing query ${index + 1}...`);
           const snapshot = await getDocs(transactionQuery);
-          const transactions = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-          allTransactions = [...allTransactions, ...transactions];
-        } catch (error) {
-          console.warn('Query failed:', error);
+          console.log(`Query ${index + 1} returned ${snapshot.docs.length} transactions`);
+          
+          snapshot.docs.forEach(doc => {
+            const transactionData = { id: doc.id, ...doc.data() };
+            console.log(`Transaction ${doc.id}:`, {
+              customerName: transactionData.customerName,
+              customerNIC: transactionData.customerNIC,
+              patientNIC: transactionData.patientNIC,
+              total: transactionData.total
+            });
+            allTransactions.push(transactionData);
+          });
+        } catch (queryError) {
+          console.error(`Error in query ${index + 1}:`, queryError);
         }
       }
       
       // Remove duplicates based on transaction ID
-      const uniqueTransactions = allTransactions.filter((transaction, index, self) => 
+      const uniqueTransactions = allTransactions.filter((transaction, index, self) =>
         index === self.findIndex(t => t.id === transaction.id)
       );
       
-      console.log('Found', uniqueTransactions.length, 'unique transactions for NIC:', customer.nic);
-      console.log('Found', uniqueTransactions.length, 'unique transactions for NIC:', customer.nic);
+      console.log('=== FINAL RESULTS ===');
+      console.log('Found', uniqueTransactions.length, 'unique transactions for customer:', customer.name);
+      uniqueTransactions.forEach(t => {
+        console.log(`Transaction: ${t.receiptNumber || t.id} - ${t.total} - ${t.customerName}`);
+      });
       
       const orderData = uniqueTransactions.map(data => {
-        console.log('Transaction data:', data);
+        console.log('Processing transaction data:', data);
         return {
           id: data.id,
           ...data,
@@ -276,17 +321,16 @@ export default function CustomerManagement({ dateFilter }) {
         };
       });
       
-      console.log('Processed order data:', orderData);
+      console.log('Setting customer orders:', orderData.length, 'orders');
       setCustomerOrders(orderData);
+      
     } catch (error) {
       console.error('Error loading customer history:', error);
       setCustomerOrders([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleAddCustomer = async () => {
+  };  const handleAddCustomer = async () => {
     try {
       // Validate form before proceeding
       if (!validateForm()) {
@@ -420,6 +464,23 @@ export default function CustomerManagement({ dateFilter }) {
             }}
           >
             Add New Customer
+          </Button>
+          
+          {/* Debug Button */}
+          <Button
+            variant="outlined"
+            onClick={debugAllTransactions}
+            sx={{
+              ml: 2,
+              color: '#ff9800',
+              borderColor: '#ff9800',
+              '&:hover': {
+                backgroundColor: '#fff3e0',
+                borderColor: '#f57c00'
+              }
+            }}
+          >
+            Debug Transactions
           </Button>
         </Box>
         

@@ -631,10 +631,15 @@ const PharmacyPOSFirebaseIntegrated = () => {
           console.warn('Could not update patient purchase history:', error.message);
         }
       } else if (patientNIC.trim() || customerName.trim()) {
+        console.log('=== CREATING/FINDING CUSTOMER ===');
+        console.log('NIC:', patientNIC);
+        console.log('Name:', customerName);
+        
         try {
           // First, check if customer already exists by NIC
           let existingCustomer = null;
           if (patientNIC.trim()) {
+            console.log('Searching for existing customer with NIC:', patientNIC);
             const customersSnapshot = await getDocs(query(
               collection(db, 'customers'),
               where('nic', '==', patientNIC)
@@ -642,12 +647,15 @@ const PharmacyPOSFirebaseIntegrated = () => {
             if (!customersSnapshot.empty) {
               existingCustomer = { id: customersSnapshot.docs[0].id, ...customersSnapshot.docs[0].data() };
               customerId = existingCustomer.id;
-              console.log('Found existing customer:', customerId);
+              console.log('Found existing customer:', customerId, existingCustomer);
+            } else {
+              console.log('No existing customer found with NIC:', patientNIC);
             }
           }
           
           // Create customer if doesn't exist and we have required data
           if (!existingCustomer && patientNIC.trim() && customerName.trim()) {
+            console.log('Creating new customer...');
             const customerData = {
               name: customerName,
               phoneNumber: customerContact || '',
@@ -656,22 +664,28 @@ const PharmacyPOSFirebaseIntegrated = () => {
               email: '',
               address: '',
               status: 'Active',
-              createdAt: new Date()
+              createdAt: new Date(),
+              createdBy: 'POS_SYSTEM',
+              totalPurchases: 0
             };
             
             try {
               // Add to customers collection for Customer Management
               const customerRef = await addDoc(collection(db, 'customers'), customerData);
               customerId = customerRef.id;
-              console.log('Created new customer:', customerId, customerData);
+              console.log('✅ Successfully created new customer:', customerId, customerData);
+              
+              // Show success message
+              alert(`✅ New customer "${customerName}" added to system!`);
             } catch (customerError) {
-              console.error('Error creating customer:', customerError);
+              console.error('❌ Error creating customer:', customerError);
             }
           }
           
           // Check if patient already exists
           let existingPatient = null;
           if (patientNIC.trim()) {
+            console.log('Searching for existing patient with NIC:', patientNIC);
             existingPatient = await patientService.findPatientByNIC(patientNIC);
           }
           
@@ -679,7 +693,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
             patientId = existingPatient.id;
             setCurrentPatient({...existingPatient, isCustomer: true, id: customerId || existingPatient.id});
             console.log('Found existing patient:', patientId);
-          } else {
+          } else if (patientNIC.trim() && customerName.trim()) {
+            console.log('Creating new patient...');
             // Create patient record
             const newPatientData = await patientService.addPatient({
               nic: patientNIC,
@@ -689,14 +704,15 @@ const PharmacyPOSFirebaseIntegrated = () => {
               age: '',
               gender: '',
               bloodGroup: '',
-              medicalNotes: 'Auto-created during sale'
+              medicalNotes: 'Auto-created during POS sale'
             });
             patientId = newPatientData.id;
             setCurrentPatient({...newPatientData, isCustomer: true, id: customerId || newPatientData.id});
-            console.log('Created new patient:', patientId);
+            console.log('✅ Successfully created new patient:', patientId);
           }
         } catch (error) {
-          console.error('Error creating/finding patient/customer:', error);
+          console.error('❌ Error creating/finding patient/customer:', error);
+          alert(`Warning: Could not create customer record: ${error.message}`);
           // Continue with sale even if customer creation fails
         }
       }
@@ -705,6 +721,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
         patientId,
         customerId,
         customerName: customerName || 'Walk-in Customer',
+        customerNIC: patientNIC,
+        patientNIC: patientNIC,
         total
       });
       
@@ -728,20 +746,24 @@ const PharmacyPOSFirebaseIntegrated = () => {
         amountPaid: paymentMethod === 'cash' ? cashReceived : total,
         balance: balance,
         customerName: customerName || 'Walk-in Customer',
-        customerContact: customerContact,
-        patientNIC: patientNIC,
+        customerContact: customerContact || '',
+        // CRITICAL: These are the fields Customer Management searches for
+        patientNIC: patientNIC || '',
+        customerNIC: patientNIC || '', // Use same NIC for both fields for consistency
         // Only include patientId if it exists
         ...(patientId && { patientId: patientId }),
         // Add customer linking information
-        customerId: customerId,
-        customerNIC: patientNIC,
+        ...(customerId && { customerId: customerId }),
         staffName: employeeName ? `${employeeName} (${employeeId})` : `EMPLOYEE: ${employeeId}`,
         staffType: 'employee',
         employeeId: employeeId,
         slmcRegNumber: slmcRegNumber,
         invoiceNumber: invoiceNumber,
         branchId: 'MAIN-BRANCH',
-        location: 'Main Pharmacy'
+        location: 'Main Pharmacy',
+        // Add timestamps for better tracking
+        saleDate: new Date(),
+        transactionType: 'SALE'
       };
 
       console.log('About to process sale with saleData:', saleData);
