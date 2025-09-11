@@ -75,7 +75,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -739,7 +739,7 @@ export default function Finance({ dateFilter }) {
                   tick={{ fontSize: 12, fill: '#64748b' }}
                   tickFormatter={(value) => `LKR ${(value/1000).toFixed(0)}K`}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <RechartsTooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"
                   dataKey="sales"
@@ -848,7 +848,7 @@ export default function Finance({ dateFilter }) {
                   tick={{ fontSize: 10, fill: '#64748b' }}
                 />
                 <YAxis hide />
-                <Tooltip 
+                <RechartsTooltip 
                   formatter={(value) => [`LKR ${value.toLocaleString()}`, '']}
                   labelStyle={{ color: '#1e3a8a' }}
                 />
@@ -1080,7 +1080,7 @@ export default function Finance({ dateFilter }) {
                 Total Gross Pay
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {formatCurrency(employeesData.reduce((sum, emp) => sum + emp.salary, 0))}
+                {formatCurrency(employeesData.reduce((sum, emp) => sum + (emp.baseSalary || 0), 0))}
               </Typography>
             </CardContent>
           </Card>
@@ -1099,7 +1099,7 @@ export default function Finance({ dateFilter }) {
                 Net Payable
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {formatCurrency(employeesData.reduce((sum, emp) => sum + emp.salary, 0))}
+                {formatCurrency(employeesData.reduce((sum, emp) => sum + (emp.netSalary || 0), 0))}
               </Typography>
             </CardContent>
           </Card>
