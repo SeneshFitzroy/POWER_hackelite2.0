@@ -87,6 +87,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
   const [patientSuggestions, setPatientSuggestions] = useState([]);
   const [showPatientDropdown, setShowPatientDropdown] = useState(false);
   const [searchingPatients, setSearchingPatients] = useState(false);
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
   // Cart item unit types for tablets/capsules
   const [cartItemUnits, setCartItemUnits] = useState({}); // { medicineId: 'tablets' | 'cards' }
@@ -250,32 +251,30 @@ const PharmacyPOSFirebaseIntegrated = () => {
     }
   }, [medicines]);
 
-  // Handle patient NIC lookup from Firebase with dropdown suggestions
-  const handlePatientNICChange = async (nicOrPhone) => {
-    setPatientNIC(nicOrPhone);
-    
-    if (nicOrPhone.length >= 3) {
+  // Debounced patient search function
+  const debouncedPatientSearch = async (searchTerm) => {
+    if (searchTerm.length >= 3) {
       try {
         setSearchingPatients(true);
         
         // Search for patients by NIC, phone number, or name
         const allPatients = await patientService.getAllPatients();
-        const searchTerm = nicOrPhone.toLowerCase();
+        const searchTermLower = searchTerm.toLowerCase();
         
         const suggestions = allPatients.filter(patient => {
           // Search by NIC (exact or partial match)
-          if (patient.nic && patient.nic.toLowerCase().includes(searchTerm)) {
+          if (patient.nic && patient.nic.toLowerCase().includes(searchTermLower)) {
             return true;
           }
           // Search by contact/phone number
-          if (patient.contact && patient.contact.includes(nicOrPhone)) {
+          if (patient.contact && patient.contact.includes(searchTerm)) {
             return true;
           }
-          if (patient.phoneNumber && patient.phoneNumber.includes(nicOrPhone)) {
+          if (patient.phoneNumber && patient.phoneNumber.includes(searchTerm)) {
             return true;
           }
           // Search by name (partial match)
-          if (patient.name && patient.name.toLowerCase().includes(searchTerm)) {
+          if (patient.name && patient.name.toLowerCase().includes(searchTermLower)) {
             return true;
           }
           return false;
@@ -285,11 +284,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
         setShowPatientDropdown(suggestions.length > 0);
         
         // If we have an exact NIC match (10+ characters), auto-select
-        if (nicOrPhone.length >= 10) {
+        if (searchTerm.length >= 10) {
           const exactMatch = suggestions.find(p => 
-            (p.nic && p.nic === nicOrPhone) || 
-            (p.contact && p.contact === nicOrPhone) || 
-            (p.phoneNumber && p.phoneNumber === nicOrPhone)
+            (p.nic && p.nic === searchTerm) || 
+            (p.contact && p.contact === searchTerm) || 
+            (p.phoneNumber && p.phoneNumber === searchTerm)
           );
           
           if (exactMatch) {
@@ -299,7 +298,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         }
         
         // Clear current patient if no exact match and less than 10 characters
-        if (nicOrPhone.length < 10 && suggestions.length === 0) {
+        if (searchTerm.length < 10 && suggestions.length === 0) {
           setCurrentPatient(null);
           setCustomerName('');
           setCustomerContact('');
@@ -323,6 +322,23 @@ const PharmacyPOSFirebaseIntegrated = () => {
       setCustomerName('');
       setCustomerContact('');
     }
+  };
+
+  // Handle patient NIC lookup from Firebase with dropdown suggestions
+  const handlePatientNICChange = async (nicOrPhone) => {
+    setPatientNIC(nicOrPhone);
+    
+    // Clear previous timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    
+    // Set new timeout for debounced search
+    const newTimeout = setTimeout(() => {
+      debouncedPatientSearch(nicOrPhone);
+    }, 300); // 300ms debounce
+    
+    setSearchTimeout(newTimeout);
   };
 
   // Select patient from dropdown
