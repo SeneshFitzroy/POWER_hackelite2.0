@@ -253,6 +253,16 @@ export const inventoryService = {
       }));
       callback(medicines);
     });
+  },
+
+  // Delete medicine
+  deleteMedicine: async (medicineId) => {
+    try {
+      await deleteDoc(doc(db, 'medicines', medicineId));
+      return { success: true, message: 'Medicine deleted successfully' };
+    } catch (error) {
+      throw new Error(`Error deleting medicine: ${error.message}`);
+    }
   }
 };
 

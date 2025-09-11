@@ -142,9 +142,12 @@ const ReorderManagement = () => {
         await inventoryService.updateMedicine(selectedMedicine.id, editForm);
         setEditDialogOpen(false);
         setSelectedMedicine(null);
+        // Refresh data
+        await loadMedicines();
       }
     } catch (error) {
       console.error('Error updating medicine:', error);
+      alert('Error updating medicine: ' + error.message);
     }
   };
 
@@ -178,9 +181,11 @@ const ReorderManagement = () => {
         await purchaseOrderService.createPurchaseOrder(orderData);
         setPurchaseOrderDialogOpen(false);
         setSelectedMedicine(null);
+        alert('Purchase order created successfully!');
       }
     } catch (error) {
       console.error('Error creating purchase order:', error);
+      alert('Error creating purchase order: ' + error.message);
     }
   };
 
@@ -200,6 +205,7 @@ const ReorderManagement = () => {
       }
     } catch (error) {
       console.error('Error creating bulk purchase orders:', error);
+      alert('Error creating bulk orders: ' + error.message);
     }
   };
 
@@ -305,10 +311,7 @@ const ReorderManagement = () => {
             startIcon={<RefreshIcon />}
             onClick={() => {
               setLoading(true);
-              // Force reload of data
-              setTimeout(() => {
-                window.location.reload();
-              }, 100);
+              loadMedicines();
             }}
             sx={{
               background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',

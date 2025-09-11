@@ -60,8 +60,31 @@ export default function InventoryModule({
       setCurrentTime(new Date());
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, []);
+    // Listen for navigation messages
+    const handleMessage = (event) => {
+      if (event.data && event.data.type === 'navigate') {
+        const { module, tab } = event.data;
+        if (module === 'stock-tracking') {
+          setActiveTab(1); // Stock Management tab
+          if (onModuleChange) {
+            onModuleChange('stock-tracking');
+          }
+        } else if (module === 'supplier-management') {
+          setActiveTab(3); // Supplier & Orders tab
+          if (onModuleChange) {
+            onModuleChange('supplier-management');
+          }
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [onModuleChange]);
 
   // Map activeModule to tab index
   useEffect(() => {
@@ -352,7 +375,7 @@ export default function InventoryModule({
           overflow: 'auto' 
         }}>
           {activeTab === 0 && <InventoryDashboard />}
-          {activeTab === 1 && <StockTrackingEnhanced />}
+          {activeTab === 1 && <StockTrackingEnhanced onNotification={onNotification} />}
           {activeTab === 2 && <ReorderManagement />}
           {activeTab === 3 && <SupplierManagementEnhanced />}
         </Box>

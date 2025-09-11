@@ -46,13 +46,14 @@ import {
   Cancel as CancelIcon,
   TrendingDown as TrendingDownIcon,
   Add as AddIcon,
-  FilterList as FilterListIcon
+  FilterList as FilterListIcon,
+  Delete as DeleteIcon
 } from '@mui/icons-material';
 import { inventoryService } from '../../services/inventoryService';
 import { quarantineService } from '../../services/quarantineService';
 import { safeFormatDate, getExpiryStatus, getDaysUntilExpiry } from '../../utils/dateUtils';
 
-const StockTrackingEnhanced = () => {
+const StockTrackingEnhanced = ({ onNotification }) => {
   const [medicines, setMedicines] = useState([]);
   const [filteredMedicines, setFilteredMedicines] = useState([]);
   const [quarantinedMedicines, setQuarantinedMedicines] = useState([]);
@@ -147,9 +148,38 @@ const StockTrackingEnhanced = () => {
     setDetailsDialogOpen(true);
   };
 
-  const handleQuarantineAction = (medicine) => {
-    setSelectedMedicine(medicine);
-    setActionDialogOpen(true);
+  const handleQuarantineAction = async (medicine) => {
+    try {
+      if (activeTab === 4) {
+        // Release from quarantine
+        await quarantineService.releaseFromQuarantine(medicine.id, 'Manual release');
+        setActionDialogOpen(false);
+        await loadAllData();
+        alert('Medicine released from quarantine successfully');
+      } else {
+        // Quarantine medicine
+        await quarantineService.quarantineMedicine(medicine.id, 'Manual quarantine');
+        setActionDialogOpen(false);
+        await loadAllData();
+        alert('Medicine quarantined successfully');
+      }
+    } catch (error) {
+      console.error('Error handling quarantine action:', error);
+      alert('Failed to update quarantine status: ' + error.message);
+    }
+  };
+
+  const handleDeleteMedicine = async (medicine) => {
+    try {
+      if (window.confirm(`Are you sure you want to delete ${medicine.name}? This action cannot be undone.`)) {
+        await inventoryService.deleteMedicine(medicine.id);
+        await loadAllData();
+        alert('Medicine deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting medicine:', error);
+      alert('Failed to delete medicine: ' + error.message);
+    }
   };
 
   const getStockStatus = (medicine) => {
@@ -355,7 +385,6 @@ const StockTrackingEnhanced = () => {
                   <MenuItem value="all">All Status</MenuItem>
                   <MenuItem value="active">Active</MenuItem>
                   <MenuItem value="inactive">Inactive</MenuItem>
-                  <MenuItem value="expired">Expired</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -567,16 +596,29 @@ const StockTrackingEnhanced = () => {
                               <ViewIcon />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Quarantine">
+                          <Tooltip title={activeTab === 4 ? "Release from Quarantine" : "Quarantine"}>
                             <IconButton 
                               size="small" 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleQuarantineAction(medicine);
+                                setSelectedMedicine(medicine);
+                                setActionDialogOpen(true);
+                              }}
+                              sx={{ color: activeTab === 4 ? '#059669' : '#dc2626' }}
+                            >
+                              {activeTab === 4 ? <CheckCircleIcon /> : <BlockIcon />}
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton 
+                              size="small" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteMedicine(medicine);
                               }}
                               sx={{ color: '#dc2626' }}
                             >
-                              <BlockIcon />
+                              <DeleteIcon />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Edit">
@@ -654,13 +696,18 @@ const StockTrackingEnhanced = () => {
 
       {/* Action Dialog */}
       <Dialog open={actionDialogOpen} onClose={() => setActionDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Quarantine Action</DialogTitle>
+        <DialogTitle>
+          {activeTab === 4 ? 'Release from Quarantine' : 'Quarantine Medicine'}
+        </DialogTitle>
         <DialogContent>
           <Typography variant="body1" sx={{ mb: 2 }}>
-            Are you sure you want to quarantine this medicine?
+            {activeTab === 4 
+              ? 'Are you sure you want to release this medicine from quarantine?'
+              : 'Are you sure you want to quarantine this medicine?'
+            }
           </Typography>
           {selectedMedicine && (
-            <Alert severity="warning">
+            <Alert severity={activeTab === 4 ? "info" : "warning"}>
               <Typography variant="subtitle2">{selectedMedicine.name}</Typography>
               <Typography variant="body2">Batch: {selectedMedicine.batchNumber || 'N/A'}</Typography>
               <Typography variant="body2">Stock: {selectedMedicine.stockQuantity || 0} units</Typography>
@@ -670,14 +717,11 @@ const StockTrackingEnhanced = () => {
         <DialogActions>
           <Button onClick={() => setActionDialogOpen(false)}>Cancel</Button>
           <Button 
-            onClick={() => {
-              // Handle quarantine action
-              setActionDialogOpen(false);
-            }} 
+            onClick={() => handleQuarantineAction(selectedMedicine)} 
             variant="contained" 
-            color="error"
+            color={activeTab === 4 ? "success" : "error"}
           >
-            Quarantine
+            {activeTab === 4 ? 'Release' : 'Quarantine'}
           </Button>
         </DialogActions>
       </Dialog>

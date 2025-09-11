@@ -32,7 +32,8 @@ import {
   Tab,
   Badge,
   Divider,
-  Fab
+  Fab,
+  TextField
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -125,6 +126,7 @@ const SupplierManagementEnhanced = () => {
         } else { // Purchase Orders/History
           return item.orderNumber?.toLowerCase().includes(searchLower) ||
                  item.supplierName?.toLowerCase().includes(searchLower) ||
+                 item.supplier?.toLowerCase().includes(searchLower) ||
                  item.status?.toLowerCase().includes(searchLower);
         }
       });
@@ -696,21 +698,106 @@ const SupplierManagementEnhanced = () => {
         <DialogTitle>
           Add New {activeTab === 0 ? 'Supplier' : activeTab === 1 ? 'Purchase Order' : 'Record'}
         </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            Add new {activeTab === 0 ? 'supplier' : activeTab === 1 ? 'purchase order' : 'record'} functionality will be implemented here.
-          </Typography>
+        <DialogContent sx={{ pt: 2 }}>
+          {activeTab === 0 ? (
+            // Add Supplier Form
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <TextField
+                fullWidth
+                label="Supplier Name *"
+                variant="outlined"
+                required
+                placeholder="Enter supplier name"
+              />
+              <TextField
+                fullWidth
+                label="Contact Person"
+                variant="outlined"
+                placeholder="Enter contact person name"
+              />
+              <TextField
+                fullWidth
+                label="Email Address"
+                variant="outlined"
+                type="email"
+                placeholder="Enter email address"
+              />
+              <TextField
+                fullWidth
+                label="Phone Number"
+                variant="outlined"
+                placeholder="Enter phone number"
+              />
+              <TextField
+                fullWidth
+                label="Address"
+                variant="outlined"
+                multiline
+                rows={3}
+                placeholder="Enter complete address"
+              />
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select defaultValue="active" label="Status">
+                  <MenuItem value="active">Active</MenuItem>
+                  <MenuItem value="inactive">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          ) : activeTab === 1 ? (
+            // Add Purchase Order Form
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <FormControl fullWidth required>
+                <InputLabel>Supplier *</InputLabel>
+                <Select label="Supplier *">
+                  {suppliers.map((supplier) => (
+                    <MenuItem key={supplier.id} value={supplier.id}>
+                      {supplier.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                fullWidth
+                label="Order Number"
+                variant="outlined"
+                placeholder="Auto-generated if left empty"
+              />
+              <TextField
+                fullWidth
+                label="Total Amount *"
+                variant="outlined"
+                type="number"
+                required
+                placeholder="Enter total amount"
+              />
+              <TextField
+                fullWidth
+                label="Notes"
+                variant="outlined"
+                multiline
+                rows={3}
+                placeholder="Enter order notes"
+              />
+            </Box>
+          ) : (
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              Purchase history records are automatically generated from completed orders.
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
           <Button 
             onClick={() => {
               // Handle add action
+              alert(`${activeTab === 0 ? 'Supplier' : activeTab === 1 ? 'Purchase Order' : 'Record'} functionality will be implemented`);
               setAddDialogOpen(false);
             }} 
             variant="contained"
+            disabled={activeTab === 2}
           >
-            Add
+            {activeTab === 2 ? 'Not Available' : 'Add'}
           </Button>
         </DialogActions>
       </Dialog>

@@ -410,12 +410,28 @@ const InventoryDashboard = () => {
         <Grid item xs={12}>
           <LowStockDashboardWidget 
             onViewAll={() => {
-              // This would navigate to the reorder management tab
-              console.log('Navigate to reorder management');
+              // Navigate to Stock Management Low Stock tab
+              if (window.parent && window.parent.postMessage) {
+                window.parent.postMessage({ 
+                  type: 'navigate', 
+                  module: 'stock-tracking',
+                  tab: 1 // Low Stock tab
+                }, '*');
+              }
+              // Also try direct navigation
+              if (window.location.hash) {
+                window.location.hash = '#stock-management';
+              }
             }}
             onCreateOrder={() => {
-              // This would navigate to create purchase orders
-              console.log('Navigate to create purchase orders');
+              // Navigate to Purchase Orders
+              if (window.parent && window.parent.postMessage) {
+                window.parent.postMessage({ 
+                  type: 'navigate', 
+                  module: 'supplier-management',
+                  tab: 1 // Purchase Orders tab
+                }, '*');
+              }
             }}
           />
         </Grid>

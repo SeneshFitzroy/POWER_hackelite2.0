@@ -226,7 +226,21 @@ const LowStockDashboardWidget = ({ onViewAll, onCreateOrder }) => {
             <Button
               size="small"
               variant="outlined"
-              onClick={onViewAll}
+              onClick={() => {
+                // Navigate to Stock Management -> Low Stock tab
+                if (onViewAll) {
+                  onViewAll();
+                } else {
+                  // Fallback navigation using module change
+                  if (window.parent && window.parent.postMessage) {
+                    window.parent.postMessage({ 
+                      type: 'navigate', 
+                      module: 'stock-tracking',
+                      tab: 1 // Low Stock tab
+                    }, '*');
+                  }
+                }
+              }}
               sx={{ textTransform: 'none' }}
             >
               View All
