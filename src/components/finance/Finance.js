@@ -293,22 +293,15 @@ export default function Finance({ dateFilter }) {
     return Object.values(monthData).slice(-6); // Last 6 months
   };
 
-  // PayPal Sandbox Integration with Website Redirection
+  // PayPal Sandbox Integration - Direct Payment
   const processPayPalPayment = async (amount, recipient, type = 'employee', recipientName = '') => {
     try {
       setPaymentProcessing(true);
-      
-      // Show notification that PayPal is opening
-      setSnackbar({
-        open: true,
-        message: `Opening PayPal Sandbox for ${type} payment of LKR ${amount.toLocaleString()} to ${recipientName}...`,
-        severity: 'info'
-      });
 
       // Create PayPal payment data
       const paymentData = {
         amount: amount,
-        currency: 'USD', // PayPal sandbox typically uses USD
+        currency: 'USD',
         recipient: recipient,
         recipientName: recipientName,
         type: type,
@@ -317,19 +310,18 @@ export default function Finance({ dateFilter }) {
         status: 'initiated'
       };
 
-      // Convert LKR to USD for PayPal (approximate rate: 1 USD = 300 LKR)
+      // Convert LKR to USD for PayPal (1 USD = 300 LKR)
       const usdAmount = (amount / 300).toFixed(2);
 
       // PayPal Sandbox URL with payment parameters
       const paypalSandboxUrl = new URL('https://www.sandbox.paypal.com/cgi-bin/webscr');
       paypalSandboxUrl.searchParams.append('cmd', '_xclick');
-      paypalSandboxUrl.searchParams.append('business', 'sb-merchant@sandbox.paypal.com'); // Sandbox merchant email
+      paypalSandboxUrl.searchParams.append('business', 'sb-merchant@sandbox.paypal.com');
       paypalSandboxUrl.searchParams.append('item_name', `${type === 'employee' ? 'Salary Payment' : 'Bill Payment'} - ${recipientName}`);
       paypalSandboxUrl.searchParams.append('amount', usdAmount);
       paypalSandboxUrl.searchParams.append('currency_code', 'USD');
       paypalSandboxUrl.searchParams.append('return', window.location.origin + '/payment-success');
       paypalSandboxUrl.searchParams.append('cancel_return', window.location.origin + '/payment-cancelled');
-      paypalSandboxUrl.searchParams.append('notify_url', window.location.origin + '/paypal-ipn');
       paypalSandboxUrl.searchParams.append('custom', JSON.stringify({
         originalAmount: amount,
         currency: 'LKR',
@@ -338,12 +330,8 @@ export default function Finance({ dateFilter }) {
         transactionId: paymentData.paypal_transaction_id
       }));
 
-      // Open PayPal in new window/tab
-      const paypalWindow = window.open(
-        paypalSandboxUrl.toString(),
-        'paypal_payment',
-        'width=800,height=600,scrollbars=yes,resizable=yes'
-      );
+      // Directly redirect to PayPal Sandbox
+      window.open(paypalSandboxUrl.toString(), '_blank');
 
       // Check if popup was blocked
       if (!paypalWindow) {
@@ -390,10 +378,9 @@ export default function Finance({ dateFilter }) {
       console.error('PayPal payment failed:', error);
       setSnackbar({
         open: true,
-        message: 'Failed to open PayPal. Please try again.',
+        message: 'PayPal payment failed. Please try again.',
         severity: 'error'
       });
-      throw error;
     } finally {
       setPaymentProcessing(false);
     }
@@ -961,51 +948,6 @@ export default function Finance({ dateFilter }) {
 
   const renderBills = () => (
     <Box>
-      {/* PayPal Integration Info */}
-      <Paper
-        sx={{
-          borderRadius: '16px',
-          border: '1px solid #e2e8f0',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          mb: 4
-        }}
-      >
-        <Box sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Payment sx={{ fontSize: '24px', color: '#1e3a8a', mr: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
-              PayPal Sandbox Integration
-            </Typography>
-          </Box>
-          <Alert severity="info" sx={{ mb: 2 }}>
-            <Typography variant="body2">
-              <strong>PayPal Sandbox Mode:</strong> All payments will redirect to PayPal Sandbox for testing. 
-              Use PayPal sandbox test accounts for transactions. Currency conversion: LKR to USD (1 USD ≈ 300 LKR)
-            </Typography>
-          </Alert>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Chip 
-              label="Sandbox Environment" 
-              color="warning" 
-              variant="outlined"
-              sx={{ fontWeight: 'bold' }}
-            />
-            <Chip 
-              label="Test Payments Only" 
-              color="info" 
-              variant="outlined"
-              sx={{ fontWeight: 'bold' }}
-            />
-            <Chip 
-              label="Auto Currency Conversion" 
-              color="success" 
-              variant="outlined"
-              sx={{ fontWeight: 'bold' }}
-            />
-          </Box>
-        </Box>
-      </Paper>
-
       {/* Bills Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={4}>

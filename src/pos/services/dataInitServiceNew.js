@@ -853,6 +853,22 @@ export const initializeSampleData = async () => {
     // Sample Patients - Sri Lankan example data
     const samplePatients = [
       {
+        name: 'Amal Rajapaksa',
+        nic: '201223456789',
+        contact: '0771234567',
+        phoneNumber: '0771234567',
+        age: '13',
+        address: 'No. 45, Galle Road, Colombo 03',
+        gender: 'Male',
+        bloodGroup: 'O+',
+        medicalNotes: 'No known allergies',
+        dateOfBirth: '2012-05-15',
+        totalPurchases: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastVisit: serverTimestamp()
+      },
+      {
         name: 'Kumara Perera',
         nic: '200123456789',
         contact: '0771234567',

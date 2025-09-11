@@ -33,6 +33,8 @@ import { medicineService } from '../services/medicineService';
 import { transactionService } from '../services/transactionService';
 import { patientService } from '../services/patientService';
 import { initializeSampleData } from '../services/dataInitServiceNew';
+import { db } from '../../firebase/config';
+import { collection, getDocs } from 'firebase/firestore';
 
 const PharmacyPOSFirebaseIntegrated = () => {
   const navigate = useNavigate();
@@ -251,30 +253,48 @@ const PharmacyPOSFirebaseIntegrated = () => {
     }
   }, [medicines]);
 
-  // Debounced patient search function
+  // Debounced patient search function - now includes customers
   const debouncedPatientSearch = async (searchTerm) => {
     if (searchTerm.length >= 3) {
       try {
         setSearchingPatients(true);
         
-        // Search for patients by NIC, phone number, or name
+        // Search for patients from patients collection
         const allPatients = await patientService.getAllPatients();
+        
+        // Search for customers from customers collection
+        const customersSnapshot = await getDocs(collection(db, 'customers'));
+        const allCustomers = customersSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          // Map customer fields to patient fields for consistency
+          name: doc.data().name,
+          contact: doc.data().phoneNumber,
+          phoneNumber: doc.data().phoneNumber,
+          nic: doc.data().nic,
+          age: doc.data().age,
+          address: doc.data().address,
+          isCustomer: true // Flag to identify customers
+        }));
+        
+        // Combine patients and customers
+        const allPeople = [...allPatients, ...allCustomers];
         const searchTermLower = searchTerm.toLowerCase();
         
-        const suggestions = allPatients.filter(patient => {
+        const suggestions = allPeople.filter(person => {
           // Search by NIC (exact or partial match)
-          if (patient.nic && patient.nic.toLowerCase().includes(searchTermLower)) {
+          if (person.nic && person.nic.toLowerCase().includes(searchTermLower)) {
             return true;
           }
           // Search by contact/phone number
-          if (patient.contact && patient.contact.includes(searchTerm)) {
+          if (person.contact && person.contact.includes(searchTerm)) {
             return true;
           }
-          if (patient.phoneNumber && patient.phoneNumber.includes(searchTerm)) {
+          if (person.phoneNumber && person.phoneNumber.includes(searchTerm)) {
             return true;
           }
           // Search by name (partial match)
-          if (patient.name && patient.name.toLowerCase().includes(searchTermLower)) {
+          if (person.name && person.name.toLowerCase().includes(searchTermLower)) {
             return true;
           }
           return false;
@@ -305,7 +325,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         }
         
       } catch (error) {
-        console.error('Error searching patients:', error);
+        console.error('Error searching patients/customers:', error);
         setPatientSuggestions([]);
         setShowPatientDropdown(false);
         setCurrentPatient(null);
@@ -913,7 +933,10 @@ const PharmacyPOSFirebaseIntegrated = () => {
                     return (
                       <Box
                         key={patient.id}
-                        onClick={() => selectPatientFromDropdown(patient)}
+                        onClick={() => {
+                          console.log('Dropdown item clicked:', patient);
+                          selectPatientFromDropdown(patient);
+                        }}
                         sx={{
                           p: 2,
                           cursor: 'pointer',
@@ -1059,55 +1082,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               </Box>
             )}
 
-            {/* Customer Name and Contact Fields */}
-            <Box sx={{ display: 'flex', gap: 1, mt: 1.5 }}>
-              <TextField
-                fullWidth
-                label="Customer Name"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Customer name (auto-filled from patient selection)"
-                size="small"
-                InputProps={{
-                  endAdornment: customerName && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-                      <Typography variant="caption" color="#4caf50">✓</Typography>
-                    </Box>
-                  )
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 1,
-                    backgroundColor: currentPatient ? '#f0f9ff' : '#ffffff',
-                    '&:hover fieldset': { borderColor: '#1976d2' },
-                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
-                  }
-                }}
-              />
-              <TextField
-                fullWidth
-                label="Contact Number"
-                value={customerContact}
-                onChange={(e) => setCustomerContact(e.target.value)}
-                placeholder="Contact number (auto-filled from patient selection)"
-                size="small"
-                InputProps={{
-                  endAdornment: customerContact && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-                      <Typography variant="caption" color="#4caf50">✓</Typography>
-                    </Box>
-                  )
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 1,
-                    backgroundColor: currentPatient ? '#f0f9ff' : '#ffffff',
-                    '&:hover fieldset': { borderColor: '#1976d2' },
-                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
-                  }
-                }}
-              />
-            </Box>
+
 
             {/* SLMC REG NUMBER - COMPACT */}
             <TextField
