@@ -483,25 +483,8 @@ export default function CustomerManagement({ dateFilter }) {
               Add New Customer
             </Button>
           </Box>
-          
-          {/* Debug Button */}
-          <Button
-            variant="outlined"
-            onClick={debugAllTransactions}
-            sx={{
-              ml: 2,
-              color: '#ff9800',
-              borderColor: '#ff9800',
-              '&:hover': {
-                backgroundColor: '#fff3e0',
-                borderColor: '#f57c00'
-              }
-            }}
-          >
-            Debug Transactions
-          </Button>
         </Box>
-        
+
         <TextField
           fullWidth
           placeholder="Search customers by name, phone, NIC, or email..."
