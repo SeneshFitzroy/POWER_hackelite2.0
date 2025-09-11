@@ -129,9 +129,9 @@ const ReorderManagement = () => {
   const handleEditClick = (medicine) => {
     setSelectedMedicine(medicine);
     setEditForm({
-      minStockLevel: medicine.minStockLevel || 10,
-      reorderPoint: medicine.reorderPoint || 20,
-      maxStockLevel: medicine.maxStockLevel || 100
+      minStockLevel: medicine.minStockLevel || 5,
+      reorderPoint: medicine.reorderPoint || (medicine.minStockLevel ? medicine.minStockLevel * 2 : 10),
+      maxStockLevel: medicine.maxStockLevel || (medicine.minStockLevel ? medicine.minStockLevel * 10 : 50)
     });
     setEditDialogOpen(true);
   };
@@ -139,11 +139,16 @@ const ReorderManagement = () => {
   const handleEditSave = async () => {
     try {
       if (selectedMedicine) {
-        await inventoryService.updateMedicine(selectedMedicine.id, editForm);
+        await inventoryService.updateMedicine(selectedMedicine.id, {
+          ...selectedMedicine,
+          minStockLevel: editForm.minStockLevel,
+          reorderPoint: editForm.reorderPoint,
+          maxStockLevel: editForm.maxStockLevel
+        });
         setEditDialogOpen(false);
         setSelectedMedicine(null);
-        // Refresh data
-        await loadMedicines();
+        // Data will refresh automatically via subscription
+        alert('Stock levels updated successfully!');
       }
     } catch (error) {
       console.error('Error updating medicine:', error);
@@ -311,7 +316,8 @@ const ReorderManagement = () => {
             startIcon={<RefreshIcon />}
             onClick={() => {
               setLoading(true);
-              loadMedicines();
+              // Data refreshes automatically via subscriptions
+              setTimeout(() => setLoading(false), 1000);
             }}
             sx={{
               background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',

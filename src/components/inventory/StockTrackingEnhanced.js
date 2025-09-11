@@ -210,9 +210,9 @@ const StockTrackingEnhanced = ({ onNotification }) => {
     setSelectedMedicine(medicine);
     setEditForm({
       stockQuantity: medicine.stockQuantity || 0,
-      minStockLevel: medicine.minStockLevel || 10,
-      reorderPoint: medicine.reorderPoint || 20,
-      maxStockLevel: medicine.maxStockLevel || 100,
+      minStockLevel: medicine.minStockLevel || 5,
+      reorderPoint: medicine.reorderPoint || (medicine.minStockLevel ? medicine.minStockLevel * 2 : 10),
+      maxStockLevel: medicine.maxStockLevel || (medicine.minStockLevel ? medicine.minStockLevel * 10 : 50),
       costPrice: medicine.costPrice || 0,
       sellingPrice: medicine.sellingPrice || 0
     });
