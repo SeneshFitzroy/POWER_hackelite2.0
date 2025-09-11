@@ -1754,6 +1754,45 @@ const PharmacyPOSFirebaseIntegrated = () => {
               >
                 {loading ? 'PROCESSING...' : 'COMPLETE SALE'}
               </Button>
+              
+              {/* DEBUG: Test Receipt Button */}
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  console.log('Force showing receipt. Current states:', {
+                    showReceipt,
+                    lastTransaction
+                  });
+                  if (!lastTransaction) {
+                    // Create a test transaction
+                    const testTransaction = {
+                      id: 'TEST-001',
+                      invoiceNumber: 'TEST-001',
+                      receiptNumber: 'RCP-TEST-001',
+                      staffName: 'Test Staff',
+                      customerName: 'Test Customer',
+                      items: [
+                        {
+                          name: 'Test Medicine',
+                          quantity: 1,
+                          totalPrice: 100,
+                          unitPrice: 100
+                        }
+                      ],
+                      subtotal: 100,
+                      total: 100,
+                      netTotal: 100,
+                      paymentMethod: 'cash',
+                      createdAt: new Date()
+                    };
+                    setLastTransaction(testTransaction);
+                  }
+                  setShowReceipt(true);
+                }}
+                sx={{ mt: 1 }}
+              >
+                Test Receipt
+              </Button>
             </Box>
           </Paper>
         </Box>
