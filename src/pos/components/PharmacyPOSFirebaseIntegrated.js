@@ -35,7 +35,7 @@ import { patientService } from '../services/patientService';
 import { employeeService } from '../../services/employeeService';
 import { initializeSampleData } from '../services/dataInitServiceNew';
 import { db } from '../../firebase/config';
-import { collection, getDocs, addDoc, query, where } from 'firebase/firestore';
+import { collection, getDocs, addDoc, query, where, doc, getDoc } from 'firebase/firestore';
 
 const PharmacyPOSFirebaseIntegrated = () => {
   const navigate = useNavigate();
@@ -703,12 +703,16 @@ const PharmacyPOSFirebaseIntegrated = () => {
             } else {
               console.warn('⚠️ Current patient document does not exist in database, clearing selection');
               setCurrentPatient(null);
+              setPatientNIC('');
+              setCustomerName('');
               alert('The selected patient no longer exists in the system. Please select a different patient or create a new one.');
               return; // Exit the sale process
             }
           } catch (error) {
             console.warn('❌ Error validating patient, clearing selection:', error.message);
             setCurrentPatient(null);
+            setPatientNIC('');
+            setCustomerName('');
             alert('Error validating patient data. Please select a different patient or create a new one.');
             return; // Exit the sale process
           }
