@@ -560,7 +560,7 @@ const SupplierManagementEnhanced = () => {
                       </TableCell>
                       <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                         <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                          ${item.totalAmount || '0.00'}
+                          LKR {item.totalAmount || '0.00'}
                         </Typography>
                       </TableCell>
                       <TableCell sx={{ p: { xs: 1, md: 2 } }}>
@@ -671,7 +671,7 @@ const SupplierManagementEnhanced = () => {
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle2" color="text.secondary">Total Amount</Typography>
                     <Typography variant="h6" sx={{ mb: 2, color: '#059669' }}>
-                      ${selectedItem.totalAmount || '0.00'}
+                      LKR {selectedItem.totalAmount || '0.00'}
                     </Typography>
                     
                     <Typography variant="subtitle2" color="text.secondary">Status</Typography>
@@ -764,11 +764,11 @@ const SupplierManagementEnhanced = () => {
               />
               <TextField
                 fullWidth
-                label="Total Amount *"
+                label="Total Amount (LKR) *"
                 variant="outlined"
                 type="number"
                 required
-                placeholder="Enter total amount"
+                placeholder="Enter total amount in LKR"
               />
               <TextField
                 fullWidth

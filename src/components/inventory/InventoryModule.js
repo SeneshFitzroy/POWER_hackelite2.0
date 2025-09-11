@@ -66,6 +66,10 @@ export default function InventoryModule({
         const { module, tab } = event.data;
         if (module === 'stock-tracking') {
           setActiveTab(1); // Stock Management tab
+          // Set the internal tab for StockTrackingEnhanced
+          if (window.stockTrackingRef && window.stockTrackingRef.setActiveTab) {
+            window.stockTrackingRef.setActiveTab(tab || 1); // Default to Low Stock tab
+          }
           if (onModuleChange) {
             onModuleChange('stock-tracking');
           }

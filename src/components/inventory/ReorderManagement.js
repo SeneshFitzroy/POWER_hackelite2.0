@@ -560,6 +560,7 @@ const ReorderManagement = () => {
                           <IconButton 
                             size="small" 
                             onClick={(e) => {
+                              e.preventDefault();
                               e.stopPropagation();
                               handleEditClick(medicine);
                             }}
@@ -572,6 +573,7 @@ const ReorderManagement = () => {
                           <IconButton 
                             size="small" 
                             onClick={(e) => {
+                              e.preventDefault();
                               e.stopPropagation();
                               handleCreatePurchaseOrder(medicine);
                             }}
@@ -584,6 +586,7 @@ const ReorderManagement = () => {
                           <IconButton 
                             size="small" 
                             onClick={(e) => {
+                              e.preventDefault();
                               e.stopPropagation();
                               handleViewDetails(medicine);
                             }}

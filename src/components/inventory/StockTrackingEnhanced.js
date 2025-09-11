@@ -64,11 +64,32 @@ const StockTrackingEnhanced = ({ onNotification }) => {
   const [selectedMedicine, setSelectedMedicine] = useState(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [actionDialogOpen, setActionDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    stockQuantity: 0,
+    minStockLevel: 0,
+    reorderPoint: 0,
+    maxStockLevel: 0,
+    costPrice: 0,
+    sellingPrice: 0
+  });
   const [lowStockThreshold, setLowStockThreshold] = useState(10);
 
   // Load data
   useEffect(() => {
     loadAllData();
+    
+    // Expose setActiveTab function globally for navigation
+    window.stockTrackingRef = {
+      setActiveTab: (tab) => {
+        setActiveTab(tab);
+      }
+    };
+    
+    return () => {
+      // Cleanup
+      delete window.stockTrackingRef;
+    };
   }, []);
 
   const loadAllData = async () => {
@@ -120,14 +141,17 @@ const StockTrackingEnhanced = ({ onNotification }) => {
         break;
     }
 
-    // Apply search filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    // Apply search filter (enhanced search)
+    if (searchTerm && searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(medicine =>
         medicine.name?.toLowerCase().includes(searchLower) ||
         medicine.batchNumber?.toLowerCase().includes(searchLower) ||
         medicine.manufacturer?.toLowerCase().includes(searchLower) ||
-        medicine.rackLocation?.toLowerCase().includes(searchLower)
+        medicine.rackLocation?.toLowerCase().includes(searchLower) ||
+        medicine.vendor?.toLowerCase().includes(searchLower) ||
+        medicine.category?.toLowerCase().includes(searchLower) ||
+        medicine.genericName?.toLowerCase().includes(searchLower)
       );
     }
 
@@ -179,6 +203,32 @@ const StockTrackingEnhanced = ({ onNotification }) => {
     } catch (error) {
       console.error('Error deleting medicine:', error);
       alert('Failed to delete medicine: ' + error.message);
+    }
+  };
+
+  const handleEditMedicine = (medicine) => {
+    setSelectedMedicine(medicine);
+    setEditForm({
+      stockQuantity: medicine.stockQuantity || 0,
+      minStockLevel: medicine.minStockLevel || 10,
+      reorderPoint: medicine.reorderPoint || 20,
+      maxStockLevel: medicine.maxStockLevel || 100,
+      costPrice: medicine.costPrice || 0,
+      sellingPrice: medicine.sellingPrice || 0
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleEditSave = async () => {
+    try {
+      await inventoryService.updateMedicine(selectedMedicine.id, editForm);
+      setEditDialogOpen(false);
+      setSelectedMedicine(null);
+      await loadAllData();
+      alert('Medicine updated successfully');
+    } catch (error) {
+      console.error('Error updating medicine:', error);
+      alert('Failed to update medicine: ' + error.message);
     }
   };
 
@@ -348,64 +398,113 @@ const StockTrackingEnhanced = ({ onNotification }) => {
       </Card>
 
       {/* Filters */}
-      <Card sx={{ mb: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-          <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                placeholder="Search medicines..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                size="small"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    backgroundColor: '#f8fafc'
-                  }
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Status Filter</InputLabel>
-                <Select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  label="Status Filter"
-                  sx={{ borderRadius: '10px' }}
-                >
-                  <MenuItem value="all">All Status</MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="inactive">Inactive</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: { xs: 'center', md: 'flex-end' } }}>
-                <Chip 
-                  icon={<FilterListIcon />}
-                  label={`${filteredMedicines.length} Items`}
-                  color="primary"
-                  sx={{ fontWeight: 'bold' }}
+      {activeTab !== 4 && (
+        <Card sx={{ mb: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+            <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center">
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  placeholder="Search medicines..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  size="small"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      backgroundColor: '#f8fafc'
+                    }
+                  }}
                 />
-              </Box>
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Status Filter</InputLabel>
+                  <Select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    label="Status Filter"
+                    sx={{ borderRadius: '10px' }}
+                  >
+                    <MenuItem value="all">All Status</MenuItem>
+                    <MenuItem value="active">Active</MenuItem>
+                    <MenuItem value="inactive">Inactive</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: { xs: 'center', md: 'flex-end' } }}>
+                  <Chip 
+                    icon={<FilterListIcon />}
+                    label={`${filteredMedicines.length} Items`}
+                    color="primary"
+                    sx={{ fontWeight: 'bold' }}
+                  />
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main Table */}
       {activeTab === 4 ? (
         // Quarantined Stock View
-        <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+        <Box>
+          {/* Simple search for quarantined items */}
+          <Card sx={{ mb: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+              <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center">
+                <Grid item xs={12} md={8}>
+                  <TextField
+                    fullWidth
+                    placeholder="Search quarantined medicines..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    size="small"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '10px',
+                        backgroundColor: '#f8fafc'
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Box sx={{ display: 'flex', gap: 2, justifyContent: { xs: 'center', md: 'flex-end' } }}>
+                    <Chip 
+                      icon={<FilterListIcon />}
+                      label={`${quarantinedMedicines.filter(q => {
+                        if (!searchTerm) return true;
+                        const searchLower = searchTerm.toLowerCase();
+                        return q.name?.toLowerCase().includes(searchLower) ||
+                               q.batchNumber?.toLowerCase().includes(searchLower) ||
+                               q.manufacturer?.toLowerCase().includes(searchLower);
+                      }).length} Items`}
+                      color="error"
+                      sx={{ fontWeight: 'bold' }}
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+          
+          <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#dc2626' }}>
               Quarantined Stock
@@ -423,7 +522,13 @@ const StockTrackingEnhanced = ({ onNotification }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {quarantinedMedicines.map((medicine) => (
+                  {quarantinedMedicines.filter(q => {
+                    if (!searchTerm) return true;
+                    const searchLower = searchTerm.toLowerCase();
+                    return q.name?.toLowerCase().includes(searchLower) ||
+                           q.batchNumber?.toLowerCase().includes(searchLower) ||
+                           q.manufacturer?.toLowerCase().includes(searchLower);
+                  }).map((medicine) => (
                     <TableRow 
                       key={medicine.id}
                       sx={{ '&:hover': { backgroundColor: '#fef2f2' } }}
@@ -487,19 +592,26 @@ const StockTrackingEnhanced = ({ onNotification }) => {
                 </TableBody>
               </Table>
             </TableContainer>
-            {quarantinedMedicines.length === 0 && (
+            {quarantinedMedicines.filter(q => {
+              if (!searchTerm) return true;
+              const searchLower = searchTerm.toLowerCase();
+              return q.name?.toLowerCase().includes(searchLower) ||
+                     q.batchNumber?.toLowerCase().includes(searchLower) ||
+                     q.manufacturer?.toLowerCase().includes(searchLower);
+            }).length === 0 && (
               <Box sx={{ textAlign: 'center', py: 6 }}>
                 <CheckCircleIcon sx={{ fontSize: 64, color: '#9ca3af', mb: 2 }} />
                 <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                  No Quarantined Stock
+                  No Quarantined Stock Found
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  All medicines are currently cleared for use
+                  {searchTerm ? 'No items match your search criteria' : 'All medicines are currently cleared for use'}
                 </Typography>
               </Box>
             )}
           </CardContent>
         </Card>
+        </Box>
       ) : (
         // Regular Stock View
         <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
@@ -626,7 +738,7 @@ const StockTrackingEnhanced = ({ onNotification }) => {
                               size="small" 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Edit functionality
+                                handleEditMedicine(medicine);
                               }}
                               sx={{ color: '#6b7280' }}
                             >
@@ -723,6 +835,86 @@ const StockTrackingEnhanced = ({ onNotification }) => {
           >
             {activeTab === 4 ? 'Release' : 'Quarantine'}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Edit Medicine</DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          {selectedMedicine && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2, color: '#1e3a8a' }}>
+                {selectedMedicine.name}
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Stock Quantity"
+                    type="number"
+                    value={editForm.stockQuantity}
+                    onChange={(e) => setEditForm({...editForm, stockQuantity: parseInt(e.target.value) || 0})}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Min Stock Level"
+                    type="number"
+                    value={editForm.minStockLevel}
+                    onChange={(e) => setEditForm({...editForm, minStockLevel: parseInt(e.target.value) || 0})}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Reorder Point"
+                    type="number"
+                    value={editForm.reorderPoint}
+                    onChange={(e) => setEditForm({...editForm, reorderPoint: parseInt(e.target.value) || 0})}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Max Stock Level"
+                    type="number"
+                    value={editForm.maxStockLevel}
+                    onChange={(e) => setEditForm({...editForm, maxStockLevel: parseInt(e.target.value) || 0})}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Cost Price (LKR)"
+                    type="number"
+                    value={editForm.costPrice}
+                    onChange={(e) => setEditForm({...editForm, costPrice: parseFloat(e.target.value) || 0})}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Selling Price (LKR)"
+                    type="number"
+                    value={editForm.sellingPrice}
+                    onChange={(e) => setEditForm({...editForm, sellingPrice: parseFloat(e.target.value) || 0})}
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleEditSave} variant="contained">Save Changes</Button>
         </DialogActions>
       </Dialog>
     </Box>
