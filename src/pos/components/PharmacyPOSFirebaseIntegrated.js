@@ -35,7 +35,7 @@ import { patientService } from '../services/patientService';
 import { employeeService } from '../../services/employeeService';
 import { initializeSampleData } from '../services/dataInitServiceNew';
 import { db } from '../../firebase/config';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, addDoc, query, where } from 'firebase/firestore';
 
 const PharmacyPOSFirebaseIntegrated = () => {
   const navigate = useNavigate();
@@ -615,29 +615,99 @@ const PharmacyPOSFirebaseIntegrated = () => {
     try {
       setLoading(true);
       
-      // Handle patient data if exists
+      console.log('=== PROCESSING SALE DEBUG ===');
+      console.log('currentPatient:', currentPatient);
+      console.log('patientNIC:', patientNIC);
+      console.log('customerName:', customerName);
+      
+      // Handle patient/customer creation and linking
       let patientId = null;
+      let customerId = null;
+      
       if (currentPatient) {
         patientId = currentPatient.id;
-        await patientService.updatePurchaseHistory(patientId, total);
-      } else if (patientNIC.trim()) {
+        customerId = currentPatient.isCustomer ? currentPatient.id : null;
+        // Only update if patient exists in database
         try {
-          const newPatientData = await patientService.addPatient({
-            nic: patientNIC,
-            name: customerName || 'Walk-in Customer',
-            contact: customerContact || '',
-            address: '',
-            age: '',
-            gender: '',
-            bloodGroup: '',
-            medicalNotes: 'Auto-created during sale'
-          });
-          patientId = newPatientData.id;
-          setCurrentPatient(newPatientData);
+          await patientService.updatePurchaseHistory(patientId, total);
         } catch (error) {
-          console.error('Error creating patient:', error);
+          console.warn('Could not update patient purchase history:', error.message);
+        }
+      } else if (patientNIC.trim() || customerName.trim()) {
+        try {
+          // First, check if customer already exists by NIC
+          let existingCustomer = null;
+          if (patientNIC.trim()) {
+            const customersSnapshot = await getDocs(query(
+              collection(db, 'customers'),
+              where('nic', '==', patientNIC)
+            ));
+            if (!customersSnapshot.empty) {
+              existingCustomer = { id: customersSnapshot.docs[0].id, ...customersSnapshot.docs[0].data() };
+              customerId = existingCustomer.id;
+              console.log('Found existing customer:', customerId);
+            }
+          }
+          
+          // Create customer if doesn't exist and we have required data
+          if (!existingCustomer && patientNIC.trim() && customerName.trim()) {
+            const customerData = {
+              name: customerName,
+              phoneNumber: customerContact || '',
+              nic: patientNIC,
+              age: 23, // Default age, can be updated later
+              email: '',
+              address: '',
+              status: 'Active',
+              createdAt: new Date()
+            };
+            
+            try {
+              // Add to customers collection for Customer Management
+              const customerRef = await addDoc(collection(db, 'customers'), customerData);
+              customerId = customerRef.id;
+              console.log('Created new customer:', customerId, customerData);
+            } catch (customerError) {
+              console.error('Error creating customer:', customerError);
+            }
+          }
+          
+          // Check if patient already exists
+          let existingPatient = null;
+          if (patientNIC.trim()) {
+            existingPatient = await patientService.findPatientByNIC(patientNIC);
+          }
+          
+          if (existingPatient) {
+            patientId = existingPatient.id;
+            setCurrentPatient({...existingPatient, isCustomer: true, id: customerId || existingPatient.id});
+            console.log('Found existing patient:', patientId);
+          } else {
+            // Create patient record
+            const newPatientData = await patientService.addPatient({
+              nic: patientNIC,
+              name: customerName || 'Walk-in Customer',
+              contact: customerContact || '',
+              address: '',
+              age: '',
+              gender: '',
+              bloodGroup: '',
+              medicalNotes: 'Auto-created during sale'
+            });
+            patientId = newPatientData.id;
+            setCurrentPatient({...newPatientData, isCustomer: true, id: customerId || newPatientData.id});
+            console.log('Created new patient:', patientId);
+          }
+        } catch (error) {
+          console.error('Error creating/finding patient/customer:', error);
+          // Continue with sale even if customer creation fails
         }
       }
+      
+      console.log('=== FINAL SALE DATA ===');
+      console.log('patientId:', patientId);
+      console.log('customerId:', customerId);
+      console.log('Will include patientId in saleData:', !!patientId);
       
       const saleData = {
         receiptNumber: `RCP-${invoiceNumber}`,
@@ -661,10 +731,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
         customerName: customerName || 'Walk-in Customer',
         customerContact: customerContact,
         patientNIC: patientNIC,
-        patientId: patientId,
+        // Only include patientId if it exists
+        ...(patientId && { patientId: patientId }),
         // Add customer linking information
-        customerId: currentPatient?.isCustomer ? currentPatient.id : null,
-        customerNIC: currentPatient?.nic || patientNIC,
+        customerId: customerId,
+        customerNIC: patientNIC,
         staffName: employeeName ? `${employeeName} (${employeeId})` : `EMPLOYEE: ${employeeId}`,
         staffType: 'employee',
         employeeId: employeeId,

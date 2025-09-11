@@ -20,6 +20,11 @@ import { db } from '../firebase/config';
 export const transactionService = {
   // Process sale transaction
   processSale: async (saleData) => {
+    console.log('=== TRANSACTION SERVICE DEBUG ===');
+    console.log('Received saleData:', saleData);
+    console.log('patientId in saleData:', saleData.patientId);
+    console.log('Will attempt patient update:', !!saleData.patientId && !!saleData.patientId.trim?.());
+    
     const batch = writeBatch(db);
     
     try {
@@ -43,14 +48,26 @@ export const transactionService = {
         });
       }
 
-      // 3. Update patient purchase history if patient exists
-      if (saleData.patientId) {
-        const patientRef = doc(db, 'patients', saleData.patientId);
-        batch.update(patientRef, {
-          totalPurchases: increment(saleData.totalAmount),
-          lastVisit: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
+      // 3. Update patient purchase history only if patient document exists
+      if (saleData.patientId && saleData.patientId.trim()) {
+        try {
+          const patientRef = doc(db, 'patients', saleData.patientId);
+          const patientDoc = await getDoc(patientRef);
+          
+          if (patientDoc.exists()) {
+            batch.update(patientRef, {
+              totalPurchases: increment(saleData.total || saleData.totalAmount || 0),
+              lastVisit: serverTimestamp(),
+              updatedAt: serverTimestamp()
+            });
+            console.log('Updated patient purchase history for:', saleData.patientId);
+          } else {
+            console.warn('Patient document does not exist for ID:', saleData.patientId);
+          }
+        } catch (patientError) {
+          console.error('Error updating patient document:', patientError);
+          // Continue processing the sale even if patient update fails
+        }
       }
 
       // 4. Update daily sales summary
@@ -58,7 +75,7 @@ export const transactionService = {
       const dailySalesRef = doc(db, 'dailySales', today);
       batch.set(dailySalesRef, {
         date: today,
-        totalSales: increment(saleData.totalAmount),
+        totalSales: increment(saleData.total || saleData.totalAmount || 0),
         transactionCount: increment(1),
         updatedAt: serverTimestamp()
       }, { merge: true });

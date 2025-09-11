@@ -215,24 +215,59 @@ export default function CustomerManagement({ dateFilter }) {
       
       console.log('Loading history for customer:', customer.name, 'NIC:', customer.nic);
       
-      // Query transactions by customer NIC (which is more reliable than customerId)
-      const transactionsQuery = query(
-        collection(db, 'transactions'),
-        where('customerNIC', '==', customer.nic),
-        orderBy('createdAt', 'desc')
+      // Query transactions by customer NIC and also by patientNIC as backup
+      const queries = [
+        // Primary query by customerNIC
+        query(
+          collection(db, 'transactions'),
+          where('customerNIC', '==', customer.nic),
+          orderBy('createdAt', 'desc')
+        ),
+        // Backup query by patientNIC
+        query(
+          collection(db, 'transactions'),
+          where('patientNIC', '==', customer.nic),
+          orderBy('createdAt', 'desc')
+        ),
+        // Additional query by customerName (less reliable but helpful)
+        query(
+          collection(db, 'transactions'),
+          where('customerName', '==', customer.name),
+          orderBy('createdAt', 'desc')
+        )
+      ];
+      
+      let allTransactions = [];
+      
+      // Execute all queries and combine results
+      for (const transactionQuery of queries) {
+        try {
+          const snapshot = await getDocs(transactionQuery);
+          const transactions = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          allTransactions = [...allTransactions, ...transactions];
+        } catch (error) {
+          console.warn('Query failed:', error);
+        }
+      }
+      
+      // Remove duplicates based on transaction ID
+      const uniqueTransactions = allTransactions.filter((transaction, index, self) => 
+        index === self.findIndex(t => t.id === transaction.id)
       );
       
-      const snapshot = await getDocs(transactionsQuery);
-      console.log('Found', snapshot.docs.length, 'transactions for NIC:', customer.nic);
+      console.log('Found', uniqueTransactions.length, 'unique transactions for NIC:', customer.nic);
+      console.log('Found', uniqueTransactions.length, 'unique transactions for NIC:', customer.nic);
       
-      const orderData = snapshot.docs.map(doc => {
-        const data = doc.data();
+      const orderData = uniqueTransactions.map(data => {
         console.log('Transaction data:', data);
         return {
-          id: doc.id,
+          id: data.id,
           ...data,
           // Transform transaction data to order format for compatibility
-          orderId: data.invoiceNumber || data.receiptNumber || doc.id,
+          orderId: data.invoiceNumber || data.receiptNumber || data.id,
           orderDate: data.createdAt,
           totalAmount: data.total || data.netTotal,
           status: data.status || 'completed',
