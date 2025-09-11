@@ -612,19 +612,16 @@ const PharmacyPOSFirebaseIntegrated = () => {
       return;
     }
 
-    try {
-      setLoading(true);
-      
-      console.log('=== PROCESSING SALE DEBUG ===');
-      console.log('currentPatient:', currentPatient);
-      console.log('patientNIC:', patientNIC);
-      console.log('customerName:', customerName);
-      
-      // Handle patient/customer creation and linking
-      let patientId = null;
-      let customerId = null;
-      
-      if (currentPatient) {
+      try {
+        setLoading(true);
+        
+        console.log('=== PROCESSING SALE ===');
+        console.log('Cart items:', cart.length);
+        console.log('Total amount:', total);
+        
+        // Handle patient/customer creation and linking
+        let patientId = null;
+        let customerId = null;      if (currentPatient) {
         patientId = currentPatient.id;
         customerId = currentPatient.isCustomer ? currentPatient.id : null;
         // Only update if patient exists in database
@@ -704,10 +701,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
         }
       }
       
-      console.log('=== FINAL SALE DATA ===');
-      console.log('patientId:', patientId);
-      console.log('customerId:', customerId);
-      console.log('Will include patientId in saleData:', !!patientId);
+      console.log('Creating transaction with:', {
+        patientId,
+        customerId,
+        customerName: customerName || 'Walk-in Customer',
+        total
+      });
       
       const saleData = {
         receiptNumber: `RCP-${invoiceNumber}`,
@@ -745,8 +744,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
         location: 'Main Pharmacy'
       };
 
+      console.log('About to process sale with saleData:', saleData);
+
       // Process the sale transaction with stock updates
       const transaction = await transactionService.processSale(saleData);
+      
+      console.log('Transaction completed successfully:', transaction);
       
       // Update local cash balance for cash payments
       if (paymentMethod === 'cash') {
@@ -755,10 +758,6 @@ const PharmacyPOSFirebaseIntegrated = () => {
         localStorage.setItem('pharmacyCashBalance', newBalance.toString());
       }
       
-      // Reload medicines to reflect updated stock
-      await loadInitialData();
-      
-      console.log('Transaction completed:', transaction);
       console.log('Setting lastTransaction and showing receipt...');
       
       // Ensure transaction has all required fields for receipt
@@ -774,13 +773,19 @@ const PharmacyPOSFirebaseIntegrated = () => {
         })),
         customerName: customerName || currentPatient?.name || 'Walk-in Customer',
         staffName: employeeName ? `${employeeName} (${employeeId})` : `EMPLOYEE: ${employeeId}`,
-        receiptNumber: transaction.receiptNumber || `RCP-${transaction.invoiceNumber}`,
-        createdAt: new Date()
+        receiptNumber: transaction.receiptNumber || `RCP-${transaction.invoiceNumber || invoiceNumber}`,
+        createdAt: new Date(),
+        total: transaction.total || total,
+        subtotal: transaction.subtotal || totals.subtotal,
+        paymentMethod: transaction.paymentMethod || paymentMethod
       };
       
-      console.log('Enriched transaction:', enrichedTransaction);
+      console.log('Enriched transaction for receipt:', enrichedTransaction);
       setLastTransaction(enrichedTransaction);
       setShowReceipt(true);
+      
+      // Show success message
+      alert('Sale completed successfully! Receipt will be displayed.');
       
       // Clear cart and reset form
       setCart([]);
@@ -793,7 +798,18 @@ const PharmacyPOSFirebaseIntegrated = () => {
         setCustomerContact('');
       }
       
+      // Reload medicines to reflect updated stock (do this after receipt is shown)
+      setTimeout(async () => {
+        try {
+          await loadInitialData();
+          console.log('Medicine data reloaded');
+        } catch (reloadError) {
+          console.error('Error reloading medicine data:', reloadError);
+        }
+      }, 1000);
+      
       console.log('Sale completed successfully:', transaction.id);
+      
     } catch (error) {
       console.error('Error processing sale:', error);
       console.error('Error details:', error.message, error.stack);
@@ -1844,35 +1860,41 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 onClick={() => {
                   console.log('Force showing receipt. Current states:', {
                     showReceipt,
-                    lastTransaction
+                    lastTransaction,
+                    cart: cart.length
                   });
-                  if (!lastTransaction) {
-                    // Create a test transaction
-                    const testTransaction = {
-                      id: 'TEST-001',
-                      invoiceNumber: 'TEST-001',
-                      receiptNumber: 'RCP-TEST-001',
-                      staffName: 'Test Staff',
-                      customerName: 'Test Customer',
-                      items: [
-                        {
-                          name: 'Test Medicine',
-                          quantity: 1,
-                          totalPrice: 100,
-                          unitPrice: 100
-                        }
-                      ],
-                      subtotal: 100,
-                      total: 100,
-                      netTotal: 100,
-                      paymentMethod: 'cash',
-                      createdAt: new Date()
-                    };
-                    setLastTransaction(testTransaction);
-                  }
+                  
+                  // Create a test transaction for testing receipt
+                  const testTransaction = {
+                    id: 'test-123',
+                    receiptNumber: 'RCP-TEST-001',
+                    items: cart.length > 0 ? cart.map(item => ({
+                      name: item.name,
+                      quantity: item.quantity,
+                      totalPrice: item.quantity * item.sellingPrice,
+                      unitPrice: item.sellingPrice,
+                      batchNumber: item.batchNumber
+                    })) : [{
+                      name: 'Test Medicine',
+                      quantity: 1,
+                      totalPrice: 100,
+                      unitPrice: 100,
+                      batchNumber: 'TEST001'
+                    }],
+                    customerName: customerName || 'Test Customer',
+                    staffName: employeeName ? `${employeeName} (${employeeId})` : `EMPLOYEE: ${employeeId}`,
+                    total: cart.length > 0 ? total : 100,
+                    subtotal: cart.length > 0 ? totals.subtotal : 100,
+                    paymentMethod: paymentMethod || 'cash',
+                    createdAt: new Date(),
+                    invoiceNumber: invoiceNumber || 'TEST001'
+                  };
+                  
+                  console.log('Setting test transaction:', testTransaction);
+                  setLastTransaction(testTransaction);
                   setShowReceipt(true);
                 }}
-                sx={{ mt: 1 }}
+                sx={{ ml: 1 }}
               >
                 Test Receipt
               </Button>

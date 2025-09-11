@@ -20,10 +20,8 @@ import { db } from '../firebase/config';
 export const transactionService = {
   // Process sale transaction
   processSale: async (saleData) => {
-    console.log('=== TRANSACTION SERVICE DEBUG ===');
-    console.log('Received saleData:', saleData);
-    console.log('patientId in saleData:', saleData.patientId);
-    console.log('Will attempt patient update:', !!saleData.patientId && !!saleData.patientId.trim?.());
+    console.log('Processing transaction for:', saleData.customerName || 'Walk-in Customer');
+    console.log('Transaction total:', saleData.total);
     
     const batch = writeBatch(db);
     
@@ -82,6 +80,12 @@ export const transactionService = {
 
       // Execute all operations
       await batch.commit();
+      
+      console.log('Transaction batch committed successfully');
+      console.log('Returning transaction:', {
+        id: transactionRef.id,
+        ...transactionData
+      });
       
       return {
         id: transactionRef.id,
