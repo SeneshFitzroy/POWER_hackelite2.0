@@ -255,7 +255,16 @@ function App() {
     }
   }
   const handleLogout = () => {
+    // Clear any stored user data (if any)
+    // localStorage.removeItem('userToken') // Uncomment if you store user data
+    
+    // Navigate to login screen
     setCurrentScreen('login')
+    
+    // If we're not on the main route, redirect to main route with login screen
+    if (window.location.pathname !== '/') {
+      window.location.href = '/?screen=login'
+    }
   }
 
   return (

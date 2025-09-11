@@ -58,6 +58,7 @@ import {
   Refresh,
   Download,
   PictureAsPdf,
+  Logout,
   TableChart,
   TrendingUp,
   TrendingDown,
@@ -118,11 +119,21 @@ export default function ColdChainModule() {
 
   const sidebarWidth = 280;
 
+  const handleLogout = () => {
+    // Clear any stored data
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Navigate back to login screen
+    window.location.href = '/?screen=login';
+  };
+
   const navigationItems = [
     { label: 'Cold Chain Dashboard', icon: <DashboardIcon />, index: 0 },
     { label: 'Alerts & Notifications', icon: <Warning />, index: 1 },
     { label: 'Reports & Analytics', icon: <Assessment />, index: 2 },
-    { label: 'Settings', icon: <Settings />, index: 3 }
+    { label: 'Settings', icon: <Settings />, index: 3 },
+    { label: 'Logout', icon: <Logout />, index: 'logout', action: handleLogout }
   ];
 
   // Update time every second
@@ -170,8 +181,12 @@ export default function ColdChainModule() {
     };
   }, []);
 
-  const handleNavClick = (index) => {
-    setActiveTab(index);
+  const handleNavClick = (index, action) => {
+    if (action) {
+      action(); // Execute the action (like logout)
+    } else {
+      setActiveTab(index);
+    }
   };
 
   const handleBackToDashboard = () => {
@@ -592,7 +607,7 @@ startxref
           {navigationItems.map((item) => (
             <ListItem key={item.label} disablePadding sx={{ mb: 0.5 }}>
               <ListItemButton
-                onClick={() => handleNavClick(item.index)}
+                onClick={() => handleNavClick(item.index, item.action)}
                 sx={{
                   borderRadius: 2,
                   backgroundColor: activeTab === item.index ? 'rgba(255,255,255,0.15)' : 'transparent',
