@@ -24,26 +24,13 @@ import {
 import {
   Dashboard as DashboardIcon,
   Inventory as InventoryIcon,
-  Warning as WarningIcon,
-  TrendingDown as TrendingDownIcon,
-  Schedule as ScheduleIcon,
   ShoppingCart as ShoppingCartIcon,
-  Assignment as AssignmentIcon,
-  Block as BlockIcon,
   Business as BusinessIcon,
-  History as HistoryIcon,
-  Gavel as GavelIcon,
   Logout
 } from '@mui/icons-material';
-import StockTracking from './StockTracking';
-import ExpiryMonitoring from './ExpiryMonitoring';
-import LowStockAlerts from './LowStockAlerts';
+import StockTrackingEnhanced from './StockTrackingEnhanced';
 import ReorderManagement from './ReorderManagement';
-import PurchaseOrderManagement from './PurchaseOrderManagement';
-import QuarantinedStock from './QuarantinedStock';
-import SupplierManagement from './SupplierManagement';
-import PurchaseHistory from './PurchaseHistory';
-import RegulatoryCompliance from './RegulatoryCompliance';
+import SupplierManagementEnhanced from './SupplierManagementEnhanced';
 import InventoryDashboard from './InventoryDashboard';
 
 export default function InventoryModule({ 
@@ -62,15 +49,9 @@ export default function InventoryModule({
 
   const navigationItems = [
     { label: 'Inventory Dashboard', icon: <DashboardIcon />, index: 0 },
-    { label: 'Stock Tracking', icon: <InventoryIcon />, index: 1 },
+    { label: 'Stock Management', icon: <InventoryIcon />, index: 1 },
     { label: 'Reorder Management', icon: <ShoppingCartIcon />, index: 2 },
-    { label: 'Purchase Orders', icon: <AssignmentIcon />, index: 3 },
-    { label: 'Supplier Management', icon: <BusinessIcon />, index: 4 },
-    { label: 'Purchase History', icon: <HistoryIcon />, index: 5 },
-    { label: 'Regulatory Compliance', icon: <GavelIcon />, index: 6 },
-    { label: 'Quarantined Stock', icon: <BlockIcon />, index: 7 },
-    { label: 'Expiry Monitoring', icon: <ScheduleIcon />, index: 8 },
-    { label: 'Low Stock Alerts', icon: <WarningIcon />, index: 9 }
+    { label: 'Supplier & Orders', icon: <BusinessIcon />, index: 3 }
   ];
 
   // Update time every second
@@ -88,13 +69,7 @@ export default function InventoryModule({
       'inventory': 0,
       'stock-tracking': 1,
       'reorder-management': 2,
-      'purchase-orders': 3,
-      'supplier-management': 4,
-      'purchase-history': 5,
-      'regulatory-compliance': 6,
-      'quarantined-stock': 7,
-      'expiry-monitoring': 8,
-      'low-stock-alerts': 9
+      'supplier-management': 3
     };
     
     // Get the correct tab index based on activeModule, default to 0 if not found
@@ -112,12 +87,7 @@ export default function InventoryModule({
       0: 'inventory',
       1: 'stock-tracking',
       2: 'reorder-management',
-      3: 'purchase-orders',
-      4: 'supplier-management',
-      5: 'purchase-history',
-      6: 'quarantine-management',
-      7: 'expiry-monitoring',
-      8: 'low-stock-alerts'
+      3: 'supplier-management'
     };
     
     const moduleName = tabToModuleMap[index];
@@ -382,15 +352,9 @@ export default function InventoryModule({
           overflow: 'auto' 
         }}>
           {activeTab === 0 && <InventoryDashboard />}
-          {activeTab === 1 && <StockTracking />}
+          {activeTab === 1 && <StockTrackingEnhanced />}
           {activeTab === 2 && <ReorderManagement />}
-          {activeTab === 3 && <PurchaseOrderManagement />}
-          {activeTab === 4 && <SupplierManagement />}
-          {activeTab === 5 && <PurchaseHistory />}
-          {activeTab === 6 && <RegulatoryCompliance />}
-          {activeTab === 7 && <QuarantinedStock />}
-          {activeTab === 8 && <ExpiryMonitoring />}
-          {activeTab === 9 && <LowStockAlerts />}
+          {activeTab === 3 && <SupplierManagementEnhanced />}
         </Box>
       </Box>
     </Box>

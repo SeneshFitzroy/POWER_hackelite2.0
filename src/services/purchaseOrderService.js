@@ -246,6 +246,24 @@ export const purchaseOrderService = {
     }
   },
 
+  // Get purchase history (completed/delivered orders)
+  getPurchaseHistory: async () => {
+    try {
+      const orders = await purchaseOrderService.getAllPurchaseOrders();
+      
+      // Filter for completed/delivered orders
+      const history = orders.filter(order => 
+        order.status === 'completed' || 
+        order.status === 'delivered' || 
+        order.status === 'received'
+      );
+      
+      return history;
+    } catch (error) {
+      throw new Error(`Error fetching purchase history: ${error.message}`);
+    }
+  },
+
   // Get purchase history with supplier details
   getPurchaseHistoryWithSuppliers: async () => {
     try {

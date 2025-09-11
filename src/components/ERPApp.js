@@ -116,12 +116,7 @@ const ERPApp = () => {
       case 'inventory':
       case 'stock-tracking':
       case 'reorder-management':
-      case 'purchase-orders':
       case 'supplier-management':
-      case 'purchase-history':
-      case 'quarantine-management':
-      case 'expiry-monitoring':
-      case 'low-stock-alerts':
         return (
           <InventoryModule 
             activeModule={activeModule}
@@ -177,14 +172,9 @@ const ERPApp = () => {
                 <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
                   {activeModule === 'dashboard' ? 'Dashboard' :
                    activeModule === 'inventory' ? 'Inventory Management' :
-                   activeModule === 'stock-tracking' ? 'Stock Tracking' :
+                   activeModule === 'stock-tracking' ? 'Stock Management' :
                    activeModule === 'reorder-management' ? 'Reorder Management' :
-                   activeModule === 'purchase-orders' ? 'Purchase Orders' :
-                   activeModule === 'supplier-management' ? 'Supplier Management' :
-                   activeModule === 'purchase-history' ? 'Purchase History' :
-                   activeModule === 'quarantine-management' ? 'Quarantine Management' :
-                   activeModule === 'expiry-monitoring' ? 'Expiry Monitoring' :
-                   activeModule === 'low-stock-alerts' ? 'Low Stock Alerts' :
+                   activeModule === 'supplier-management' ? 'Supplier & Orders Management' :
                    activeModule === 'compliance' ? 'Regulatory Compliance' :
                    'Pharma ERP'}
                 </Typography>

@@ -58,7 +58,7 @@ const ERPNavigation = ({
       subItems: [
         {
           id: 'stock-tracking',
-          label: 'Stock Tracking',
+          label: 'Stock Management',
           icon: <InventoryIcon />,
           permission: 'view_stock'
         },
@@ -69,40 +69,10 @@ const ERPNavigation = ({
           permission: 'view_stock'
         },
         {
-          id: 'purchase-orders',
-          label: 'Purchase Orders',
-          icon: <AssignmentIcon />,
-          permission: 'view_purchase_orders'
-        },
-        {
           id: 'supplier-management',
-          label: 'Supplier Management',
+          label: 'Supplier & Orders',
           icon: <BusinessIcon />,
           permission: 'manage_suppliers'
-        },
-        {
-          id: 'purchase-history',
-          label: 'Purchase History',
-          icon: <HistoryIcon />,
-          permission: 'view_purchase_orders'
-        },
-        {
-          id: 'quarantine-management',
-          label: 'Quarantine Management',
-          icon: <BlockIcon />,
-          permission: 'manage_quarantine'
-        },
-        {
-          id: 'expiry-monitoring',
-          label: 'Expiry Monitoring',
-          icon: <ScheduleIcon />,
-          permission: 'view_stock'
-        },
-        {
-          id: 'low-stock-alerts',
-          label: 'Low Stock Alerts',
-          icon: <WarningIcon />,
-          permission: 'view_stock'
         }
       ]
     },
