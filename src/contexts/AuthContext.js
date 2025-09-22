@@ -11,6 +11,30 @@ import { auth } from '../firebase/config';
 
 const AuthContext = createContext();
 
+// User role definitions with specific permissions
+const USER_ROLES = {
+  'john.ceo.pharma@gmail.com': {
+    role: 'OWNER',
+    name: 'John CEO',
+    permissions: ['hr', 'sales', 'pos', 'inventory', 'coldchain', 'legal', 'ecommerce', 'delivery', 'reports', 'settings']
+  },
+  'john.reg.pharma@gmail.com': {
+    role: 'PHARMACIST',
+    name: 'John Registered Pharmacist',
+    permissions: ['sales', 'pos', 'inventory', 'delivery', 'legal', 'ecommerce']
+  },
+  'john.assit.pharma@gmail.com': {
+    role: 'ASSISTANT_PHARMACIST',
+    name: 'John Assistant Pharmacist',
+    permissions: ['pos', 'inventory', 'delivery', 'ecommerce']
+  },
+  'john.cashier.pharma@gmail.com': {
+    role: 'CASHIER',
+    name: 'John Cashier',
+    permissions: ['pos']
+  }
+};
+
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
@@ -21,6 +45,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [demoMode, setDemoMode] = useState(false);
@@ -31,20 +56,71 @@ export function AuthProvider({ children }) {
            process.env.REACT_APP_FIREBASE_API_KEY !== 'your_api_key_here';
   };
 
+  // Get user role information based on email
+  const getUserRoleInfo = (email) => {
+    return USER_ROLES[email] || null;
+  };
+
+  // Check if user has specific permission
+  const hasPermission = (permission) => {
+    if (!userRole || !userRole.permissions) return false;
+    return userRole.permissions.includes(permission);
+  };
+
   // Demo login function for when Firebase is not configured
   const demoLogin = (email, password) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (email === 'demo@coreerp.com' && password === 'demo123') {
+        // Check if it's one of our specific users
+        const roleInfo = getUserRoleInfo(email);
+        
+        if (roleInfo) {
+          // Check password based on email
+          let expectedPassword = '';
+          switch (email) {
+            case 'john.ceo.pharma@gmail.com':
+              expectedPassword = 'JohnCEO2002';
+              break;
+            case 'john.reg.pharma@gmail.com':
+              expectedPassword = 'JohnReg2002';
+              break;
+            case 'john.assit.pharma@gmail.com':
+              expectedPassword = 'JohnAssit2002';
+              break;
+            case 'john.cashier.pharma@gmail.com':
+              expectedPassword = 'JohnCash2002';
+              break;
+            default:
+              expectedPassword = 'demo123';
+          }
+
+          if (password === expectedPassword) {
+            const demoUser = {
+              uid: `demo-${email.split('@')[0]}`,
+              email: email,
+              displayName: roleInfo.name
+            };
+            setUser(demoUser);
+            setUserRole(roleInfo);
+            resolve({ user: demoUser });
+          } else {
+            reject(new Error('Invalid password'));
+          }
+        } else if (email === 'demo@coreerp.com' && password === 'demo123') {
           const demoUser = {
             uid: 'demo-user',
             email: 'demo@coreerp.com',
             displayName: 'Demo User'
           };
           setUser(demoUser);
+          setUserRole({
+            role: 'DEMO',
+            name: 'Demo User',
+            permissions: ['hr', 'sales', 'pos', 'inventory', 'coldchain', 'legal']
+          });
           resolve({ user: demoUser });
         } else {
-          reject(new Error('Demo credentials: demo@coreerp.com / demo123'));
+          reject(new Error('Invalid credentials. Use the provided email/password combinations.'));
         }
       }, 1000);
     });
