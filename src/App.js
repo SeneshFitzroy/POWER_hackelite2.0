@@ -10,6 +10,8 @@ import HRModule from './components/hr/HRModule'
 import ColdChainModule from './components/coldchain/ColdChainModule'
 import InventoryModule from './components/inventory/InventoryModule'
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
+import { AuthProvider } from './contexts/AuthContext'
+import { RoleProvider } from './contexts/RoleContext'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
@@ -242,70 +244,74 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <ErrorBoundary>
-        <Routes>
-          <Route path="/inventory" element={<InventoryModule />} />
-          <Route path="/pos" element={
-            <Box sx={{ height: '100vh', overflow: 'hidden' }}>
-              <PharmacyPOS />
-            </Box>
-          } />
-          <Route path="/sales" element={
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              minHeight: '100vh',
-              backgroundColor: '#f8fafc'
-            }}>
-              <SalesModule />
-            </Box>
-          } />
-          <Route path="/hr" element={
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              minHeight: '100vh',
-              backgroundColor: '#f8fafc'
-            }}>
-              <HRModule />
-            </Box>
-          } />
-          <Route path="/legal" element={
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              minHeight: '100vh',
-              backgroundColor: '#f8fafc'
-            }}>
-              <iframe 
-                src="/legal/index.html" 
-                title="Legal Module"
-                style={{ 
-                  flex: 1, 
-                  border: 'none',
-                  width: '100%'
-                }}
-              />
-            </Box>
-          } />
-          <Route path="/coldchain" element={<ColdChainModule />} />
-          <Route path="/clear-data" element={
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              minHeight: '100vh',
-              backgroundColor: '#f8fafc'
-            }}>
-              <FirebaseDataCleaner />
-            </Box>
-          } />
-          <Route path="/" element={
-            <>
-              {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
-              {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
-            </>
-          } />
-        </Routes>
+        <AuthProvider>
+          <RoleProvider>
+            <Routes>
+              <Route path="/inventory" element={<InventoryModule />} />
+              <Route path="/pos" element={
+                <Box sx={{ height: '100vh', overflow: 'hidden' }}>
+                  <PharmacyPOS />
+                </Box>
+              } />
+              <Route path="/sales" element={
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  minHeight: '100vh',
+                  backgroundColor: '#f8fafc'
+                }}>
+                  <SalesModule />
+                </Box>
+              } />
+              <Route path="/hr" element={
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  minHeight: '100vh',
+                  backgroundColor: '#f8fafc'
+                }}>
+                  <HRModule />
+                </Box>
+              } />
+              <Route path="/legal" element={
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  minHeight: '100vh',
+                  backgroundColor: '#f8fafc'
+                }}>
+                  <iframe 
+                    src="/legal/index.html" 
+                    title="Legal Module"
+                    style={{ 
+                      flex: 1, 
+                      border: 'none',
+                      width: '100%'
+                    }}
+                  />
+                </Box>
+              } />
+              <Route path="/coldchain" element={<ColdChainModule />} />
+              <Route path="/clear-data" element={
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  minHeight: '100vh',
+                  backgroundColor: '#f8fafc'
+                }}>
+                  <FirebaseDataCleaner />
+                </Box>
+              } />
+              <Route path="/" element={
+                <>
+                  {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
+                  {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
+                  {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
+                </>
+              } />
+            </Routes>
+          </RoleProvider>
+        </AuthProvider>
       </ErrorBoundary>
     </ThemeProvider>
   )

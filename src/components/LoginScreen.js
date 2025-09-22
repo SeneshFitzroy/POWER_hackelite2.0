@@ -1,17 +1,7 @@
 import React, { useState } from "react"
+import { useAuth } from '../contexts/AuthContext'
 // Uncomment the line below if you put the logo in src/assets/images/
 // import npkLogo from "../assets/images/npk-logo.png"
-
-// Safely import Firebase auth
-let sendPasswordResetEmail, auth
-try {
-  const firebaseAuth = require('firebase/auth')
-  const firebaseConfig = require('../firebase/config')
-  sendPasswordResetEmail = firebaseAuth.sendPasswordResetEmail
-  auth = firebaseConfig.auth
-} catch (error) {
-  console.warn('Firebase not available:', error)
-}
 
 export default function LoginScreen({ onLoginSuccess }) {
   const [email, setEmail] = useState("")
@@ -21,6 +11,8 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [errors, setErrors] = useState({})
   const [resetEmailSent, setResetEmailSent] = useState(false)
   const [resetLoading, setResetLoading] = useState(false)
+
+  const { login, resetPassword, demoMode } = useAuth()
 
   const validateForm = () => {
     const newErrors = {}
@@ -50,9 +42,9 @@ export default function LoginScreen({ onLoginSuccess }) {
       return
     }
 
-    // Check if Firebase auth is available
-    if (!auth) {
-      setErrors({ general: "Authentication service is not available" })
+    // Check if in demo mode
+    if (demoMode) {
+      setErrors({ general: "Password reset not available in demo mode" })
       return
     }
 
@@ -60,7 +52,7 @@ export default function LoginScreen({ onLoginSuccess }) {
     setErrors({})
 
     try {
-      await sendPasswordResetEmail(auth, email)
+      await resetPassword(email)
       setResetEmailSent(true)
       setErrors({})
     } catch (error) {
@@ -77,13 +69,18 @@ export default function LoginScreen({ onLoginSuccess }) {
     if (!validateForm()) return
 
     setIsLoading(true)
+    setErrors({})
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      console.log("Login attempted with:", { email, password })
+    try {
+      await login(email, password)
+      console.log("Login successful for:", email)
       onLoginSuccess()
-    }, 2000)
+    } catch (error) {
+      console.error("Login error:", error)
+      setErrors({ general: error.message || "Login failed. Please check your credentials." })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

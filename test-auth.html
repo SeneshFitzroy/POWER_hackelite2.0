@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test - Pharmacy ERP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 1) 50%);
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1e3a8a;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        .user-credential {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .user-email {
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+        .user-role {
+            color: #059669;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .modules-list {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #f59e0b;
+            margin: 20px 0;
+        }
+        .success {
+            color: #059669;
+            font-weight: bold;
+        }
+        .button {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(30, 58, 138, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 Pharmacy ERP - Authentication System Test</h1>
+        
+        <div class="instructions">
+            <h3>📋 Testing Instructions:</h3>
+            <p>Your role-based authentication system has been successfully implemented! Here are the test credentials:</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>👨‍💼 Test User Accounts</h3>
+            
+            <div class="user-credential">
+                <div class="user-email">john.ceo.pharma@gmail.com</div>
+                <div class="user-role">OWNER</div>
+                <div class="modules-list">Password: JohnCEO2002 | Modules: All (HR, POS, Sales, Legal, Inventory, Cold Chain, E-commerce, Delivery)</div>
+            </div>
+            
+            <div class="user-credential">
+                <div class="user-email">john.reg.pharma@gmail.com</div>
+                <div class="user-role">PHARMACIST</div>
+                <div class="modules-list">Password: JohnREG2002 | Modules: Sales, POS, Inventory, Delivery, Legal, E-commerce</div>
+            </div>
+            
+            <div class="user-credential">
+                <div class="user-email">john.assit.pharma@gmail.com</div>
+                <div class="user-role">ASSISTANT PHARMACIST</div>
+                <div class="modules-list">Password: JohnASSIT2002 | Modules: POS, Inventory, Delivery, E-commerce</div>
+            </div>
+            
+            <div class="user-credential">
+                <div class="user-email">john.cashier.pharma@gmail.com</div>
+                <div class="user-role">CASHIER</div>
+                <div class="modules-list">Password: JohnCASHIER2002 | Modules: POS only</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>✅ Implementation Status</h3>
+            <div class="success">✓ Firebase Authentication integration completed</div>
+            <div class="success">✓ Role-based access control system implemented</div>
+            <div class="success">✓ User permission mapping configured</div>
+            <div class="success">✓ Module filtering based on user roles active</div>
+            <div class="success">✓ AuthContext and RoleContext providers set up</div>
+            <div class="success">✓ Dashboard displays only authorized modules</div>
+            <div class="success">✓ Role badges with color coding added</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🧪 Testing Process</h3>
+            <ol>
+                <li>Click "Open Main Application" to access the login screen</li>
+                <li>Try logging in with any of the test credentials above</li>
+                <li>Verify that only the authorized modules appear for each role</li>
+                <li>Check that the role badge displays correctly</li>
+                <li>Test logout functionality</li>
+                <li>Try logging in with different roles to see module filtering</li>
+            </ol>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="index.html" class="button">🚀 Open Main Application</a>
+            <a href="file:///c:/Users/senes/OneDrive/Desktop/hackelite/POWER_hackelite2.0/build/index.html" class="button">📱 Open Built Application</a>
+        </div>
+        
+        <div class="test-section" style="margin-top: 20px;">
+            <h4>🔧 System Architecture:</h4>
+            <p><strong>Frontend:</strong> React 19 with Material-UI components</p>
+            <p><strong>Authentication:</strong> Firebase Auth with custom role mapping</p>
+            <p><strong>State Management:</strong> Context API (AuthContext + RoleContext)</p>
+            <p><strong>Access Control:</strong> Permission-based module filtering</p>
+            <p><strong>Styling:</strong> Custom CSS with role-specific badges and animations</p>
+        </div>
+    </div>
+</body>
+</html>
