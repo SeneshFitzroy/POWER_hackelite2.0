@@ -143,12 +143,31 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Sign in function
-  const login = (email, password) => {
+  // Sign in function with role-based authentication
+  const login = async (email, password) => {
     if (demoMode) {
       return demoLogin(email, password);
     }
-    return signInWithEmailAndPassword(auth, email, password);
+
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      // Set role information after successful Firebase login
+      const roleInfo = getUserRoleInfo(email);
+      if (roleInfo) {
+        setUserRole(roleInfo);
+      } else {
+        // If user exists in Firebase but not in our role system, give basic access
+        setUserRole({
+          role: 'USER',
+          name: result.user.displayName || 'User',
+          permissions: ['pos'] // Basic permission
+        });
+      }
+      return result;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
   // Sign out function
@@ -156,9 +175,11 @@ export function AuthProvider({ children }) {
     if (demoMode) {
       return new Promise((resolve) => {
         setUser(null);
+        setUserRole(null);
         resolve();
       });
     }
+    setUserRole(null);
     return signOut(auth);
   };
 
