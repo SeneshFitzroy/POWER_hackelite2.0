@@ -208,12 +208,29 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        setUser(user);
+      return onAuthStateChanged(auth, (firebaseUser) => {
+        setUser(firebaseUser);
+        
+        // If user is logged in, get their role information
+        if (firebaseUser) {
+          const roleInfo = getUserRoleInfo(firebaseUser.email);
+          if (roleInfo) {
+            setUserRole(roleInfo);
+          } else {
+            // Default role for users not in our system
+            setUserRole({
+              role: 'USER',
+              name: firebaseUser.displayName || 'User',
+              permissions: ['pos']
+            });
+          }
+        } else {
+          setUserRole(null);
+        }
+        
         setLoading(false);
       });
 
-      return unsubscribe;
     } catch (error) {
       console.error('Auth state change error:', error);
       setError(error);
@@ -224,6 +241,8 @@ export function AuthProvider({ children }) {
 
   const value = {
     user,
+    userRole,
+    hasPermission,
     signup,
     login,
     logout,
