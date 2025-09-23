@@ -9,6 +9,7 @@ import SalesModule from './components/sales/SalesModule'
 import HRModule from './components/hr/HRModule'
 import ColdChainModule from './components/coldchain/ColdChainModule'
 import InventoryModule from './components/inventory/InventoryModule'
+import AdminDashboard from './components/admin/AdminDashboard'
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import './App.css'
 
@@ -225,6 +226,10 @@ function App() {
   const handleInventoryAccess = () => {
     navigate('/inventory')
   }
+
+  const handleAdminAccess = () => {
+    navigate('/admin')
+  }
   
   const handleLogout = () => {
     // Clear any stored user data (if any)
@@ -244,6 +249,7 @@ function App() {
       <ErrorBoundary>
         <Routes>
           <Route path="/inventory" element={<InventoryModule />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/pos" element={
             <Box sx={{ height: '100vh', overflow: 'hidden' }}>
               <PharmacyPOS />
@@ -302,7 +308,7 @@ function App() {
             <>
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onAdminAccess={handleAdminAccess} onLogout={handleLogout} />}
             </>
           } />
         </Routes>

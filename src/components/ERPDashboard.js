@@ -23,7 +23,7 @@ function ModuleCard({ icon, title, description, delay, onClick, color }) {
   )
 }
 
-export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onLegalAccess, onColdChainAccess, onInventoryAccess, onLogout }) {
+export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onLegalAccess, onColdChainAccess, onInventoryAccess, onAdminAccess, onLogout }) {
   const [headerVisible, setHeaderVisible] = useState(false)
 
   useEffect(() => {
@@ -143,9 +143,8 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       onLegalAccess()
     } else if (moduleTitle === "Cold Chain" && onColdChainAccess) {
       onColdChainAccess()
-    } else if (moduleTitle === "Administration") {
-      // Navigate to data cleaner
-      window.open('/clear-data', '_blank')
+    } else if (moduleTitle === "Administration" && onAdminAccess) {
+      onAdminAccess()
     }
     // Other module navigation logic will be implemented here
   };
