@@ -16,8 +16,7 @@ module.exports = {
       '@contexts': path.resolve(__dirname, 'src/contexts'),
       '@services': path.resolve(__dirname, 'src/services'),
       '@utils': path.resolve(__dirname, 'src/utils'),
-      '@models': path.resolve(__dirname, 'src/models'),
-      '@firebase': path.resolve(__dirname, 'src/firebase'),
+      '@models': path.resolve(__dirname, 'src/models')
     },
     configure: (webpackConfig) => {
       // Enable source maps for better debugging

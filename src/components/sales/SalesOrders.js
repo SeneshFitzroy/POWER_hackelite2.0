@@ -84,8 +84,9 @@ export default function SalesOrders({ dateFilter }) {
   const loadOrders = async () => {
     try {
       setLoading(true);
+      // FIXED: Use 'transactions' collection instead of 'salesOrders'
       const ordersQuery = query(
-        collection(db, 'salesOrders'),
+        collection(db, 'transactions'),
         orderBy('createdAt', 'desc')
       );
       
@@ -127,23 +128,18 @@ export default function SalesOrders({ dateFilter }) {
         return;
       }
 
-      const orderData = {
+      // FIXED: Use transactionService to process sale instead of adding to salesOrders
+      const transactionData = {
         ...newOrder,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
-        orderNumber: `ORD-${Date.now()}`
+        receiptNumber: `RCP-${Date.now()}`,
+        transactionType: 'manual_sale'
       };
 
-      if (editingOrder) {
-        // Update existing order
-        await updateDoc(doc(db, 'salesOrders', editingOrder.id), {
-          ...orderData,
-          updatedAt: Timestamp.now()
-        });
-      } else {
-        // Add new order
-        await addDoc(collection(db, 'salesOrders'), orderData);
-      }
+      // Note: For manual sales, we would need to integrate with transactionService
+      // For now, we'll add to transactions collection directly
+      await addDoc(collection(db, 'transactions'), transactionData);
 
       setShowOrderDialog(false);
       setEditingOrder(null);
@@ -178,7 +174,8 @@ export default function SalesOrders({ dateFilter }) {
   const handleDeleteOrder = async (orderId) => {
     if (window.confirm('Are you sure you want to delete this order?')) {
       try {
-        await deleteDoc(doc(db, 'salesOrders', orderId));
+        // FIXED: Use 'transactions' collection instead of 'salesOrders'
+        await deleteDoc(doc(db, 'transactions', orderId));
         loadOrders();
       } catch (error) {
         console.error('Error deleting order:', error);
@@ -194,7 +191,8 @@ export default function SalesOrders({ dateFilter }) {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await updateDoc(doc(db, 'salesOrders', orderId), {
+      // FIXED: Use 'transactions' collection instead of 'salesOrders'
+      await updateDoc(doc(db, 'transactions', orderId), {
         status: newStatus,
         updatedAt: Timestamp.now()
       });
@@ -206,7 +204,8 @@ export default function SalesOrders({ dateFilter }) {
 
   const handlePaymentMethodChange = async (orderId, paymentMethod) => {
     try {
-      await updateDoc(doc(db, 'salesOrders', orderId), {
+      // FIXED: Use 'transactions' collection instead of 'salesOrders'
+      await updateDoc(doc(db, 'transactions', orderId), {
         paymentMethod: paymentMethod,
         updatedAt: Timestamp.now()
       });

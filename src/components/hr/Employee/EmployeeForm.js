@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -15,16 +15,24 @@ import {
   Divider,
   Container,
   IconButton,
+  CircularProgress,
   Chip
 } from '@mui/material';
 import { ArrowLeft, Save, User, Briefcase, PhoneIcon, MailIcon, MapPinIcon, CalendarIcon, FileTextIcon } from 'lucide-react';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { useAuth } from '../../../contexts/AuthContext';
 import { db } from '../../../firebase/config';
+import { useAuth } from '../../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-const AddEmployee = () => {
+const EmployeeForm = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isEdit = Boolean(id);
+  const { user, demoMode } = useAuth(); // Move this to the top level
+  
+  console.log('Auth context - User:', user, 'Demo mode:', demoMode);
+  
   const [formData, setFormData] = useState({
     // Personal Information
     firstName: '',
@@ -45,6 +53,7 @@ const AddEmployee = () => {
     employmentType: '',
     workSchedule: '',
     reportingManager: '',
+    status: 'active',
     
     // Compensation
     baseSalary: '',
@@ -55,12 +64,10 @@ const AddEmployee = () => {
     emergencyPhone: '',
     notes: ''
   });
-  
-  const { user, demoMode } = useAuth();
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [fetching, setFetching] = useState(false);
 
   const roles = [
     { value: 'registered_pharmacist', label: 'Registered Pharmacist' },
@@ -96,6 +103,43 @@ const AddEmployee = () => {
     { value: 'night', label: 'Night Shift (10:00 PM - 6:00 AM)' },
     { value: 'flexible', label: 'Flexible Hours' }
   ];
+
+  const statuses = [
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' },
+    { value: 'probation', label: 'Probation' }
+  ];
+
+  // Fetch employee data if editing
+  useEffect(() => {
+    if (isEdit && id) {
+      const fetchEmployee = async () => {
+        try {
+          setFetching(true);
+          const docRef = doc(db, 'employees', id);
+          const docSnap = await getDoc(docRef);
+          
+          if (docSnap.exists()) {
+            setFormData(prev => ({
+              ...prev,
+              ...docSnap.data()
+            }));
+          } else {
+            toast.error('Employee not found');
+            navigate('/hr/employees');
+          }
+        } catch (error) {
+          console.error('Error fetching employee:', error);
+          toast.error('Failed to fetch employee details');
+          navigate('/hr/employees');
+        } finally {
+          setFetching(false);
+        }
+      };
+
+      fetchEmployee();
+    }
+  }, [id, isEdit, navigate]);
 
   const handleInputChange = useCallback((field, value) => {
     setFormData(prev => ({
@@ -173,36 +217,58 @@ const AddEmployee = () => {
 
     setLoading(true);
     try {
-      // Generate employee ID if not provided
-      const employeeId = formData.employeeId || `EMP${Date.now().toString().slice(-6)}`;
+      // Generate employee ID if not provided and not editing
+      let employeeId = formData.employeeId;
+      if (!isEdit && !employeeId) {
+        employeeId = `EMP${Date.now().toString().slice(-6)}`;
+      }
       
       const employeeData = {
         ...formData,
         employeeId,
-        status: 'active',
-        createdAt: new Date().toISOString(),
+        baseSalary: parseFloat(formData.baseSalary) || 0,
         updatedAt: new Date().toISOString()
       };
 
-      console.log('AddEmployee: Saving employee data:', employeeData);
-      console.log('AddEmployee: Database reference:', db);
-      console.log('AddEmployee: Collection reference:', collection(db, 'employees'));
+      console.log('Saving employee data:', employeeData);
+      console.log('Database reference:', db);
+      console.log('Collection reference:', collection(db, 'employees'));
 
-      // Save to Firestore
-      const docRef = await addDoc(collection(db, 'employees'), employeeData);
-      console.log('AddEmployee: Employee added with ID:', docRef.id);
-      console.log('AddEmployee: Document reference:', docRef);
-      
-      toast.success('Employee added successfully!');
+      if (isEdit) {
+        // Update existing employee
+        const docRef = doc(db, 'employees', id);
+        console.log('Updating employee with ID:', id);
+        console.log('Document reference:', docRef);
+        await updateDoc(docRef, employeeData);
+        toast.success('Employee updated successfully!');
+      } else {
+        // Add new employee
+        employeeData.createdAt = new Date().toISOString();
+        employeeData.status = employeeData.status || 'active';
+        console.log('Adding new employee with data:', employeeData);
+        const docRef = await addDoc(collection(db, 'employees'), employeeData);
+        console.log('Employee added with ID:', docRef.id);
+        console.log('Document reference:', docRef);
+        toast.success('Employee added successfully!');
+      }
+
       navigate('/hr/employees');
     } catch (error) {
       console.error('Error saving employee:', error);
       console.error('Error details:', error.code, error.message);
-      toast.error('Failed to save employee. Please try again.');
+      toast.error(`Failed to ${isEdit ? 'update' : 'save'} employee. Please try again.`);
     } finally {
       setLoading(false);
     }
   };
+
+  if (fetching) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 3, pl: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+        <CircularProgress size={60} />
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 3, pl: 8 }}>
@@ -215,7 +281,7 @@ const AddEmployee = () => {
           <ArrowLeft />
         </IconButton>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
-          Add New Employee
+          {isEdit ? 'Edit Employee' : 'Add New Employee'}
         </Typography>
       </Box>
 
@@ -466,7 +532,8 @@ const AddEmployee = () => {
                     variant="outlined"
                     value={formData.employeeId}
                     onChange={(e) => handleInputChange('employeeId', e.target.value)}
-                    placeholder="Leave blank to auto-generate"
+                    placeholder={isEdit ? "" : "Leave blank to auto-generate"}
+                    disabled={isEdit}
                     sx={{ 
                       '& .MuiOutlinedInput-root': {
                         borderRadius: '8px'
@@ -603,6 +670,26 @@ const AddEmployee = () => {
                       }
                     }}
                   />
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth variant="outlined">
+                    <InputLabel>Status</InputLabel>
+                    <Select
+                      value={formData.status}
+                      onChange={(e) => handleInputChange('status', e.target.value)}
+                      label="Status"
+                      sx={{ 
+                        borderRadius: '8px'
+                      }}
+                    >
+                      {statuses.map((status) => (
+                        <MenuItem key={status.value} value={status.value}>
+                          {status.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
               </Grid>
             </Grid>
@@ -823,7 +910,7 @@ const AddEmployee = () => {
                     '&.Mui-disabled': { backgroundColor: '#1565c0' }
                   }}
                 >
-                  {loading ? 'Saving...' : 'Save Employee'}
+                  {loading ? (isEdit ? 'Updating...' : 'Saving...') : (isEdit ? 'Update Employee' : 'Save Employee')}
                 </Button>
               </Box>
             </Grid>
@@ -834,4 +921,4 @@ const AddEmployee = () => {
   );
 };
 
-export default AddEmployee;
+export default EmployeeForm;

@@ -97,7 +97,8 @@ const PayrollList = () => {
       const payrollBatch = [];
 
       for (const employee of activeEmployees) {
-        const baseSalary = employee.salary || 0;
+        // Get base salary from employee data
+        const baseSalary = parseFloat(employee.baseSalary) || 0;
         const overtimeHours = 0; // This would come from attendance data
         const overtimePay = overtimeHours * (200 / 60); // 200 LKR per 30 minutes
         
@@ -114,7 +115,7 @@ const PayrollList = () => {
           employeeId: employee.id,
           employeeName: `${employee.firstName} ${employee.lastName}`,
           month: selectedMonth,
-          baseSalary,
+          baseSalary: baseSalary,
           overtimeHours,
           overtimePay,
           grossSalary,
@@ -124,6 +125,7 @@ const PayrollList = () => {
           totalDeductions,
           netSalary,
           status: 'processed',
+          currency: employee.currency || 'LKR',
           createdAt: new Date().toISOString(),
           processedBy: 'current-user' // This would be the logged-in user
         };
@@ -316,7 +318,7 @@ const PayrollList = () => {
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             title="Total Payout"
-            value={`LKR ${payrollStats.totalPayout.toLocaleString()}`}
+            value={`LKR ${parseFloat(payrollStats.totalPayout).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             icon={<AttachMoney sx={{ fontSize: 28 }} />}
             color="#f59e0b"
           />
@@ -359,7 +361,7 @@ const PayrollList = () => {
                   })}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {monthPayrolls.length} employees • LKR {monthPayrolls.reduce((sum, p) => sum + p.netSalary, 0).toLocaleString()}
+                  {monthPayrolls.length} employees • LKR {monthPayrolls.reduce((sum, p) => sum + (p.netSalary || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </Typography>
               </Box>
             </Box>
@@ -397,27 +399,27 @@ const PayrollList = () => {
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2" color="text.primary">
-                            LKR {payroll.baseSalary.toLocaleString()}
+                            LKR {parseFloat(payroll.baseSalary || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </Typography>
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2" color="text.primary">
-                            {payroll.overtimeHours}h • LKR {payroll.overtimePay.toLocaleString()}
+                            {payroll.overtimeHours}h • LKR {parseFloat(payroll.overtimePay || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </Typography>
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2" color="text.primary">
-                            LKR {payroll.grossSalary.toLocaleString()}
+                            LKR {parseFloat(payroll.grossSalary || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </Typography>
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2" color="text.primary">
-                            LKR {payroll.totalDeductions.toLocaleString()}
+                            LKR {parseFloat(payroll.totalDeductions || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </Typography>
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2" sx={{ fontWeight: 'medium', color: '#1f2937' }}>
-                            LKR {payroll.netSalary.toLocaleString()}
+                            LKR {parseFloat(payroll.netSalary || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </Typography>
                         </TableCell>
                         <TableCell>

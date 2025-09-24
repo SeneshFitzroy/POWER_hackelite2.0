@@ -263,7 +263,7 @@ function App() {
                   <SalesModule />
                 </Box>
               } />
-              <Route path="/hr" element={
+              <Route path="/hr/*" element={
                 <Box sx={{ 
                   display: 'flex', 
                   flexDirection: 'column', 

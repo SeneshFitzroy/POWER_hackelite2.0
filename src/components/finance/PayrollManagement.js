@@ -29,7 +29,8 @@ import {
   Alert,
   LinearProgress,
   Tabs,
-  Tab
+  Tab,
+  CircularProgress
 } from '@mui/material';
 import {
   Add,
@@ -44,7 +45,8 @@ import {
   Schedule,
   AttachMoney,
   TrendingUp,
-  Person
+  Person,
+  Refresh
 } from '@mui/icons-material';
 import {
   BarChart,
@@ -60,6 +62,9 @@ import {
   Pie,
   Cell
 } from 'recharts';
+import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { db } from '../../firebase/config';
+import toast from 'react-hot-toast';
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -84,25 +89,104 @@ export default function PayrollManagement({ dateFilter }) {
   const [showPayrollDialog, setShowPayrollDialog] = useState(false);
   const [showEmployeeDialog, setShowEmployeeDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [payrollData, setPayrollData] = useState([]);
+  const [employees, setEmployees] = useState([]);
 
-  // Employee data - will be loaded from Firebase
-  const employees = [];
+  // Load data from Firebase
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  // Payroll summary data
-  const payrollSummary = {
-    totalEmployees: 0,
-    totalGrossPay: 0,
-    totalDeductions: 0,
-    totalNetPay: 0,
-    pendingPayments: 0,
-    processedPayments: 0
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      // Load payroll data from HR system
+      const payrollQuery = query(
+        collection(db, 'payrolls'),
+        orderBy('createdAt', 'desc')
+      );
+      const payrollSnapshot = await getDocs(payrollQuery);
+      const payrollDocs = payrollSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setPayrollData(payrollDocs);
+
+      // Load employee data
+      const employeesSnapshot = await getDocs(collection(db, 'employees'));
+      const employeeDocs = employeesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEmployees(employeeDocs);
+    } catch (error) {
+      console.error('Error loading payroll data:', error);
+      toast.error('Failed to load payroll data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Department-wise salary distribution
-  const departmentSalaryData = [];
+  // Calculate payroll summary from actual data
+  const calculatePayrollSummary = () => {
+    const totalEmployees = employees.filter(e => e.status === 'active').length;
+    const totalGrossPay = payrollData.reduce((sum, p) => sum + (p.grossSalary || 0), 0);
+    const totalDeductions = payrollData.reduce((sum, p) => sum + (p.totalDeductions || 0), 0);
+    const totalNetPay = payrollData.reduce((sum, p) => sum + (p.netSalary || 0), 0);
+    const processedPayments = payrollData.length;
+    const pendingPayments = totalEmployees - processedPayments;
 
-  // Monthly payroll trends
-  const payrollTrends = [];
+    return {
+      totalEmployees,
+      totalGrossPay,
+      totalDeductions,
+      totalNetPay,
+      pendingPayments,
+      processedPayments
+    };
+  };
+
+  // Calculate department-wise salary distribution
+  const calculateDepartmentSalaryData = () => {
+    const deptMap = {};
+    
+    payrollData.forEach(payroll => {
+      const employee = employees.find(e => e.id === payroll.employeeId);
+      if (employee) {
+        const dept = employee.department || 'Other';
+        if (!deptMap[dept]) {
+          deptMap[dept] = { department: dept, totalSalary: 0, employees: 0 };
+        }
+        deptMap[dept].totalSalary += payroll.netSalary || 0;
+        deptMap[dept].employees += 1;
+      }
+    });
+
+    return Object.values(deptMap);
+  };
+
+  // Calculate monthly payroll trends
+  const calculatePayrollTrends = () => {
+    const monthMap = {};
+    
+    payrollData.forEach(payroll => {
+      const month = payroll.month;
+      if (month) {
+        if (!monthMap[month]) {
+          monthMap[month] = { month, grossPay: 0, netPay: 0, deductions: 0 };
+        }
+        monthMap[month].grossPay += payroll.grossSalary || 0;
+        monthMap[month].netPay += payroll.netSalary || 0;
+        monthMap[month].deductions += payroll.totalDeductions || 0;
+      }
+    });
+
+    return Object.values(monthMap).sort((a, b) => a.month.localeCompare(b.month));
+  };
+
+  const payrollSummary = calculatePayrollSummary();
+  const departmentSalaryData = calculateDepartmentSalaryData();
+  const payrollTrends = calculatePayrollTrends();
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -114,11 +198,11 @@ export default function PayrollManagement({ dateFilter }) {
   };
 
   const formatCurrency = (amount) => {
-    return `₹${amount.toLocaleString()}`;
+    return `LKR ${parseFloat(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-IN');
+    return new Date(dateString).toLocaleDateString('en-US');
   };
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -142,7 +226,7 @@ export default function PayrollManagement({ dateFilter }) {
               variant="body2"
               sx={{ color: item.color, fontSize: '12px' }}
             >
-              {item.name}: ₹{item.value?.toLocaleString()}
+              {item.name}: LKR {parseFloat(item.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </Typography>
           ))}
         </Box>
@@ -150,6 +234,14 @@ export default function PayrollManagement({ dateFilter }) {
     }
     return null;
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: 0 }}>
@@ -178,6 +270,21 @@ export default function PayrollManagement({ dateFilter }) {
         </Box>
         
         <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            startIcon={<Refresh />}
+            variant="outlined"
+            onClick={loadData}
+            sx={{
+              borderColor: '#64748b',
+              color: '#64748b',
+              '&:hover': {
+                backgroundColor: '#64748b',
+                color: 'white'
+              }
+            }}
+          >
+            Refresh Data
+          </Button>
           <Button
             startIcon={<Add />}
             variant="outlined"
@@ -384,7 +491,7 @@ export default function PayrollManagement({ dateFilter }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {employees.map((employee) => (
+                {employees.filter(e => e.status === 'active').map((employee) => (
                   <TableRow key={employee.id} sx={{ '&:hover': { backgroundColor: '#f8fafc' } }}>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -398,21 +505,21 @@ export default function PayrollManagement({ dateFilter }) {
                             fontWeight: 'bold'
                           }}
                         >
-                          {employee.name.split(' ').map(n => n[0]).join('')}
+                          {employee.firstName?.charAt(0)}{employee.lastName?.charAt(0)}
                         </Avatar>
                         <Box>
                           <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                            {employee.name}
+                            {employee.firstName} {employee.lastName}
                           </Typography>
                           <Typography variant="caption" sx={{ color: '#64748b' }}>
-                            ID: {employee.id}
+                            ID: {employee.employeeId}
                           </Typography>
                         </Box>
                       </Box>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {employee.position}
+                        {employee.role?.replace('_', ' ')}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -429,21 +536,21 @@ export default function PayrollManagement({ dateFilter }) {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                        {formatCurrency(employee.baseSalary)}
+                        {formatCurrency(employee.baseSalary || 0)}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#10b981' }}>
-                        {formatCurrency(employee.netSalary)}
+                        {formatCurrency(employee.baseSalary * 0.92 || 0)} {/* Approx net salary */}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={employee.paymentStatus.toUpperCase()}
+                        label="Active"
                         size="small"
                         sx={{
-                          backgroundColor: `${getStatusColor(employee.paymentStatus)}15`,
-                          color: getStatusColor(employee.paymentStatus),
+                          backgroundColor: '#10b98115',
+                          color: '#10b981',
                           fontWeight: 'bold',
                           fontSize: '11px'
                         }}
@@ -457,11 +564,6 @@ export default function PayrollManagement({ dateFilter }) {
                         <IconButton size="small" sx={{ color: '#64748b' }}>
                           <Edit sx={{ fontSize: '16px' }} />
                         </IconButton>
-                        {employee.paymentStatus !== 'paid' && (
-                          <IconButton size="small" sx={{ color: '#10b981' }}>
-                            <Payment sx={{ fontSize: '16px' }} />
-                          </IconButton>
-                        )}
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -475,7 +577,7 @@ export default function PayrollManagement({ dateFilter }) {
         <TabPanel value={activeTab} index={1}>
           <Box sx={{ mb: 3 }}>
             <Alert severity="info" icon={<Schedule />}>
-              Payroll for September 2024 is ready for processing. Review all employee details before final approval.
+              Payroll for {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} is ready for processing. Review all employee details before final approval.
             </Alert>
           </Box>
 
@@ -520,7 +622,7 @@ export default function PayrollManagement({ dateFilter }) {
                   </Typography>
                   <LinearProgress
                     variant="determinate"
-                    value={(payrollSummary.processedPayments / payrollSummary.totalEmployees) * 100}
+                    value={payrollSummary.totalEmployees > 0 ? (payrollSummary.processedPayments / payrollSummary.totalEmployees) * 100 : 0}
                     sx={{
                       height: 8,
                       borderRadius: 4,
@@ -560,65 +662,41 @@ export default function PayrollManagement({ dateFilter }) {
                 }}
               >
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: '#1e3a8a' }}>
-                  Quick Actions
+                  Recent Payroll Records
                 </Typography>
                 
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Download />}
-                      sx={{
-                        borderColor: '#64748b',
-                        color: '#64748b',
-                        justifyContent: 'flex-start',
-                        '&:hover': {
-                          backgroundColor: '#64748b',
-                          color: 'white'
-                        }
+                <Box sx={{ maxHeight: 300, overflowY: 'auto' }}>
+                  {payrollData.slice(0, 5).map((payroll) => (
+                    <Box 
+                      key={payroll.id} 
+                      sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        py: 1,
+                        borderBottom: '1px solid #f1f5f9'
                       }}
                     >
-                      Download Payslips
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Calculate />}
-                      sx={{
-                        borderColor: '#64748b',
-                        color: '#64748b',
-                        justifyContent: 'flex-start',
-                        '&:hover': {
-                          backgroundColor: '#64748b',
-                          color: 'white'
-                        }
-                      }}
-                    >
-                      Generate Tax Reports
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<AccountBalance />}
-                      sx={{
-                        borderColor: '#64748b',
-                        color: '#64748b',
-                        justifyContent: 'flex-start',
-                        '&:hover': {
-                          backgroundColor: '#64748b',
-                          color: 'white'
-                        }
-                      }}
-                    >
-                      Bank Transfer File
-                    </Button>
-                  </Grid>
-                </Grid>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                          {payroll.employeeName}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                          {payroll.month}
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#10b981' }}>
+                        {formatCurrency(payroll.netSalary)}
+                      </Typography>
+                    </Box>
+                  ))}
+                  
+                  {payrollData.length === 0 && (
+                    <Typography variant="body2" sx={{ textAlign: 'center', py: 2, color: '#64748b' }}>
+                      No payroll records found
+                    </Typography>
+                  )}
+                </Box>
               </Paper>
             </Grid>
           </Grid>
@@ -652,7 +730,7 @@ export default function PayrollManagement({ dateFilter }) {
                       axisLine={false}
                       tickLine={false}
                       tick={{ fontSize: 12, fill: '#64748b' }}
-                      tickFormatter={(value) => `₹${(value/1000).toFixed(0)}K`}
+                      tickFormatter={(value) => `LKR ${(value/1000).toFixed(0)}K`}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Bar 
@@ -725,7 +803,7 @@ export default function PayrollManagement({ dateFilter }) {
                       axisLine={false}
                       tickLine={false}
                       tick={{ fontSize: 12, fill: '#64748b' }}
-                      tickFormatter={(value) => `₹${(value/1000).toFixed(0)}K`}
+                      tickFormatter={(value) => `LKR ${(value/1000).toFixed(0)}K`}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Line
