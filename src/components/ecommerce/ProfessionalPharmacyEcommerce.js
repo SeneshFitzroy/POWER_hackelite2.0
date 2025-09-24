@@ -324,8 +324,38 @@ const EcommerceProvider = ({ children }) => {
 // Professional Delivery Content Component for Popup
 const ProfessionalDeliveryContent = ({ orderId }) => {
   const [deliveryStatus] = useState('in_transit');
-  const [driverLocation] = useState({ lat: 6.9300, lng: 79.8500 });
   const [estimatedTime] = useState('15-20 minutes');
+
+  // Professional CSS-in-JS animations
+  const pulseAnimation = {
+    '@keyframes pulse': {
+      '0%': {
+        transform: 'scale(1)',
+        opacity: 1,
+      },
+      '50%': {
+        transform: 'scale(1.05)',
+        opacity: 0.7,
+      },
+      '100%': {
+        transform: 'scale(1)',
+        opacity: 1,
+      },
+    },
+  };
+
+  const slideInAnimation = {
+    '@keyframes slideIn': {
+      '0%': {
+        transform: 'translateY(20px)',
+        opacity: 0,
+      },
+      '100%': {
+        transform: 'translateY(0)',
+        opacity: 1,
+      },
+    },
+  };
   
   const deliverySteps = [
     { id: 'confirmed', label: 'Order Confirmed', icon: CheckCircleIcon, completed: true, time: '10:30 AM' },
@@ -336,35 +366,139 @@ const ProfessionalDeliveryContent = ({ orderId }) => {
 
   const driverInfo = {
     name: 'Kamal Perera',
-    phone: '+94 77 123 4567',
     vehicle: 'Motorcycle - ABC 1234',
     rating: 4.8,
-    photo: '/images/avatars/driver-avatar.svg'
+    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format&q=80'
   };
 
   return (
-    <Box sx={{ minHeight: '500px' }}>
-      {/* Delivery Status Progress */}
-      <Box sx={{ p: 3, backgroundColor: '#f8fafc' }}>
-        <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 3 }}>
+    <Box sx={{ 
+      minHeight: '650px', 
+      backgroundColor: '#ffffff',
+      borderRadius: '24px',
+      overflow: 'hidden',
+      boxShadow: '0 24px 48px rgba(25,118,210,0.15)',
+      border: '1px solid #e3f2fd',
+      animation: 'slideIn 0.4s ease-out',
+      ...slideInAnimation,
+      ...pulseAnimation
+    }}>
+      {/* Header Section */}
+      <Box sx={{ 
+        p: 4, 
+        backgroundColor: 'white',
+        borderBottom: '1px solid #e3f2fd',
+        background: 'linear-gradient(180deg, #f8fafe 0%, #ffffff 100%)'
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+          <Box 
+            sx={{ 
+              width: 14, 
+              height: 14, 
+              backgroundColor: '#1976d2', 
+              borderRadius: '50%',
+              animation: 'pulse 2s infinite',
+              boxShadow: '0 0 0 4px rgba(25,118,210,0.2)'
+            }} 
+          />
+          <Typography 
+            variant="h5" 
+            sx={{
+              color: '#1565c0',
+              fontWeight: '800',
+              fontSize: '24px',
+              fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+            }}
+          >
+            Live Tracking
+          </Typography>
+        </Box>
+        
+        {/* ETA Card */}
+        <Card sx={{ 
+          background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)', 
+          color: 'white',
+          boxShadow: '0 12px 40px rgba(21,101,192,0.35)',
+          borderRadius: '20px',
+          border: '1px solid rgba(255,255,255,0.1)'
+        }}>
+          <CardContent sx={{ textAlign: 'center', py: 3.5, px: 3 }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                opacity: 0.9, 
+                mb: 1,
+                fontSize: '14px',
+                fontWeight: '500',
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase',
+                fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+              }}
+            >
+              Estimated Arrival
+            </Typography>
+            <Typography 
+              variant="h3" 
+              sx={{ 
+                fontWeight: '800', 
+                mb: 1,
+                fontSize: '32px',
+                fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+              }}
+            >
+              {estimatedTime}
+            </Typography>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                opacity: 0.95,
+                fontSize: '16px',
+                fontWeight: '500',
+                fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+              }}
+            >
+              Your medicines are on the way
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+
+      {/* Delivery Progress Section */}
+      <Box sx={{ 
+        p: 4, 
+        backgroundColor: 'white', 
+        mb: 1,
+        borderTop: '1px solid #f3f4f6'
+      }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: '800', 
+            color: '#1565c0', 
+            mb: 4,
+            fontSize: '20px',
+            fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+          }}
+        >
           Delivery Progress
         </Typography>
         
-        <Box sx={{ position: 'relative' }}>
+        <Box sx={{ position: 'relative', pl: 2 }}>
           {deliverySteps.map((step, index) => {
             const IconComponent = step.icon;
             return (
-              <Box key={step.id} sx={{ display: 'flex', alignItems: 'center', mb: 3, position: 'relative' }}>
+              <Box key={step.id} sx={{ display: 'flex', alignItems: 'flex-start', mb: 4, position: 'relative' }}>
                 {/* Progress Line */}
                 {index < deliverySteps.length - 1 && (
                   <Box
                     sx={{
                       position: 'absolute',
-                      left: '15px',
-                      top: '35px',
-                      width: '2px',
-                      height: '40px',
-                      backgroundColor: step.completed ? '#4caf50' : '#e0e0e0',
+                      left: '18px',
+                      top: '36px',
+                      width: '3px',
+                      height: '36px',
+                      backgroundColor: step.completed ? '#1565c0' : '#bbdefb',
+                      borderRadius: '2px',
                       zIndex: 0
                     }}
                   />
@@ -373,37 +507,48 @@ const ProfessionalDeliveryContent = ({ orderId }) => {
                 {/* Step Icon */}
                 <Box
                   sx={{
-                    width: 32,
-                    height: 32,
+                    width: 36,
+                    height: 36,
                     borderRadius: '50%',
-                    backgroundColor: step.completed ? '#4caf50' : step.active ? '#1976d2' : '#e0e0e0',
-                    color: step.completed || step.active ? 'white' : '#666',
+                    backgroundColor: step.completed ? '#1565c0' : step.active ? '#1976d2' : '#e3f2fd',
+                    color: step.completed || step.active ? 'white' : '#90caf9',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     zIndex: 1,
                     position: 'relative',
-                    animation: step.active ? 'pulse 2s infinite' : 'none',
-                    '@keyframes pulse': {
-                      '0%': { transform: 'scale(1)', opacity: 1 },
-                      '50%': { transform: 'scale(1.1)', opacity: 0.7 },
-                      '100%': { transform: 'scale(1)', opacity: 1 }
-                    }
+                    boxShadow: step.active ? '0 0 0 6px rgba(25,118,210,0.15)' : step.completed ? '0 4px 12px rgba(21,101,192,0.25)' : 'none',
+                    transform: step.active ? 'scale(1.15)' : 'scale(1)',
+                    transition: 'all 0.4s ease',
+                    border: step.active ? '2px solid white' : 'none'
                   }}
                 >
                   <IconComponent sx={{ fontSize: 18 }} />
                 </Box>
                 
                 {/* Step Details */}
-                <Box sx={{ ml: 3, flex: 1 }}>
+                <Box sx={{ ml: 3, flex: 1, pt: 0.5 }}>
                   <Typography 
                     variant="body1" 
-                    fontWeight={step.active ? 'bold' : 'medium'}
-                    color={step.active ? '#1976d2' : step.completed ? '#333' : '#666'}
+                    sx={{
+                      fontWeight: step.active ? '800' : '700',
+                      color: step.active ? '#1565c0' : step.completed ? '#0d47a1' : '#90caf9',
+                      mb: 0.5,
+                      fontSize: '17px',
+                      fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                    }}
                   >
                     {step.label}
                   </Typography>
-                  <Typography variant="body2" color="#666">
+                  <Typography 
+                    variant="body2" 
+                    sx={{
+                      color: step.active ? '#1976d2' : '#64b5f6',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                    }}
+                  >
                     {step.time}
                   </Typography>
                 </Box>
@@ -413,237 +558,376 @@ const ProfessionalDeliveryContent = ({ orderId }) => {
         </Box>
       </Box>
 
-      {/* Live Tracking Section */}
-      <Box sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <Box 
-            sx={{ 
-              width: 8, 
-              height: 8, 
-              backgroundColor: '#4caf50', 
-              borderRadius: '50%',
-              animation: 'pulse 2s infinite'
-            }} 
-          />
-          <Typography variant="h6" color="#4caf50" fontWeight="bold">
-            Live Tracking
-          </Typography>
-        </Box>
-
-        {/* ETA Card */}
-        <Card sx={{ mb: 3, background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)', color: 'white' }}>
-          <CardContent sx={{ textAlign: 'center', py: 3 }}>
-            <Typography variant="body2" sx={{ opacity: 0.9, mb: 1 }}>
-              Estimated Arrival Time
-            </Typography>
-            <Typography variant="h4" fontWeight="bold">
-              {estimatedTime}
-            </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.9, mt: 1 }}>
-              Your medicine is on the way!
-            </Typography>
-          </CardContent>
-        </Card>
-
-        {/* Driver Information */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 2 }}>
-              Your Delivery Partner
-            </Typography>
+      {/* Driver Information */}
+      <Box sx={{ 
+        p: 4, 
+        backgroundColor: 'white', 
+        mb: 1,
+        borderTop: '1px solid #f3f4f6'
+      }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: '800', 
+            color: '#1565c0', 
+            mb: 4,
+            fontSize: '20px',
+            fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+          }}
+        >
+          Your Delivery Partner
+        </Typography>
+        
+        <Card sx={{ 
+          p: 4, 
+          border: '2px solid #e3f2fd',
+          borderRadius: '20px',
+          boxShadow: '0 8px 32px rgba(25,118,210,0.12)',
+          background: 'linear-gradient(135deg, #fafbff 0%, #f3f4f6 100%)'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Avatar 
+              src={driverInfo.photo}
+              sx={{ 
+                width: 84, 
+                height: 84,
+                border: '4px solid #1565c0',
+                boxShadow: '0 8px 24px rgba(21,101,192,0.35)',
+                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)'
+              }}
+            >
+              <PersonIcon sx={{ fontSize: 42, color: 'white' }} />
+            </Avatar>
             
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar 
-                src={driverInfo.photo}
+            <Box sx={{ flex: 1 }}>
+              <Typography 
+                variant="h6" 
                 sx={{ 
-                  width: 60, 
-                  height: 60,
-                  border: '3px solid #1976d2'
+                  fontWeight: '800', 
+                  color: '#0d47a1', 
+                  mb: 0.5,
+                  fontSize: '20px',
+                  fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
                 }}
               >
-                <PersonIcon />
-              </Avatar>
-              
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  {driverInfo.name}
-                </Typography>
-                <Typography variant="body2" color="#666" sx={{ mb: 1 }}>
-                  {driverInfo.vehicle}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Rating value={driverInfo.rating} precision={0.1} readOnly size="small" />
-                  <Typography variant="body2" color="#666">
-                    {driverInfo.rating}
-                  </Typography>
-                </Box>
-              </Box>
-              
-              <Chip
-                label={`★ ${driverInfo.rating}`}
-                color="primary"
+                {driverInfo.name}
+              </Typography>
+              <Typography 
+                variant="body2" 
                 sx={{ 
-                  backgroundColor: '#1976d2',
+                  color: '#1976d2', 
+                  mb: 1.5,
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                }}
+              >
+                {driverInfo.vehicle}
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Rating value={driverInfo.rating} precision={0.1} readOnly size="medium" 
+                  sx={{ color: '#1976d2' }}
+                />
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: '#1565c0', 
+                    fontWeight: '700',
+                    fontSize: '15px',
+                    fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }}
+                >
+                  {driverInfo.rating} rating
+                </Typography>
+              </Box>
+            </Box>
+            
+            <Box sx={{ ml: 'auto' }}>
+              <Chip
+                label="Professional Driver"
+                sx={{ 
+                  background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
                   color: 'white',
-                  fontWeight: 'bold'
+                  fontWeight: '700',
+                  fontSize: '13px',
+                  height: '32px',
+                  px: 2,
+                  fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  boxShadow: '0 4px 12px rgba(25,118,210,0.3)'
                 }}
               />
             </Box>
-          </CardContent>
+          </Box>
         </Card>
+      </Box>
 
-        {/* Professional Route Map */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 2 }}>
-              Delivery Route
-            </Typography>
+      {/* Professional Route Map */}
+      <Box sx={{ 
+        p: 4, 
+        backgroundColor: 'white', 
+        mb: 1,
+        borderTop: '1px solid #f3f4f6'
+      }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: '800', 
+            color: '#1565c0', 
+            mb: 4,
+            fontSize: '20px',
+            fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+          }}
+        >
+          Live Route Tracking
+        </Typography>
+        
+        {/* Route Visualization */}
+        <Box
+          sx={{
+            position: 'relative',
+            height: 280,
+            background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            border: '1px solid #e1e5e9',
+            mb: 3
+          }}
+        >
+          {/* Professional Map Background */}
+          <svg 
+            width="100%" 
+            height="100%" 
+            viewBox="0 0 400 240" 
+            style={{ position: 'absolute', top: 0, left: 0 }}
+          >
+            {/* Street grid pattern */}
+            <defs>
+              <pattern id="streetGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#cbd5e1" strokeWidth="1" opacity="0.3"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#streetGrid)" />
             
-            {/* Route Visualization */}
-            <Box
-              sx={{
-                position: 'relative',
-                height: 200,
-                background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                borderRadius: 2,
-                overflow: 'hidden',
-                border: '2px solid #e2e8f0'
+            {/* Main delivery route */}
+            <path 
+              d="M 60 120 Q 200 100 340 120" 
+              stroke="#1976d2" 
+              strokeWidth="6" 
+              fill="none"
+              strokeDasharray="8,4"
+              opacity="0.8"
+            />
+            
+            {/* Pharmacy location */}
+            <circle cx="60" cy="120" r="12" fill="#1976d2" stroke="white" strokeWidth="3"/>
+            <text x="60" y="126" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">P</text>
+            
+            {/* Customer location */}
+            <circle cx="340" cy="120" r="12" fill="#4caf50" stroke="white" strokeWidth="3"/>
+            <text x="340" y="126" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">C</text>
+            
+            {/* Driver current position (animated) */}
+            <circle cx="200" cy="105" r="10" fill="#ff5722" stroke="white" strokeWidth="3">
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="0,0; 10,-2; 0,0; -10,2; 0,0"
+                dur="4s"
+                repeatCount="indefinite"
+              />
+            </circle>
+            <text x="200" y="111" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">D</text>
+          </svg>
+          
+          {/* Location Labels */}
+          <Box sx={{ position: 'absolute', top: 20, left: 20 }}>
+            <Chip 
+              icon={<StoreIcon />} 
+              label="NPK Pharmacy" 
+              size="medium"
+              sx={{ 
+                background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)', 
+                color: 'white',
+                fontWeight: '700',
+                fontSize: '13px',
+                boxShadow: '0 4px 12px rgba(21,101,192,0.4)',
+                fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}
-            >
-              {/* Route Path */}
-              <svg 
-                width="100%" 
-                height="100%" 
-                viewBox="0 0 400 200" 
-                style={{ position: 'absolute', top: 0, left: 0 }}
+            />
+          </Box>
+          
+          <Box sx={{ position: 'absolute', top: 20, right: 20 }}>
+            <Chip 
+              icon={<LocationOnIcon />} 
+              label="Your Location" 
+              size="medium"
+              sx={{ 
+                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)', 
+                color: 'white',
+                fontWeight: '700',
+                fontSize: '13px',
+                boxShadow: '0 4px 12px rgba(25,118,210,0.4)',
+                fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+              }}
+            />
+          </Box>
+          
+          {/* Driver position indicator */}
+          <Box sx={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)' }}>
+            <Chip 
+              icon={<LocalShippingIcon />} 
+              label="Driver En Route" 
+              size="small"
+              sx={{ 
+                backgroundColor: '#ff5722', 
+                color: 'white',
+                fontWeight: '600',
+                fontSize: '0.75rem'
+              }}
+            />
+          </Box>
+        </Box>
+        
+        {/* Delivery Statistics */}
+        <Box sx={{ display: 'flex', gap: 3, mt: 3 }}>
+          <Card sx={{ 
+            flex: 1, 
+            backgroundColor: 'white', 
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+          }}>
+            <CardContent sx={{ textAlign: 'center', py: 2.5 }}>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  fontWeight: '900', 
+                  color: '#1565c0',
+                  fontSize: '26px',
+                  mb: 0.5,
+                  fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                }}
               >
-                {/* Background grid */}
-                <defs>
-                  <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#cbd5e1" strokeWidth="0.5" opacity="0.5"/>
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-                
-                {/* Route line */}
-                <path 
-                  d="M 80 100 Q 200 80 320 100" 
-                  stroke="#1976d2" 
-                  strokeWidth="4" 
-                  fill="none"
-                  strokeDasharray="5,5"
-                />
-                
-                {/* Pharmacy marker */}
-                <circle cx="80" cy="100" r="8" fill="#4caf50" stroke="white" strokeWidth="2"/>
-                
-                {/* Driver marker (animated) */}
-                <circle cx="200" cy="85" r="6" fill="#ff5722" stroke="white" strokeWidth="2">
-                  <animateMotion dur="3s" repeatCount="indefinite">
-                    <mpath href="#route"/>
-                  </animateMotion>
-                </circle>
-                
-                {/* Customer marker */}
-                <circle cx="320" cy="100" r="8" fill="#1976d2" stroke="white" strokeWidth="2"/>
-                
-                {/* Hidden path for animation */}
-                <path id="route" d="M 80 100 Q 200 80 320 100" opacity="0"/>
-              </svg>
-              
-              {/* Location Labels */}
-              <Box sx={{ position: 'absolute', top: 10, left: 20 }}>
-                <Chip 
-                  icon={<StoreIcon />} 
-                  label="NPK Pharmacy" 
-                  size="small"
-                  sx={{ 
-                    backgroundColor: '#4caf50', 
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: '0.75rem'
-                  }}
-                />
-              </Box>
-              
-              <Box sx={{ position: 'absolute', top: 10, right: 20 }}>
-                <Chip 
-                  icon={<LocationOnIcon />} 
-                  label="Your Location" 
-                  size="small"
-                  sx={{ 
-                    backgroundColor: '#1976d2', 
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: '0.75rem'
-                  }}
-                />
-              </Box>
-              
-              {/* Driver position indicator */}
-              <Box sx={{ position: 'absolute', top: '35%', left: '45%', transform: 'translate(-50%, -50%)' }}>
-                <Chip 
-                  icon={<LocalShippingIcon />} 
-                  label="Driver" 
-                  size="small"
-                  sx={{ 
-                    backgroundColor: '#ff5722', 
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: '0.7rem',
-                    animation: 'bounce 2s infinite',
-                    '@keyframes bounce': {
-                      '0%, 20%, 50%, 80%, 100%': { transform: 'translate(-50%, -50%) translateY(0)' },
-                      '40%': { transform: 'translate(-50%, -50%) translateY(-5px)' },
-                      '60%': { transform: 'translate(-50%, -50%) translateY(-3px)' }
-                    }
-                  }}
-                />
-              </Box>
-            </Box>
-            
-            {/* Distance & Time Info */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h6" fontWeight="bold" color="#1976d2">
-                  2.5 km
-                </Typography>
-                <Typography variant="body2" color="#666">
-                  Distance Remaining
-                </Typography>
-              </Box>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h6" fontWeight="bold" color="#4caf50">
-                  15 min
-                </Typography>
-                <Typography variant="body2" color="#666">
-                  Estimated Time
-                </Typography>
-              </Box>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h6" fontWeight="bold" color="#ff5722">
-                  35 km/h
-                </Typography>
-                <Typography variant="body2" color="#666">
-                  Current Speed
-                </Typography>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
+                2.4 km
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#64b5f6',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.8px',
+                  fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                }}
+              >
+                Distance Left
+              </Typography>
+            </CardContent>
+          </Card>
+          
+          <Card sx={{ 
+            flex: 1, 
+            backgroundColor: 'white', 
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+          }}>
+            <CardContent sx={{ textAlign: 'center', py: 2.5 }}>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  fontWeight: '900', 
+                  color: '#1976d2',
+                  fontSize: '26px',
+                  mb: 0.5,
+                  fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                }}
+              >
+                12 min
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6b7280',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                }}
+              >
+                ETA
+              </Typography>
+            </CardContent>
+          </Card>
+          
+          <Card sx={{ 
+            flex: 1, 
+            backgroundColor: 'white', 
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+          }}>
+            <CardContent sx={{ textAlign: 'center', py: 2.5 }}>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  fontWeight: '900', 
+                  color: '#0d47a1',
+                  fontSize: '26px',
+                  mb: 0.5,
+                  fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                }}
+              >
+                32 km/h
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6b7280',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                }}
+              >
+                Speed
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
 
-        {/* Action Buttons */}
-        <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+      {/* Action Buttons */}
+      <Box sx={{ 
+        p: 4, 
+        backgroundColor: '#fafbff', 
+        borderTop: '2px solid #e3f2fd',
+        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafe 100%)'
+      }}>
+        <Box sx={{ display: 'flex', gap: 3 }}>
           <Button
             fullWidth
             variant="outlined"
             startIcon={<NotificationsIcon />}
             sx={{ 
-              borderColor: '#1976d2', 
-              color: '#1976d2',
+              borderColor: '#1565c0', 
+              color: '#1565c0',
+              fontWeight: '800',
+              py: 2.5,
+              fontSize: '16px',
+              borderRadius: '16px',
+              borderWidth: '2px',
+              fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
               '&:hover': {
-                backgroundColor: '#1976d2',
-                color: 'white'
+                backgroundColor: '#e3f2fd',
+                borderColor: '#0d47a1',
+                borderWidth: '2px',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 6px 20px rgba(21,101,192,0.2)'
               }
             }}
           >
@@ -654,7 +938,18 @@ const ProfessionalDeliveryContent = ({ orderId }) => {
             variant="contained"
             startIcon={<ReceiptIcon />}
             sx={{ 
-              background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)'
+              background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+              fontWeight: '800',
+              py: 2.5,
+              fontSize: '16px',
+              borderRadius: '16px',
+              boxShadow: '0 8px 32px rgba(21,101,192,0.4)',
+              fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #0d47a1 0%, #1a237e 100%)',
+                boxShadow: '0 12px 40px rgba(13,71,161,0.5)',
+                transform: 'translateY(-2px)'
+              }
             }}
           >
             View Receipt
