@@ -1,108 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Grid, Typography, Paper } from '@mui/material';
+// ERP Dashboard - Inventory Navigation Fixed - Version 3.0
+import React, { useState, useEffect } from "react"
 
 function ModuleCard({ icon, title, description, delay, onClick, color }) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
+    const timer = setTimeout(() => setIsVisible(true), delay)
+    return () => clearTimeout(timer)
+  }, [delay])
 
   return (
-    <Paper
-      elevation={0}
+    <div
+      className={`module-card ${isVisible ? 'animate' : ''}`}
       onClick={onClick}
-      sx={{
-        p: 3,
-        border: '1px solid #eef2ff',
-        borderRadius: '16px',
-        cursor: 'pointer',
-        transition: 'transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease, opacity 400ms ease, transform 400ms ease',
-        boxShadow: '0 8px 24px rgba(30,58,138,0.08)',
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
-        minHeight: 220,
-        height: 220,
-        maxHeight: 220,
-        minWidth: 290,
-        width: 290,
-        maxWidth: 290,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 20px 40px rgba(30,58,138,0.16)',
-          borderColor: '#c7d2fe'
-        }
-      }}
     >
-      <Box
-        sx={{
-          height: 72,
-          width: 72,
-          borderRadius: '18px',
-          mb: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#fff',
-          boxShadow: '0 12px 22px rgba(30,58,138,0.25)',
-          background: `linear-gradient(135deg, ${color} 0%, ${color}CC 100%)`
-        }}
-      >
+      <div className="module-icon" style={{background: `linear-gradient(135deg, ${color} 0%, ${color}CC 100%)`}}>
         {icon}
-      </Box>
-      <Typography
-        variant="h6"
-        sx={{
-          fontWeight: 800,
-          color: '#1e3a8a',
-          fontSize: '1.125rem',
-          mt: 0.5,
-          mb: 0.75,
-          textAlign: 'center',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          display: '-webkit-box',
-          WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 1,
-          whiteSpace: 'normal',
-          wordBreak: 'break-word'
-        }}
-      >
-        {title}
-      </Typography>
-      <Typography
-        variant="body2"
-        sx={{
-          color: '#5b6b94',
-          textAlign: 'center',
-          mt: 'auto',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          display: '-webkit-box',
-          WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 2,
-          whiteSpace: 'normal',
-          wordBreak: 'break-word'
-        }}
-      >
-        {description}
-      </Typography>
-    </Paper>
-  );
+      </div>
+      <h3 className="module-title">{title}</h3>
+      <p className="module-description">{description}</p>
+    </div>
+  )
 }
 
-export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onLegalAccess, onColdChainAccess, onInventoryAccess, onLogout }) {
-  const [headerVisible, setHeaderVisible] = useState(false);
+export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onLegalAccess, onColdChainAccess, onInventoryAccess, onAdminAccess, onLogout }) {
+  const [headerVisible, setHeaderVisible] = useState(false)
 
   useEffect(() => {
-    const timer = setTimeout(() => setHeaderVisible(true), 200);
-    return () => clearTimeout(timer);
-  }, []);
+    const timer = setTimeout(() => setHeaderVisible(true), 200)
+    return () => clearTimeout(timer)
+  }, [])
 
   const modules = [
     {
@@ -112,9 +39,9 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
           <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      title: 'HR',
-      description: 'Employee records, payroll, and workforce management',
-      color: '#10B981'
+      title: "HR",
+      description: "Employee records, payroll, and workforce management",
+      color: "#10B981", // Green for HR/People
     },
     {
       icon: (
@@ -122,9 +49,9 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
           <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V19C17 19.5523 17.4477 20 18 20C18.5523 20 19 19.5523 19 19V13M9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18C8.32843 18 9 18.6716 9 19.5ZM20 19.5C20 20.3284 19.3284 21 18.5 21C17.6716 21 17 20.3284 17 19.5C17 18.6716 17.6716 18 18.5 18C19.3284 18 20 18.6716 20 19.5Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      title: 'POS',
-      description: 'Point of sale and retail operations',
-      color: '#F59E0B'
+      title: "POS",
+      description: "Point of sale and retail operations",
+      color: "#F59E0B", // Orange for Sales/POS
     },
     {
       icon: (
@@ -133,9 +60,9 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
           <path d="M22 10H2M7 15H7.01M11 15H11.01" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      title: 'Sales & Finance',
-      description: 'Sales tracking, accounting, and financial reporting',
-      color: '#059669'
+      title: "Sales & Finance",
+      description: "Sales tracking, accounting, and financial reporting",
+      color: "#059669", // Dark Green for Finance/Money
     },
     {
       icon: (
@@ -144,9 +71,9 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
           <path d="M14 2V8H20M16 13H8M16 17H8M10 9H8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      title: 'Legal',
-      description: 'Contract management and legal compliance',
-      color: '#7C3AED'
+      title: "Legal",
+      description: "Contract management and legal compliance",
+      color: "#7C3AED", // Purple for Legal/Compliance
     },
     {
       icon: (
@@ -155,9 +82,9 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
           <path d="M9 22V12H15V22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      title: 'Inventory',
-      description: 'Stock management and warehouse operations',
-      color: '#DC2626'
+      title: "Inventory",
+      description: "Stock management and warehouse operations",
+      color: "#DC2626", // Red for Inventory/Critical
     },
     {
       icon: (
@@ -168,9 +95,9 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
           <path d="M12 13V15" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      title: 'Delivery',
-      description: 'Logistics and delivery management',
-      color: '#0EA5E9'
+      title: "Delivery",
+      description: "Logistics and delivery management",
+      color: "#0EA5E9", // Blue for Logistics/Transport
     },
     {
       icon: (
@@ -179,9 +106,9 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
           <path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.4995 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4195 16.365 19.2648 16.0406 19.206C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.258 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.286C7.71502 19.3448 7.41568 19.4995 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.58054 16.6643 4.73519 16.365 4.794 16.0406C4.85282 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.0113 9.77251C4.28059 9.5799 4.48572 9.31074 4.6 9C4.73312 8.69838 4.77282 8.36381 4.714 8.03941C4.65519 7.71502 4.50054 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.58054 7.63502 4.73519 7.95941 4.794C8.28381 4.85282 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77282 15.9606 4.714C16.285 4.65519 16.5843 4.50054 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4195 7.33568 19.2648 7.63502 19.206 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      title: 'Administration',
-      description: 'System settings and user management',
-      color: '#6B7280'
+      title: "Administration",
+      description: "System settings and user management",
+      color: "#6B7280", // Gray for Admin/Settings
     },
     {
       icon: (
@@ -190,68 +117,107 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
           <path d="M12 2V6M12 18V22M4.93 4.93L7.76 7.76M16.24 16.24L19.07 19.07M2 12H6M18 12H22M4.93 19.07L7.76 16.24M16.24 7.76L19.07 4.93" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      title: 'Cold Chain',
-      description: 'IoT monitoring for temperature and humidity control',
-      color: '#0f766e'
-    }
-  ];
+      title: "Cold Chain",
+      description: "IoT monitoring for temperature and humidity control",
+      color: "#1e40af", // Blue for Cold Chain/IoT
+    },
+    {
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V19C17 19.5523 17.4477 20 18 20C18.5523 20 19 19.5523 19 19V13M9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18C8.32843 18 9 18.6716 9 19.5ZM20 19.5C20 20.3284 19.3284 21 18.5 21C17.6716 21 17 20.3284 17 19.5C17 18.6716 17.6716 18 18.5 18C19.3284 18 20 18.6716 20 19.5Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      title: "E-Commerce",
+      description: "Online pharmacy store and customer management",
+      color: "#3b82f6", // Professional blue for E-commerce
+    },
+  ]
 
   const handleModuleClick = (moduleTitle) => {
-    if (moduleTitle === 'POS' && onPOSAccess) {
-      onPOSAccess();
-    } else if (moduleTitle === 'Sales & Finance' && onSalesAccess) {
-      onSalesAccess();
-    } else if (moduleTitle === 'HR' && onHRAccess) {
-      onHRAccess();
-    } else if (moduleTitle === 'Legal' && onLegalAccess) {
-      onLegalAccess();
-    } else if (moduleTitle === 'Cold Chain' && onColdChainAccess) {
-      onColdChainAccess();
-    } else if (moduleTitle === 'Inventory' && onInventoryAccess) {
-      onInventoryAccess();
-    } else if (moduleTitle === 'Administration') {
-      window.open('/clear-data', '_blank');
+    console.log(`[FIXED v3.1] Module clicked: ${moduleTitle}`)
+    
+    // INVENTORY NAVIGATION - USING PROPER CALLBACK
+    if (moduleTitle === "Inventory" && onInventoryAccess) {
+      console.log('[FIXED v3.1] Inventory navigation using proper callback...')
+      onInventoryAccess()
+      return
     }
+    
+    if (moduleTitle === "POS" && onPOSAccess) {
+      onPOSAccess()
+    } else if (moduleTitle === "Sales & Finance" && onSalesAccess) {
+      onSalesAccess()
+    } else if (moduleTitle === "HR" && onHRAccess) {
+      onHRAccess()
+    } else if (moduleTitle === "Legal" && onLegalAccess) {
+      onLegalAccess()
+    } else if (moduleTitle === "Cold Chain" && onColdChainAccess) {
+      onColdChainAccess()
+    } else if (moduleTitle === "Administration" && onAdminAccess) {
+      onAdminAccess()
+    } else if (moduleTitle === "E-Commerce") {
+      // Direct navigation to ecommerce route
+      window.location.href = '/ecommerce'
+    }
+    // Other module navigation logic will be implemented here
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)', px: 2, pt: 6, pb: 6 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          mb: 6,
-          opacity: headerVisible ? 1 : 0,
-          transform: headerVisible ? 'translateY(0)' : 'translateY(-12px)',
-          transition: 'opacity 400ms ease, transform 400ms ease'
-        }}
-      >
-        <Paper elevation={0} sx={{ px: 3, py: 1.5, borderRadius: '12px', border: '1px solid #e6eafe', boxShadow: '0 10px 30px rgba(30,58,138,0.10)' }}>
-          <Box component="img" src="/images/npk-logo.png" alt="NPK New Pharmacy" sx={{ height: 72, width: 'auto', display: 'block' }} />
-        </Paper>
-      </Box>
+    <div className="dashboard-screen">
+      {/* Header */}
+      <div className={`dashboard-header ${headerVisible ? 'animate' : ''}`}>
+        {/* Logo and Title */}
+        <div className="dashboard-logo-title">
+          <div className="dashboard-npk-logo">
+            <img 
+              src="/images/npk-logo.png" 
+              alt="NPK New Pharmacy" 
+              className="dashboard-logo-image"
+            />
+          </div>
+        </div>
+        
+        {/* Logout Button */}
+        <div className="dashboard-logout">
+          <button 
+            onClick={onLogout}
+            className="logout-button"
+            title="Logout"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <polyline points="16,17 21,12 16,7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
 
-      <Box sx={{ maxWidth: '80rem', mx: 'auto' }}>
-        <Grid container spacing={{ xs: 3, lg: 4 }} alignItems="stretch">
+      {/* Modules Grid */}
+      <div className="max-w-7xl mx-auto">
+        <div className="modules-grid">
           {modules.map((module, index) => (
-            <Grid item xs={12} sm={3} md={3} lg={3} key={module.title} sx={{ display: 'flex' }}>
-              <ModuleCard
-                icon={module.icon}
-                title={module.title}
-                description={module.description}
-                color={module.color}
-                delay={400 + index * 100}
-                onClick={() => handleModuleClick(module.title)}
-              />
-            </Grid>
+            <ModuleCard
+              key={module.title}
+              icon={module.icon}
+              title={module.title}
+              description={module.description}
+              color={module.color}
+              delay={400 + index * 100}
+              onClick={() => {
+                console.log(`ModuleCard clicked: ${module.title}`)
+                handleModuleClick(module.title)
+              }}
+            />
           ))}
-        </Grid>
-      </Box>
+        </div>
+      </div>
 
-      <Typography align="center" sx={{ mt: 4, color: '#8b94b0', fontSize: '0.875rem', fontStyle: 'italic' }}>
-        by NPK New Pharmacy Kalutara
-      </Typography>
-    </Box>
-  );
+      {/* Footer */}
+      <div className="footer-text">
+        <p>by CoreERP Systems</p>
+      </div>
+    </div>
+  )
 }
