@@ -178,7 +178,7 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('ecommerce') // Show ecommerce directly
+  const [currentScreen, setCurrentScreen] = useState('splash') // Start with splash screen
   const navigate = useNavigate()
 
   // Check URL parameters and current path on component mount
@@ -208,9 +208,11 @@ function App() {
       setCurrentScreen('dashboard');
     } else if (screenParam === 'splash') {
       setCurrentScreen('splash');
-    } else {
-      // Default to ecommerce for better user experience
+    } else if (screenParam === 'ecommerce') {
       setCurrentScreen('ecommerce');
+    } else {
+      // Default to splash for proper login flow
+      setCurrentScreen('splash');
     }
   }, []);
 
