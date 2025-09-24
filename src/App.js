@@ -247,7 +247,11 @@ function App() {
   }
 
   const handleDeliveryAccess = () => {
-    navigate('/delivery')
+    navigate('/delivery-management')
+  }
+
+  const handleAdminAccess = () => {
+    navigate('/clear-data')
   }
   
   const handleLogout = () => {
@@ -311,7 +315,16 @@ function App() {
               />
             </Box>
           } />
-          <Route path="/coldchain" element={<ColdChainModule />} />
+          <Route path="/coldchain" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <ColdChainModule />
+            </Box>
+          } />
           <Route path="/delivery-management" element={
             <Box sx={{ 
               display: 'flex', 
@@ -336,7 +349,7 @@ function App() {
             <>
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onAdminAccess={handleAdminAccess} onLogout={handleLogout} />}
             </>
           } />
           <Route path="/ecommerce" element={<ProfessionalPharmacyEcommerce />} />
@@ -345,7 +358,7 @@ function App() {
             <>
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onAdminAccess={handleAdminAccess} onLogout={handleLogout} />}
               {currentScreen === 'ecommerce' && <ProfessionalPharmacyEcommerce />}
             </>
           } />

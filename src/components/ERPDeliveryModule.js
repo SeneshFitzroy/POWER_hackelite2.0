@@ -73,6 +73,8 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import GetAppIcon from '@mui/icons-material/GetApp';
 
 const ERPDeliveryModule = () => {
   const [currentTab, setCurrentTab] = useState(0);
@@ -81,8 +83,30 @@ const ERPDeliveryModule = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedDelivery, setSelectedDelivery] = useState(null);
+  const [mapDialogOpen, setMapDialogOpen] = useState(false);
 
-  // Real-time delivery data - in production this would come from WebSocket/API
+  // Real-time clock for Sri Lankan time
+  const [currentTime, setCurrentTime] = useState(new Date());
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Format time in Sri Lankan timezone
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit', 
+      hour12: true,
+      timeZone: 'Asia/Colombo'
+    });
+  };
+
+  // Admin delivery statistics - real-time updates
   const [deliveryStats, setDeliveryStats] = useState({
     totalDeliveries: 245,
     activeDeliveries: 23,
@@ -226,7 +250,9 @@ const ERPDeliveryModule = () => {
 
   // Real-time updates simulation
   useEffect(() => {
-    if (!realTimeUpdates) return;
+    if (!realTimeUpdates) {
+      return;
+    }
 
     const interval = setInterval(() => {
       setLiveDeliveries(prev => prev.map(delivery => {
@@ -663,7 +689,7 @@ const ERPDeliveryModule = () => {
           <SpeedDialAction
             icon={<MapIcon />}
             tooltipTitle="Live Map View"
-            onClick={() => {}}
+            onClick={() => setMapDialogOpen(true)}
           />
           <SpeedDialAction
             icon={<AddIcon />}
@@ -671,16 +697,202 @@ const ERPDeliveryModule = () => {
             onClick={() => {}}
           />
           <SpeedDialAction
-            icon={<ReportIcon />}
+            icon={<AssessmentIcon />}
             tooltipTitle="Analytics"
             onClick={() => {}}
           />
           <SpeedDialAction
-            icon={<ExportIcon />}
+            icon={<GetAppIcon />}
             tooltipTitle="Export Data"
             onClick={() => {}}
           />
         </SpeedDial>
+
+        {/* Admin Live Map Dialog */}
+        <Dialog 
+          open={mapDialogOpen} 
+          onClose={() => setMapDialogOpen(false)}
+          maxWidth="lg"
+          fullWidth
+          PaperProps={{
+            sx: { height: '90vh', borderRadius: '16px' }
+          }}
+        >
+          <DialogTitle sx={{ 
+            background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)', 
+            color: 'white',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <MapIcon />
+              <Typography variant="h6" sx={{ fontWeight: '700' }}>
+                Admin Live Delivery Map
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                {formatTime(currentTime)}
+              </Typography>
+              <Badge badgeContent={deliveryStats.activeDeliveries} color="error">
+                <LocalShippingIcon />
+              </Badge>
+            </Box>
+          </DialogTitle>
+          
+          <DialogContent sx={{ p: 0, height: '100%' }}>
+            {/* Professional Admin Map Interface */}
+            <Box sx={{ height: '100%', position: 'relative' }}>
+              {/* Embedded Google Maps for Admin */}
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126737.76104286815!2d79.77380134726562!3d6.92194!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae253d10f7a7003%3A0x320b2e4d32d3838d!2sColombo%2C%20Sri%20Lanka!5e0!3m2!1sen!2slk!4v1697123456789!5m2!1sen!2slk"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Admin Delivery Map"
+              />
+              
+              {/* Admin Control Panel Overlay */}
+              <Paper
+                elevation={8}
+                sx={{
+                  position: 'absolute',
+                  top: 16,
+                  left: 16,
+                  width: 320,
+                  maxHeight: 'calc(100% - 32px)',
+                  overflow: 'auto',
+                  background: 'rgba(255,255,255,0.95)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: '12px'
+                }}
+              >
+                <Box sx={{ p: 2 }}>
+                  <Typography variant="h6" sx={{ color: '#1565c0', fontWeight: '700', mb: 2 }}>
+                    Live Delivery Control
+                  </Typography>
+                  
+                  {/* Real-time Stats */}
+                  <Grid container spacing={1} sx={{ mb: 2 }}>
+                    <Grid item xs={6}>
+                      <Paper sx={{ p: 1, textAlign: 'center', background: '#e3f2fd' }}>
+                        <Typography variant="h6" sx={{ color: '#1565c0', fontWeight: '700' }}>
+                          {deliveryStats.activeDeliveries}
+                        </Typography>
+                        <Typography variant="caption">Active</Typography>
+                      </Paper>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Paper sx={{ p: 1, textAlign: 'center', background: '#e8f5e8' }}>
+                        <Typography variant="h6" sx={{ color: '#2e7d32', fontWeight: '700' }}>
+                          {deliveryStats.completedToday}
+                        </Typography>
+                        <Typography variant="caption">Today</Typography>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+                  
+                  {/* Active Deliveries List */}
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', mb: 1 }}>
+                    Active Deliveries
+                  </Typography>
+                  
+                  {liveDeliveries.filter(d => d.status === 'in_transit').map(delivery => (
+                    <Card 
+                      key={delivery.id} 
+                      sx={{ 
+                        mb: 1, 
+                        cursor: 'pointer',
+                        '&:hover': { boxShadow: 3 }
+                      }}
+                      onClick={() => setSelectedDelivery(delivery)}
+                    >
+                      <CardContent sx={{ p: '8px !important' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Avatar 
+                            src={delivery.driver.avatar} 
+                            sx={{ width: 32, height: 32 }}
+                          />
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="body2" sx={{ fontWeight: '600' }}>
+                              {delivery.driver.name}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: '#666' }}>
+                              {delivery.customer.name} • {Math.round(delivery.actualProgress)}%
+                            </Typography>
+                          </Box>
+                          <Chip 
+                            label={delivery.priority} 
+                            size="small" 
+                            color={getPriorityColor(delivery.priority)}
+                            variant="outlined"
+                          />
+                        </Box>
+                        <LinearProgress 
+                          variant="determinate" 
+                          value={delivery.actualProgress} 
+                          sx={{ mt: 1, height: 6, borderRadius: 3 }}
+                        />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Box>
+              </Paper>
+              
+              {/* Admin Action Bar */}
+              <Paper
+                elevation={8}
+                sx={{
+                  position: 'absolute',
+                  bottom: 16,
+                  left: 16,
+                  right: 16,
+                  background: 'rgba(255,255,255,0.95)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: '12px',
+                  p: 2
+                }}
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: '700', color: '#1565c0' }}>
+                      📊 Admin Dashboard
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#666' }}>
+                      Monitoring {deliveryStats.activeDeliveries} active deliveries • Last updated: {formatTime(currentTime)}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      startIcon={<RefreshIcon />}
+                      onClick={() => window.location.reload()}
+                      sx={{
+                        background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Refresh
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<AnalyticsIcon />}
+                      sx={{ fontSize: '12px' }}
+                    >
+                      Analytics
+                    </Button>
+                  </Box>
+                </Box>
+              </Paper>
+            </Box>
+          </DialogContent>
+        </Dialog>
       </Container>
     </Box>
   );

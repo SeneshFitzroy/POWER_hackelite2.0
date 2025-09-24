@@ -1425,7 +1425,7 @@ const ProfessionalPharmacyEcommerce = () => {
         <DialogContent sx={{ p: 3 }}>
           <Grid container spacing={3}>
             {/* Product Images */}
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ position: 'relative', mb: 2 }}>
                 <img
                   src={selectedProduct.images[selectedImage]}
@@ -1496,7 +1496,7 @@ const ProfessionalPharmacyEcommerce = () => {
             </Grid>
 
             {/* Product Info */}
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Chip
                 label={selectedProduct.category.toUpperCase()}
                 size="small"
@@ -1775,7 +1775,7 @@ const ProfessionalPharmacyEcommerce = () => {
         {/* Products Grid */}
         <Grid container spacing={3}>
           {filteredProducts.map((product) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
               <ProductCard product={product} />
             </Grid>
           ))}
@@ -1909,7 +1909,7 @@ const ProfessionalPharmacyEcommerce = () => {
             <Box>
               <Typography variant="h6" sx={{ mb: 3 }}>Customer Information</Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="First Name"
@@ -1918,7 +1918,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Last Name"
@@ -1927,7 +1927,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Email Address"
@@ -1937,7 +1937,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Phone Number"
@@ -1946,7 +1946,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <TextField
                     fullWidth
                     label="NIC Number"
@@ -1963,7 +1963,7 @@ const ProfessionalPharmacyEcommerce = () => {
             <Box>
               <Typography variant="h6" sx={{ mb: 3 }}>Shipping Address</Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <TextField
                     fullWidth
                     label="Street Address"
@@ -1974,7 +1974,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     rows={2}
                   />
                 </Grid>
-                <Grid item xs={12} sm={8}>
+                <Grid size={{ xs: 12, sm: 8 }}>
                   <TextField
                     fullWidth
                     label="City"
@@ -1983,7 +1983,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <TextField
                     fullWidth
                     label="Postal Code"
@@ -2012,7 +2012,7 @@ const ProfessionalPharmacyEcommerce = () => {
               
               {paymentInfo.paymentMethod === 'card' && (
                 <Grid container spacing={2}>
-                  <Grid item xs={12}>
+                  <Grid size={{ xs: 12 }}>
                     <TextField
                       fullWidth
                       label="Cardholder Name"
@@ -2021,7 +2021,7 @@ const ProfessionalPharmacyEcommerce = () => {
                       required
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={{ xs: 12 }}>
                     <TextField
                       fullWidth
                       label="Card Number"
@@ -2031,7 +2031,7 @@ const ProfessionalPharmacyEcommerce = () => {
                       required
                     />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid size={{ xs: 6 }}>
                     <TextField
                       fullWidth
                       label="Expiry Date"
@@ -2041,7 +2041,7 @@ const ProfessionalPharmacyEcommerce = () => {
                       required
                     />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid size={{ xs: 6 }}>
                     <TextField
                       fullWidth
                       label="CVV"
@@ -2358,7 +2358,7 @@ const ProfessionalPharmacyEcommerce = () => {
           </Typography>
           
           <Grid container spacing={3}>
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="primary">
                   {products.length}
@@ -2366,7 +2366,7 @@ const ProfessionalPharmacyEcommerce = () => {
                 <Typography variant="body1">Total Products</Typography>
               </Card>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="success.main">
                   156
@@ -2374,7 +2374,7 @@ const ProfessionalPharmacyEcommerce = () => {
                 <Typography variant="body1">Orders Today</Typography>
               </Card>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="warning.main">
                   LKR 12,450
@@ -2382,7 +2382,7 @@ const ProfessionalPharmacyEcommerce = () => {
                 <Typography variant="body1">Revenue Today</Typography>
               </Card>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="error.main">
                   23
@@ -2445,7 +2445,7 @@ const ProfessionalPharmacyEcommerce = () => {
           
           <Paper sx={{ p: 4 }}>
             <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Box
                   component="img"
                   src={selectedProduct.images[0]}
@@ -2458,7 +2458,7 @@ const ProfessionalPharmacyEcommerce = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   {selectedProduct.category.toUpperCase()}
                 </Typography>

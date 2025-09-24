@@ -9,10 +9,20 @@ function ModuleCard({ icon, title, description, delay, onClick, color }) {
     return () => clearTimeout(timer)
   }, [delay])
 
+  const handleClick = () => {
+    console.log(`[DEBUG] ModuleCard clicked: ${title}`)
+    if (onClick) {
+      onClick()
+    } else {
+      console.error(`[ERROR] No onClick handler for module: ${title}`)
+    }
+  }
+
   return (
     <div
       className={`module-card ${isVisible ? 'animate' : ''}`}
-      onClick={onClick}
+      onClick={handleClick}
+      style={{ cursor: 'pointer' }}
     >
       <div className="module-icon" style={{background: `linear-gradient(135deg, ${color} 0%, ${color}CC 100%)`}}>
         {icon}
@@ -97,19 +107,7 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       description: "Live delivery tracking and logistics management",
       color: "#0EA5E9", // Blue for Logistics/Transport
     },
-    {
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M8 21L16 21C17.1046 21 18 20.1046 18 19L18 17C18 15.8954 17.1046 15 16 15L8 15C6.89543 15 6 15.8954 6 17L6 19C6 20.1046 6.89543 21 8 21Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M12 13V15" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      ),
-      title: "Delivery",
-      description: "Logistics and delivery management",
-      color: "#0EA5E9", // Blue for Logistics/Transport
-    },
+
     {
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -144,35 +142,64 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
     },
   ]
 
+  console.log('[DEBUG] Total modules:', modules.length, modules.map(m => m.title))
+  console.log('[DEBUG] ERPDashboard callbacks:', {
+    onDeliveryAccess: !!onDeliveryAccess,
+    onColdChainAccess: !!onColdChainAccess
+  })
+
   const handleModuleClick = (moduleTitle) => {
-    console.log(`[FIXED v3.1] Module clicked: ${moduleTitle}`)
+    console.log(`[DEBUG] Module clicked: ${moduleTitle}`)
+    console.log('[DEBUG] Available callbacks:', {
+      onPOSAccess: !!onPOSAccess,
+      onSalesAccess: !!onSalesAccess,
+      onHRAccess: !!onHRAccess,
+      onLegalAccess: !!onLegalAccess,
+      onColdChainAccess: !!onColdChainAccess,
+      onInventoryAccess: !!onInventoryAccess,
+      onDeliveryAccess: !!onDeliveryAccess,
+      onAdminAccess: !!onAdminAccess
+    })
     
-    // INVENTORY NAVIGATION - USING PROPER CALLBACK
-    if (moduleTitle === "Inventory" && onInventoryAccess) {
-      console.log('[FIXED v3.1] Inventory navigation using proper callback...')
-      onInventoryAccess()
-      return
+    try {
+      // INVENTORY NAVIGATION - USING PROPER CALLBACK
+      if (moduleTitle === "Inventory" && onInventoryAccess) {
+        console.log('[DEBUG] Navigating to Inventory...')
+        onInventoryAccess()
+        return
+      }
+      
+      if (moduleTitle === "POS" && onPOSAccess) {
+        console.log('[DEBUG] Navigating to POS...')
+        onPOSAccess()
+      } else if (moduleTitle === "Sales & Finance" && onSalesAccess) {
+        console.log('[DEBUG] Navigating to Sales...')
+        onSalesAccess()
+      } else if (moduleTitle === "HR" && onHRAccess) {
+        console.log('[DEBUG] Navigating to HR...')
+        onHRAccess()
+      } else if (moduleTitle === "Legal" && onLegalAccess) {
+        console.log('[DEBUG] Navigating to Legal...')
+        onLegalAccess()
+      } else if (moduleTitle === "Cold Chain" && onColdChainAccess) {
+        console.log('[DEBUG] Navigating to Cold Chain...')
+        onColdChainAccess()
+      } else if (moduleTitle === "Administration" && onAdminAccess) {
+        console.log('[DEBUG] Navigating to Administration...')
+        onAdminAccess()
+      } else if ((moduleTitle === "Real-Time Delivery" || moduleTitle === "Delivery") && onDeliveryAccess) {
+        console.log('[DEBUG] Navigating to Delivery...')
+        onDeliveryAccess()
+      } else if (moduleTitle === "E-Commerce") {
+        console.log('[DEBUG] Navigating to E-Commerce...')
+        window.location.href = '/ecommerce'
+      } else {
+        console.log(`[DEBUG] No handler found for module: ${moduleTitle}`)
+        console.error(`[ERROR] Module navigation failed: ${moduleTitle}`)
+      }
+    } catch (error) {
+      console.error(`[ERROR] Exception during navigation for ${moduleTitle}:`, error)
     }
-    
-    if (moduleTitle === "POS" && onPOSAccess) {
-      onPOSAccess()
-    } else if (moduleTitle === "Sales & Finance" && onSalesAccess) {
-      onSalesAccess()
-    } else if (moduleTitle === "HR" && onHRAccess) {
-      onHRAccess()
-    } else if (moduleTitle === "Legal" && onLegalAccess) {
-      onLegalAccess()
-    } else if (moduleTitle === "Cold Chain" && onColdChainAccess) {
-      onColdChainAccess()
-    } else if (moduleTitle === "Administration" && onAdminAccess) {
-      onAdminAccess()
-    } else if ((moduleTitle === "Real-Time Delivery" || moduleTitle === "Delivery") && onDeliveryAccess) {
-      onDeliveryAccess()
-    } else if (moduleTitle === "E-Commerce") {
-      // Direct navigation to ecommerce route
-      window.location.href = '/ecommerce'
-    }
-    // Other module navigation logic will be implemented here
   };
 
   return (
