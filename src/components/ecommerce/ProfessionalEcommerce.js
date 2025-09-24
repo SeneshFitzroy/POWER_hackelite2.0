@@ -98,7 +98,8 @@ import {
   Shield as ShieldIcon,
   ThumbUp as ThumbUpIcon
 } from '@mui/icons-material';
-import { LightMode as LightModeIcon, DarkMode as DarkModeIcon } from '@mui/icons-material';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import ProfessionalFooter from './ProfessionalFooter';
 import { useTheme, ThemeContextProvider } from '../../contexts/ThemeContext';
 

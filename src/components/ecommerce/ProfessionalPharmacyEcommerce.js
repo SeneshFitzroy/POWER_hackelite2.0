@@ -90,9 +90,11 @@ import {
   Receipt as ReceiptIcon,
   Dashboard as DashboardIcon
 } from '@mui/icons-material';
-import { LightMode as LightModeIcon, DarkMode as DarkModeIcon } from '@mui/icons-material';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import ProfessionalFooter from './ProfessionalFooter';
 import { useTheme, ThemeContextProvider } from '../../contexts/ThemeContext';
+import DeliveryManagement from './DeliveryManagement';
 
 // Professional Medicine Database - Real Pharmacy Products
 const medicineCategories = [
@@ -319,9 +321,353 @@ const EcommerceProvider = ({ children }) => {
   );
 };
 
+// Professional Delivery Content Component for Popup
+const ProfessionalDeliveryContent = ({ orderId }) => {
+  const [deliveryStatus] = useState('in_transit');
+  const [driverLocation] = useState({ lat: 6.9300, lng: 79.8500 });
+  const [estimatedTime] = useState('15-20 minutes');
+  
+  const deliverySteps = [
+    { id: 'confirmed', label: 'Order Confirmed', icon: CheckCircleIcon, completed: true, time: '10:30 AM' },
+    { id: 'preparing', label: 'Preparing Order', icon: StoreIcon, completed: true, time: '10:45 AM' },
+    { id: 'dispatched', label: 'Out for Delivery', icon: LocalShippingIcon, completed: true, time: '11:15 AM', active: true },
+    { id: 'delivered', label: 'Delivered', icon: VerifiedIcon, completed: false, time: 'ETA: 11:35 AM' }
+  ];
+
+  const driverInfo = {
+    name: 'Kamal Perera',
+    phone: '+94 77 123 4567',
+    vehicle: 'Motorcycle - ABC 1234',
+    rating: 4.8,
+    photo: '/images/avatars/driver-avatar.svg'
+  };
+
+  return (
+    <Box sx={{ minHeight: '500px' }}>
+      {/* Delivery Status Progress */}
+      <Box sx={{ p: 3, backgroundColor: '#f8fafc' }}>
+        <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 3 }}>
+          Delivery Progress
+        </Typography>
+        
+        <Box sx={{ position: 'relative' }}>
+          {deliverySteps.map((step, index) => {
+            const IconComponent = step.icon;
+            return (
+              <Box key={step.id} sx={{ display: 'flex', alignItems: 'center', mb: 3, position: 'relative' }}>
+                {/* Progress Line */}
+                {index < deliverySteps.length - 1 && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      left: '15px',
+                      top: '35px',
+                      width: '2px',
+                      height: '40px',
+                      backgroundColor: step.completed ? '#4caf50' : '#e0e0e0',
+                      zIndex: 0
+                    }}
+                  />
+                )}
+                
+                {/* Step Icon */}
+                <Box
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: '50%',
+                    backgroundColor: step.completed ? '#4caf50' : step.active ? '#1976d2' : '#e0e0e0',
+                    color: step.completed || step.active ? 'white' : '#666',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1,
+                    position: 'relative',
+                    animation: step.active ? 'pulse 2s infinite' : 'none',
+                    '@keyframes pulse': {
+                      '0%': { transform: 'scale(1)', opacity: 1 },
+                      '50%': { transform: 'scale(1.1)', opacity: 0.7 },
+                      '100%': { transform: 'scale(1)', opacity: 1 }
+                    }
+                  }}
+                >
+                  <IconComponent sx={{ fontSize: 18 }} />
+                </Box>
+                
+                {/* Step Details */}
+                <Box sx={{ ml: 3, flex: 1 }}>
+                  <Typography 
+                    variant="body1" 
+                    fontWeight={step.active ? 'bold' : 'medium'}
+                    color={step.active ? '#1976d2' : step.completed ? '#333' : '#666'}
+                  >
+                    {step.label}
+                  </Typography>
+                  <Typography variant="body2" color="#666">
+                    {step.time}
+                  </Typography>
+                </Box>
+              </Box>
+            );
+          })}
+        </Box>
+      </Box>
+
+      {/* Live Tracking Section */}
+      <Box sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+          <Box 
+            sx={{ 
+              width: 8, 
+              height: 8, 
+              backgroundColor: '#4caf50', 
+              borderRadius: '50%',
+              animation: 'pulse 2s infinite'
+            }} 
+          />
+          <Typography variant="h6" color="#4caf50" fontWeight="bold">
+            Live Tracking
+          </Typography>
+        </Box>
+
+        {/* ETA Card */}
+        <Card sx={{ mb: 3, background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)', color: 'white' }}>
+          <CardContent sx={{ textAlign: 'center', py: 3 }}>
+            <Typography variant="body2" sx={{ opacity: 0.9, mb: 1 }}>
+              Estimated Arrival Time
+            </Typography>
+            <Typography variant="h4" fontWeight="bold">
+              {estimatedTime}
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9, mt: 1 }}>
+              Your medicine is on the way!
+            </Typography>
+          </CardContent>
+        </Card>
+
+        {/* Driver Information */}
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 2 }}>
+              Your Delivery Partner
+            </Typography>
+            
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar 
+                src={driverInfo.photo}
+                sx={{ 
+                  width: 60, 
+                  height: 60,
+                  border: '3px solid #1976d2'
+                }}
+              >
+                <PersonIcon />
+              </Avatar>
+              
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  {driverInfo.name}
+                </Typography>
+                <Typography variant="body2" color="#666" sx={{ mb: 1 }}>
+                  {driverInfo.vehicle}
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Rating value={driverInfo.rating} precision={0.1} readOnly size="small" />
+                  <Typography variant="body2" color="#666">
+                    {driverInfo.rating}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Chip
+                label={`★ ${driverInfo.rating}`}
+                color="primary"
+                sx={{ 
+                  backgroundColor: '#1976d2',
+                  color: 'white',
+                  fontWeight: 'bold'
+                }}
+              />
+            </Box>
+          </CardContent>
+        </Card>
+
+        {/* Professional Route Map */}
+        <Card sx={{ mb: 3 }}>
+          <CardContent sx={{ p: 3 }}>
+            <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 2 }}>
+              Delivery Route
+            </Typography>
+            
+            {/* Route Visualization */}
+            <Box
+              sx={{
+                position: 'relative',
+                height: 200,
+                background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                borderRadius: 2,
+                overflow: 'hidden',
+                border: '2px solid #e2e8f0'
+              }}
+            >
+              {/* Route Path */}
+              <svg 
+                width="100%" 
+                height="100%" 
+                viewBox="0 0 400 200" 
+                style={{ position: 'absolute', top: 0, left: 0 }}
+              >
+                {/* Background grid */}
+                <defs>
+                  <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#cbd5e1" strokeWidth="0.5" opacity="0.5"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                
+                {/* Route line */}
+                <path 
+                  d="M 80 100 Q 200 80 320 100" 
+                  stroke="#1976d2" 
+                  strokeWidth="4" 
+                  fill="none"
+                  strokeDasharray="5,5"
+                />
+                
+                {/* Pharmacy marker */}
+                <circle cx="80" cy="100" r="8" fill="#4caf50" stroke="white" strokeWidth="2"/>
+                
+                {/* Driver marker (animated) */}
+                <circle cx="200" cy="85" r="6" fill="#ff5722" stroke="white" strokeWidth="2">
+                  <animateMotion dur="3s" repeatCount="indefinite">
+                    <mpath href="#route"/>
+                  </animateMotion>
+                </circle>
+                
+                {/* Customer marker */}
+                <circle cx="320" cy="100" r="8" fill="#1976d2" stroke="white" strokeWidth="2"/>
+                
+                {/* Hidden path for animation */}
+                <path id="route" d="M 80 100 Q 200 80 320 100" opacity="0"/>
+              </svg>
+              
+              {/* Location Labels */}
+              <Box sx={{ position: 'absolute', top: 10, left: 20 }}>
+                <Chip 
+                  icon={<StoreIcon />} 
+                  label="NPK Pharmacy" 
+                  size="small"
+                  sx={{ 
+                    backgroundColor: '#4caf50', 
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: '0.75rem'
+                  }}
+                />
+              </Box>
+              
+              <Box sx={{ position: 'absolute', top: 10, right: 20 }}>
+                <Chip 
+                  icon={<LocationOnIcon />} 
+                  label="Your Location" 
+                  size="small"
+                  sx={{ 
+                    backgroundColor: '#1976d2', 
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: '0.75rem'
+                  }}
+                />
+              </Box>
+              
+              {/* Driver position indicator */}
+              <Box sx={{ position: 'absolute', top: '35%', left: '45%', transform: 'translate(-50%, -50%)' }}>
+                <Chip 
+                  icon={<LocalShippingIcon />} 
+                  label="Driver" 
+                  size="small"
+                  sx={{ 
+                    backgroundColor: '#ff5722', 
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: '0.7rem',
+                    animation: 'bounce 2s infinite',
+                    '@keyframes bounce': {
+                      '0%, 20%, 50%, 80%, 100%': { transform: 'translate(-50%, -50%) translateY(0)' },
+                      '40%': { transform: 'translate(-50%, -50%) translateY(-5px)' },
+                      '60%': { transform: 'translate(-50%, -50%) translateY(-3px)' }
+                    }
+                  }}
+                />
+              </Box>
+            </Box>
+            
+            {/* Distance & Time Info */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h6" fontWeight="bold" color="#1976d2">
+                  2.5 km
+                </Typography>
+                <Typography variant="body2" color="#666">
+                  Distance Remaining
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h6" fontWeight="bold" color="#4caf50">
+                  15 min
+                </Typography>
+                <Typography variant="body2" color="#666">
+                  Estimated Time
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h6" fontWeight="bold" color="#ff5722">
+                  35 km/h
+                </Typography>
+                <Typography variant="body2" color="#666">
+                  Current Speed
+                </Typography>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        {/* Action Buttons */}
+        <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            startIcon={<NotificationsIcon />}
+            sx={{ 
+              borderColor: '#1976d2', 
+              color: '#1976d2',
+              '&:hover': {
+                backgroundColor: '#1976d2',
+                color: 'white'
+              }
+            }}
+          >
+            Get Updates
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            startIcon={<ReceiptIcon />}
+            sx={{ 
+              background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)'
+            }}
+          >
+            View Receipt
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
 // Main Professional Pharmacy Ecommerce Component
 const ProfessionalPharmacyEcommerce = () => {
-  const [currentView, setCurrentView] = useState('home'); // home, cart, checkout, admin, product
+  const [currentView, setCurrentView] = useState('home'); // home, cart, checkout, admin, product, delivery, delivery-management
   const [products] = useState(professionalProducts);
   const [filteredProducts, setFilteredProducts] = useState(professionalProducts);
   const [searchQuery, setSearchQuery] = useState('');
@@ -331,6 +677,12 @@ const ProfessionalPharmacyEcommerce = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [productDetailOpen, setProductDetailOpen] = useState(false);
+  const [showDeliveryTracker, setShowDeliveryTracker] = useState(false);
+  const [trackingOrderId, setTrackingOrderId] = useState(null);
+  
+  // Order completion state at main component level
+  const [orderComplete, setOrderComplete] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState(null);
 
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
@@ -1138,41 +1490,82 @@ const ProfessionalPharmacyEcommerce = () => {
     
     // Form data
     const [customerInfo, setCustomerInfo] = useState({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      address: '',
-      city: '',
-      postalCode: '',
-      nic: ''
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      phone: '0771234567',
+      address: '123 Main Street',
+      city: 'Colombo',
+      postalCode: '10100',
+      nic: '123456789V'
     });
     
     const [paymentInfo, setPaymentInfo] = useState({
-      paymentMethod: 'card',
-      cardNumber: '',
-      expiryDate: '',
-      cvv: '',
-      cardName: ''
+      paymentMethod: 'cash',
+      cardNumber: '1234567890123456',
+      expiryDate: '12/25',
+      cvv: '123',
+      cardName: 'John Doe'
     });
     
-    const [orderComplete, setOrderComplete] = useState(false);
-    const [orderNumber, setOrderNumber] = useState('');
+    // Order state moved to main component level
+
+    const validateCurrentStep = () => {
+      switch (activeStep) {
+        case 0: // Customer Info
+          return customerInfo.firstName.trim() && customerInfo.lastName.trim() && customerInfo.email.trim() && 
+                 customerInfo.phone.trim() && customerInfo.address.trim() && customerInfo.city.trim() && 
+                 customerInfo.postalCode.trim() && customerInfo.nic.trim();
+        case 1: // Shipping - no additional validation needed
+          return true;
+        case 2: // Payment
+          if (paymentInfo.paymentMethod === 'card') {
+            return paymentInfo.cardName.trim() && paymentInfo.cardNumber.trim() && 
+                   paymentInfo.expiryDate.trim() && paymentInfo.cvv.trim();
+          }
+          return true;
+        case 3: // Review
+          return true;
+        default:
+          return true;
+      }
+    };
 
     const handleNext = () => {
+      // Only validate on the final step (Place Order)
       if (activeStep === steps.length - 1) {
-        const newOrderNumber = `NPK${Date.now()}`;
-        setOrderNumber(newOrderNumber);
-        placeOrder({ 
-          customerInfo, 
-          paymentInfo,
+        // Basic validation - just check if required fields exist
+        if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email) {
+          alert('Please fill in your name and email before placing your order.');
+          return;
+        }
+        
+        const newOrderNumber = `NPK-2025-${String(Date.now()).slice(-6)}`;
+        
+        // Store cart items before placeOrder clears them
+        const currentOrderItems = [...cart];
+        
+        // Create complete order object
+        const orderData = {
           orderNumber: newOrderNumber,
+          customerInfo,
+          paymentInfo,
+          items: currentOrderItems,
           total: finalTotal,
           subtotal: cartTotal,
           shipping: shippingCost,
-          tax: tax
-        });
+          tax: tax,
+          date: new Date().toISOString()
+        };
+        
+        placeOrder(orderData);
+        
+        // Set completed order in main state
+        setCompletedOrder(orderData);
         setOrderComplete(true);
+        
+        // Set up delivery tracking
+        setTrackingOrderId(newOrderNumber);
       } else {
         setActiveStep(prev => prev + 1);
       }
@@ -1381,9 +1774,7 @@ const ProfessionalPharmacyEcommerce = () => {
       }
     };
 
-    if (orderComplete) {
-      return <OrderReceipt orderNumber={orderNumber} customerInfo={customerInfo} cart={cart} total={finalTotal} subtotal={cartTotal} shipping={shippingCost} tax={tax} />;
-    }
+    // Order completion is now handled at main component level
 
     return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
@@ -1411,6 +1802,9 @@ const ProfessionalPharmacyEcommerce = () => {
               >
                 {activeStep === 0 ? 'Back to Shop' : 'Back'}
               </Button>
+              
+
+              
               <Button
                 variant="contained"
                 onClick={handleNext}
@@ -1429,7 +1823,7 @@ const ProfessionalPharmacyEcommerce = () => {
   };
 
   // Order Receipt Component
-  const OrderReceipt = ({ orderNumber, customerInfo, cart, total, subtotal, shipping, tax }) => {
+  const OrderReceipt = ({ orderNumber, customerInfo, cart, total, subtotal, shipping, tax, onContinueShopping }) => {
     const currentDate = new Date();
     
     return (
@@ -1458,10 +1852,10 @@ const ProfessionalPharmacyEcommerce = () => {
                 New Pharmacy Kalutara
               </Typography>
               <Typography variant="body2" sx={{ color: '#666' }}>
-                📍 123 Main Street, Kalutara, Sri Lanka
+                123 Main Street, Kalutara, Sri Lanka
               </Typography>
               <Typography variant="body2" sx={{ color: '#666' }}>
-                📞 +94 34 223 4567 | 📧 info@npkpharmacy.lk
+                +94 34 223 4567 | info@npkpharmacy.lk
               </Typography>
               <Typography variant="body2" sx={{ color: '#666', fontWeight: 'bold' }}>
                 Pharmacy Reg: PH/2024/NPK001 | License: LIC/2024/NPK001
@@ -1568,19 +1962,54 @@ const ProfessionalPharmacyEcommerce = () => {
               </Typography>
             </Box>
 
+            {/* Delivery Status Alert */}
+            <Alert 
+              severity="success" 
+              sx={{ 
+                mb: 3, 
+                background: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)',
+                border: '1px solid #22c55e'
+              }}
+            >
+              <Typography fontWeight="bold">
+                Your order is being processed for delivery!
+              </Typography>
+              <Typography variant="body2">
+                Estimated delivery time: 2-3 hours | You will receive SMS updates
+              </Typography>
+            </Alert>
+
             {/* Action Buttons */}
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 4 }}>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 4, flexWrap: 'wrap' }}>
+              <Button
+                variant="contained"
+                startIcon={<LocalShippingIcon />}
+                onClick={() => setShowDeliveryTracker(true)}
+                sx={{ 
+                  background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                  minWidth: '150px'
+                }}
+              >
+                Track Your Order
+              </Button>
               <Button
                 variant="contained"
                 onClick={() => window.print()}
-                sx={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)' }}
+                sx={{ 
+                  background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+                  minWidth: '120px'
+                }}
               >
                 Print Receipt
               </Button>
               <Button
                 variant="outlined"
-                onClick={() => setCurrentView('home')}
-                sx={{ borderColor: '#1e3a8a', color: '#1e3a8a' }}
+                onClick={onContinueShopping}
+                sx={{ 
+                  borderColor: '#1e3a8a', 
+                  color: '#1e3a8a',
+                  minWidth: '140px'
+                }}
               >
                 Continue Shopping
               </Button>
@@ -1646,6 +2075,17 @@ const ProfessionalPharmacyEcommerce = () => {
               }}
             >
               Back to Shop
+            </Button>
+            <Button 
+              variant="contained"
+              startIcon={<DeliveryIcon />}
+              onClick={() => setCurrentView('delivery-management')}
+              sx={{
+                background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                mr: 2
+              }}
+            >
+              Delivery Management
             </Button>
             <Button variant="outlined">
               Manage Products
@@ -1760,6 +2200,26 @@ const ProfessionalPharmacyEcommerce = () => {
 
   // Render current view
   const renderCurrentView = () => {
+    // Check for completed order first
+    if (orderComplete && completedOrder) {
+      return (
+        <OrderReceipt 
+          orderNumber={completedOrder.orderNumber}
+          customerInfo={completedOrder.customerInfo}
+          cart={completedOrder.items}
+          total={completedOrder.total}
+          subtotal={completedOrder.subtotal}
+          shipping={completedOrder.shipping}
+          tax={completedOrder.tax}
+          onContinueShopping={() => {
+            setOrderComplete(false);
+            setCompletedOrder(null);
+            setCurrentView('home');
+          }}
+        />
+      );
+    }
+
     switch (currentView) {
       case 'home':
         return <HomeView />;
@@ -1769,6 +2229,8 @@ const ProfessionalPharmacyEcommerce = () => {
         return <AdminView />;
       case 'product':
         return <ProductDetailView />;
+      case 'delivery-management':
+        return <DeliveryManagement />;
       default:
         return <HomeView />;
     }
@@ -1822,6 +2284,52 @@ const ProfessionalPharmacyEcommerce = () => {
           </MenuItem>
         </Menu>
 
+        {/* Delivery Tracker Dialog */}
+        {/* Professional Delivery Tracking Dialog */}
+        <Dialog 
+          open={showDeliveryTracker} 
+          onClose={() => setShowDeliveryTracker(false)}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+              boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+              overflow: 'hidden'
+            }
+          }}
+        >
+          <DialogTitle sx={{ 
+            background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+            color: 'white',
+            p: 3,
+            position: 'relative'
+          }}>
+            <Box display="flex" alignItems="center" justifyContent="space-between">
+              <Box display="flex" alignItems="center" gap={2}>
+                <LocalShippingIcon sx={{ fontSize: 28 }} />
+                <Box>
+                  <Typography variant="h6" fontWeight="bold">
+                    Track Your Delivery
+                  </Typography>
+                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                    Order #{trackingOrderId}
+                  </Typography>
+                </Box>
+              </Box>
+              <IconButton 
+                onClick={() => setShowDeliveryTracker(false)}
+                sx={{ color: 'white' }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </DialogTitle>
+          
+          <DialogContent sx={{ p: 0 }}>
+            <ProfessionalDeliveryContent orderId={trackingOrderId} />
+          </DialogContent>
+        </Dialog>
 
         </Box>
       </EcommerceProvider>

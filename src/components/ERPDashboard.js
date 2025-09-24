@@ -23,7 +23,7 @@ function ModuleCard({ icon, title, description, delay, onClick, color }) {
   )
 }
 
-export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onLegalAccess, onColdChainAccess, onInventoryAccess, onAdminAccess, onLogout }) {
+export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, onLegalAccess, onColdChainAccess, onInventoryAccess, onDeliveryAccess, onAdminAccess, onLogout }) {
   const [headerVisible, setHeaderVisible] = useState(false)
 
   useEffect(() => {
@@ -85,6 +85,17 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       title: "Inventory",
       description: "Stock management and warehouse operations",
       color: "#DC2626", // Red for Inventory/Critical
+    },
+    {
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 17H4C3.46957 17 2.96086 16.7893 2.58579 16.4142C2.21071 16.0391 2 15.5304 2 15V7C2 6.46957 2.21071 5.96086 2.58579 5.58579C2.96086 5.21071 3.46957 5 4 5H12L15 9H20C20.5304 9 21.0391 9.21071 21.4142 9.58579C21.7893 9.96086 22 10.4696 22 11V15C22 15.5304 21.7893 16.0391 21.4142 16.4142C21.0391 16.7893 20.5304 17 20 17H19M5 17C5 18.1046 5.89543 19 7 19C8.10457 19 9 18.1046 9 17M5 17C5 15.8954 5.89543 15 7 15C8.10457 15 9 15.8954 9 17M19 17C19 18.1046 18.1046 19 17 19C15.8954 19 15 18.1046 15 17M19 17C19 15.8954 18.1046 15 17 15C15.8954 15 15 15.8954 15 17M9 17H15" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx="12" cy="10" r="2" fill="white"/>
+        </svg>
+      ),
+      title: "Real-Time Delivery",
+      description: "Live delivery tracking and logistics management",
+      color: "#0EA5E9", // Blue for Logistics/Transport
     },
     {
       icon: (
@@ -155,6 +166,8 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       onColdChainAccess()
     } else if (moduleTitle === "Administration" && onAdminAccess) {
       onAdminAccess()
+    } else if ((moduleTitle === "Real-Time Delivery" || moduleTitle === "Delivery") && onDeliveryAccess) {
+      onDeliveryAccess()
     } else if (moduleTitle === "E-Commerce") {
       // Direct navigation to ecommerce route
       window.location.href = '/ecommerce'

@@ -11,6 +11,8 @@ import ColdChainModule from './components/coldchain/ColdChainModule'
 import InventoryModule from './components/inventory/InventoryModule'
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import ProfessionalPharmacyEcommerce from './components/ecommerce/ProfessionalPharmacyEcommerce'
+import ERPDeliveryModule from './components/ERPDeliveryModule'
+import DeliveryManagement from './components/ecommerce/DeliveryManagement'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
@@ -243,6 +245,10 @@ function App() {
   const handleInventoryAccess = () => {
     navigate('/inventory')
   }
+
+  const handleDeliveryAccess = () => {
+    navigate('/delivery')
+  }
   
   const handleLogout = () => {
     // Clear any stored user data (if any)
@@ -306,6 +312,16 @@ function App() {
             </Box>
           } />
           <Route path="/coldchain" element={<ColdChainModule />} />
+          <Route path="/delivery-management" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <ERPDeliveryModule />
+            </Box>
+          } />
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
@@ -320,18 +336,20 @@ function App() {
             <>
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onLogout={handleLogout} />}
             </>
           } />
           <Route path="/ecommerce" element={<ProfessionalPharmacyEcommerce />} />
+          <Route path="/delivery" element={<DeliveryManagement />} />
           <Route path="/" element={
             <>
               {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
               {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
+              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onLogout={handleLogout} />}
               {currentScreen === 'ecommerce' && <ProfessionalPharmacyEcommerce />}
             </>
           } />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </ErrorBoundary>
     </ThemeProvider>

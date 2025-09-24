@@ -1,6 +1,9 @@
 import React from 'react';
 import { Box, Typography, Button, Container, Paper, Fade } from '@mui/material';
-import { ShoppingCart, LocalPharmacy, Verified, LocalShipping } from '@mui/icons-material';
+import ShoppingCart from '@mui/icons-material/ShoppingCart';
+import LocalPharmacy from '@mui/icons-material/LocalPharmacy';
+import Verified from '@mui/icons-material/Verified';
+import LocalShipping from '@mui/icons-material/LocalShipping';
 
 const EcommerceSplashScreen = ({ onGetStarted }) => {
   return (

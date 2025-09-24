@@ -98,7 +98,8 @@ import {
 import ProfessionalCheckout from './ProfessionalCheckout';
 import ProfessionalEcommerceAdmin from './ProfessionalEcommerceAdmin';
 import ProfessionalFooter from './ProfessionalFooter';
-import { LightMode as LightModeIcon, DarkMode as DarkModeIcon } from '@mui/icons-material';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useTheme, ThemeContextProvider } from '../../contexts/ThemeContext';
 
 // Professional Medicine Database with Real Data

@@ -1,0 +1,12 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="60" fill="#1976D2"/>
+  
+  <!-- Driver silhouette -->
+  <path d="M60 25C70 25 78 33 78 43C78 53 70 61 60 61C50 61 42 53 42 43C42 33 50 25 60 25Z" fill="#fff"/>
+  <path d="M30 95C30 80 44 68 60 68C76 68 90 80 90 95L30 95Z" fill="#fff"/>
+  
+  <!-- Driver cap -->
+  <path d="M45 35C45 30 52 26 60 26C68 26 75 30 75 35L75 40L45 40Z" fill="#fff"/>
+  <rect x="42" y="32" width="36" height="4" fill="#FFD700"/>
+</svg>
