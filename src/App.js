@@ -13,6 +13,7 @@ import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import ProfessionalPharmacyEcommerce from './components/ecommerce/ProfessionalPharmacyEcommerce'
 import ERPDeliveryModule from './components/ERPDeliveryModule'
 import DeliveryManagement from './components/ecommerce/DeliveryManagement'
+import AdminDashboard from './components/admin/AdminDashboard'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
@@ -253,7 +254,7 @@ function App() {
   }
 
   const handleAdminAccess = () => {
-    navigate('/clear-data')
+    navigate('/admin')
   }
   
   const handleLogout = () => {
@@ -345,6 +346,16 @@ function App() {
               backgroundColor: '#f8fafc'
             }}>
               <FirebaseDataCleaner />
+            </Box>
+          } />
+          <Route path="/admin" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <AdminDashboard />
             </Box>
           } />
           <Route path="/dashboard" element={

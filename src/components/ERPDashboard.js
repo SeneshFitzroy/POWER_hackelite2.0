@@ -119,8 +119,8 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
           <circle cx="12" cy="16" r="1" fill="white"/>
         </svg>
       ),
-      title: "Reports & Analytics",
-      description: "Business intelligence and performance analytics",
+      title: "Administration",
+      description: "System admin, user management, and security monitoring",
       color: "#8B5CF6", // Purple for Reports/Analytics
     },
     {
@@ -179,8 +179,8 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       } else if (moduleTitle === "Cold Chain" && onColdChainAccess) {
         console.log('[DEBUG] Navigating to Cold Chain...')
         onColdChainAccess()
-      } else if (moduleTitle === "Reports & Analytics" && onAdminAccess) {
-        console.log('[DEBUG] Navigating to Reports & Analytics...')
+      } else if (moduleTitle === "Administration" && onAdminAccess) {
+        console.log('[DEBUG] Navigating to Administration dashboard...')
         onAdminAccess()
       } else if ((moduleTitle === "Real-Time Delivery" || moduleTitle === "Delivery") && onDeliveryAccess) {
         console.log('[DEBUG] Navigating to Delivery...')
