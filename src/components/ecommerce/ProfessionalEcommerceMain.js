@@ -97,6 +97,7 @@ import {
 // Import components
 import ProfessionalCheckout from './ProfessionalCheckout';
 import ProfessionalEcommerceAdmin from './ProfessionalEcommerceAdmin';
+import ProfessionalFooter from './ProfessionalFooter';
 
 // Professional Medicine Database with Real Data
 const medicineCategories = [
@@ -1191,8 +1192,13 @@ const ProfessionalEcommerceMain = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh' }}>
-      {renderCurrentScreen()}
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flex: 1 }}>
+        {renderCurrentScreen()}
+      </Box>
+      
+      {/* Professional Footer */}
+      <ProfessionalFooter />
 
       {/* Snackbar */}
       <Snackbar

@@ -98,6 +98,7 @@ import {
   Shield as ShieldIcon,
   ThumbUp as ThumbUpIcon
 } from '@mui/icons-material';
+import ProfessionalFooter from './ProfessionalFooter';
 
 // Professional Medicine Database
 const medicineCategories = [
@@ -1070,8 +1071,9 @@ const ProfessionalEcommerce = () => {
 
   return (
     <EcommerceProvider>
-      <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-        {/* Professional Header */}
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flex: 1 }}>
+          {/* Professional Header */}
         <ProfessionalHeader
           onSearch={setSearchQuery}
           searchQuery={searchQuery}
@@ -1243,6 +1245,11 @@ const ProfessionalEcommerce = () => {
         >
           <HelpOutlineIcon />
         </Fab>
+
+        </Box>
+        
+        {/* Professional Footer */}
+        <ProfessionalFooter />
 
         {/* Snackbar */}
         <Snackbar

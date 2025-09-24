@@ -90,6 +90,7 @@ import {
   Receipt as ReceiptIcon,
   Dashboard as DashboardIcon
 } from '@mui/icons-material';
+import ProfessionalFooter from './ProfessionalFooter';
 
 // Professional Medicine Database - Real Pharmacy Products
 const medicineCategories = [
@@ -1705,8 +1706,13 @@ const ProfessionalPharmacyEcommerce = () => {
 
   return (
     <EcommerceProvider>
-      <Box sx={{ minHeight: '100vh' }}>
-        {renderCurrentView()}
+      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flex: 1 }}>
+          {renderCurrentView()}
+        </Box>
+        
+        {/* Professional Footer */}
+        <ProfessionalFooter />
 
         {/* Snackbar */}
         <Snackbar
