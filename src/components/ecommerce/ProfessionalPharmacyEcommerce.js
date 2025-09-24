@@ -2,7 +2,6 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 import {
   Box,
   Container,
-  Grid,
   Card,
   CardContent,
   CardMedia,
@@ -326,6 +325,7 @@ const ProfessionalPharmacyEcommerce = () => {
   const [sortBy, setSortBy] = useState('name');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const [productDetailOpen, setProductDetailOpen] = useState(false);
 
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
@@ -382,10 +382,23 @@ const ProfessionalPharmacyEcommerce = () => {
         <Toolbar sx={{ py: 1.5 }}>
           {/* Logo */}
           <Box display="flex" alignItems="center" sx={{ mr: 4 }}>
-            <LocalPharmacyIcon sx={{ mr: 1, fontSize: 32 }} />
-            <Typography variant="h5" fontWeight="bold">
-              PHARMACY
-            </Typography>
+            <img 
+              src="/images/npk-logo.png" 
+              alt="NPK Pharmacy" 
+              style={{ 
+                height: '60px',
+                width: 'auto',
+                borderRadius: '8px',
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'inline-flex';
+              }}
+            />
+            <Box sx={{ display: 'none', alignItems: 'center' }}>
+              <LocalPharmacyIcon sx={{ fontSize: 60, color: 'white' }} />
+            </Box>
           </Box>
 
           {/* Search Bar */}
@@ -459,7 +472,7 @@ const ProfessionalPharmacyEcommerce = () => {
             </IconButton>
 
             <Typography variant="body2" sx={{ ml: 1, fontWeight: 'bold' }}>
-              £{cartTotal.toFixed(2)}
+              LKR {cartTotal.toFixed(2)}
             </Typography>
           </Box>
         </Toolbar>
@@ -555,14 +568,14 @@ const ProfessionalPharmacyEcommerce = () => {
           </Box>
 
           <Typography variant="h6" fontWeight="bold" sx={{ color: '#1e3a8a', mb: 1 }}>
-            £{product.price.toFixed(2)}
+            LKR {product.price.toFixed(2)}
             {product.originalPrice > product.price && (
               <Typography
                 component="span"
                 variant="body2"
                 sx={{ textDecoration: 'line-through', color: 'text.secondary', ml: 1 }}
               >
-                £{product.originalPrice.toFixed(2)}
+                LKR {product.originalPrice.toFixed(2)}
               </Typography>
             )}
           </Typography>
@@ -572,9 +585,30 @@ const ProfessionalPharmacyEcommerce = () => {
           </Typography>
         </CardContent>
 
-        <Box sx={{ p: 2, pt: 0 }}>
+        <Box sx={{ p: 2, pt: 0, display: 'flex', gap: 1 }}>
           <Button
-            fullWidth
+            variant="outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedProduct(product);
+              setProductDetailOpen(true);
+            }}
+            sx={{
+              borderRadius: '8px',
+              py: 1,
+              flex: 1,
+              border: '1px solid #3b82f6',
+              color: '#3b82f6',
+              fontWeight: 'bold',
+              '&:hover': {
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                border: '1px solid #1e3a8a'
+              }
+            }}
+          >
+            View More
+          </Button>
+          <Button
             variant="contained"
             onClick={(e) => {
               e.stopPropagation();
@@ -585,6 +619,7 @@ const ProfessionalPharmacyEcommerce = () => {
             sx={{
               borderRadius: '8px',
               py: 1,
+              flex: 1,
               background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
               fontWeight: 'bold'
             }}
@@ -593,6 +628,245 @@ const ProfessionalPharmacyEcommerce = () => {
           </Button>
         </Box>
       </Card>
+    );
+  };
+
+  // Product Detail Modal Component
+  const ProductDetailModal = () => {
+    const { addToCart, toggleWishlist, wishlist } = useEcommerce();
+    const [quantity, setQuantity] = useState(1);
+    const [selectedImage, setSelectedImage] = useState(0);
+    
+    if (!selectedProduct) {
+      return null;
+    }
+    
+    const isInWishlist = wishlist.some(item => item.id === selectedProduct.id);
+
+    return (
+      <Dialog
+        open={productDetailOpen}
+        onClose={() => setProductDetailOpen(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '16px',
+            maxHeight: '90vh'
+          }
+        }}
+      >
+        <DialogTitle sx={{ p: 0 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ p: 3, pb: 0 }}>
+            <Typography variant="h5" fontWeight="bold">
+              Product Details
+            </Typography>
+            <IconButton onClick={() => setProductDetailOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        
+        <DialogContent sx={{ p: 3 }}>
+          <Grid container spacing={3}>
+            {/* Product Images */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{ position: 'relative', mb: 2 }}>
+                <img
+                  src={selectedProduct.images[selectedImage]}
+                  alt={selectedProduct.name}
+                  style={{
+                    width: '100%',
+                    height: '300px',
+                    objectFit: 'cover',
+                    borderRadius: '12px'
+                  }}
+                />
+                {selectedProduct.originalPrice > selectedProduct.price && (
+                  <Chip
+                    label={`${Math.round((1 - selectedProduct.price / selectedProduct.originalPrice) * 100)}% OFF`}
+                    color="error"
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: 12,
+                      left: 12,
+                      fontWeight: 'bold'
+                    }}
+                  />
+                )}
+                <IconButton
+                  onClick={() => {
+                    toggleWishlist(selectedProduct);
+                    showSnackbar(`${selectedProduct.name} ${isInWishlist ? 'removed from' : 'added to'} wishlist`);
+                  }}
+                  sx={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    backgroundColor: 'rgba(255,255,255,0.9)',
+                    '&:hover': { backgroundColor: 'white' }
+                  }}
+                >
+                  {isInWishlist ? (
+                    <FavoriteIcon sx={{ color: '#ef4444' }} />
+                  ) : (
+                    <FavoriteBorderIcon />
+                  )}
+                </IconButton>
+              </Box>
+              
+              {/* Additional Images */}
+              {selectedProduct.images.length > 1 && (
+                <Box display="flex" gap={1}>
+                  {selectedProduct.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`${selectedProduct.name} ${index + 1}`}
+                      onClick={() => setSelectedImage(index)}
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        objectFit: 'cover',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        border: selectedImage === index ? '2px solid #3b82f6' : '2px solid transparent',
+                        opacity: selectedImage === index ? 1 : 0.7
+                      }}
+                    />
+                  ))}
+                </Box>
+              )}
+            </Grid>
+
+            {/* Product Info */}
+            <Grid item xs={12} md={6}>
+              <Chip
+                label={selectedProduct.category.toUpperCase()}
+                size="small"
+                sx={{ mb: 2, backgroundColor: '#e5e7eb', color: '#374151' }}
+              />
+              
+              <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
+                {selectedProduct.name}
+              </Typography>
+              
+              <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 2 }}>
+                Brand: {selectedProduct.brand}
+              </Typography>
+
+              <Box display="flex" alignItems="center" gap={1} sx={{ mb: 2 }}>
+                <Rating value={selectedProduct.rating} precision={0.1} size="small" readOnly />
+                <Typography variant="body2" color="text.secondary">
+                  ({selectedProduct.reviewCount} reviews)
+                </Typography>
+              </Box>
+
+              <Typography variant="h4" fontWeight="bold" sx={{ color: '#1e3a8a', mb: 2 }}>
+                LKR {selectedProduct.price.toFixed(2)}
+                {selectedProduct.originalPrice > selectedProduct.price && (
+                  <Typography
+                    component="span"
+                    variant="h6"
+                    sx={{ textDecoration: 'line-through', color: 'text.secondary', ml: 2 }}
+                  >
+                    LKR {selectedProduct.originalPrice.toFixed(2)}
+                  </Typography>
+                )}
+              </Typography>
+
+              <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
+                {selectedProduct.description}
+              </Typography>
+
+              {/* Features */}
+              {selectedProduct.features && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
+                    Key Features:
+                  </Typography>
+                  <Box display="flex" flexWrap="wrap" gap={1}>
+                    {selectedProduct.features.map((feature, index) => (
+                      <Chip
+                        key={index}
+                        label={feature}
+                        size="small"
+                        sx={{ backgroundColor: '#e3f2fd', color: '#1976d2' }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              )}
+
+              {/* Stock Status */}
+              <Box display="flex" alignItems="center" gap={1} sx={{ mb: 3 }}>
+                <CheckCircleIcon sx={{ color: selectedProduct.inStock ? '#10b981' : '#ef4444', fontSize: 20 }} />
+                <Typography color={selectedProduct.inStock ? 'success.main' : 'error.main'}>
+                  {selectedProduct.inStock ? `In Stock (${selectedProduct.stockCount} available)` : 'Out of Stock'}
+                </Typography>
+              </Box>
+
+              {/* Quantity Selector */}
+              <Box display="flex" alignItems="center" gap={2} sx={{ mb: 3 }}>
+                <Typography variant="body1" fontWeight="bold">
+                  Quantity:
+                </Typography>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <IconButton
+                    size="small"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={quantity <= 1}
+                    sx={{ border: '1px solid #e5e7eb' }}
+                  >
+                    <RemoveIcon />
+                  </IconButton>
+                  <Typography variant="h6" sx={{ minWidth: 40, textAlign: 'center' }}>
+                    {quantity}
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => setQuantity(Math.min(selectedProduct.stockCount, quantity + 1))}
+                    disabled={quantity >= selectedProduct.stockCount}
+                    sx={{ border: '1px solid #e5e7eb' }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </DialogContent>
+
+        <DialogActions sx={{ p: 3, pt: 0 }}>
+          <Button
+            variant="outlined"
+            onClick={() => setProductDetailOpen(false)}
+            sx={{ mr: 1 }}
+          >
+            Continue Shopping
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              for (let i = 0; i < quantity; i++) {
+                addToCart(selectedProduct);
+              }
+              showSnackbar(`${quantity} x ${selectedProduct.name} added to cart!`);
+              setProductDetailOpen(false);
+              setQuantity(1);
+            }}
+            disabled={!selectedProduct.inStock}
+            sx={{
+              background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+              fontWeight: 'bold',
+              px: 4
+            }}
+          >
+            Add {quantity} to Cart
+          </Button>
+        </DialogActions>
+      </Dialog>
     );
   };
 
@@ -642,7 +916,7 @@ const ProfessionalPharmacyEcommerce = () => {
                         {item.name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        £{item.price.toFixed(2)} each
+                        LKR {item.price.toFixed(2)} each
                       </Typography>
                       <Box display="flex" alignItems="center" gap={1} sx={{ mt: 1 }}>
                         <IconButton
@@ -662,7 +936,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     </Box>
                     <Box textAlign="right">
                       <Typography variant="h6" fontWeight="bold">
-                        £{(item.price * item.quantity).toFixed(2)}
+                        LKR {(item.price * item.quantity).toFixed(2)}
                       </Typography>
                       <IconButton
                         color="error"
@@ -683,7 +957,7 @@ const ProfessionalPharmacyEcommerce = () => {
               <Divider sx={{ my: 2 }} />
               <Box display="flex" justifyContent="space-between" sx={{ mb: 2 }}>
                 <Typography variant="h6" fontWeight="bold">
-                  Total: £{cartTotal.toFixed(2)}
+                  Total: LKR {cartTotal.toFixed(2)}
                 </Typography>
               </Box>
               <Button
@@ -776,6 +1050,7 @@ const ProfessionalPharmacyEcommerce = () => {
       </Container>
 
       <CartDrawer />
+      <ProductDetailModal />
     </Box>
   );
 
@@ -821,13 +1096,13 @@ const ProfessionalPharmacyEcommerce = () => {
                 {cart.map((item) => (
                   <Box key={item.id} display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
                     <Typography>{item.name} x {item.quantity}</Typography>
-                    <Typography fontWeight="bold">£{(item.price * item.quantity).toFixed(2)}</Typography>
+                    <Typography fontWeight="bold">LKR {(item.price * item.quantity).toFixed(2)}</Typography>
                   </Box>
                 ))}
                 <Divider sx={{ my: 2 }} />
                 <Box display="flex" justifyContent="space-between">
                   <Typography variant="h6" fontWeight="bold">Total:</Typography>
-                  <Typography variant="h6" fontWeight="bold">£{cartTotal.toFixed(2)}</Typography>
+                  <Typography variant="h6" fontWeight="bold">LKR {cartTotal.toFixed(2)}</Typography>
                 </Box>
               </Box>
             )}
@@ -886,7 +1161,7 @@ const ProfessionalPharmacyEcommerce = () => {
             <Grid size={{ xs: 12, md: 3 }}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="warning.main">
-                  £12,450
+                  LKR 12,450
                 </Typography>
                 <Typography variant="body1">Revenue Today</Typography>
               </Card>
@@ -975,14 +1250,14 @@ const ProfessionalPharmacyEcommerce = () => {
                 </Box>
 
                 <Typography variant="h4" fontWeight="bold" sx={{ color: '#1e3a8a', mb: 2 }}>
-                  £{selectedProduct.price.toFixed(2)}
+                  LKR {selectedProduct.price.toFixed(2)}
                   {selectedProduct.originalPrice > selectedProduct.price && (
                     <Typography
                       component="span"
                       variant="h6"
                       sx={{ textDecoration: 'line-through', color: 'text.secondary', ml: 2 }}
                     >
-                      £{selectedProduct.originalPrice.toFixed(2)}
+                      LKR {selectedProduct.originalPrice.toFixed(2)}
                     </Typography>
                   )}
                 </Typography>
