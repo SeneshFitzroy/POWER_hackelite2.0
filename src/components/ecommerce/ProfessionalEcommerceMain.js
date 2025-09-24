@@ -669,9 +669,15 @@ const ProfessionalEcommerceMain = () => {
           <CardMedia
             component="img"
             height="200"
-            image={product.images[0]}
+            image={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/400x400/e5e7eb/6b7280?text=No+Image'}
             alt={product.name}
-            sx={{ borderRadius: '16px 16px 0 0' }}
+            sx={{ 
+              borderRadius: '16px 16px 0 0',
+              objectFit: 'cover'
+            }}
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/400x400/e5e7eb/6b7280?text=No+Image';
+            }}
           />
           
           {/* Discount Badge */}
