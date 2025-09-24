@@ -47,7 +47,8 @@ import {
   FormControlLabel,
   Checkbox,
   Tabs,
-  Tab
+  Tab,
+  Grid
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -1024,7 +1025,7 @@ const ProfessionalPharmacyEcommerce = () => {
         {/* Products Grid */}
         <Grid container spacing={3}>
           {filteredProducts.map((product) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
               <ProductCard product={product} />
             </Grid>
           ))}
@@ -1058,18 +1059,260 @@ const ProfessionalPharmacyEcommerce = () => {
   const CheckoutView = () => {
     const { cart, placeOrder } = useEcommerce();
     const [activeStep, setActiveStep] = useState(0);
-    const steps = ['Shipping', 'Payment', 'Review', 'Complete'];
+    const steps = ['Customer Info', 'Shipping', 'Payment', 'Review'];
     const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const shippingCost = 250.00;
+    const tax = cartTotal * 0.02; // 2% tax
+    const finalTotal = cartTotal + shippingCost + tax;
+    
+    // Form data
+    const [customerInfo, setCustomerInfo] = useState({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: '',
+      city: '',
+      postalCode: '',
+      nic: ''
+    });
+    
+    const [paymentInfo, setPaymentInfo] = useState({
+      paymentMethod: 'card',
+      cardNumber: '',
+      expiryDate: '',
+      cvv: '',
+      cardName: ''
+    });
+    
+    const [orderComplete, setOrderComplete] = useState(false);
+    const [orderNumber, setOrderNumber] = useState('');
 
     const handleNext = () => {
       if (activeStep === steps.length - 1) {
-        placeOrder({ total: cartTotal });
-        showSnackbar('Order placed successfully!');
-        setCurrentView('home');
+        const newOrderNumber = `NPK${Date.now()}`;
+        setOrderNumber(newOrderNumber);
+        placeOrder({ 
+          customerInfo, 
+          paymentInfo,
+          orderNumber: newOrderNumber,
+          total: finalTotal,
+          subtotal: cartTotal,
+          shipping: shippingCost,
+          tax: tax
+        });
+        setOrderComplete(true);
       } else {
         setActiveStep(prev => prev + 1);
       }
     };
+
+    const handleBack = () => {
+      setActiveStep(prev => prev - 1);
+    };
+
+    const renderStepContent = () => {
+      switch (activeStep) {
+        case 0:
+          return (
+            <Box>
+              <Typography variant="h6" sx={{ mb: 3 }}>Customer Information</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="First Name"
+                    value={customerInfo.firstName}
+                    onChange={(e) => setCustomerInfo({...customerInfo, firstName: e.target.value})}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Last Name"
+                    value={customerInfo.lastName}
+                    onChange={(e) => setCustomerInfo({...customerInfo, lastName: e.target.value})}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Email Address"
+                    type="email"
+                    value={customerInfo.email}
+                    onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Phone Number"
+                    value={customerInfo.phone}
+                    onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="NIC Number"
+                    value={customerInfo.nic}
+                    onChange={(e) => setCustomerInfo({...customerInfo, nic: e.target.value})}
+                    required
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          );
+        case 1:
+          return (
+            <Box>
+              <Typography variant="h6" sx={{ mb: 3 }}>Shipping Address</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Street Address"
+                    value={customerInfo.address}
+                    onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
+                    required
+                    multiline
+                    rows={2}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={8}>
+                  <TextField
+                    fullWidth
+                    label="City"
+                    value={customerInfo.city}
+                    onChange={(e) => setCustomerInfo({...customerInfo, city: e.target.value})}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    label="Postal Code"
+                    value={customerInfo.postalCode}
+                    onChange={(e) => setCustomerInfo({...customerInfo, postalCode: e.target.value})}
+                    required
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          );
+        case 2:
+          return (
+            <Box>
+              <Typography variant="h6" sx={{ mb: 3 }}>Payment Information</Typography>
+              <FormControl component="fieldset" sx={{ mb: 3 }}>
+                <RadioGroup
+                  value={paymentInfo.paymentMethod}
+                  onChange={(e) => setPaymentInfo({...paymentInfo, paymentMethod: e.target.value})}
+                >
+                  <FormControlLabel value="card" control={<Radio />} label="Credit/Debit Card" />
+                  <FormControlLabel value="cash" control={<Radio />} label="Cash on Delivery" />
+                  <FormControlLabel value="bank" control={<Radio />} label="Bank Transfer" />
+                </RadioGroup>
+              </FormControl>
+              
+              {paymentInfo.paymentMethod === 'card' && (
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Cardholder Name"
+                      value={paymentInfo.cardName}
+                      onChange={(e) => setPaymentInfo({...paymentInfo, cardName: e.target.value})}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Card Number"
+                      value={paymentInfo.cardNumber}
+                      onChange={(e) => setPaymentInfo({...paymentInfo, cardNumber: e.target.value})}
+                      placeholder="1234 5678 9012 3456"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      fullWidth
+                      label="Expiry Date"
+                      value={paymentInfo.expiryDate}
+                      onChange={(e) => setPaymentInfo({...paymentInfo, expiryDate: e.target.value})}
+                      placeholder="MM/YY"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      fullWidth
+                      label="CVV"
+                      value={paymentInfo.cvv}
+                      onChange={(e) => setPaymentInfo({...paymentInfo, cvv: e.target.value})}
+                      placeholder="123"
+                      required
+                    />
+                  </Grid>
+                </Grid>
+              )}
+            </Box>
+          );
+        case 3:
+          return (
+            <Box>
+              <Typography variant="h6" sx={{ mb: 3 }}>Order Review</Typography>
+              <Paper sx={{ p: 3, mb: 3, backgroundColor: '#f8fafc' }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>Customer Details</Typography>
+                <Typography><strong>Name:</strong> {customerInfo.firstName} {customerInfo.lastName}</Typography>
+                <Typography><strong>Email:</strong> {customerInfo.email}</Typography>
+                <Typography><strong>Phone:</strong> {customerInfo.phone}</Typography>
+                <Typography><strong>Address:</strong> {customerInfo.address}, {customerInfo.city} {customerInfo.postalCode}</Typography>
+              </Paper>
+              
+              <Paper sx={{ p: 3, mb: 3, backgroundColor: '#f8fafc' }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>Order Summary</Typography>
+                {cart.map((item) => (
+                  <Box key={item.id} display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
+                    <Typography>{item.name} x {item.quantity}</Typography>
+                    <Typography>LKR {(item.price * item.quantity).toFixed(2)}</Typography>
+                  </Box>
+                ))}
+                <Divider sx={{ my: 2 }} />
+                <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Typography>Subtotal:</Typography>
+                  <Typography>LKR {cartTotal.toFixed(2)}</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Typography>Shipping:</Typography>
+                  <Typography>LKR {shippingCost.toFixed(2)}</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Typography>Tax (2%):</Typography>
+                  <Typography>LKR {tax.toFixed(2)}</Typography>
+                </Box>
+                <Divider sx={{ my: 2 }} />
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h6" fontWeight="bold">Total:</Typography>
+                  <Typography variant="h6" fontWeight="bold" color="primary">LKR {finalTotal.toFixed(2)}</Typography>
+                </Box>
+              </Paper>
+            </Box>
+          );
+        default:
+          return null;
+      }
+    };
+
+    if (orderComplete) {
+      return <OrderReceipt orderNumber={orderNumber} customerInfo={customerInfo} cart={cart} total={finalTotal} subtotal={cartTotal} shipping={shippingCost} tax={tax} />;
+    }
 
     return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
@@ -1088,31 +1331,14 @@ const ProfessionalPharmacyEcommerce = () => {
               ))}
             </Stepper>
 
-            {activeStep < 3 && (
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Order Summary
-                </Typography>
-                {cart.map((item) => (
-                  <Box key={item.id} display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
-                    <Typography>{item.name} x {item.quantity}</Typography>
-                    <Typography fontWeight="bold">LKR {(item.price * item.quantity).toFixed(2)}</Typography>
-                  </Box>
-                ))}
-                <Divider sx={{ my: 2 }} />
-                <Box display="flex" justifyContent="space-between">
-                  <Typography variant="h6" fontWeight="bold">Total:</Typography>
-                  <Typography variant="h6" fontWeight="bold">LKR {cartTotal.toFixed(2)}</Typography>
-                </Box>
-              </Box>
-            )}
+            {renderStepContent()}
 
-            <Box display="flex" justifyContent="space-between">
+            <Box display="flex" justifyContent="space-between" sx={{ mt: 4 }}>
               <Button
-                onClick={() => setCurrentView('home')}
+                onClick={activeStep === 0 ? () => setCurrentView('home') : handleBack}
                 sx={{ color: '#6b7280' }}
               >
-                Back to Shop
+                {activeStep === 0 ? 'Back to Shop' : 'Back'}
               </Button>
               <Button
                 variant="contained"
@@ -1123,6 +1349,169 @@ const ProfessionalPharmacyEcommerce = () => {
                 }}
               >
                 {activeStep === steps.length - 1 ? 'Place Order' : 'Next'}
+              </Button>
+            </Box>
+          </Paper>
+        </Container>
+      </Box>
+    );
+  };
+
+  // Order Receipt Component
+  const OrderReceipt = ({ orderNumber, customerInfo, cart, total, subtotal, shipping, tax }) => {
+    const currentDate = new Date();
+    
+    return (
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc', py: 4 }}>
+        <Container maxWidth="sm">
+          <Paper sx={{ p: 4, backgroundColor: 'white' }}>
+            {/* Header */}
+            <Box sx={{ textAlign: 'center', mb: 3, borderBottom: '2px solid #1e3a8a', pb: 2 }}>
+              <img 
+                src="/images/npk-logo.png" 
+                alt="NPK Pharmacy" 
+                style={{ 
+                  height: '60px',
+                  width: 'auto',
+                  marginBottom: '8px'
+                }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'block';
+                }}
+              />
+              <Typography variant="h6" sx={{ display: 'none', fontWeight: 'bold', color: '#1e3a8a' }}>
+                NPK PHARMACY
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666', mt: 1 }}>
+                New Pharmacy Kalutara
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666' }}>
+                📍 123 Main Street, Kalutara, Sri Lanka
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666' }}>
+                📞 +94 34 223 4567 | 📧 info@npkpharmacy.lk
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666', fontWeight: 'bold' }}>
+                Pharmacy Reg: PH/2024/NPK001 | License: LIC/2024/NPK001
+              </Typography>
+            </Box>
+
+            {/* Receipt Header */}
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+              <Typography variant="h5" fontWeight="bold" sx={{ 
+                backgroundColor: '#1e3a8a', 
+                color: 'white', 
+                py: 1, 
+                borderRadius: 1,
+                mb: 2
+              }}>
+                PURCHASE RECEIPT
+              </Typography>
+              <Typography variant="body1" fontWeight="bold">
+                Order #: {orderNumber}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Date: {currentDate.toLocaleDateString('en-GB')} {currentDate.toLocaleTimeString('en-GB')}
+              </Typography>
+            </Box>
+
+            {/* Customer Info */}
+            <Box sx={{ mb: 3, p: 2, backgroundColor: '#f8fafc', borderRadius: 1 }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: 1, color: '#1e3a8a' }}>
+                CUSTOMER DETAILS
+              </Typography>
+              <Typography variant="body2"><strong>Name:</strong> {customerInfo.firstName} {customerInfo.lastName}</Typography>
+              <Typography variant="body2"><strong>Email:</strong> {customerInfo.email}</Typography>
+              <Typography variant="body2"><strong>Phone:</strong> {customerInfo.phone}</Typography>
+              <Typography variant="body2"><strong>NIC:</strong> {customerInfo.nic}</Typography>
+              <Typography variant="body2"><strong>Address:</strong> {customerInfo.address}, {customerInfo.city} {customerInfo.postalCode}</Typography>
+            </Box>
+
+            {/* Items */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#1e3a8a' }}>
+                ITEMS PURCHASED
+              </Typography>
+              <Box sx={{ display: 'flex', mb: 1, fontWeight: 'bold', borderBottom: '1px solid #ddd', pb: 1 }}>
+                <Typography variant="body2" sx={{ flex: 3 }}>ITEM</Typography>
+                <Typography variant="body2" sx={{ flex: 1, textAlign: 'center' }}>QTY</Typography>
+                <Typography variant="body2" sx={{ flex: 1, textAlign: 'center' }}>RATE</Typography>
+                <Typography variant="body2" sx={{ flex: 1, textAlign: 'right' }}>TOTAL</Typography>
+              </Box>
+
+              {cart.map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', mb: 1, py: 0.5 }}>
+                  <Typography variant="body2" sx={{ flex: 3, fontSize: '0.85rem' }}>
+                    {item.name}
+                    <br />
+                    <Typography component="span" variant="caption" color="text.secondary">
+                      {item.brand}
+                    </Typography>
+                  </Typography>
+                  <Typography variant="body2" sx={{ flex: 1, textAlign: 'center' }}>{item.quantity}</Typography>
+                  <Typography variant="body2" sx={{ flex: 1, textAlign: 'center' }}>LKR {item.price.toFixed(2)}</Typography>
+                  <Typography variant="body2" sx={{ flex: 1, textAlign: 'right', fontWeight: 'bold' }}>
+                    LKR {(item.price * item.quantity).toFixed(2)}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+
+            {/* Totals */}
+            <Box sx={{ borderTop: '2px solid #1e3a8a', pt: 2 }}>
+              <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
+                <Typography variant="body1">Subtotal:</Typography>
+                <Typography variant="body1">LKR {subtotal.toFixed(2)}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
+                <Typography variant="body1">Shipping:</Typography>
+                <Typography variant="body1">LKR {shipping.toFixed(2)}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between" sx={{ mb: 2 }}>
+                <Typography variant="body1">Tax (2%):</Typography>
+                <Typography variant="body1">LKR {tax.toFixed(2)}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between" sx={{ 
+                backgroundColor: '#1e3a8a', 
+                color: 'white', 
+                p: 1, 
+                borderRadius: 1,
+                fontWeight: 'bold'
+              }}>
+                <Typography variant="h6" fontWeight="bold">GRAND TOTAL:</Typography>
+                <Typography variant="h6" fontWeight="bold">LKR {total.toFixed(2)}</Typography>
+              </Box>
+            </Box>
+
+            {/* Footer */}
+            <Box sx={{ textAlign: 'center', mt: 4, pt: 2, borderTop: '1px solid #ddd' }}>
+              <Typography variant="body2" color="text.secondary">
+                Thank you for shopping with NPK Pharmacy!
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                For support, call +94 34 223 4567 or email info@npkpharmacy.lk
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                This is a computer generated receipt. Return policy: 7 days with original receipt.
+              </Typography>
+            </Box>
+
+            {/* Action Buttons */}
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 4 }}>
+              <Button
+                variant="contained"
+                onClick={() => window.print()}
+                sx={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)' }}
+              >
+                Print Receipt
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setCurrentView('home')}
+                sx={{ borderColor: '#1e3a8a', color: '#1e3a8a' }}
+              >
+                Continue Shopping
               </Button>
             </Box>
           </Paper>
@@ -1142,7 +1531,7 @@ const ProfessionalPharmacyEcommerce = () => {
           </Typography>
           
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 3 }}>
+            <Grid item xs={12} md={3}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="primary">
                   {products.length}
@@ -1150,7 +1539,7 @@ const ProfessionalPharmacyEcommerce = () => {
                 <Typography variant="body1">Total Products</Typography>
               </Card>
             </Grid>
-            <Grid size={{ xs: 12, md: 3 }}>
+            <Grid item xs={12} md={3}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="success.main">
                   156
@@ -1158,7 +1547,7 @@ const ProfessionalPharmacyEcommerce = () => {
                 <Typography variant="body1">Orders Today</Typography>
               </Card>
             </Grid>
-            <Grid size={{ xs: 12, md: 3 }}>
+            <Grid item xs={12} md={3}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="warning.main">
                   LKR 12,450
@@ -1166,7 +1555,7 @@ const ProfessionalPharmacyEcommerce = () => {
                 <Typography variant="body1">Revenue Today</Typography>
               </Card>
             </Grid>
-            <Grid size={{ xs: 12, md: 3 }}>
+            <Grid item xs={12} md={3}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="error.main">
                   23
@@ -1218,7 +1607,7 @@ const ProfessionalPharmacyEcommerce = () => {
           
           <Paper sx={{ p: 4 }}>
             <Grid container spacing={4}>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid item xs={12} md={6}>
                 <Box
                   component="img"
                   src={selectedProduct.images[0]}
@@ -1231,7 +1620,7 @@ const ProfessionalPharmacyEcommerce = () => {
                   }}
                 />
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid item xs={12} md={6}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   {selectedProduct.category.toUpperCase()}
                 </Typography>
