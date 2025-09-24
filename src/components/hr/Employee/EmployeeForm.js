@@ -241,6 +241,7 @@ const EmployeeForm = () => {
         console.log('Document reference:', docRef);
         await updateDoc(docRef, employeeData);
         toast.success('Employee updated successfully!');
+        navigate('/hr/employees');
       } else {
         // Add new employee
         employeeData.createdAt = new Date().toISOString();
@@ -250,6 +251,7 @@ const EmployeeForm = () => {
         console.log('Employee added with ID:', docRef.id);
         console.log('Document reference:', docRef);
         toast.success('Employee added successfully!');
+        navigate('/hr/employees');
       }
 
       navigate('/hr/employees');
@@ -883,7 +885,9 @@ const EmployeeForm = () => {
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
                 <Button
                   variant="outlined"
-                  onClick={() => navigate('/hr/employees')}
+                  onClick={() => {
+                    navigate('/hr/employees');
+                  }}
                   sx={{ 
                     px: 4, 
                     py: 1.5, 

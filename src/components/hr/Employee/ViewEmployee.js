@@ -93,7 +93,9 @@ const ViewEmployee = () => {
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton 
-            onClick={() => navigate('/hr/employees')}
+            onClick={() => {
+              navigate('/hr/employees');
+            }}
             sx={{ mr: 2, color: 'primary.main' }}
           >
             <ArrowLeft />
@@ -106,7 +108,9 @@ const ViewEmployee = () => {
         <Button
           variant="contained"
           startIcon={<Edit size={20} />}
-          onClick={() => navigate(`/hr/employees/${employee.id}/edit`)}
+          onClick={() => {
+            navigate(`/hr/employees/${employee.id}/edit`);
+          }}
           sx={{ 
             px: 3, 
             py: 1.5, 

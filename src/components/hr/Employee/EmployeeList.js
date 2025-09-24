@@ -1,4 +1,4 @@
-﻿﻿import React, { useState, useEffect, useCallback } from 'react';
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -442,7 +442,9 @@ const EmployeeList = () => {
                       color: '#1565c0',
                       '&:hover': { backgroundColor: 'rgba(21, 101, 192, 0.1)' }
                     }}
-                    onClick={() => navigate(`/hr/employees/${employee.id}`)}
+                    onClick={() => {
+                      navigate(`/hr/employees/${employee.id}`);
+                    }}
                     title="View Employee"
                   >
                     <Eye size={18} />
@@ -453,7 +455,9 @@ const EmployeeList = () => {
                       color: '#2e7d32',
                       '&:hover': { backgroundColor: 'rgba(46, 125, 50, 0.1)' }
                     }}
-                    onClick={() => navigate(`/hr/employees/${employee.id}/edit`)}
+                    onClick={() => {
+                      navigate(`/hr/employees/${employee.id}/edit`);
+                    }}
                     title="Edit Employee"
                   >
                     <Edit size={18} />

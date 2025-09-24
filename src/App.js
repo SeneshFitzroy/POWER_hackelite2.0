@@ -279,14 +279,16 @@ function App() {
               <SalesModule />
             </Box>
           } />
-          <Route path="/hr" element={
+          <Route path="/hr/*" element={
             <Box sx={{ 
               display: 'flex', 
               flexDirection: 'column', 
               minHeight: '100vh',
               backgroundColor: '#f8fafc'
             }}>
-              <HRModule />
+              <AuthProvider>
+                <HRModule />
+              </AuthProvider>
             </Box>
           } />
           <Route path="/legal" element={

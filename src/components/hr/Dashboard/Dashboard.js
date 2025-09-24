@@ -207,91 +207,90 @@ const Dashboard = () => {
         <Button
           variant="contained"
           startIcon={<Plus size={20} />}
-          sx={{
-            background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-            color: 'white',
-            px: 3,
-            py: 1.5,
-            fontWeight: 'bold',
-            borderRadius: '10px',
-            boxShadow: '0 4px 12px rgba(30, 64, 175, 0.3)',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)',
-              boxShadow: '0 6px 16px rgba(30, 64, 175, 0.4)',
-              transform: 'translateY(-1px)'
-            },
-            transition: 'all 0.2s ease-in-out',
-            textTransform: 'none'
-          }}
           onClick={() => navigate('/hr/employees/new')}
+          sx={{ 
+            px: 3, 
+            py: 1.5, 
+            borderRadius: 2,
+            backgroundColor: '#1565c0',
+            fontWeight: 'bold',
+            textTransform: 'none',
+            '&:hover': { backgroundColor: '#0d47a1' }
+          }}
         >
           Add New Employee
         </Button>
       </Box>
 
       {/* Stats Grid */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3}>
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
-          
           return (
-            <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
+            <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
               <Card
                 sx={{
                   borderRadius: '16px',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                   border: '1px solid #f0f0f0',
                   cursor: 'pointer',
-                  transition: 'all 0.3s ease-in-out',
+                  transition: 'all 0.2s ease-in-out',
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: '0 8px 30px rgba(30, 58, 138, 0.15)',
-                    borderColor: '#1e40af'
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                    borderColor: stat.color
                   }
                 }}
-                onClick={() => navigate(stat.link)}
+                onClick={() => {
+                  navigate(stat.link);
+                }}
               >
                 <CardContent sx={{ p: 3, flex: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Box>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: '#6b7280',
-                          fontWeight: '600',
-                          mb: 1,
-                          fontSize: '14px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px'
-                        }}
-                      >
-                        {stat.title}
-                      </Typography>
-                      <Typography
-                        variant="h3"
-                        sx={{
-                          fontWeight: 'bold',
-                          color: '#1f2937',
-                          lineHeight: 1
-                        }}
-                      >
-                        {stat.value}
-                      </Typography>
-                    </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                     <Avatar
                       sx={{
                         backgroundColor: stat.bgColor,
-                        width: 56,
-                        height: 56,
-                        ml: 2
+                        width: 48,
+                        height: 48
                       }}
                     >
-                      <Icon size={28} color={stat.color} />
+                      <Icon size={24} color={stat.color} />
                     </Avatar>
+                    <Chip
+                      label="Live"
+                      size="small"
+                      sx={{
+                        backgroundColor: '#10b981',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '10px',
+                        height: 20
+                      }}
+                    />
                   </Box>
+                  <Typography
+                    variant="h3"
+                    sx={{
+                      fontWeight: 'bold',
+                      color: '#1f2937',
+                      mb: 1,
+                      fontSize: '28px'
+                    }}
+                  >
+                    {stat.value}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: '#6b7280',
+                      fontWeight: '500',
+                      fontSize: '14px'
+                    }}
+                  >
+                    {stat.title}
+                  </Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -342,7 +341,9 @@ const Dashboard = () => {
                         boxShadow: '0 4px 12px rgba(30, 64, 175, 0.1)'
                       }
                     }}
-                    onClick={() => navigate(action.link)}
+                    onClick={() => {
+                      navigate(action.link);
+                    }}
                   >
                     <CardContent sx={{ p: 2.5, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                       <Avatar

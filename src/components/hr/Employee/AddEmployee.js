@@ -204,12 +204,16 @@ const AddEmployee = () => {
     }
   };
 
+  const handleBackClick = () => {
+    navigate('/hr/employees');
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 3, pl: 8 }}>
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
         <IconButton 
-          onClick={() => navigate('/hr/employees')}
+          onClick={handleBackClick}
           sx={{ mr: 2, color: 'primary.main' }}
         >
           <ArrowLeft />
@@ -796,7 +800,7 @@ const AddEmployee = () => {
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
                 <Button
                   variant="outlined"
-                  onClick={() => navigate('/hr/employees')}
+                  onClick={handleBackClick}
                   sx={{ 
                     px: 4, 
                     py: 1.5, 

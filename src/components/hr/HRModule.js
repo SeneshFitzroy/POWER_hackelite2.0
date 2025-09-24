@@ -375,14 +375,14 @@ export default function HRModule() {
         >
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="employees" element={<EmployeeList />} />
-            <Route path="employees/new" element={<EmployeeForm />} />
-            <Route path="employees/:id" element={<ViewEmployee />} />
-            <Route path="employees/:id/edit" element={<EmployeeForm />} />
-            <Route path="test-firestore" element={<TestFirestore />} />
-            <Route path="attendance" element={<AttendanceList />} />
-            <Route path="payroll" element={<PayrollList />} />
-            <Route path="licenses" element={<LicenseTracking />} />
+            <Route path="/employees" element={<EmployeeList />} />
+            <Route path="/employees/new" element={<EmployeeForm />} />
+            <Route path="/employees/:id" element={<ViewEmployee />} />
+            <Route path="/employees/:id/edit" element={<EmployeeForm />} />
+            <Route path="/test-firestore" element={<TestFirestore />} />
+            <Route path="/attendance" element={<AttendanceList />} />
+            <Route path="/payroll" element={<PayrollList />} />
+            <Route path="/licenses" element={<LicenseTracking />} />
           </Routes>
         </Container>
       </Box>
