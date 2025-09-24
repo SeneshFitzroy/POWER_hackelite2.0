@@ -26,6 +26,7 @@
     "@googlemaps/react-wrapper": "^1.2.0",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
+    "@react-google-maps/api": "^2.20.7",
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
     "firebase": "^12.2.1",

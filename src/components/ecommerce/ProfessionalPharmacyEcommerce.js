@@ -357,11 +357,44 @@ const ProfessionalDeliveryContent = ({ orderId }) => {
     },
   };
   
+  // Real-time clock state
+  const [currentTime, setCurrentTime] = useState(new Date());
+  
+  // Fixed delivery timeline times (don't change)
+  const [deliveryTimes] = useState(() => {
+    const baseTime = new Date();
+    return {
+      confirmed: new Date(baseTime.getTime() - (50 * 60 * 1000)), // 50 mins ago
+      preparing: new Date(baseTime.getTime() - (35 * 60 * 1000)), // 35 mins ago
+      dispatched: new Date(baseTime.getTime() - (15 * 60 * 1000)), // 15 mins ago
+      eta: new Date(baseTime.getTime() + (12 * 60 * 1000)) // 12 mins from now
+    };
+  });
+
+  // Update current time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+  
+  // Format time in 12-hour format for Sri Lanka timezone
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit', 
+      hour12: true,
+      timeZone: 'Asia/Colombo'
+    });
+  };
+
   const deliverySteps = [
-    { id: 'confirmed', label: 'Order Confirmed', icon: CheckCircleIcon, completed: true, time: '10:30 AM' },
-    { id: 'preparing', label: 'Preparing Order', icon: StoreIcon, completed: true, time: '10:45 AM' },
-    { id: 'dispatched', label: 'Out for Delivery', icon: LocalShippingIcon, completed: true, time: '11:15 AM', active: true },
-    { id: 'delivered', label: 'Delivered', icon: VerifiedIcon, completed: false, time: 'ETA: 11:35 AM' }
+    { id: 'confirmed', label: 'Order Confirmed', icon: CheckCircleIcon, completed: true, time: formatTime(deliveryTimes.confirmed) },
+    { id: 'preparing', label: 'Preparing Order', icon: StoreIcon, completed: true, time: formatTime(deliveryTimes.preparing) },
+    { id: 'dispatched', label: 'Out for Delivery', icon: LocalShippingIcon, completed: true, time: formatTime(deliveryTimes.dispatched), active: true },
+    { id: 'delivered', label: 'Delivered', icon: VerifiedIcon, completed: false, time: `ETA: ${formatTime(deliveryTimes.eta)}` }
   ];
 
   const driverInfo = {
@@ -668,77 +701,75 @@ const ProfessionalDeliveryContent = ({ orderId }) => {
         mb: 1,
         borderTop: '1px solid #f3f4f6'
       }}>
-        <Typography 
-          variant="h6" 
-          sx={{ 
-            fontWeight: '800', 
-            color: '#1565c0', 
-            mb: 4,
-            fontSize: '20px',
-            fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}
-        >
-          Live Route Tracking
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              fontWeight: '800', 
+              color: '#1565c0',
+              fontSize: '20px',
+              fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+            }}
+          >
+            Live Route Tracking
+          </Typography>
+          
+          {/* Real-time Current Time */}
+          <Box sx={{ textAlign: 'right' }}>
+            <Typography variant="caption" sx={{ color: '#666', fontSize: '11px', display: 'block' }}>
+              Current Time
+            </Typography>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#1565c0', 
+                fontWeight: '700',
+                fontSize: '14px',
+                fontFamily: 'monospace'
+              }}
+            >
+              {formatTime(currentTime)}
+            </Typography>
+          </Box>
+        </Box>
         
-        {/* Route Visualization */}
+        {/* Real Google Maps */}
         <Box
           sx={{
             position: 'relative',
-            height: 280,
-            background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+            height: 320,
             borderRadius: '16px',
             overflow: 'hidden',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            border: '1px solid #e1e5e9',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+            border: '2px solid #e3f2fd',
             mb: 3
           }}
         >
-          {/* Professional Map Background */}
-          <svg 
-            width="100%" 
-            height="100%" 
-            viewBox="0 0 400 240" 
-            style={{ position: 'absolute', top: 0, left: 0 }}
+          {/* Clean Real Google Maps */}
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              position: 'relative',
+              borderRadius: '16px',
+              overflow: 'hidden'
+            }}
           >
-            {/* Street grid pattern */}
-            <defs>
-              <pattern id="streetGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#cbd5e1" strokeWidth="1" opacity="0.3"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#streetGrid)" />
-            
-            {/* Main delivery route */}
-            <path 
-              d="M 60 120 Q 200 100 340 120" 
-              stroke="#1976d2" 
-              strokeWidth="6" 
-              fill="none"
-              strokeDasharray="8,4"
-              opacity="0.8"
+            {/* Embedded Google Maps - Clean View */}
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d15843.296905834536!2d79.85162!3d6.92707!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x3ae25911dd8b1b91%3A0x2db2c18a68712863!2sNPK%20Pharmacy%2C%20Colombo%2C%20Sri%20Lanka!3m2!1d6.9201!2d79.8585!4m5!1s0x3ae259692f4b7bdd%3A0x52963fe4145c4a2b!2sColombo%2C%20Sri%20Lanka!3m2!1d6.9341!2d79.8639!5e0!3m2!1sen!2slk!4v1697123456789!5m2!1sen!2slk"
+              width="100%"
+              height="100%"
+              style={{ 
+                border: 0,
+                borderRadius: '16px'
+              }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Live Delivery Tracking"
             />
-            
-            {/* Pharmacy location */}
-            <circle cx="60" cy="120" r="12" fill="#1976d2" stroke="white" strokeWidth="3"/>
-            <text x="60" y="126" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">P</text>
-            
-            {/* Customer location */}
-            <circle cx="340" cy="120" r="12" fill="#4caf50" stroke="white" strokeWidth="3"/>
-            <text x="340" y="126" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">C</text>
-            
-            {/* Driver current position (animated) */}
-            <circle cx="200" cy="105" r="10" fill="#ff5722" stroke="white" strokeWidth="3">
-              <animateTransform
-                attributeName="transform"
-                type="translate"
-                values="0,0; 10,-2; 0,0; -10,2; 0,0"
-                dur="4s"
-                repeatCount="indefinite"
-              />
-            </circle>
-            <text x="200" y="111" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">D</text>
-          </svg>
+          </Box>
           
           {/* Location Labels */}
           <Box sx={{ position: 'absolute', top: 20, left: 20 }}>
@@ -901,60 +932,43 @@ const ProfessionalDeliveryContent = ({ orderId }) => {
         </Box>
       </Box>
 
-      {/* Action Buttons */}
+      {/* Action Button */}
       <Box sx={{ 
         p: 4, 
         backgroundColor: '#fafbff', 
         borderTop: '2px solid #e3f2fd',
         background: 'linear-gradient(180deg, #ffffff 0%, #f8fafe 100%)'
       }}>
-        <Box sx={{ display: 'flex', gap: 3 }}>
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={<NotificationsIcon />}
-            sx={{ 
-              borderColor: '#1565c0', 
-              color: '#1565c0',
-              fontWeight: '800',
-              py: 2.5,
-              fontSize: '16px',
-              borderRadius: '16px',
-              borderWidth: '2px',
-              fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-              '&:hover': {
-                backgroundColor: '#e3f2fd',
-                borderColor: '#0d47a1',
-                borderWidth: '2px',
-                transform: 'translateY(-1px)',
-                boxShadow: '0 6px 20px rgba(21,101,192,0.2)'
-              }
-            }}
-          >
-            Get Updates
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            startIcon={<ReceiptIcon />}
-            sx={{ 
-              background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
-              fontWeight: '800',
-              py: 2.5,
-              fontSize: '16px',
-              borderRadius: '16px',
-              boxShadow: '0 8px 32px rgba(21,101,192,0.4)',
-              fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-              '&:hover': {
-                background: 'linear-gradient(135deg, #0d47a1 0%, #1a237e 100%)',
-                boxShadow: '0 12px 40px rgba(13,71,161,0.5)',
-                transform: 'translateY(-2px)'
-              }
-            }}
-          >
-            View Receipt
-          </Button>
-        </Box>
+        <Button
+          fullWidth
+          variant="contained"
+          startIcon={<ReceiptIcon />}
+          onClick={() => {
+            // Close delivery tracking and show receipt
+            if (window.closeDeliveryTracking) {
+              window.closeDeliveryTracking();
+            }
+            if (window.showOrderReceipt) {
+              window.showOrderReceipt();
+            }
+          }}
+          sx={{ 
+            background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+            fontWeight: '800',
+            py: 3,
+            fontSize: '18px',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(21,101,192,0.4)',
+            fontFamily: '"SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #0d47a1 0%, #1a237e 100%)',
+              boxShadow: '0 12px 40px rgba(13,71,161,0.5)',
+              transform: 'translateY(-2px)'
+            }
+          }}
+        >
+          View Receipt
+        </Button>
       </Box>
     </Box>
   );
@@ -1019,6 +1033,24 @@ const ProfessionalPharmacyEcommerce = () => {
   const showSnackbar = (message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
   };
+
+  // Delivery tracking and receipt functions
+  useEffect(() => {
+    // Set up global functions for delivery tracking
+    window.closeDeliveryTracking = () => {
+      setShowDeliveryTracker(false);
+    };
+    
+    window.showOrderReceipt = () => {
+      setOrderComplete(true);
+      setCurrentView('home');
+    };
+    
+    return () => {
+      delete window.closeDeliveryTracking;
+      delete window.showOrderReceipt;
+    };
+  }, []);
 
   // Dark Mode Toggle Component
   const DarkModeToggle = () => {
