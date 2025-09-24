@@ -90,7 +90,9 @@ import {
   Receipt as ReceiptIcon,
   Dashboard as DashboardIcon
 } from '@mui/icons-material';
+import { LightMode as LightModeIcon, DarkMode as DarkModeIcon } from '@mui/icons-material';
 import ProfessionalFooter from './ProfessionalFooter';
+import { useTheme, ThemeContextProvider } from '../../contexts/ThemeContext';
 
 // Professional Medicine Database - Real Pharmacy Products
 const medicineCategories = [
@@ -325,6 +327,7 @@ const ProfessionalPharmacyEcommerce = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
+  const [selectedLanguage, setSelectedLanguage] = useState('en'); // en, si, ta
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [productDetailOpen, setProductDetailOpen] = useState(false);
@@ -370,16 +373,45 @@ const ProfessionalPharmacyEcommerce = () => {
     setSnackbar({ open: true, message, severity });
   };
 
+  // Dark Mode Toggle Component
+  const DarkModeToggle = () => {
+    const { isDarkMode, toggleTheme } = useTheme();
+    
+    return (
+      <IconButton
+        color="inherit"
+        onClick={toggleTheme}
+        sx={{
+          mr: 2,
+          backgroundColor: 'rgba(255,255,255,0.1)',
+          borderRadius: '50%',
+          '&:hover': {
+            backgroundColor: 'rgba(255,255,255,0.2)',
+          }
+        }}
+      >
+        {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
+      </IconButton>
+    );
+  };
+
   // Professional Header Component
   const ProfessionalHeader = () => {
     const { cart, wishlist } = useEcommerce();
     const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
     const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 
+    const { isDarkMode } = useTheme();
+    
     return (
       <AppBar position="sticky" sx={{
-        background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-        boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)'
+        background: isDarkMode 
+          ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
+          : 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+        boxShadow: isDarkMode 
+          ? '0 4px 20px rgba(15, 23, 42, 0.5)'
+          : '0 4px 20px rgba(59, 130, 246, 0.3)',
+        transition: 'all 0.3s ease'
       }}>
         <Toolbar sx={{ py: 1.5 }}>
           {/* Logo */}
@@ -403,7 +435,7 @@ const ProfessionalPharmacyEcommerce = () => {
             </Box>
           </Box>
 
-          {/* Search Bar */}
+          {/* Search Bar - Made Longer */}
           <TextField
             placeholder="Search medicines, health products..."
             value={searchQuery}
@@ -411,12 +443,13 @@ const ProfessionalPharmacyEcommerce = () => {
             size="small"
             sx={{
               flexGrow: 1,
-              maxWidth: 500,
-              mr: 3,
+              maxWidth: 650, // Increased from 500
+              mr: 2, // Reduced margin
               '& .MuiOutlinedInput-root': {
                 backgroundColor: 'rgba(255,255,255,0.15)',
                 color: 'white',
                 borderRadius: '25px',
+                height: '42px', // Made slightly taller
                 '& fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
                 '& input::placeholder': { color: 'rgba(255,255,255,0.8)' },
                 '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.5)' }
@@ -431,16 +464,18 @@ const ProfessionalPharmacyEcommerce = () => {
             }}
           />
 
-          {/* Category Filter */}
-          <FormControl size="small" sx={{ minWidth: 120, mr: 3 }}>
+          {/* Category Filter - Made Longer */}
+          <FormControl size="small" sx={{ minWidth: 180, mr: 4 }}> {/* Increased from 120, added more margin */}
             <Select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               displayEmpty
               sx={{
                 color: 'white',
+                height: '42px', // Made same height as search bar
                 '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(255,255,255,0.3)'
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  borderRadius: '25px' // Rounded corners to match search
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'rgba(255,255,255,0.5)'
@@ -459,8 +494,41 @@ const ProfessionalPharmacyEcommerce = () => {
             </Select>
           </FormControl>
 
-          {/* Cart and Wishlist */}
-          <Box display="flex" alignItems="center" gap={1}>
+          {/* Language Dropdown */}
+          <FormControl size="small" sx={{ minWidth: 160, mr: 3 }}>
+            <Select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              displayEmpty
+              sx={{
+                color: 'white',
+                height: '42px',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  borderRadius: '25px'
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255,255,255,0.5)'
+                },
+                '& .MuiSvgIcon-root': {
+                  color: 'white'
+                }
+              }}
+            >
+              <MenuItem value="en">English</MenuItem>
+              <MenuItem value="si">සිංහල</MenuItem>
+              <MenuItem value="ta">தமிழ்</MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* Dark/Light Mode Toggle */}
+          <DarkModeToggle />
+
+          {/* Spacer to push cart to the right */}
+          <Box sx={{ flexGrow: 0.3 }} />
+
+          {/* Cart and Wishlist - Aligned More to Right */}
+          <Box display="flex" alignItems="center" gap={1.5} sx={{ ml: 'auto' }}>
             <IconButton color="inherit">
               <Badge badgeContent={wishlist.length} color="error">
                 <FavoriteIcon />
@@ -1001,24 +1069,20 @@ const ProfessionalPharmacyEcommerce = () => {
             </Typography>
           </Typography>
           
-          <FormControl size="small" sx={{ minWidth: 200 }}>
+          {/* Sort Dropdown */}
+          <FormControl size="small" sx={{ minWidth: 180 }}>
             <InputLabel>Sort By</InputLabel>
             <Select
               value={sortBy}
               label="Sort By"
               onChange={(e) => setSortBy(e.target.value)}
-              sx={{
-                borderRadius: '25px',
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#e5e7eb'
-                }
-              }}
+              sx={{ backgroundColor: 'white' }}
             >
-              <MenuItem value="name">Name A-Z</MenuItem>
+              <MenuItem value="name">Sort by Name</MenuItem>
               <MenuItem value="price-low">Price: Low to High</MenuItem>
               <MenuItem value="price-high">Price: High to Low</MenuItem>
-              <MenuItem value="rating">Highest Rated</MenuItem>
-              <MenuItem value="popularity">Most Popular</MenuItem>
+              <MenuItem value="rating">Sort by Rating</MenuItem>
+              <MenuItem value="newest">Newest First</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -1705,14 +1769,15 @@ const ProfessionalPharmacyEcommerce = () => {
   };
 
   return (
-    <EcommerceProvider>
-      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ flex: 1 }}>
-          {renderCurrentView()}
-        </Box>
-        
-        {/* Professional Footer */}
-        <ProfessionalFooter />
+    <ThemeContextProvider>
+      <EcommerceProvider>
+        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ flex: 1 }}>
+            {renderCurrentView()}
+          </Box>
+          
+          {/* Professional Footer */}
+          <ProfessionalFooter />
 
         {/* Snackbar */}
         <Snackbar
@@ -1752,8 +1817,9 @@ const ProfessionalPharmacyEcommerce = () => {
         </Menu>
 
 
-      </Box>
-    </EcommerceProvider>
+        </Box>
+      </EcommerceProvider>
+    </ThemeContextProvider>
   );
 };
 
