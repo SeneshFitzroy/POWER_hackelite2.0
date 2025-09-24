@@ -13,7 +13,8 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Button
+  Button,
+  Paper
 } from '@mui/material';
 import {
   Inventory as InventoryIcon,
@@ -105,12 +106,6 @@ const InventoryDashboard = () => {
 
   // getExpiryStatus is now imported from dateUtils
 
-  const quickActions = [
-    { title: 'View All Stock', link: '/stock', icon: InventoryIcon },
-    { title: 'Check Expiry', link: '/expiry', icon: ScheduleIcon },
-    { title: 'Low Stock Alert', link: '/low-stock', icon: WarningIcon }
-  ];
-
   if (loading) {
     return (
       <Box sx={{ 
@@ -140,7 +135,7 @@ const InventoryDashboard = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
       {/* Header */}
       <Box sx={{ 
         display: 'flex', 
@@ -182,232 +177,258 @@ const InventoryDashboard = () => {
         </Button>
       </Box>
 
-      {/* Stats Grid */}
-      <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: 4 }}>
-        <Grid item xs={6} sm={4} md={2}>
-          <Card sx={{ 
-            background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-            color: 'white',
-            boxShadow: '0 4px 12px rgba(30, 64, 175, 0.3)'
-          }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-                <InventoryIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
-                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
-                    {stats.totalMedicines}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
-                    Total Medicines
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+      {/* Stats Overview */}
+      <Paper elevation={3} sx={{ mb: 4, borderRadius: '12px', overflow: 'hidden' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1e3a8a' }}>
+            Inventory Overview
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                color: 'white',
+                borderRadius: '10px',
+                height: '100%'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <InventoryIcon sx={{ fontSize: 40, mr: 2 }} />
+                    <Box>
+                      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                        {stats.totalMedicines}
+                      </Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Total Medicines
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <Grid item xs={6} sm={4} md={2}>
-          <Card sx={{ 
-            background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-            color: 'white',
-            boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)'
-          }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-                <CheckCircleIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
-                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
-                    {stats.activeMedicines}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
-                    Active Stock
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                color: 'white',
+                borderRadius: '10px',
+                height: '100%'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CheckCircleIcon sx={{ fontSize: 40, mr: 2 }} />
+                    <Box>
+                      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                        {stats.activeMedicines}
+                      </Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Active Stock
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <Grid item xs={6} sm={4} md={2}>
-          <Card sx={{ 
-            background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
-            color: 'white',
-            boxShadow: '0 4px 12px rgba(217, 119, 6, 0.3)'
-          }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-                <TrendingDownIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
-                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
-                    {stats.lowStockMedicines}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
-                    Low Stock
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+                color: 'white',
+                borderRadius: '10px',
+                height: '100%'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <InventoryIcon sx={{ fontSize: 40, mr: 2 }} />
+                    <Box>
+                      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                        LKR {stats.totalStockValue.toLocaleString()}
+                      </Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Stock Value
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <Grid item xs={6} sm={4} md={2}>
-          <Card sx={{ 
-            background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
-            color: 'white',
-            boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)'
-          }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-                <ScheduleIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
-                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
-                    {stats.expiringMedicines}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
-                    Expiring Soon
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
+                color: 'white',
+                borderRadius: '10px',
+                height: '100%'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <TrendingDownIcon sx={{ fontSize: 40, mr: 2 }} />
+                    <Box>
+                      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                        {stats.lowStockMedicines}
+                      </Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Low Stock Items
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <Grid item xs={6} sm={4} md={2}>
-          <Card sx={{ 
-            background: 'linear-gradient(135deg, #7c2d12 0%, #dc2626 100%)',
-            color: 'white',
-            boxShadow: '0 4px 12px rgba(124, 45, 18, 0.3)'
-          }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-                <ErrorIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
-                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
-                    {stats.expiredMedicines}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
-                    Expired
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
+                color: 'white',
+                borderRadius: '10px',
+                height: '100%'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <ScheduleIcon sx={{ fontSize: 40, mr: 2 }} />
+                    <Box>
+                      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                        {stats.expiringMedicines}
+                      </Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Expiring Soon
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <Grid item xs={12} sm={8} md={2}>
-          <Card sx={{ 
-            background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
-            color: 'white',
-            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)'
-          }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-                <InventoryIcon sx={{ fontSize: { xs: 30, md: 40 }, mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }} />
-                <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-                  <Typography variant={{ xs: 'h5', md: 'h4' }} sx={{ fontWeight: 'bold' }}>
-                    LKR {stats.totalStockValue.toLocaleString()}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
-                    Stock Value
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #7c2d12 0%, #dc2626 100%)',
+                color: 'white',
+                borderRadius: '10px',
+                height: '100%'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <ErrorIcon sx={{ fontSize: 40, mr: 2 }} />
+                    <Box>
+                      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                        {stats.expiredMedicines}
+                      </Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Expired Items
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Paper>
 
-      {/* Alerts and Quick Actions */}
-      <Grid container spacing={{ xs: 2, md: 3 }}>
-        {/* Low Stock Alerts */}
-        <Grid item xs={12} lg={6}>
-          <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <WarningIcon sx={{ color: '#d97706', mr: 1 }} />
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '1rem', md: '1.25rem' } }}>
-                  Low Stock Alerts
-                </Typography>
-              </Box>
-              {lowStockItems.length > 0 ? (
-                <List>
-                  {lowStockItems.map((medicine, index) => (
-                    <React.Fragment key={medicine.id}>
-                      <ListItem sx={{ px: 0 }}>
-                        <ListItemIcon>
-                          <TrendingDownIcon sx={{ color: '#d97706' }} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={medicine.name}
-                          secondary={`Stock: ${medicine.stockQuantity} | Min: ${medicine.minStockLevel || 10}`}
-                        />
-                        <Chip 
-                          label={`${medicine.stockQuantity}`} 
-                          color="warning" 
-                          size="small" 
-                        />
-                      </ListItem>
-                      {index < lowStockItems.length - 1 && <Divider />}
-                    </React.Fragment>
-                  ))}
-                </List>
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  No low stock items found
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
+      {/* Alerts Section */}
+      <Paper elevation={3} sx={{ borderRadius: '12px', overflow: 'hidden', mb: 4 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1e3a8a' }}>
+            Critical Alerts
+          </Typography>
+          <Grid container spacing={3}>
+            {/* Low Stock Alerts */}
+            <Grid item xs={12} lg={6}>
+              <Card sx={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderRadius: '10px', height: '100%' }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <WarningIcon sx={{ color: '#d97706', mr: 1 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+                      Low Stock Alerts
+                    </Typography>
+                  </Box>
+                  {lowStockItems.length > 0 ? (
+                    <List>
+                      {lowStockItems.map((medicine, index) => (
+                        <React.Fragment key={medicine.id}>
+                          <ListItem sx={{ px: 0 }}>
+                            <ListItemIcon>
+                              <TrendingDownIcon sx={{ color: '#d97706' }} />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={medicine.name}
+                              secondary={`Stock: ${medicine.stockQuantity} | Min: ${medicine.minStockLevel || 10}`}
+                            />
+                            <Chip 
+                              label={`${medicine.stockQuantity}`} 
+                              color="warning" 
+                              size="small" 
+                            />
+                          </ListItem>
+                          {index < lowStockItems.length - 1 && <Divider />}
+                        </React.Fragment>
+                      ))}
+                    </List>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 2 }}>
+                      <CheckCircleIcon sx={{ fontSize: 40, color: '#059669', mb: 1 }} />
+                      <Typography variant="body2" color="text.secondary">
+                        No low stock items found
+                      </Typography>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
 
-        {/* Expiring Medicines */}
-        <Grid item xs={12} lg={6}>
-          <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <ScheduleIcon sx={{ color: '#dc2626', mr: 1 }} />
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a', fontSize: { xs: '1rem', md: '1.25rem' } }}>
-                  Expiring Soon
-                </Typography>
-              </Box>
-              {expiringItems.length > 0 ? (
-                <List>
-                  {expiringItems.map((medicine, index) => {
-                    const expiryStatus = getExpiryStatus(medicine.expiryDate);
-                    return (
-                      <React.Fragment key={medicine.id}>
-                        <ListItem sx={{ px: 0 }}>
-                          <ListItemIcon>
-                            <ScheduleIcon sx={{ color: expiryStatus.color === 'error' ? '#dc2626' : '#d97706' }} />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={medicine.name}
-                            secondary={`Expires: ${safeFormatDate(medicine.expiryDate)}`}
-                          />
-                          <Chip 
-                            label={expiryStatus.status} 
-                            color={expiryStatus.color} 
-                            size="small" 
-                          />
-                        </ListItem>
-                        {index < expiringItems.length - 1 && <Divider />}
-                      </React.Fragment>
-                    );
-                  })}
-                </List>
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  No medicines expiring soon
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+            {/* Expiring Soon */}
+            <Grid item xs={12} lg={6}>
+              <Card sx={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderRadius: '10px', height: '100%' }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <ScheduleIcon sx={{ color: '#dc2626', mr: 1 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
+                      Expiring Soon
+                    </Typography>
+                  </Box>
+                  {expiringItems.length > 0 ? (
+                    <List>
+                      {expiringItems.map((medicine, index) => {
+                        const expiryStatus = getExpiryStatus(medicine.expiryDate);
+                        return (
+                          <React.Fragment key={medicine.id}>
+                            <ListItem sx={{ px: 0 }}>
+                              <ListItemIcon>
+                                <ScheduleIcon sx={{ color: expiryStatus.color === 'error' ? '#dc2626' : '#d97706' }} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={medicine.name}
+                                secondary={`Expires: ${safeFormatDate(medicine.expiryDate)}`}
+                              />
+                              <Chip 
+                                label={expiryStatus.status} 
+                                color={expiryStatus.color} 
+                                size="small" 
+                              />
+                            </ListItem>
+                            {index < expiringItems.length - 1 && <Divider />}
+                          </React.Fragment>
+                        );
+                      })}
+                    </List>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 2 }}>
+                      <CheckCircleIcon sx={{ fontSize: 40, color: '#059669', mb: 1 }} />
+                      <Typography variant="body2" color="text.secondary">
+                        No medicines expiring soon
+                      </Typography>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Paper>
 
       {/* Low Stock Dashboard Widget */}
-      <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mt: 2 }}>
-        <Grid item xs={12}>
+      <Paper elevation={3} sx={{ borderRadius: '12px', overflow: 'hidden' }}>
+        <CardContent sx={{ p: 0 }}>
           <LowStockDashboardWidget 
             onViewAll={() => {
               // Navigate to Stock Management Low Stock tab
@@ -434,8 +455,8 @@ const InventoryDashboard = () => {
               }
             }}
           />
-        </Grid>
-      </Grid>
+        </CardContent>
+      </Paper>
     </Box>
   );
 };

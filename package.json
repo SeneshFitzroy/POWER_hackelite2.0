@@ -27,7 +27,7 @@
     "@mui/material": "^7.3.2",
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
-    "firebase": "^12.2.1",
+    "firebase": "^9.23.0",
     "lucide-react": "^0.542.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

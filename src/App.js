@@ -11,6 +11,8 @@ import ColdChainModule from './components/coldchain/ColdChainModule'
 import InventoryModule from './components/inventory/InventoryModule'
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import ProfessionalPharmacyEcommerce from './components/ecommerce/ProfessionalPharmacyEcommerce'
+import { AuthProvider } from './contexts/AuthContext'
+import { RoleProvider } from './contexts/RoleContext'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
