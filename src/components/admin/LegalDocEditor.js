@@ -1,34 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Edit, 
-  Save, 
-  X, 
+  FileText, 
   Plus, 
+  Edit, 
   Trash2, 
   Upload, 
   Download,
-  FileText,
-  Image,
   Eye,
-  AlertCircle
+  Save,
+  X,
+  Image as ImageIcon,
+  Link,
+  Calendar,
+  User,
+  AlertCircle,
+  CheckCircle,
+  Search,
+  Filter,
+  ExternalLink
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { db, storage } from '../../firebase/config';
 import { 
   collection, 
-  doc, 
   getDocs, 
   addDoc, 
   updateDoc, 
-  deleteDoc,
+  deleteDoc, 
+  doc,
+  query,
+  orderBy,
   serverTimestamp 
 } from 'firebase/firestore';
-import { 
-  ref, 
-  uploadBytes, 
-  getDownloadURL, 
-  deleteObject 
-} from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 const LegalDocEditor = () => {
   const [documents, setDocuments] = useState([]);

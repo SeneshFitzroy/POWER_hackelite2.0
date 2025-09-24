@@ -372,6 +372,13 @@ body {
   overflow: hidden;
 }
 
+/* Hide login elements on e-commerce routes */
+body[data-route="/ecommerce"] .login-screen,
+body[data-route="/ecommerce"] .login-card,
+body[data-route="/ecommerce"] .login-form {
+  display: none !important;
+}
+
 .login-screen::before {
   content: '';
   position: absolute;

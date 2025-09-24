@@ -1,0 +1,404 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Users, 
+  FileText, 
+  Shield, 
+  Database, 
+  Settings,
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Download,
+  Upload,
+  Edit,
+  Trash2,
+  Eye,
+  Lock,
+  Unlock,
+  BarChart3,
+  ArrowLeft,
+  TrendingUp
+} from 'lucide-react';
+import LegalDocEditor from './LegalDocEditor';
+import UserManagement from './UserManagement';
+import DataBackup from './DataBackup';
+import LoginAttempts from './LoginAttempts';
+import { toast } from 'react-hot-toast';
+import { db } from '../../firebase/config';tate, useEffect } from 'react';
+import { 
+  Users, 
+  FileText, 
+  Shield, 
+  Database, 
+  Settings,
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Download,
+  Upload,
+  Edit,
+  Trash2,
+  Eye,
+  Lock,
+  Unlock,
+  BarChart3,
+  Home,
+  TrendingUp,
+  Clock,
+  Bell,
+  Search,
+  Filter
+} from 'lucide-react';
+import LegalDocEditor from './LegalDocEditor';
+import UserManagement from './UserManagement';
+import DataBackup from './DataBackup';
+import LoginAttempts from './LoginAttempts';
+import { toast } from 'react-hot-toast';
+import { db } from '../../firebase/config';
+import { collection, getDocs, query, orderBy, limit, where } from 'firebase/firestore';
+
+const AdminDashboard = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    blockedUsers: 0,
+    loginAttempts: 0,
+    legalDocs: 0,
+    backups: 0,
+    failedLogins: 0,
+    systemHealth: 'Good'
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Load real stats from Firebase
+      const [usersSnapshot, docsSnapshot, attemptsSnapshot, backupsSnapshot] = await Promise.all([
+        getDocs(collection(db, 'users')),
+        getDocs(collection(db, 'legalDocuments')),
+        getDocs(query(collection(db, 'loginAttempts'), orderBy('timestamp', 'desc'), limit(50))),
+        getDocs(collection(db, 'backupHistory'))
+      ]);
+
+      const users = [];
+      usersSnapshot.forEach(doc => users.push({ id: doc.id, ...doc.data() }));
+      
+      const attempts = [];
+      attemptsSnapshot.forEach(doc => attempts.push({ id: doc.id, ...doc.data() }));
+
+      const activeUsers = users.filter(user => user.status === 'active' || !user.status).length;
+      const blockedUsers = users.filter(user => user.status === 'blocked').length;
+      const failedLogins = attempts.filter(attempt => !attempt.success).length;
+
+      setStats({
+        totalUsers: users.length,
+        activeUsers: activeUsers,
+        blockedUsers: blockedUsers,
+        loginAttempts: attempts.length,
+        legalDocs: docsSnapshot.size,
+        backups: backupsSnapshot.size,
+        failedLogins: failedLogins,
+        systemHealth: failedLogins > 10 ? 'Warning' : 'Good'
+      });
+
+      // Recent activity
+      const activities = [];
+      attempts.slice(0, 5).forEach(attempt => {
+        activities.push({
+          id: attempt.id,
+          type: attempt.success ? 'login_success' : 'login_failed',
+          user: attempt.email || 'Unknown',
+          timestamp: attempt.timestamp,
+          description: `${attempt.success ? 'Successful' : 'Failed'} login attempt`
+        });
+      });
+
+      setRecentActivity(activities);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const adminTabs = [
+    { id: 'overview', name: 'Overview', icon: BarChart3 },
+    { id: 'users', name: 'User Management', icon: Users },
+    { id: 'legal', name: 'Legal Documents', icon: FileText },
+    { id: 'backup', name: 'Data Backup', icon: Database },
+    { id: 'security', name: 'Login Attempts', icon: Shield }
+  ];
+
+  const StatCard = ({ title, value, icon: Icon, color, change, trend }) => (
+    <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">{title}</h3>
+          <div className="flex items-center mt-2">
+            <span className={`text-3xl font-bold ${color}`}>{value}</span>
+            {trend && (
+              <div className={`ml-3 flex items-center text-sm font-medium ${
+                trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-600' : 'text-gray-500'
+              }`}>
+                <TrendingUp className={`w-4 h-4 mr-1 ${trend < 0 ? 'transform rotate-180' : ''}`} />
+                {Math.abs(trend)}%
+              </div>
+            )}
+          </div>
+          {change && (
+            <p className="text-xs text-gray-500 mt-1">{change}</p>
+          )}
+        </div>
+        <div className={`p-3 rounded-full ${color.replace('text-', 'bg-').replace('-600', '-100')}`}>
+          <Icon className={`w-8 h-8 ${color}`} />
+        </div>
+      </div>
+    </div>
+  );
+
+  const OverviewTab = () => (
+    <div className="space-y-8">
+      {/* Welcome Header */}
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 rounded-xl p-8 text-white shadow-2xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
+            <p className="text-blue-100 text-lg">Manage your ERP system with complete control</p>
+          </div>
+          <div className="text-right">
+            <div className="text-blue-100 text-sm">System Status</div>
+            <div className={`text-xl font-bold ${stats.systemHealth === 'Good' ? 'text-green-300' : 'text-yellow-300'}`}>
+              {stats.systemHealth}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Statistics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Users"
+          value={stats.totalUsers}
+          icon={Users}
+          color="text-blue-600"
+          trend={12}
+          change="from last month"
+        />
+        <StatCard
+          title="Active Users"
+          value={stats.activeUsers}
+          icon={CheckCircle}
+          color="text-green-600"
+          trend={8}
+          change="from last month"
+        />
+        <StatCard
+          title="Failed Logins"
+          value={stats.failedLogins}
+          icon={AlertTriangle}
+          color="text-red-600"
+          trend={-15}
+          change="from last month"
+        />
+        <StatCard
+          title="Legal Documents"
+          value={stats.legalDocs}
+          icon={FileText}
+          color="text-purple-600"
+          trend={2}
+          change="from last month"
+        />
+      </div>
+
+      {/* Additional Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard
+          title="Blocked Users"
+          value={stats.blockedUsers}
+          icon={Lock}
+          color="text-orange-600"
+          trend={-3}
+          change="from last month"
+        />
+        <StatCard
+          title="Data Backups"
+          value={stats.backups}
+          icon={Database}
+          color="text-indigo-600"
+          trend={0}
+          change="from last month"
+        />
+        <StatCard
+          title="Login Attempts"
+          value={stats.loginAttempts}
+          icon={Shield}
+          color="text-cyan-600"
+          trend={5}
+          change="from last month"
+        />
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white rounded-xl shadow-lg border border-gray-100">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold text-gray-900">Recent Activity</h3>
+            <Bell className="w-5 h-5 text-gray-400" />
+          </div>
+        </div>
+        <div className="p-6">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : recentActivity.length > 0 ? (
+            <div className="space-y-4">
+              {recentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className={`p-2 rounded-full ${
+                    activity.type === 'login_success' 
+                      ? 'bg-green-100 text-green-600' 
+                      : 'bg-red-100 text-red-600'
+                  }`}>
+                    {activity.type === 'login_success' ? 
+                      <CheckCircle className="w-5 h-5" /> : 
+                      <XCircle className="w-5 h-5" />
+                    }
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-gray-900">{activity.description}</p>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Clock className="w-4 h-4 mr-1" />
+                        {activity.timestamp ? 
+                          new Date(activity.timestamp.seconds * 1000).toLocaleString() : 
+                          'Just now'
+                        }
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">{activity.user}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Activity className="mx-auto w-12 h-12 text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No recent activity</h3>
+              <p className="text-gray-600">Activity will appear here as users interact with the system.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+        <h3 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button
+            onClick={() => setActiveTab('users')}
+            className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group"
+          >
+            <Users className="w-8 h-8 text-gray-600 group-hover:text-blue-600 mb-2" />
+            <div className="text-sm font-medium text-gray-900">Manage Users</div>
+            <div className="text-xs text-gray-500">View and manage user accounts</div>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab('legal')}
+            className="p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-all duration-200 group"
+          >
+            <FileText className="w-8 h-8 text-gray-600 group-hover:text-purple-600 mb-2" />
+            <div className="text-sm font-medium text-gray-900">Legal Documents</div>
+            <div className="text-xs text-gray-500">Edit legal content</div>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab('backup')}
+            className="p-4 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all duration-200 group"
+          >
+            <Database className="w-8 h-8 text-gray-600 group-hover:text-green-600 mb-2" />
+            <div className="text-sm font-medium text-gray-900">Backup Data</div>
+            <div className="text-xs text-gray-500">Create system backups</div>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab('security')}
+            className="p-4 border-2 border-gray-200 rounded-lg hover:border-red-500 hover:bg-red-50 transition-all duration-200 group"
+          >
+            <Shield className="w-8 h-8 text-gray-600 group-hover:text-red-600 mb-2" />
+            <div className="text-sm font-medium text-gray-900">Security</div>
+            <div className="text-xs text-gray-500">Monitor login attempts</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Control Center</h1>
+              <p className="text-gray-600 text-lg">Complete system administration and management</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={loadDashboardData}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+              >
+                <Activity className="w-4 h-4 mr-2" />
+                Refresh Data
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="mb-8">
+          <nav className="flex space-x-1 bg-white rounded-xl p-1 shadow-lg border border-gray-100">
+            {adminTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'bg-blue-600 text-white shadow-md transform scale-105'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                <tab.icon className="w-5 h-5" />
+                <span>{tab.name}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Content Area */}
+        <div className="bg-transparent rounded-xl">
+          {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'legal' && <LegalDocEditor />}
+          {activeTab === 'users' && <UserManagement />}
+          {activeTab === 'security' && <LoginAttempts />}
+          {activeTab === 'backup' && <DataBackup />}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;

@@ -121,6 +121,16 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       description: "IoT monitoring for temperature and humidity control",
       color: "#1e40af", // Blue for Cold Chain/IoT
     },
+    {
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V19C17 19.5523 17.4477 20 18 20C18.5523 20 19 19.5523 19 19V13M9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18C8.32843 18 9 18.6716 9 19.5ZM20 19.5C20 20.3284 19.3284 21 18.5 21C17.6716 21 17 20.3284 17 19.5C17 18.6716 17.6716 18 18.5 18C19.3284 18 20 18.6716 20 19.5Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      title: "E-Commerce",
+      description: "Online pharmacy store and customer management",
+      color: "#3b82f6", // Professional blue for E-commerce
+    },
   ]
 
   const handleModuleClick = (moduleTitle) => {
@@ -145,6 +155,9 @@ export default function ERPDashboard({ onPOSAccess, onSalesAccess, onHRAccess, o
       onColdChainAccess()
     } else if (moduleTitle === "Administration" && onAdminAccess) {
       onAdminAccess()
+    } else if (moduleTitle === "E-Commerce") {
+      // Direct navigation to ecommerce route
+      window.location.href = '/ecommerce'
     }
     // Other module navigation logic will be implemented here
   };
