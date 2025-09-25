@@ -174,15 +174,19 @@ const PharmacyPOSFirebaseIntegrated = () => {
         setMedicines(stockedMedicines);
         console.log(`Loaded ${stockedMedicines.length} medicines with guaranteed stock`);
       } else {
-        // Ensure all existing medicines have stock > 0
-        const stockedMedicines = uniqueMedicines.map(medicine => ({
-          ...medicine,
-          stock: Math.max(getMedicineStock(medicine), 100), // Minimum 100 stock
-          stockQuantity: Math.max(getMedicineStock(medicine), 100)
-        }));
+        // FIXED: Use actual stock levels instead of forcing minimum 100
+        // Only set to 100 if stock is 0 or negative, otherwise use actual stock
+        const stockedMedicines = uniqueMedicines.map(medicine => {
+          const actualStock = getMedicineStock(medicine);
+          return {
+            ...medicine,
+            stock: actualStock,
+            stockQuantity: actualStock
+          };
+        });
         
         setMedicines(stockedMedicines);
-        console.log(`Loaded ${stockedMedicines.length} existing medicines with guaranteed stock`);
+        console.log(`Loaded ${stockedMedicines.length} existing medicines with actual stock levels`);
       }
       
       // Load cash balance from Firebase or local storage
@@ -952,7 +956,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
               
               // Enhanced success message with unique identification
               const identifier = patientNIC.trim() ? `NIC: ${patientNIC}` : `Phone: ${customerContact}`;
-              alert(`✅ NEW CUSTOMER CREATED!\n👤 Name: ${customerName}\n🆔 ${identifier}\n📝 Customer ID: ${customerId}\n\n🎯 This customer is now in the system and future transactions will be linked automatically.`);
+              alert(`✅ NEW CUSTOMER CREATED!
+👤 Name: ${customerName}
+🆔 ${identifier}
+📝 Customer ID: ${customerId}
+
+🎯 This customer is now in the system and future transactions will be linked automatically.`);
               
             } catch (customerError) {
               console.error('❌ Error creating customer:', customerError);

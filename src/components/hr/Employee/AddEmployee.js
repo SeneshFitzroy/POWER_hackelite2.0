@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -12,14 +13,18 @@ import {
   InputLabel,
   Select,
   Divider,
-  Paper,
   Container,
-  IconButton
+  IconButton,
+  Chip
 } from '@mui/material';
-import { ArrowBack, Save, Person, Work, Phone, Mail, MapPin, Calendar, FileText } from 'lucide-react';
+import { ArrowLeft, Save, User, Briefcase, PhoneIcon, MailIcon, MapPinIcon, CalendarIcon, FileTextIcon } from 'lucide-react';
+import { collection, addDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { useAuth } from '../../../contexts/AuthContext';
+import { db } from '../../../firebase/config';
 import toast from 'react-hot-toast';
 
-const AddEmployee = ({ onBack, onSave }) => {
+const AddEmployee = () => {
   const [formData, setFormData] = useState({
     // Personal Information
     firstName: '',
@@ -50,9 +55,12 @@ const AddEmployee = ({ onBack, onSave }) => {
     emergencyPhone: '',
     notes: ''
   });
+  
+  const { user, demoMode } = useAuth();
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const roles = [
     { value: 'registered_pharmacist', label: 'Registered Pharmacist' },
@@ -148,6 +156,21 @@ const AddEmployee = ({ onBack, onSave }) => {
       return;
     }
 
+    // Check authentication using the already declared variables
+    console.log('Submit - User:', user, 'Demo mode:', demoMode);
+    
+    if (demoMode) {
+      console.log('App is in demo mode, cannot save to Firestore');
+      toast.error('App is in demo mode. Cannot save employee data to Firestore.');
+      return;
+    }
+    
+    if (!user) {
+      console.log('No user authenticated');
+      toast.error('You must be logged in to save employee data');
+      return;
+    }
+
     setLoading(true);
     try {
       // Generate employee ID if not provided
@@ -156,33 +179,33 @@ const AddEmployee = ({ onBack, onSave }) => {
       const employeeData = {
         ...formData,
         employeeId,
-        id: Date.now().toString(),
         status: 'active',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
 
-      // Here you would typically save to your database
-      console.log('Saving employee:', employeeData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('AddEmployee: Saving employee data:', employeeData);
+      console.log('AddEmployee: Database reference:', db);
+      console.log('AddEmployee: Collection reference:', collection(db, 'employees'));
+
+      // Save to Firestore
+      const docRef = await addDoc(collection(db, 'employees'), employeeData);
+      console.log('AddEmployee: Employee added with ID:', docRef.id);
+      console.log('AddEmployee: Document reference:', docRef);
       
       toast.success('Employee added successfully!');
-      
-      if (onSave) {
-        onSave(employeeData);
-      }
-      
-      if (onBack) {
-        onBack();
-      }
+      navigate('/hr/employees');
     } catch (error) {
       console.error('Error saving employee:', error);
+      console.error('Error details:', error.code, error.message);
       toast.error('Failed to save employee. Please try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBackClick = () => {
+    navigate('/hr/employees');
   };
 
   return (
@@ -190,108 +213,174 @@ const AddEmployee = ({ onBack, onSave }) => {
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
         <IconButton 
-          onClick={onBack}
+          onClick={handleBackClick}
           sx={{ mr: 2, color: 'primary.main' }}
         >
-          <ArrowBack />
+          <ArrowLeft />
         </IconButton>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
           Add New Employee
         </Typography>
       </Box>
 
-      <Grid container spacing={3}>
-        {/* Personal Information */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Person size={24} color="#1565c0" />
-                <Typography variant="h6" sx={{ ml: 1, fontWeight: 'bold' }}>
+      {/* Employee Form */}
+      <Card elevation={3} sx={{ borderRadius: 3, border: '1px solid #e0e0e0' }}>
+        <CardContent sx={{ p: 4 }}>
+          <Grid container spacing={4}>
+            {/* Personal Information Section */}
+            <Grid item xs={12}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 3,
+                pb: 2,
+                borderBottom: '2px solid #f0f0f0'
+              }}>
+                <Box sx={{ 
+                  p: 1.5, 
+                  borderRadius: '50%', 
+                  backgroundColor: '#e3f2fd',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <User size={20} color="#1565c0" />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1565c0' }}>
                   Personal Information
                 </Typography>
+                <Chip 
+                  label="Required" 
+                  size="small" 
+                  sx={{ 
+                    ml: 2, 
+                    backgroundColor: '#1565c0', 
+                    color: 'white',
+                    fontWeight: 'bold'
+                  }} 
+                />
               </Box>
               
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="First Name"
+                    variant="outlined"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
                     error={!!errors.firstName}
                     helperText={errors.firstName}
                     required
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Last Name"
+                    variant="outlined"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
                     error={!!errors.lastName}
                     helperText={errors.lastName}
                     required
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
                   />
                 </Grid>
-                <Grid size={{ xs: 12 }}>
+                
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Email Address"
+                    variant="outlined"
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     error={!!errors.email}
                     helperText={errors.email}
                     required
-                    InputProps={{
-                      startAdornment: <Mail size={20} color="#9ca3af" style={{ marginRight: 8 }} />
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
                     }}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Phone Number"
+                    variant="outlined"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     error={!!errors.phone}
                     helperText={errors.phone}
                     required
-                    InputProps={{
-                      startAdornment: <Phone size={20} color="#9ca3af" style={{ marginRight: 8 }} />
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
                     }}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="NIC Number"
+                    variant="outlined"
                     value={formData.nic}
                     onChange={(e) => handleInputChange('nic', e.target.value)}
                     error={!!errors.nic}
                     helperText={errors.nic}
                     required
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Date of Birth"
+                    variant="outlined"
                     type="date"
+                    InputLabelProps={{ shrink: true }}
                     value={formData.dateOfBirth}
                     onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                    InputLabelProps={{ shrink: true }}
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <FormControl fullWidth>
+                
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth variant="outlined">
                     <InputLabel>Gender</InputLabel>
                     <Select
                       value={formData.gender}
-                      label="Gender"
                       onChange={(e) => handleInputChange('gender', e.target.value)}
+                      label="Gender"
+                      sx={{ 
+                        borderRadius: '8px'
+                      }}
                     >
                       <MenuItem value="male">Male</MenuItem>
                       <MenuItem value="female">Female</MenuItem>
@@ -299,73 +388,107 @@ const AddEmployee = ({ onBack, onSave }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid size={{ xs: 12 }}>
+                
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Address"
+                    variant="outlined"
                     multiline
-                    rows={2}
+                    rows={3}
                     value={formData.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
-                    InputProps={{
-                      startAdornment: <MapPin size={20} color="#9ca3af" style={{ marginRight: 8, marginTop: 8 }} />
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
                     }}
                   />
                 </Grid>
-                <Grid size={{ xs: 12 }}>
+                
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="City"
+                    variant="outlined"
                     value={formData.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
                   />
                 </Grid>
               </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+            </Grid>
 
-        {/* Employment Information */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Work size={24} color="#1565c0" />
-                <Typography variant="h6" sx={{ ml: 1, fontWeight: 'bold' }}>
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2, borderColor: '#e0e0e0' }} />
+            </Grid>
+
+            {/* Employment Information Section */}
+            <Grid item xs={12}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 3,
+                pb: 2,
+                borderBottom: '2px solid #f0f0f0'
+              }}>
+                <Box sx={{ 
+                  p: 1.5, 
+                  borderRadius: '50%', 
+                  backgroundColor: '#e8f5e9',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <Briefcase size={20} color="#2e7d32" />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
                   Employment Information
                 </Typography>
+                <Chip 
+                  label="Required" 
+                  size="small" 
+                  sx={{ 
+                    ml: 2, 
+                    backgroundColor: '#2e7d32', 
+                    color: 'white',
+                    fontWeight: 'bold'
+                  }} 
+                />
               </Box>
               
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Employee ID"
+                    variant="outlined"
                     value={formData.employeeId}
                     onChange={(e) => handleInputChange('employeeId', e.target.value)}
-                    placeholder="Auto-generated if empty"
+                    placeholder="Leave blank to auto-generate"
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Start Date"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => handleInputChange('startDate', e.target.value)}
-                    error={!!errors.startDate}
-                    helperText={errors.startDate}
-                    required
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <FormControl fullWidth required error={!!errors.role}>
-                    <InputLabel>Role</InputLabel>
+                
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth variant="outlined" error={!!errors.role}>
+                    <InputLabel>Role *</InputLabel>
                     <Select
                       value={formData.role}
-                      label="Role"
                       onChange={(e) => handleInputChange('role', e.target.value)}
+                      label="Role *"
+                      sx={{ 
+                        borderRadius: '8px'
+                      }}
                     >
                       {roles.map((role) => (
                         <MenuItem key={role.value} value={role.value}>
@@ -373,15 +496,24 @@ const AddEmployee = ({ onBack, onSave }) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {errors.role && (
+                      <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                        {errors.role}
+                      </Typography>
+                    )}
                   </FormControl>
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <FormControl fullWidth required error={!!errors.department}>
-                    <InputLabel>Department</InputLabel>
+                
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth variant="outlined" error={!!errors.department}>
+                    <InputLabel>Department *</InputLabel>
                     <Select
                       value={formData.department}
-                      label="Department"
                       onChange={(e) => handleInputChange('department', e.target.value)}
+                      label="Department *"
+                      sx={{ 
+                        borderRadius: '8px'
+                      }}
                     >
                       {departments.map((dept) => (
                         <MenuItem key={dept.value} value={dept.value}>
@@ -389,15 +521,44 @@ const AddEmployee = ({ onBack, onSave }) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {errors.department && (
+                      <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                        {errors.department}
+                      </Typography>
+                    )}
                   </FormControl>
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <FormControl fullWidth required error={!!errors.employmentType}>
-                    <InputLabel>Employment Type</InputLabel>
+                
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Start Date"
+                    variant="outlined"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    value={formData.startDate}
+                    onChange={(e) => handleInputChange('startDate', e.target.value)}
+                    error={!!errors.startDate}
+                    helperText={errors.startDate}
+                    required
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth variant="outlined" error={!!errors.employmentType}>
+                    <InputLabel>Employment Type *</InputLabel>
                     <Select
                       value={formData.employmentType}
-                      label="Employment Type"
                       onChange={(e) => handleInputChange('employmentType', e.target.value)}
+                      label="Employment Type *"
+                      sx={{ 
+                        borderRadius: '8px'
+                      }}
                     >
                       {employmentTypes.map((type) => (
                         <MenuItem key={type.value} value={type.value}>
@@ -405,15 +566,24 @@ const AddEmployee = ({ onBack, onSave }) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {errors.employmentType && (
+                      <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                        {errors.employmentType}
+                      </Typography>
+                    )}
                   </FormControl>
                 </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <FormControl fullWidth>
+                
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth variant="outlined">
                     <InputLabel>Work Schedule</InputLabel>
                     <Select
                       value={formData.workSchedule}
-                      label="Work Schedule"
                       onChange={(e) => handleInputChange('workSchedule', e.target.value)}
+                      label="Work Schedule"
+                      sx={{ 
+                        borderRadius: '8px'
+                      }}
                     >
                       {workSchedules.map((schedule) => (
                         <MenuItem key={schedule.value} value={schedule.value}>
@@ -423,140 +593,247 @@ const AddEmployee = ({ onBack, onSave }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid size={{ xs: 12 }}>
+                
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Reporting Manager"
+                    variant="outlined"
                     value={formData.reportingManager}
                     onChange={(e) => handleInputChange('reportingManager', e.target.value)}
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
                   />
                 </Grid>
               </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+            </Grid>
 
-        {/* Compensation & Additional Info */}
-        <Grid size={{ xs: 12 }}>
-          <Card elevation={3} sx={{ borderRadius: 3 }}>
-            <CardContent sx={{ p: 3 }}>
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2, borderColor: '#e0e0e0' }} />
+            </Grid>
+
+            {/* Compensation Section */}
+            <Grid item xs={12}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 3,
+                pb: 2,
+                borderBottom: '2px solid #f0f0f0'
+              }}>
+                <Box sx={{ 
+                  p: 1.5, 
+                  borderRadius: '50%', 
+                  backgroundColor: '#fff3e0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <Briefcase size={20} color="#ef6c00" />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#ef6c00' }}>
+                  Compensation
+                </Typography>
+              </Box>
+              
               <Grid container spacing={3}>
-                {/* Compensation */}
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <FileText size={24} color="#1565c0" />
-                    <Typography variant="h6" sx={{ ml: 1, fontWeight: 'bold' }}>
-                      Compensation
-                    </Typography>
-                  </Box>
-                  
-                  <Grid container spacing={2}>
-                    <Grid size={{ xs: 8 }}>
-                      <TextField
-                        fullWidth
-                        label="Base Salary"
-                        type="number"
-                        value={formData.baseSalary}
-                        onChange={(e) => handleInputChange('baseSalary', e.target.value)}
-                        error={!!errors.baseSalary}
-                        helperText={errors.baseSalary}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 4 }}>
-                      <FormControl fullWidth>
-                        <InputLabel>Currency</InputLabel>
-                        <Select
-                          value={formData.currency}
-                          label="Currency"
-                          onChange={(e) => handleInputChange('currency', e.target.value)}
-                        >
-                          <MenuItem value="LKR">LKR</MenuItem>
-                          <MenuItem value="USD">USD</MenuItem>
-                          <MenuItem value="EUR">EUR</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                {/* Emergency Contact */}
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>
-                    Emergency Contact
-                  </Typography>
-                  
-                  <Grid container spacing={2}>
-                    <Grid size={{ xs: 12 }}>
-                      <TextField
-                        fullWidth
-                        label="Emergency Contact Name"
-                        value={formData.emergencyContact}
-                        onChange={(e) => handleInputChange('emergencyContact', e.target.value)}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12 }}>
-                      <TextField
-                        fullWidth
-                        label="Emergency Contact Phone"
-                        value={formData.emergencyPhone}
-                        onChange={(e) => handleInputChange('emergencyPhone', e.target.value)}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                {/* Notes */}
-                <Grid size={{ xs: 12 }}>
-                  <Divider sx={{ my: 2 }} />
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
-                    label="Additional Notes"
-                    multiline
-                    rows={3}
-                    value={formData.notes}
-                    onChange={(e) => handleInputChange('notes', e.target.value)}
-                    placeholder="Any additional information about the employee..."
+                    label="Base Salary"
+                    variant="outlined"
+                    type="number"
+                    value={formData.baseSalary}
+                    onChange={(e) => handleInputChange('baseSalary', e.target.value)}
+                    error={!!errors.baseSalary}
+                    helperText={errors.baseSalary}
+                    InputProps={{
+                      startAdornment: (
+                        <Typography sx={{ mr: 1, color: '#666' }}>{formData.currency}</Typography>
+                      )
+                    }}
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth variant="outlined">
+                    <InputLabel>Currency</InputLabel>
+                    <Select
+                      value={formData.currency}
+                      onChange={(e) => handleInputChange('currency', e.target.value)}
+                      label="Currency"
+                      sx={{ 
+                        borderRadius: '8px'
+                      }}
+                    >
+                      <MenuItem value="LKR">LKR (Sri Lankan Rupee)</MenuItem>
+                      <MenuItem value="USD">USD (US Dollar)</MenuItem>
+                      <MenuItem value="EUR">EUR (Euro)</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2, borderColor: '#e0e0e0' }} />
+            </Grid>
+
+            {/* Emergency Contact Section */}
+            <Grid item xs={12}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 3,
+                pb: 2,
+                borderBottom: '2px solid #f0f0f0'
+              }}>
+                <Box sx={{ 
+                  p: 1.5, 
+                  borderRadius: '50%', 
+                  backgroundColor: '#fce4ec',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <PhoneIcon size={20} color="#c2185b" />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#c2185b' }}>
+                  Emergency Contact
+                </Typography>
+              </Box>
+              
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Emergency Contact Name"
+                    variant="outlined"
+                    value={formData.emergencyContact}
+                    onChange={(e) => handleInputChange('emergencyContact', e.target.value)}
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Emergency Contact Phone"
+                    variant="outlined"
+                    value={formData.emergencyPhone}
+                    onChange={(e) => handleInputChange('emergencyPhone', e.target.value)}
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
                   />
                 </Grid>
               </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+            </Grid>
 
-        {/* Action Buttons */}
-        <Grid size={{ xs: 12 }}>
-          <Paper elevation={3} sx={{ p: 3, borderRadius: 3, bgcolor: '#f8fafc' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-              <Button
-                variant="outlined"
-                onClick={onBack}
-                sx={{ 
-                  px: 4,
-                  borderRadius: 2,
-                  textTransform: 'none'
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleSubmit}
-                disabled={loading}
-                startIcon={<Save size={20} />}
-                sx={{ 
-                  px: 4,
-                  backgroundColor: '#1565c0',
-                  '&:hover': { backgroundColor: '#0d47a1' },
-                  borderRadius: 2,
-                  textTransform: 'none'
-                }}
-              >
-                {loading ? 'Saving...' : 'Save Employee'}
-              </Button>
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2, borderColor: '#e0e0e0' }} />
+            </Grid>
+
+            {/* Additional Information Section */}
+            <Grid item xs={12}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 3,
+                pb: 2,
+                borderBottom: '2px solid #f0f0f0'
+              }}>
+                <Box sx={{ 
+                  p: 1.5, 
+                  borderRadius: '50%', 
+                  backgroundColor: '#f3e5f5',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <FileTextIcon size={20} color="#7b1fa2" />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#7b1fa2' }}>
+                  Additional Information
+                </Typography>
+              </Box>
+              
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Notes"
+                    variant="outlined"
+                    multiline
+                    rows={4}
+                    value={formData.notes}
+                    onChange={(e) => handleInputChange('notes', e.target.value)}
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px'
+                      }
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            {/* Form Actions */}
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+                <Button
+                  variant="outlined"
+                  onClick={handleBackClick}
+                  sx={{ 
+                    px: 4, 
+                    py: 1.5, 
+                    borderRadius: 2,
+                    fontWeight: 'bold',
+                    textTransform: 'none'
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<Save size={20} />}
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  sx={{ 
+                    px: 4, 
+                    py: 1.5, 
+                    borderRadius: 2,
+                    backgroundColor: '#1565c0',
+                    fontWeight: 'bold',
+                    textTransform: 'none',
+                    '&:hover': { backgroundColor: '#0d47a1' },
+                    '&.Mui-disabled': { backgroundColor: '#1565c0' }
+                  }}
+                >
+                  {loading ? 'Saving...' : 'Save Employee'}
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
     </Container>
   );
 };

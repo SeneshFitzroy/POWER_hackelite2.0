@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
-  FormControl,
-  Select,
-  MenuItem,
   Container,
   Chip,
   List,
@@ -32,43 +30,44 @@ import {
 } from '@mui/icons-material';
 import Dashboard from './Dashboard/Dashboard';
 import EmployeeList from './Employee/EmployeeList';
+import AddEmployee from './Employee/AddEmployee';
+import ViewEmployee from './Employee/ViewEmployee';
+import EmployeeForm from './Employee/EmployeeForm';
+import TestFirestore from './Employee/TestFirestore';
 import AttendanceList from './Attendance/AttendanceList';
 import PayrollList from './Payroll/PayrollList';
 import LicenseTracking from './License/LicenseTracking';
 
-function TabPanel({ children, value, index, ...other }) {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`hr-tabpanel-${index}`}
-      aria-labelledby={`hr-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ py: 0 }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
-
 export default function HRModule() {
-  const [activeTab, setActiveTab] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const sidebarWidth = 280;
 
+  // Determine active tab based on current route
+  const getActiveTab = () => {
+    if (location.pathname === '/hr' || location.pathname === '/hr/') return 0;
+    if (location.pathname === '/hr/employees') return 1;
+    if (location.pathname === '/hr/employees/new') return 1;
+    if (location.pathname.startsWith('/hr/employees/')) return 1;
+    if (location.pathname === '/hr/attendance') return 2;
+    if (location.pathname === '/hr/payroll') return 3;
+    if (location.pathname === '/hr/licenses') return 4;
+    return 0;
+  };
+
+  const [activeTab, setActiveTab] = useState(getActiveTab());
+
   const navigationItems = [
-    { label: 'HR Dashboard', icon: <DashboardIcon />, index: 0 },
-    { label: 'Employee Management', icon: <People />, index: 1 },
-    { label: 'Attendance', icon: <Schedule />, index: 2 },
-    { label: 'Payroll', icon: <AttachMoney />, index: 3 },
-    { label: 'License Tracking', icon: <VerifiedUser />, index: 4 }
+    { label: 'HR Dashboard', icon: <DashboardIcon />, path: '/hr' },
+    { label: 'Employee Management', icon: <People />, path: '/hr/employees' },
+    { label: 'Attendance', icon: <Schedule />, path: '/hr/attendance' },
+    { label: 'Payroll', icon: <AttachMoney />, path: '/hr/payroll' },
+    { label: 'License Tracking', icon: <VerifiedUser />, path: '/hr/licenses' }
   ];
 
   // Update time every second
@@ -80,8 +79,13 @@ export default function HRModule() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleNavClick = (index) => {
-    setActiveTab(index);
+  // Update active tab when location changes
+  useEffect(() => {
+    setActiveTab(getActiveTab());
+  }, [location]);
+
+  const handleNavClick = (path) => {
+    navigate(path);
     if (isMobile) {
       setMobileOpen(false);
     }
@@ -140,20 +144,20 @@ export default function HRModule() {
 
       {/* Navigation Menu */}
       <List sx={{ px: 2, py: 2 }}>
-        {navigationItems.map((item) => (
-          <ListItem key={item.index} disablePadding sx={{ mb: 1 }}>
+        {navigationItems.map((item, index) => (
+          <ListItem key={index} disablePadding sx={{ mb: 1 }}>
             <ListItemButton
-              onClick={() => handleNavClick(item.index)}
+              onClick={() => handleNavClick(item.path)}
               sx={{
                 borderRadius: '12px',
                 py: 1.5,
                 px: 2,
-                backgroundColor: activeTab === item.index ? 'rgba(255,255,255,0.2)' : 'transparent',
+                backgroundColor: activeTab === index ? 'rgba(255,255,255,0.2)' : 'transparent',
                 '&:hover': {
                   backgroundColor: 'rgba(255,255,255,0.1)',
                 },
                 transition: 'all 0.2s ease-in-out',
-                boxShadow: activeTab === item.index ? '0 4px 12px rgba(0,0,0,0.2)' : 'none',
+                boxShadow: activeTab === index ? '0 4px 12px rgba(0,0,0,0.2)' : 'none',
               }}
             >
               <ListItemIcon
@@ -172,7 +176,7 @@ export default function HRModule() {
                 sx={{
                   '& .MuiListItemText-primary': {
                     fontSize: '14px',
-                    fontWeight: activeTab === item.index ? 'bold' : 'medium',
+                    fontWeight: activeTab === index ? 'bold' : 'medium',
                     color: '#ffffff'
                   }
                 }}
@@ -369,21 +373,17 @@ export default function HRModule() {
             px: { xs: 2, sm: 3 } // Responsive padding
           }}
         >
-          <TabPanel value={activeTab} index={0}>
-            <Dashboard />
-          </TabPanel>
-          <TabPanel value={activeTab} index={1}>
-            <EmployeeList />
-          </TabPanel>
-          <TabPanel value={activeTab} index={2}>
-            <AttendanceList />
-          </TabPanel>
-          <TabPanel value={activeTab} index={3}>
-            <PayrollList />
-          </TabPanel>
-          <TabPanel value={activeTab} index={4}>
-            <LicenseTracking />
-          </TabPanel>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/employees" element={<EmployeeList />} />
+            <Route path="/employees/new" element={<EmployeeForm />} />
+            <Route path="/employees/:id" element={<ViewEmployee />} />
+            <Route path="/employees/:id/edit" element={<EmployeeForm />} />
+            <Route path="/test-firestore" element={<TestFirestore />} />
+            <Route path="/attendance" element={<AttendanceList />} />
+            <Route path="/payroll" element={<PayrollList />} />
+            <Route path="/licenses" element={<LicenseTracking />} />
+          </Routes>
         </Container>
       </Box>
     </Box>

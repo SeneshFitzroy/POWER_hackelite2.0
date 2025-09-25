@@ -77,8 +77,34 @@ const StockTrackingEnhanced = ({ onNotification }) => {
 
   // Load data
   useEffect(() => {
-    loadAllData();
+    let unsubscribeMedicines = null;
+    let unsubscribeQuarantined = null;
     
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const quarantinedData = await quarantineService.getQuarantinedMedicines();
+        setQuarantinedMedicines(quarantinedData);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Load initial data
+    loadData();
+    
+    // Set up real-time listeners - FIXED: Add real-time updates for medicines
+    unsubscribeMedicines = inventoryService.subscribeMedicines((medicinesData) => {
+      setMedicines(medicinesData);
+    });
+    
+    // FIXED: Use the correct subscribe method
+    unsubscribeQuarantined = quarantineService.subscribeQuarantinedMedicines((quarantinedData) => {
+      setQuarantinedMedicines(quarantinedData);
+    });
+
     // Expose setActiveTab function globally for navigation
     window.stockTrackingRef = {
       setActiveTab: (tab) => {
@@ -87,6 +113,10 @@ const StockTrackingEnhanced = ({ onNotification }) => {
     };
     
     return () => {
+      // Cleanup subscriptions
+      if (unsubscribeMedicines) unsubscribeMedicines();
+      if (unsubscribeQuarantined) unsubscribeQuarantined();
+      
       // Cleanup
       delete window.stockTrackingRef;
     };
@@ -127,7 +157,7 @@ const StockTrackingEnhanced = ({ onNotification }) => {
         filtered = filtered.filter(medicine => {
           if (!medicine.expiryDate) return false;
           const daysUntilExpiry = getDaysUntilExpiry(medicine.expiryDate);
-          return daysUntilExpiry !== null && daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+          return daysUntilExpiry !== null && daysUntilExpiry >= 0 && daysUntilExpiry <= 90;
         });
         break;
       case 3: // Expired
@@ -257,7 +287,7 @@ const StockTrackingEnhanced = ({ onNotification }) => {
       return <Chip label="Expired" color="error" size="small" icon={<ErrorIcon />} />;
     } else if (daysUntilExpiry <= 7) {
       return <Chip label={`Expires in ${daysUntilExpiry}d`} color="error" size="small" icon={<WarningIcon />} />;
-    } else if (daysUntilExpiry <= 30) {
+    } else if (daysUntilExpiry <= 90) {
       return <Chip label={`Expires in ${daysUntilExpiry}d`} color="warning" size="small" icon={<ScheduleIcon />} />;
     }
     return null;
@@ -273,7 +303,7 @@ const StockTrackingEnhanced = ({ onNotification }) => {
     const expiringSoon = medicines.filter(m => {
       if (!m.expiryDate) return false;
       const days = getDaysUntilExpiry(m.expiryDate);
-      return days !== null && days >= 0 && days <= 30;
+      return days !== null && days >= 0 && days <= 90;
     }).length;
 
     const expired = medicines.filter(m => {

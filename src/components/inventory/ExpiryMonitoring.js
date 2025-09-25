@@ -85,30 +85,23 @@ const ExpiryMonitoring = () => {
 
     // Filter by expiry status
     filtered = filtered.filter(medicine => {
-      // If medicine has status 'expired', include it in expired filter
-      if (medicine.status === 'expired' && expiryFilter === 'expired') {
-        return true;
-      }
-      
-      // If no expiry date, only include if it's not an expiry-based filter
-      if (!medicine.expiryDate) {
-        return expiryFilter === 'all';
-      }
-      
-      const daysUntilExpiry = getDaysUntilExpiry(medicine.expiryDate);
-      if (daysUntilExpiry === null) {
-        return expiryFilter === 'all';
-      }
-      
       switch (expiryFilter) {
         case 'expired':
-          return daysUntilExpiry < 0 || medicine.status === 'expired';
+          // Include medicines that are either marked as expired or have passed expiry date
+          return medicine.status === 'expired' || 
+                 (medicine.expiryDate && getDaysUntilExpiry(medicine.expiryDate) !== null && getDaysUntilExpiry(medicine.expiryDate) < 0);
         case 'expiring_7':
-          return daysUntilExpiry >= 0 && daysUntilExpiry <= 7;
+          if (!medicine.expiryDate) return false;
+          const days7 = getDaysUntilExpiry(medicine.expiryDate);
+          return days7 !== null && days7 >= 0 && days7 <= 7;
         case 'expiring_30':
-          return daysUntilExpiry > 7 && daysUntilExpiry <= 30;
+          if (!medicine.expiryDate) return false;
+          const days30 = getDaysUntilExpiry(medicine.expiryDate);
+          return days30 !== null && days30 > 7 && days30 <= 30;
         case 'expiring_90':
-          return daysUntilExpiry > 30 && daysUntilExpiry <= 90;
+          if (!medicine.expiryDate) return false;
+          const days90 = getDaysUntilExpiry(medicine.expiryDate);
+          return days90 !== null && days90 >= 0 && days90 <= 90;
         case 'all':
         default:
           return true;
@@ -118,11 +111,15 @@ const ExpiryMonitoring = () => {
     // Sort by expiry date (expired first, then by days until expiry)
     filtered.sort((a, b) => {
       // Handle medicines with status 'expired' first
-      if (a.status === 'expired' && b.status !== 'expired') return -1;
-      if (a.status !== 'expired' && b.status === 'expired') return 1;
+      const aIsExpired = a.status === 'expired' || (a.expiryDate && getDaysUntilExpiry(a.expiryDate) !== null && getDaysUntilExpiry(a.expiryDate) < 0);
+      const bIsExpired = b.status === 'expired' || (b.expiryDate && getDaysUntilExpiry(b.expiryDate) !== null && getDaysUntilExpiry(b.expiryDate) < 0);
       
-      // If both have status 'expired', sort by name
-      if (a.status === 'expired' && b.status === 'expired') {
+      // Expired items first
+      if (aIsExpired && !bIsExpired) return -1;
+      if (!aIsExpired && bIsExpired) return 1;
+      
+      // If both are expired or both are not expired, sort by name
+      if (aIsExpired && bIsExpired) {
         return (a.name || '').localeCompare(b.name || '');
       }
       
@@ -137,10 +134,6 @@ const ExpiryMonitoring = () => {
       if (aDays === null || bDays === null) {
         return (a.name || '').localeCompare(b.name || '');
       }
-      
-      // Expired items first
-      if (aDays < 0 && bDays >= 0) return -1;
-      if (aDays >= 0 && bDays < 0) return 1;
       
       // Then by days until expiry
       return aDays - bDays;
@@ -258,17 +251,10 @@ const ExpiryMonitoring = () => {
                 <ErrorIcon sx={{ fontSize: 40, mr: 2 }} />
                 <Box>
                   <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                    {medicines.filter(m => {
-                      // Include medicines with status 'expired'
-                      if (m.status === 'expired') return true;
-                      // Include medicines with expired expiry date
-                      if (!m.expiryDate) return false;
-                      const expiryDate = m.expiryDate && typeof m.expiryDate === 'object' && m.expiryDate.toDate 
-                        ? m.expiryDate.toDate() 
-                        : new Date(m.expiryDate);
-                      const days = differenceInDays(expiryDate, new Date());
-                      return days < 0;
-                    }).length}
+                    {medicines.filter(m => 
+                      m.status === 'expired' || 
+                      (m.expiryDate && getDaysUntilExpiry(m.expiryDate) !== null && getDaysUntilExpiry(m.expiryDate) < 0)
+                    ).length}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
                     Expired
@@ -292,15 +278,12 @@ const ExpiryMonitoring = () => {
                   <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
                     {medicines.filter(m => {
                       if (!m.expiryDate) return false;
-                      const expiryDate = m.expiryDate && typeof m.expiryDate === 'object' && m.expiryDate.toDate 
-                        ? m.expiryDate.toDate() 
-                        : new Date(m.expiryDate);
-                      const days = differenceInDays(expiryDate, new Date());
-                      return days >= 0 && days <= 7;
+                      const days = getDaysUntilExpiry(m.expiryDate);
+                      return days !== null && days >= 0 && days <= 7;
                     }).length}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Critical (≤7 days)
+                    Critical (0-7 days)
                   </Typography>
                 </Box>
               </Box>
@@ -321,15 +304,12 @@ const ExpiryMonitoring = () => {
                   <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
                     {medicines.filter(m => {
                       if (!m.expiryDate) return false;
-                      const expiryDate = m.expiryDate && typeof m.expiryDate === 'object' && m.expiryDate.toDate 
-                        ? m.expiryDate.toDate() 
-                        : new Date(m.expiryDate);
-                      const days = differenceInDays(expiryDate, new Date());
-                      return days > 7 && days <= 30;
+                      const days = getDaysUntilExpiry(m.expiryDate);
+                      return days !== null && days > 7 && days <= 30;
                     }).length}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Expiring (≤30 days)
+                    Expiring (8-30 days)
                   </Typography>
                 </Box>
               </Box>
@@ -350,15 +330,12 @@ const ExpiryMonitoring = () => {
                   <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
                     {medicines.filter(m => {
                       if (!m.expiryDate) return false;
-                      const expiryDate = m.expiryDate && typeof m.expiryDate === 'object' && m.expiryDate.toDate 
-                        ? m.expiryDate.toDate() 
-                        : new Date(m.expiryDate);
-                      const days = differenceInDays(expiryDate, new Date());
-                      return days > 30 && days <= 90;
+                      const days = getDaysUntilExpiry(m.expiryDate);
+                      return days !== null && days >= 0 && days <= 90;
                     }).length}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Approaching (≤90 days)
+                    Expiring Soon (≤90 days)
                   </Typography>
                 </Box>
               </Box>
@@ -402,9 +379,9 @@ const ExpiryMonitoring = () => {
                 >
                   <MenuItem value="all">All Medicines</MenuItem>
                   <MenuItem value="expired">Expired</MenuItem>
-                  <MenuItem value="expiring_7">Critical (≤7 days)</MenuItem>
-                  <MenuItem value="expiring_30">Expiring (≤30 days)</MenuItem>
-                  <MenuItem value="expiring_90">Approaching (≤90 days)</MenuItem>
+                  <MenuItem value="expiring_7">Critical (0-7 days)</MenuItem>
+                  <MenuItem value="expiring_30">Expiring (8-30 days)</MenuItem>
+                  <MenuItem value="expiring_90">Expiring Soon (0-90 days)</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db } from '../../../firebase/config';
 import {
   Box,
   Typography,
@@ -7,21 +10,47 @@ import {
   Grid,
   Chip,
   Divider,
-  Paper,
   Container,
   IconButton,
-  Avatar
+  Avatar,
+  CircularProgress,
+  Button
 } from '@mui/material';
-import { ArrowBack, Edit, Mail, Phone, MapPin, Calendar, User, Work, FileText } from 'lucide-react';
+import { ArrowLeft, Edit, MailIcon, PhoneIcon, MapPinIcon, CalendarIcon, User, Briefcase, FileTextIcon } from 'lucide-react';
+import toast from 'react-hot-toast';
 
-const ViewEmployee = ({ employee, onBack, onEdit }) => {
-  if (!employee) {
-    return (
-      <Container maxWidth="lg" sx={{ py: 3, pl: 8 }}>
-        <Typography variant="h5">Employee not found</Typography>
-      </Container>
-    );
-  }
+const ViewEmployee = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [employee, setEmployee] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        setLoading(true);
+        const docRef = doc(db, 'employees', id);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          setEmployee({ id: docSnap.id, ...docSnap.data() });
+        } else {
+          toast.error('Employee not found');
+          navigate('/hr/employees');
+        }
+      } catch (error) {
+        console.error('Error fetching employee:', error);
+        toast.error('Failed to fetch employee details');
+        navigate('/hr/employees');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchEmployee();
+    }
+  }, [id, navigate]);
 
   const getStatusColor = (status) => {
     const colors = {
@@ -42,38 +71,64 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
     return `${currency} ${parseFloat(amount).toLocaleString()}`;
   };
 
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 3, pl: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+        <CircularProgress size={60} />
+      </Container>
+    );
+  }
+
+  if (!employee) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 3, pl: 8 }}>
+        <Typography variant="h5">Employee not found</Typography>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="lg" sx={{ py: 3, pl: 8 }}>
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton 
-            onClick={onBack}
+            onClick={() => {
+              navigate('/hr/employees');
+            }}
             sx={{ mr: 2, color: 'primary.main' }}
           >
-            <ArrowBack />
+            <ArrowLeft />
           </IconButton>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
             Employee Details
           </Typography>
         </Box>
         
-        <IconButton
-          onClick={() => onEdit && onEdit(employee)}
+        <Button
+          variant="contained"
+          startIcon={<Edit size={20} />}
+          onClick={() => {
+            navigate(`/hr/employees/${employee.id}/edit`);
+          }}
           sx={{ 
-            backgroundColor: 'primary.main',
-            color: 'white',
-            '&:hover': { backgroundColor: 'primary.dark' }
+            px: 3, 
+            py: 1.5, 
+            borderRadius: 2,
+            backgroundColor: '#1565c0',
+            fontWeight: 'bold',
+            textTransform: 'none',
+            '&:hover': { backgroundColor: '#0d47a1' }
           }}
         >
-          <Edit size={20} />
-        </IconButton>
+          Edit Employee
+        </Button>
       </Box>
 
       <Grid container spacing={3}>
         {/* Employee Profile Header */}
         <Grid item xs={12}>
-          <Card elevation={3} sx={{ borderRadius: 3, mb: 3 }}>
+          <Card elevation={3} sx={{ borderRadius: 3, mb: 3, border: '1px solid #e0e0e0' }}>
             <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 <Avatar
@@ -100,6 +155,7 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
                       label={employee.status?.charAt(0).toUpperCase() + employee.status?.slice(1)}
                       color={getStatusColor(employee.status)}
                       variant="filled"
+                      sx={{ fontWeight: 'bold' }}
                     />
                     <Typography variant="body2" color="text.secondary">
                       Employee ID: {employee.employeeId || 'N/A'}
@@ -113,18 +169,34 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
 
         {/* Personal Information */}
         <Grid item xs={12} md={6}>
-          <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
+          <Card elevation={3} sx={{ height: '100%', borderRadius: 3, border: '1px solid #e0e0e0' }}>
             <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <User size={24} color="#1565c0" />
-                <Typography variant="h6" sx={{ ml: 1, fontWeight: 'bold' }}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 3,
+                pb: 2,
+                borderBottom: '2px solid #f0f0f0'
+              }}>
+                <Box sx={{ 
+                  p: 1.5, 
+                  borderRadius: '50%', 
+                  backgroundColor: '#e3f2fd',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <User size={20} color="#1565c0" />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1565c0' }}>
                   Personal Information
                 </Typography>
               </Box>
               
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Mail size={18} color="#9ca3af" />
+                  <MailIcon size={18} color="#9ca3af" />
                   <Box>
                     <Typography variant="body2" color="text.secondary">Email</Typography>
                     <Typography variant="body1">{employee.email || 'N/A'}</Typography>
@@ -132,7 +204,7 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Phone size={18} color="#9ca3af" />
+                  <PhoneIcon size={18} color="#9ca3af" />
                   <Box>
                     <Typography variant="body2" color="text.secondary">Phone</Typography>
                     <Typography variant="body1">{employee.phone || 'N/A'}</Typography>
@@ -140,7 +212,7 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <FileText size={18} color="#9ca3af" />
+                  <FileTextIcon size={18} color="#9ca3af" />
                   <Box>
                     <Typography variant="body2" color="text.secondary">NIC</Typography>
                     <Typography variant="body1">{employee.nic || 'N/A'}</Typography>
@@ -148,7 +220,7 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Calendar size={18} color="#9ca3af" />
+                  <CalendarIcon size={18} color="#9ca3af" />
                   <Box>
                     <Typography variant="body2" color="text.secondary">Date of Birth</Typography>
                     <Typography variant="body1">{formatDate(employee.dateOfBirth)}</Typography>
@@ -167,7 +239,7 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
                 
                 {employee.address && (
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                    <MapPin size={18} color="#9ca3af" style={{ marginTop: 2 }} />
+                    <MapPinIcon size={18} color="#9ca3af" style={{ marginTop: 2 }} />
                     <Box>
                       <Typography variant="body2" color="text.secondary">Address</Typography>
                       <Typography variant="body1">{employee.address}</Typography>
@@ -184,11 +256,27 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
 
         {/* Employment Information */}
         <Grid item xs={12} md={6}>
-          <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
+          <Card elevation={3} sx={{ height: '100%', borderRadius: 3, border: '1px solid #e0e0e0' }}>
             <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Work size={24} color="#1565c0" />
-                <Typography variant="h6" sx={{ ml: 1, fontWeight: 'bold' }}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 3,
+                pb: 2,
+                borderBottom: '2px solid #f0f0f0'
+              }}>
+                <Box sx={{ 
+                  p: 1.5, 
+                  borderRadius: '50%', 
+                  backgroundColor: '#e8f5e9',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <Briefcase size={20} color="#2e7d32" />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
                   Employment Information
                 </Typography>
               </Box>
@@ -202,10 +290,8 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
                 </Box>
                 
                 <Box>
-                  <Typography variant="body2" color="text.secondary">Employment Type</Typography>
-                  <Typography variant="body1">
-                    {employee.employmentType?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'N/A'}
-                  </Typography>
+                  <Typography variant="body2" color="text.secondary">Employee ID</Typography>
+                  <Typography variant="body1">{employee.employeeId || 'N/A'}</Typography>
                 </Box>
                 
                 <Box>
@@ -214,10 +300,15 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
                 </Box>
                 
                 <Box>
-                  <Typography variant="body2" color="text.secondary">Work Schedule</Typography>
+                  <Typography variant="body2" color="text.secondary">Employment Type</Typography>
                   <Typography variant="body1">
-                    {employee.workSchedule?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'N/A'}
+                    {employee.employmentType?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'N/A'}
                   </Typography>
+                </Box>
+                
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Work Schedule</Typography>
+                  <Typography variant="body1">{employee.workSchedule || 'N/A'}</Typography>
                 </Box>
                 
                 <Box>
@@ -227,71 +318,104 @@ const ViewEmployee = ({ employee, onBack, onEdit }) => {
                 
                 <Box>
                   <Typography variant="body2" color="text.secondary">Base Salary</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 'medium', color: 'success.main' }}>
-                    {formatCurrency(employee.baseSalary, employee.currency)}
-                  </Typography>
+                  <Typography variant="body1">{formatCurrency(employee.baseSalary, employee.currency)}</Typography>
+                </Box>
+                
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Status</Typography>
+                  <Chip 
+                    label={employee.status?.charAt(0).toUpperCase() + employee.status?.slice(1)}
+                    color={getStatusColor(employee.status)}
+                    size="small"
+                    sx={{ fontWeight: 'bold' }}
+                  />
                 </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Emergency Contact & Additional Info */}
-        <Grid item xs={12}>
-          <Card elevation={3} sx={{ borderRadius: 3 }}>
-            <CardContent sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>
+        {/* Emergency Contact */}
+        {(employee.emergencyContact || employee.emergencyPhone) && (
+          <Grid item xs={12}>
+            <Card elevation={3} sx={{ borderRadius: 3, border: '1px solid #e0e0e0' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  mb: 3,
+                  pb: 2,
+                  borderBottom: '2px solid #f0f0f0'
+                }}>
+                  <Box sx={{ 
+                    p: 1.5, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#fce4ec',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mr: 2
+                  }}>
+                    <PhoneIcon size={20} color="#c2185b" />
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#c2185b' }}>
                     Emergency Contact
                   </Typography>
-                  
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                </Box>
+                
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {employee.emergencyContact && (
                     <Box>
                       <Typography variant="body2" color="text.secondary">Contact Name</Typography>
-                      <Typography variant="body1">{employee.emergencyContact || 'N/A'}</Typography>
+                      <Typography variant="body1">{employee.emergencyContact}</Typography>
                     </Box>
-                    
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">Contact Phone</Typography>
-                      <Typography variant="body1">{employee.emergencyPhone || 'N/A'}</Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>
-                    System Information
-                  </Typography>
+                  )}
                   
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {employee.emergencyPhone && (
                     <Box>
-                      <Typography variant="body2" color="text.secondary">Created At</Typography>
-                      <Typography variant="body1">{formatDate(employee.createdAt)}</Typography>
+                      <Typography variant="body2" color="text.secondary">Phone Number</Typography>
+                      <Typography variant="body1">{employee.emergencyPhone}</Typography>
                     </Box>
-                    
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">Last Updated</Typography>
-                      <Typography variant="body1">{formatDate(employee.updatedAt)}</Typography>
-                    </Box>
-                  </Box>
-                </Grid>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
 
-                {employee.notes && (
-                  <Grid item xs={12}>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
-                      Additional Notes
-                    </Typography>
-                    <Paper sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 2 }}>
-                      <Typography variant="body1">{employee.notes}</Typography>
-                    </Paper>
-                  </Grid>
-                )}
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+        {/* Additional Information */}
+        {employee.notes && (
+          <Grid item xs={12}>
+            <Card elevation={3} sx={{ borderRadius: 3, border: '1px solid #e0e0e0' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  mb: 3,
+                  pb: 2,
+                  borderBottom: '2px solid #f0f0f0'
+                }}>
+                  <Box sx={{ 
+                    p: 1.5, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#f3e5f5',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mr: 2
+                  }}>
+                    <FileTextIcon size={20} color="#7b1fa2" />
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#7b1fa2' }}>
+                    Additional Notes
+                  </Typography>
+                </Box>
+                
+                <Typography variant="body1">{employee.notes}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
       </Grid>
     </Container>
   );

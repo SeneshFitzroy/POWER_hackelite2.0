@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -25,7 +25,8 @@ import {
   TrendingUp,
   Calendar,
   Award,
-  FileText
+  FileText,
+  Plus
 } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
@@ -41,6 +42,7 @@ const Dashboard = () => {
     pendingReviews: 0
   });
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     initializeAndFetchData();
@@ -118,56 +120,56 @@ const Dashboard = () => {
       value: stats.totalEmployees,
       icon: Users,
       color: '#1e40af',
-      bgColor: '#eff6ff',
-      link: '/employees'
+      bgColor: '#dbeafe',
+      link: '/hr/employees'
     },
     {
       title: 'Active Employees',
       value: stats.activeEmployees,
       icon: TrendingUp,
       color: '#059669',
-      bgColor: '#f0fdf4',
-      link: '/employees'
+      bgColor: '#dcfce7',
+      link: '/hr/employees'
     },
     {
       title: 'Pending Payroll',
       value: stats.pendingPayroll,
       icon: DollarSign,
       color: '#d97706',
-      bgColor: '#fffbeb',
-      link: '/payroll'
+      bgColor: '#fef3c7',
+      link: '/hr/payroll'
     },
     {
       title: 'Expiring Licenses',
       value: stats.expiringLicenses,
       icon: AlertTriangle,
       color: '#dc2626',
-      bgColor: '#fef2f2',
-      link: '/licenses'
+      bgColor: '#fee2e2',
+      link: '/hr/licenses'
     },
     {
       title: 'Today Attendance',
       value: stats.todayAttendance,
       icon: Clock,
       color: '#7c3aed',
-      bgColor: '#faf5ff',
-      link: '/attendance'
+      bgColor: '#ede9fe',
+      link: '/hr/attendance'
     },
     {
       title: 'Pending Reviews',
       value: stats.pendingReviews,
       icon: FileText,
       color: '#4338ca',
-      bgColor: '#eef2ff',
-      link: '/performance'
+      bgColor: '#e0e7ff',
+      link: '/hr/performance'
     }
   ];
 
   const quickActions = [
-    { title: 'Add New Employee', link: '/employees/new', icon: Users },
-    { title: 'Process Payroll', link: '/payroll', icon: DollarSign },
-    { title: 'Mark Attendance', link: '/attendance', icon: Clock },
-    { title: 'License Tracking', link: '/licenses', icon: Award }
+    { title: 'Add New Employee', link: '/hr/employees/new', icon: Plus },
+    { title: 'Process Payroll', link: '/hr/payroll', icon: DollarSign },
+    { title: 'Mark Attendance', link: '/hr/attendance', icon: Clock },
+    { title: 'License Tracking', link: '/hr/licenses', icon: Award }
   ];
 
   if (loading) {
@@ -204,21 +206,16 @@ const Dashboard = () => {
         </Typography>
         <Button
           variant="contained"
-          startIcon={<Users size={20} />}
-          sx={{
-            background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-            color: 'white',
-            px: 3,
-            py: 1.5,
+          startIcon={<Plus size={20} />}
+          onClick={() => navigate('/hr/employees/new')}
+          sx={{ 
+            px: 3, 
+            py: 1.5, 
+            borderRadius: 2,
+            backgroundColor: '#1565c0',
             fontWeight: 'bold',
-            borderRadius: '10px',
-            boxShadow: '0 4px 12px rgba(30, 64, 175, 0.3)',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)',
-              boxShadow: '0 6px 16px rgba(30, 64, 175, 0.4)',
-              transform: 'translateY(-1px)'
-            },
-            transition: 'all 0.2s ease-in-out'
+            textTransform: 'none',
+            '&:hover': { backgroundColor: '#0d47a1' }
           }}
         >
           Add New Employee
@@ -226,64 +223,74 @@ const Dashboard = () => {
       </Box>
 
       {/* Stats Grid */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3}>
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
-          
           return (
-            <Grid item xs={12} sm={6} lg={4} key={index}>
+            <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
               <Card
                 sx={{
                   borderRadius: '16px',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                   border: '1px solid #f0f0f0',
                   cursor: 'pointer',
-                  transition: 'all 0.3s ease-in-out',
+                  transition: 'all 0.2s ease-in-out',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: '0 8px 30px rgba(30, 58, 138, 0.15)',
-                    borderColor: '#1e40af'
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                    borderColor: stat.color
                   }
                 }}
+                onClick={() => {
+                  navigate(stat.link);
+                }}
               >
-                <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <CardContent sx={{ p: 3, flex: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                     <Avatar
                       sx={{
                         backgroundColor: stat.bgColor,
-                        width: 56,
-                        height: 56,
-                        mr: 2.5
+                        width: 48,
+                        height: 48
                       }}
                     >
-                      <Icon size={28} color={stat.color} />
+                      <Icon size={24} color={stat.color} />
                     </Avatar>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: '#6b7280',
-                          fontWeight: '500',
-                          mb: 0.5,
-                          fontSize: '13px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px'
-                        }}
-                      >
-                        {stat.title}
-                      </Typography>
-                      <Typography
-                        variant="h3"
-                        sx={{
-                          fontWeight: 'bold',
-                          color: '#1f2937',
-                          lineHeight: 1
-                        }}
-                      >
-                        {stat.value}
-                      </Typography>
-                    </Box>
+                    <Chip
+                      label="Live"
+                      size="small"
+                      sx={{
+                        backgroundColor: '#10b981',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '10px',
+                        height: 20
+                      }}
+                    />
                   </Box>
+                  <Typography
+                    variant="h3"
+                    sx={{
+                      fontWeight: 'bold',
+                      color: '#1f2937',
+                      mb: 1,
+                      fontSize: '28px'
+                    }}
+                  >
+                    {stat.value}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: '#6b7280',
+                      fontWeight: '500',
+                      fontSize: '14px'
+                    }}
+                  >
+                    {stat.title}
+                  </Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -317,13 +324,16 @@ const Dashboard = () => {
             {quickActions.map((action, index) => {
               const Icon = action.icon;
               return (
-                <Grid item xs={12} sm={6} lg={3} key={index}>
+                <Grid item xs={12} sm={6} md={3} key={index}>
                   <Card
                     sx={{
                       borderRadius: '12px',
                       border: '1px solid #e5e7eb',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease-in-out',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
                       '&:hover': {
                         backgroundColor: '#f8fafc',
                         borderColor: '#1e40af',
@@ -331,30 +341,32 @@ const Dashboard = () => {
                         boxShadow: '0 4px 12px rgba(30, 64, 175, 0.1)'
                       }
                     }}
+                    onClick={() => {
+                      navigate(action.link);
+                    }}
                   >
-                    <CardContent sx={{ p: 2.5 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar
-                          sx={{
-                            backgroundColor: '#f8fafc',
-                            width: 40,
-                            height: 40,
-                            mr: 2
-                          }}
-                        >
-                          <Icon size={20} color="#6b7280" />
-                        </Avatar>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: '600',
-                            color: '#374151',
-                            fontSize: '14px'
-                          }}
-                        >
-                          {action.title}
-                        </Typography>
-                      </Box>
+                    <CardContent sx={{ p: 2.5, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                      <Avatar
+                        sx={{
+                          backgroundColor: '#f8fafc',
+                          width: 48,
+                          height: 48,
+                          mb: 2
+                        }}
+                      >
+                        <Icon size={24} color="#6b7280" />
+                      </Avatar>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: '600',
+                          color: '#374151',
+                          fontSize: '14px',
+                          textAlign: 'center'
+                        }}
+                      >
+                        {action.title}
+                      </Typography>
                     </CardContent>
                   </Card>
                 </Grid>

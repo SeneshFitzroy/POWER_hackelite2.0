@@ -152,9 +152,9 @@ export default function Finance({ dateFilter }) {
     try {
       setLoading(true);
       
-      // Load sales orders data
+      // Load sales orders data - FIXED: Use 'transactions' collection instead of 'salesOrders'
       const salesQuery = query(
-        collection(db, 'salesOrders'),
+        collection(db, 'transactions'),
         orderBy('createdAt', 'desc')
       );
       const salesSnapshot = await getDocs(salesQuery);
@@ -173,8 +173,9 @@ export default function Finance({ dateFilter }) {
       }));
 
       // Calculate financial metrics from real data
+      // FIXED: Use 'total' field which is what POS transactions use
       const totalRevenue = salesOrders.reduce((sum, order) => {
-        return sum + (order.totalAmount || 0);
+        return sum + (order.total || order.netTotal || order.totalAmount || 0);
       }, 0);
 
       const totalExpenses = totalRevenue * 0.65; // Estimate expenses as 65% of revenue
@@ -193,7 +194,86 @@ export default function Finance({ dateFilter }) {
       setSalesData(salesByMonth);
       setSalesTrendData(salesByMonth);
 
-      // Set sample employee data with enhanced properties
+      // Load employee data from HR system
+      await loadEmployeeData();
+
+      setSuppliersData([
+        {
+          id: 'SUP-001',
+          supplier: 'Medical Supplies Ltd',
+          amount: Math.floor(totalRevenue * 0.3),
+          dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+          status: 'pending',
+          daysOverdue: 0
+        },
+        {
+          id: 'SUP-002',
+          supplier: 'Pharmacy Equipment Co',
+          amount: Math.floor(totalRevenue * 0.15),
+          dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+          status: 'overdue',
+          daysOverdue: 5
+        }
+      ]);
+
+    } catch (error) {
+      console.error('Error loading financial data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load employee data from HR system (Firestore)
+  const loadEmployeeData = async () => {
+    try {
+      // Load employees from HR system
+      const employeesQuery = query(
+        collection(db, 'employees'),
+        orderBy('createdAt', 'desc')
+      );
+      const employeesSnapshot = await getDocs(employeesQuery);
+      const employees = employeesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Load payroll data
+      const payrollQuery = query(
+        collection(db, 'payrolls'),
+        orderBy('createdAt', 'desc')
+      );
+      const payrollSnapshot = await getDocs(payrollQuery);
+      const payrolls = payrollSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Process employee data with payroll information
+      const processedEmployees = employees.map(employee => {
+        // Find latest payroll record for this employee
+        const latestPayroll = payrolls
+          .filter(p => p.employeeId === employee.id)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+
+        return {
+          id: employee.id,
+          name: `${employee.firstName} ${employee.lastName}`,
+          position: employee.role?.replace('_', ' ') || 'Unknown',
+          baseSalary: parseFloat(employee.baseSalary) || 0,
+          netSalary: latestPayroll ? parseFloat(latestPayroll.netSalary) || 0 : (parseFloat(employee.baseSalary) * 0.92) || 0,
+          email: employee.email || '',
+          status: latestPayroll ? 'paid' : 'pending',
+          paymentStatus: latestPayroll ? 'paid' : 'pending',
+          paymentBlocked: false,
+          lastPaid: latestPayroll ? new Date(latestPayroll.createdAt) : null,
+          employeeId: employee.employeeId || employee.id
+        };
+      });
+
+      setEmployeesData(processedEmployees);
+    } catch (error) {
+      console.error('Error loading employee data:', error);
+      // Fallback to sample data if Firestore fails
       setEmployeesData([
         {
           id: 'EMP-001',
@@ -244,30 +324,6 @@ export default function Finance({ dateFilter }) {
           lastPaid: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
         }
       ]);
-
-      setSuppliersData([
-        {
-          id: 'SUP-001',
-          supplier: 'Medical Supplies Ltd',
-          amount: Math.floor(totalRevenue * 0.3),
-          dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
-          status: 'pending',
-          daysOverdue: 0
-        },
-        {
-          id: 'SUP-002',
-          supplier: 'Pharmacy Equipment Co',
-          amount: Math.floor(totalRevenue * 0.15),
-          dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          status: 'overdue',
-          daysOverdue: 5
-        }
-      ]);
-
-    } catch (error) {
-      console.error('Error loading financial data:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -284,8 +340,10 @@ export default function Finance({ dateFilter }) {
           monthData[key] = { month: key, sales: 0, expenses: 0, profit: 0 };
         }
         
-        monthData[key].sales += order.totalAmount || 0;
-        monthData[key].expenses += (order.totalAmount || 0) * 0.65;
+        // FIXED: Use correct total field from POS transactions
+        const orderTotal = order.total || order.netTotal || order.totalAmount || 0;
+        monthData[key].sales += orderTotal;
+        monthData[key].expenses += orderTotal * 0.65;
         monthData[key].profit = monthData[key].sales - monthData[key].expenses;
       }
     });
@@ -611,7 +669,7 @@ export default function Finance({ dateFilter }) {
   };
 
   const formatCurrency = (amount) => {
-    return `LKR ${amount.toLocaleString()}`;
+    return `LKR ${parseFloat(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const getStatusColor = (status) => {
@@ -644,7 +702,7 @@ export default function Finance({ dateFilter }) {
               variant="body2"
               sx={{ color: item.color, fontSize: '12px' }}
             >
-              {item.name}: LKR {item.value?.toLocaleString()}
+              {item.name}: LKR {parseFloat(item.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </Typography>
           ))}
         </Box>
@@ -930,7 +988,7 @@ export default function Finance({ dateFilter }) {
                 />
                 <YAxis hide />
                 <RechartsTooltip 
-                  formatter={(value) => [`LKR ${value.toLocaleString()}`, '']}
+                  formatter={(value) => [`LKR ${parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, '']}
                   labelStyle={{ color: '#1e3a8a' }}
                 />
                 <Bar 
@@ -1294,7 +1352,7 @@ export default function Finance({ dateFilter }) {
           {selectedEmployees.length > 0 && (
             <Alert severity="info" sx={{ mt: 2 }}>
               {selectedEmployees.length} employee(s) selected for bulk payment. 
-              Total: LKR {employeesData.filter(emp => selectedEmployees.includes(emp.id)).reduce((sum, emp) => sum + emp.netSalary, 0).toLocaleString()}
+              Total: LKR {employeesData.filter(emp => selectedEmployees.includes(emp.id)).reduce((sum, emp) => sum + emp.netSalary, 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </Alert>
           )}
         </Box>
@@ -1352,7 +1410,7 @@ export default function Finance({ dateFilter }) {
                           )}
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#64748b' }}>
-                          {employee.id}
+                          {employee.employeeId || employee.id}
                         </Typography>
                       </Box>
                     </Box>

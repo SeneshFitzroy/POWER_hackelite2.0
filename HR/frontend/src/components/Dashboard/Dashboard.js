@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Users, 
   DollarSign, 
@@ -24,6 +24,7 @@ const Dashboard = () => {
     pendingReviews: 0
   });
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     initializeAndFetchData();
@@ -95,6 +96,10 @@ const Dashboard = () => {
     }
   };
 
+  const handleAddEmployee = () => {
+    navigate('/employees/new');
+  };
+
   const statCards = [
     {
       title: 'Total Employees',
@@ -161,7 +166,10 @@ const Dashboard = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">HR Dashboard</h1>
         <div className="flex items-center space-x-4">
-          <button className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center">
+          <button 
+            onClick={handleAddEmployee}
+            className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center"
+          >
             <Users className="h-4 w-4 mr-2" />
             Add New Employee
           </button>

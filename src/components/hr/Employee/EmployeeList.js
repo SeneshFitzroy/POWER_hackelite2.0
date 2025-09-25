@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -17,7 +18,8 @@ import {
   FormControl,
   Select,
   MenuItem,
-  InputLabel
+  InputLabel,
+  Tooltip
 } from '@mui/material';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
@@ -31,6 +33,7 @@ const EmployeeList = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [roleFilter, setRoleFilter] = useState('all');
   const [firebaseError, setFirebaseError] = useState(false);
+  const navigate = useNavigate();
 
   // Check if Firebase is configured
   const isFirebaseConfigured = () => {
@@ -85,7 +88,7 @@ const EmployeeList = () => {
       try {
         // Remove from UI immediately for better UX
         setEmployees(prev => prev.filter(emp => emp.id !== id));
-        toast.info('Deleting employee...');
+        toast.success('Deleting employee...');
         
         // Delete from Firebase
         await deleteDoc(doc(db, 'employees', id));
@@ -112,17 +115,22 @@ const EmployeeList = () => {
 
   const getStatusBadge = (status) => {
     const statusColors = {
-      active: 'success',
-      inactive: 'error',
-      probation: 'warning'
+      active: '#4caf50',
+      inactive: '#f44336',
+      probation: '#ff9800'
     };
     
     return (
       <Chip
         label={status?.charAt(0).toUpperCase() + status?.slice(1)}
-        color={statusColors[status] || 'default'}
+        sx={{ 
+          backgroundColor: statusColors[status] || '#9e9e9e',
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: '0.75rem',
+          height: 24
+        }}
         size="small"
-        sx={{ fontWeight: 'medium' }}
       />
     );
   };
@@ -130,9 +138,13 @@ const EmployeeList = () => {
   const getRoleBadge = (role) => {
     const roleColors = {
       'registered_pharmacist': '#1565c0',
-      'assistant_pharmacist': '#2e7d32',
+      'pharmacy_assistant': '#2e7d32',
       'cashier': '#ed6c02',
-      'manager': '#7b1fa2'
+      'inventory_manager': '#7b1fa2',
+      'store_manager': '#374151',
+      'hr_manager': '#0d47a1',
+      'accountant': '#455a64',
+      'sales_representative': '#5d4037'
     };
     
     return (
@@ -141,7 +153,9 @@ const EmployeeList = () => {
         sx={{ 
           backgroundColor: roleColors[role] || '#757575',
           color: 'white',
-          fontWeight: 'medium'
+          fontWeight: 'bold',
+          fontSize: '0.75rem',
+          height: 24
         }}
         size="small"
       />
@@ -167,15 +181,17 @@ const EmployeeList = () => {
             variant="outlined"
             startIcon={<RefreshCw size={20} />}
             sx={{ 
-              borderColor: '#dc2626',
-              color: '#dc2626',
+              borderColor: '#1565c0',
+              color: '#1565c0',
               '&:hover': { 
-                backgroundColor: '#dc2626',
+                backgroundColor: '#1565c0',
                 color: 'white'
               },
               px: 3,
               py: 1.5,
-              borderRadius: 2
+              borderRadius: 2,
+              fontWeight: 'bold',
+              textTransform: 'none'
             }}
             onClick={() => {
               console.log('Refreshing employees...');
@@ -197,10 +213,12 @@ const EmployeeList = () => {
               '&:hover': { backgroundColor: '#0d47a1' },
               px: 3,
               py: 1.5,
-              borderRadius: 2
+              borderRadius: 2,
+              fontWeight: 'bold',
+              textTransform: 'none'
             }}
             onClick={() => {
-              toast('Add Employee feature coming soon!');
+              navigate('/hr/employees/new');
             }}
           >
             Add Employee
@@ -209,7 +227,7 @@ const EmployeeList = () => {
       </Box>
 
       {/* Search and Filter Section */}
-      <Paper sx={{ p: 3, mb: 3, borderRadius: 3, border: '1px solid #e0e0e0' }}>
+      <Paper sx={{ p: 3, mb: 3, borderRadius: 3, border: '1px solid #e0e0e0', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={4}>
             <TextField
@@ -225,7 +243,12 @@ const EmployeeList = () => {
                   </InputAdornment>
                 ),
               }}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              sx={{ 
+                '& .MuiOutlinedInput-root': { 
+                  borderRadius: 2,
+                  height: 48
+                } 
+              }}
             />
           </Grid>
           
@@ -236,7 +259,10 @@ const EmployeeList = () => {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 label="Status Filter"
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  height: 48
+                }}
               >
                 <MenuItem value="all">All Status</MenuItem>
                 <MenuItem value="active">Active</MenuItem>
@@ -253,13 +279,20 @@ const EmployeeList = () => {
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
                 label="Role Filter"
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  height: 48
+                }}
               >
                 <MenuItem value="all">All Roles</MenuItem>
                 <MenuItem value="registered_pharmacist">Registered Pharmacist</MenuItem>
-                <MenuItem value="assistant_pharmacist">Assistant Pharmacist</MenuItem>
+                <MenuItem value="pharmacy_assistant">Pharmacy Assistant</MenuItem>
                 <MenuItem value="cashier">Cashier</MenuItem>
-                <MenuItem value="manager">Manager</MenuItem>
+                <MenuItem value="inventory_manager">Inventory Manager</MenuItem>
+                <MenuItem value="store_manager">Store Manager</MenuItem>
+                <MenuItem value="hr_manager">HR Manager</MenuItem>
+                <MenuItem value="accountant">Accountant</MenuItem>
+                <MenuItem value="sales_representative">Sales Representative</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -267,7 +300,7 @@ const EmployeeList = () => {
           <Grid item xs={12} md={2}>
             <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
               <Users size={20} />
-              <Typography variant="body2" sx={{ ml: 1, fontWeight: 'medium' }}>
+              <Typography variant="body2" sx={{ ml: 1, fontWeight: 'bold' }}>
                 {filteredEmployees.length} employees
               </Typography>
             </Box>
@@ -289,17 +322,38 @@ const EmployeeList = () => {
           </Typography>
         </Paper>
       ) : filteredEmployees.length === 0 ? (
-        <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 3 }}>
+        <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 3, border: '1px solid #e0e0e0' }}>
           <Users size={48} color="#ccc" style={{ marginBottom: '16px' }} />
           <Typography variant="h6" color="text.secondary" gutterBottom>
             No employees found
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {employees.length === 0 
               ? "Get started by adding your first employee" 
               : "Try adjusting your search filters"
             }
           </Typography>
+          {employees.length === 0 && (
+            <Button
+              variant="contained"
+              startIcon={<Plus size={20} />}
+              sx={{ 
+                mt: 2,
+                backgroundColor: '#1565c0',
+                '&:hover': { backgroundColor: '#0d47a1' },
+                px: 3,
+                py: 1.5,
+                borderRadius: 2,
+                fontWeight: 'bold',
+                textTransform: 'none'
+              }}
+              onClick={() => {
+                navigate('/hr/employees/new');
+              }}
+            >
+              Add Employee
+            </Button>
+          )}
         </Paper>
       ) : (
         <Grid container spacing={3}>
@@ -310,13 +364,16 @@ const EmployeeList = () => {
                   borderRadius: 3,
                   border: '1px solid #e0e0e0',
                   transition: 'all 0.2s ease-in-out',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.1)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
                   }
                 }}
               >
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: 3, flex: 1 }}>
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <Avatar
@@ -348,9 +405,20 @@ const EmployeeList = () => {
                   
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                     <Mail size={16} color="#666" />
-                    <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-                      {employee.email || 'No email'}
-                    </Typography>
+                    <Tooltip title={employee.email || 'No email'}>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          ml: 1, 
+                          color: 'text.secondary',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        {employee.email || 'No email'}
+                      </Typography>
+                    </Tooltip>
                   </Box>
                   
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -359,40 +427,53 @@ const EmployeeList = () => {
                       {employee.phone || 'No phone'}
                     </Typography>
                   </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                    <IconButton
-                      size="small"
-                      sx={{ 
-                        color: '#1565c0',
-                        '&:hover': { backgroundColor: 'rgba(21, 101, 192, 0.1)' }
-                      }}
-                      onClick={() => toast('View employee details coming soon!')}
-                    >
-                      <Eye size={18} />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      sx={{ 
-                        color: '#2e7d32',
-                        '&:hover': { backgroundColor: 'rgba(46, 125, 50, 0.1)' }
-                      }}
-                      onClick={() => toast('Edit employee coming soon!')}
-                    >
-                      <Edit size={18} />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      sx={{ 
-                        color: '#d32f2f',
-                        '&:hover': { backgroundColor: 'rgba(211, 47, 47, 0.1)' }
-                      }}
-                      onClick={() => handleDelete(employee.id, `${employee.firstName} ${employee.lastName}`)}
-                    >
-                      <Trash2 size={18} />
-                    </IconButton>
-                  </Box>
                 </CardContent>
+                
+                <Box sx={{ 
+                  p: 2, 
+                  borderTop: '1px solid #eee',
+                  display: 'flex', 
+                  justifyContent: 'flex-end', 
+                  gap: 1 
+                }}>
+                  <IconButton
+                    size="small"
+                    sx={{ 
+                      color: '#1565c0',
+                      '&:hover': { backgroundColor: 'rgba(21, 101, 192, 0.1)' }
+                    }}
+                    onClick={() => {
+                      navigate(`/hr/employees/${employee.id}`);
+                    }}
+                    title="View Employee"
+                  >
+                    <Eye size={18} />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    sx={{ 
+                      color: '#2e7d32',
+                      '&:hover': { backgroundColor: 'rgba(46, 125, 50, 0.1)' }
+                    }}
+                    onClick={() => {
+                      navigate(`/hr/employees/${employee.id}/edit`);
+                    }}
+                    title="Edit Employee"
+                  >
+                    <Edit size={18} />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    sx={{ 
+                      color: '#d32f2f',
+                      '&:hover': { backgroundColor: 'rgba(211, 47, 47, 0.1)' }
+                    }}
+                    onClick={() => handleDelete(employee.id, `${employee.firstName} ${employee.lastName}`)}
+                    title="Delete Employee"
+                  >
+                    <Trash2 size={18} />
+                  </IconButton>
+                </Box>
               </Card>
             </Grid>
           ))}

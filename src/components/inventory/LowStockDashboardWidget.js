@@ -18,7 +18,8 @@ import {
   Divider,
   Grid,
   LinearProgress,
-  Badge
+  Badge,
+  Paper
 } from '@mui/material';
 import {
   Warning as WarningIcon,
@@ -201,8 +202,8 @@ const LowStockDashboardWidget = ({ onViewAll, onCreateOrder }) => {
   }
 
   return (
-    <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-      <CardContent>
+    <Card sx={{ boxShadow: 'none', borderRadius: 0 }}>
+      <CardContent sx={{ p: 3 }}>
         {/* Header */}
         <Box sx={{ 
           display: 'flex', 
@@ -279,44 +280,44 @@ const LowStockDashboardWidget = ({ onViewAll, onCreateOrder }) => {
         {/* Statistics */}
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={6} sm={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: '#dc2626', fontWeight: 'bold' }}>
+            <Paper elevation={1} sx={{ p: 2, textAlign: 'center', borderRadius: '8px' }}>
+              <Typography variant="h5" sx={{ color: '#dc2626', fontWeight: 'bold' }}>
                 {stats.outOfStock}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 Out of Stock
               </Typography>
-            </Box>
+            </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: '#dc2626', fontWeight: 'bold' }}>
+            <Paper elevation={1} sx={{ p: 2, textAlign: 'center', borderRadius: '8px' }}>
+              <Typography variant="h5" sx={{ color: '#dc2626', fontWeight: 'bold' }}>
                 {stats.critical}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 Critical
               </Typography>
-            </Box>
+            </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: '#d97706', fontWeight: 'bold' }}>
+            <Paper elevation={1} sx={{ p: 2, textAlign: 'center', borderRadius: '8px' }}>
+              <Typography variant="h5" sx={{ color: '#d97706', fontWeight: 'bold' }}>
                 {stats.reorderNeeded}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 Reorder Needed
               </Typography>
-            </Box>
+            </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: '#3b82f6', fontWeight: 'bold' }}>
+            <Paper elevation={1} sx={{ p: 2, textAlign: 'center', borderRadius: '8px' }}>
+              <Typography variant="h5" sx={{ color: '#3b82f6', fontWeight: 'bold' }}>
                 {stats.pendingOrders}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 Pending Orders
               </Typography>
-            </Box>
+            </Paper>
           </Grid>
         </Grid>
 
