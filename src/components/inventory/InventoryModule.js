@@ -168,9 +168,29 @@ export default function InventoryModule({
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-              COREERP - Inventory
-            </Typography>
+            <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
+              <img 
+                src="/images/npk-logo.png" 
+                alt="NPK Pharmacy" 
+                style={{ 
+                  height: '40px',
+                  width: 'auto',
+                  marginRight: '12px',
+                  borderRadius: '6px',
+                  objectFit: 'contain'
+                }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'inline-flex';
+                }}
+              />
+              <Typography variant="h6" noWrap component="div" sx={{ 
+                fontWeight: 'bold',
+                color: '#1e3a8a'
+              }}>
+                NPK Pharmacy - Inventory
+              </Typography>
+            </Box>
           </Toolbar>
         </AppBar>
       )}
@@ -204,16 +224,32 @@ export default function InventoryModule({
             borderBottom: '1px solid rgba(255,255,255,0.15)'
           }}
         >
+          <img 
+            src="/images/npk-logo.png" 
+            alt="NPK Pharmacy" 
+            style={{ 
+              height: '60px',
+              width: 'auto',
+              marginBottom: '8px',
+              borderRadius: '8px',
+              objectFit: 'contain'
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'block';
+            }}
+          />
           <Typography
-            variant="h5"
+            variant="h6"
             sx={{
               fontWeight: 'bold',
               letterSpacing: '0.5px',
               color: '#ffffff',
-              mb: 1
+              mb: 1,
+              display: 'none'
             }}
           >
-            COREERP
+            NPK Pharmacy
           </Typography>
           <Chip 
             label="INVENTORY MODULE" 
