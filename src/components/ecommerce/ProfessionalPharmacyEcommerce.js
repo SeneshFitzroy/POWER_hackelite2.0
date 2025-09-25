@@ -152,21 +152,23 @@ const professionalProducts = [
   },
   {
     id: 3,
-    name: 'SENSATION STRAWBERRY CONDOM',
-    brand: 'SENSATION',
-    category: 'personal-care',
-    price: 150.00,
-    originalPrice: 180.00,
+    name: 'Ibuprofen 400mg Tablets',
+    brand: 'ADVIL',
+    category: 'medicine',
+    price: 420.00,
+    originalPrice: 480.00,
     images: [
-      'https://images.unsplash.com/photo-1576671081837-49000212a370?w=400&h=400&fit=crop'
+      'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop'
     ],
-    rating: 4.5,
-    reviewCount: 67,
-    description: 'Premium quality condoms with strawberry flavor for enhanced experience.',
+    rating: 4.8,
+    reviewCount: 342,
+    description: 'Fast-acting anti-inflammatory pain reliever for headaches, muscle pain, and fever reduction.',
     inStock: true,
-    stockCount: 89,
-    features: ['Premium Quality', 'Flavored', 'Safe', 'Tested'],
-    reviews: []
+    stockCount: 156,
+    features: ['Anti-inflammatory', 'Pain Relief', 'Fever Reduction', 'Fast Acting'],
+    reviews: [
+      { id: 1, user: 'Dr. Johnson', rating: 5, comment: 'Excellent pain relief medication. Very effective for inflammation.', date: '2025-09-24', verified: true }
+    ]
   },
   {
     id: 4,
@@ -1214,7 +1216,24 @@ const ProfessionalPharmacyEcommerce = () => {
               </Badge>
             </IconButton>
 
-            <IconButton color="inherit" onClick={() => setCartDrawerOpen(true)}>
+            <IconButton 
+              color="inherit" 
+              onClick={() => {
+                try {
+                  setCartDrawerOpen(true);
+                } catch (error) {
+                  console.error('Cart open error:', error);
+                  showSnackbar('Error opening cart', 'error');
+                }
+              }}
+              sx={{
+                '&:hover': {
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  transform: 'scale(1.05)'
+                },
+                transition: 'all 0.2s ease'
+              }}
+            >
               <Badge badgeContent={cartItemCount} color="error">
                 <ShoppingCartIcon />
               </Badge>
@@ -1287,15 +1306,24 @@ const ProfessionalPharmacyEcommerce = () => {
           <IconButton
             onClick={(e) => {
               e.stopPropagation();
-              toggleWishlist(product);
-              showSnackbar(`${product.name} ${isInWishlist ? 'removed from' : 'added to'} wishlist`);
+              try {
+                toggleWishlist(product);
+                showSnackbar(`${product.name} ${isInWishlist ? 'removed from' : 'added to'} wishlist`);
+              } catch (error) {
+                console.error('Wishlist toggle error:', error);
+                showSnackbar(`Error updating wishlist for ${product.name}`, 'error');
+              }
             }}
             sx={{
               position: 'absolute',
               top: 8,
               right: 8,
               backgroundColor: 'rgba(255,255,255,0.9)',
-              '&:hover': { backgroundColor: 'white' }
+              '&:hover': { 
+                backgroundColor: 'white',
+                transform: 'scale(1.1)'
+              },
+              transition: 'all 0.2s ease'
             }}
           >
             {isInWishlist ? (
@@ -1345,8 +1373,13 @@ const ProfessionalPharmacyEcommerce = () => {
             variant="outlined"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedProduct(product);
-              setProductDetailOpen(true);
+              try {
+                setSelectedProduct(product);
+                setProductDetailOpen(true);
+              } catch (error) {
+                console.error('View product error:', error);
+                showSnackbar(`Error viewing ${product.name}`, 'error');
+              }
             }}
             sx={{
               borderRadius: '8px',
@@ -1357,8 +1390,11 @@ const ProfessionalPharmacyEcommerce = () => {
               fontWeight: 'bold',
               '&:hover': {
                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                border: '1px solid #1e3a8a'
-              }
+                border: '1px solid #1e3a8a',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 2px 8px rgba(59, 130, 246, 0.2)'
+              },
+              transition: 'all 0.2s ease'
             }}
           >
             View More
@@ -1367,8 +1403,13 @@ const ProfessionalPharmacyEcommerce = () => {
             variant="contained"
             onClick={(e) => {
               e.stopPropagation();
-              addToCart(product);
-              showSnackbar(`${product.name} added to cart!`);
+              try {
+                addToCart(product);
+                showSnackbar(`${product.name} added to cart!`);
+              } catch (error) {
+                console.error('Add to cart error:', error);
+                showSnackbar(`Error adding ${product.name} to cart`, 'error');
+              }
             }}
             disabled={!product.inStock}
             sx={{
@@ -1376,7 +1417,13 @@ const ProfessionalPharmacyEcommerce = () => {
               py: 1,
               flex: 1,
               background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #0d47a1 0%, #1e3a8a 100%)',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 4px 12px rgba(30, 58, 138, 0.4)'
+              },
+              transition: 'all 0.2s ease'
             }}
           >
             Add to Cart
@@ -1604,18 +1651,33 @@ const ProfessionalPharmacyEcommerce = () => {
           <Button
             variant="contained"
             onClick={() => {
-              for (let i = 0; i < quantity; i++) {
-                addToCart(selectedProduct);
+              try {
+                for (let i = 0; i < quantity; i++) {
+                  addToCart(selectedProduct);
+                }
+                showSnackbar(`${quantity} x ${selectedProduct.name} added to cart!`);
+                setProductDetailOpen(false);
+                setQuantity(1);
+              } catch (error) {
+                console.error('Add to cart (detail) error:', error);
+                showSnackbar(`Error adding ${selectedProduct.name} to cart`, 'error');
               }
-              showSnackbar(`${quantity} x ${selectedProduct.name} added to cart!`);
-              setProductDetailOpen(false);
-              setQuantity(1);
             }}
             disabled={!selectedProduct.inStock}
             sx={{
               background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
               fontWeight: 'bold',
-              px: 4
+              px: 4,
+              '&:hover': {
+                background: 'linear-gradient(135deg, #0d47a1 0%, #1e3a8a 100%)',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 4px 12px rgba(30, 58, 138, 0.4)'
+              },
+              '&:disabled': {
+                background: '#ccc',
+                color: '#666'
+              },
+              transition: 'all 0.2s ease'
             }}
           >
             Add {quantity} to Cart
@@ -1676,14 +1738,42 @@ const ProfessionalPharmacyEcommerce = () => {
                       <Box display="flex" alignItems="center" gap={1} sx={{ mt: 1 }}>
                         <IconButton
                           size="small"
-                          onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                          onClick={() => {
+                            try {
+                              updateCartQuantity(item.id, item.quantity - 1);
+                            } catch (error) {
+                              console.error('Cart quantity decrease error:', error);
+                              showSnackbar('Error updating cart quantity', 'error');
+                            }
+                          }}
+                          sx={{
+                            '&:hover': {
+                              backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                              transform: 'scale(1.1)'
+                            },
+                            transition: 'all 0.2s ease'
+                          }}
                         >
                           <RemoveIcon />
                         </IconButton>
-                        <Typography>{item.quantity}</Typography>
+                        <Typography sx={{ fontWeight: 'bold', minWidth: 30, textAlign: 'center' }}>{item.quantity}</Typography>
                         <IconButton
                           size="small"
-                          onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                          onClick={() => {
+                            try {
+                              updateCartQuantity(item.id, item.quantity + 1);
+                            } catch (error) {
+                              console.error('Cart quantity increase error:', error);
+                              showSnackbar('Error updating cart quantity', 'error');
+                            }
+                          }}
+                          sx={{
+                            '&:hover': {
+                              backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                              transform: 'scale(1.1)'
+                            },
+                            transition: 'all 0.2s ease'
+                          }}
                         >
                           <AddIcon />
                         </IconButton>
@@ -1696,7 +1786,22 @@ const ProfessionalPharmacyEcommerce = () => {
                       <IconButton
                         color="error"
                         size="small"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => {
+                          try {
+                            removeFromCart(item.id);
+                            showSnackbar(`${item.name} removed from cart`, 'success');
+                          } catch (error) {
+                            console.error('Remove from cart error:', error);
+                            showSnackbar(`Error removing ${item.name} from cart`, 'error');
+                          }
+                        }}
+                        sx={{
+                          '&:hover': {
+                            backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                            transform: 'scale(1.1)'
+                          },
+                          transition: 'all 0.2s ease'
+                        }}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -2134,10 +2239,23 @@ const ProfessionalPharmacyEcommerce = () => {
               
               <Button
                 variant="contained"
-                onClick={handleNext}
+                onClick={() => {
+                  try {
+                    handleNext();
+                  } catch (error) {
+                    console.error('Checkout next error:', error);
+                    showSnackbar('Error proceeding with checkout', 'error');
+                  }
+                }}
                 sx={{
                   background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-                  px: 4
+                  px: 4,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #0d47a1 0%, #1e3a8a 100%)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 4px 12px rgba(30, 58, 138, 0.4)'
+                  },
+                  transition: 'all 0.2s ease'
                 }}
               >
                 {activeStep === steps.length - 1 ? 'Place Order' : 'Next'}

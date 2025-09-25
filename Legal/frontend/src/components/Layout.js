@@ -112,17 +112,13 @@ const Layout = ({ children }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3, width: '100%', py: 3 }}>
           <img 
             src="/images/npk-logo.png" 
-            alt="NPK New Pharmacy Kalutara" 
+            alt="NPK Pharmacy" 
             style={{ 
-              height: '180px', 
-              width: 'auto', 
-              border: '6px solid #000000',
-              borderRadius: '16px',
-              padding: '20px',
-              backgroundColor: 'white',
-              objectFit: 'contain',
-              boxShadow: '0 8px 16px rgba(0,0,0,0.5)',
-              maxWidth: '95%'
+              height: '60px',
+              width: 'auto',
+              marginBottom: '8px',
+              borderRadius: '8px',
+              objectFit: 'contain'
             }}
             onError={(e) => {
               e.target.style.display = 'none';
@@ -244,17 +240,13 @@ const Layout = ({ children }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>
             <img 
               src="/images/npk-logo.png" 
-              alt="NPK New Pharmacy Kalutara" 
+              alt="NPK Pharmacy" 
               style={{ 
-                height: '90px', 
-                width: 'auto', 
-                border: '5px solid #000000',
-                borderRadius: '10px',
-                padding: '10px',
-                backgroundColor: 'white',
-                objectFit: 'contain',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.4)',
-                maxWidth: '85%'
+                height: '60px',
+                width: 'auto',
+                marginBottom: '8px',
+                borderRadius: '8px',
+                objectFit: 'contain'
               }}
               onError={(e) => {
                 e.target.style.display = 'none';
