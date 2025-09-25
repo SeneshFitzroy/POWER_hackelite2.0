@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -49,6 +50,7 @@ function TabPanel({ children, value, index, ...other }) {
 }
 
 export default function LegalModule() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -84,12 +86,39 @@ export default function LegalModule() {
   };
 
   const handleLogout = () => {
-    // Clear any stored data
-    localStorage.clear();
-    sessionStorage.clear();
+    console.log('Legal Logout initiated - Enhanced logout system');
     
-    // Navigate back to login screen
-    window.location.href = '/?screen=login';
+    // Clear only legal-specific data, not main authentication
+    localStorage.removeItem('legalSession');
+    localStorage.removeItem('currentLegalView');
+    sessionStorage.removeItem('legalData');
+    
+    // Set multiple dashboard access flags for maximum reliability
+    localStorage.setItem('dashboardAccess', 'true');
+    localStorage.setItem('forceDashboard', 'true');
+    localStorage.setItem('skipAuth', 'true');
+    localStorage.setItem('directToDashboard', 'true');
+    
+    console.log('Legal logout: All dashboard flags set');
+    
+    // Force immediate redirect to prevent any routing glitches
+    try {
+      // Try navigate first (if available)
+      navigate('/?screen=dashboard', { replace: true });
+      console.log('Legal logout: Navigate called successfully');
+    } catch (error) {
+      console.log('Legal logout: Navigate failed, using window.location');
+      // Fallback to window.location with forced reload
+      window.location.replace('/?screen=dashboard');
+    }
+    
+    // Additional safety measure - set a timeout to ensure redirect happens
+    setTimeout(() => {
+      if (window.location.pathname !== '/' || !window.location.search.includes('screen=dashboard')) {
+        console.log('Legal logout: Timeout redirect triggered');
+        window.location.replace('/?screen=dashboard');
+      }
+    }, 100);
   };
 
   const drawerContent = (

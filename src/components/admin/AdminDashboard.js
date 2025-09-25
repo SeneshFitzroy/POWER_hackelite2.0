@@ -287,15 +287,28 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = () => {
+    console.log('Admin Logout initiated - Enhanced logout system');
+    
     // Clear only admin-specific session data, not main authentication
     localStorage.removeItem('adminSession');
     localStorage.removeItem('currentAdminView');
+    sessionStorage.removeItem('adminData');
+    
+    // Set multiple dashboard access flags for maximum reliability
+    localStorage.setItem('dashboardAccess', 'true');
+    localStorage.setItem('forceDashboard', 'true');
+    localStorage.setItem('skipAuth', 'true');
+    localStorage.setItem('directToDashboard', 'true');
+    
+    console.log('Admin logout: All dashboard flags set');
     
     // Show logout confirmation
     toast.success('Logged out successfully!');
     
-    // Navigate back to ERP Dashboard
-    window.location.href = '/?screen=dashboard';
+    // Force immediate redirect to prevent any routing glitches
+    setTimeout(() => {
+      window.location.replace('/?screen=dashboard');
+    }, 100);
   };
 
   const menuItems = [

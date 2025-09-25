@@ -119,13 +119,25 @@ export default function ColdChainModule() {
   const sidebarWidth = 280;
 
   const handleLogout = () => {
+    console.log('Cold Chain Logout initiated - Enhanced logout system');
+    
     // Clear only cold chain-specific data, not main authentication
     localStorage.removeItem('coldChainSession');
     localStorage.removeItem('currentColdChainView');
     sessionStorage.removeItem('coldChainData');
     
-    // Navigate back to ERP Dashboard
-    window.location.href = '/?screen=dashboard';
+    // Set multiple dashboard access flags for maximum reliability
+    localStorage.setItem('dashboardAccess', 'true');
+    localStorage.setItem('forceDashboard', 'true');
+    localStorage.setItem('skipAuth', 'true');
+    localStorage.setItem('directToDashboard', 'true');
+    
+    console.log('Cold Chain logout: All dashboard flags set');
+    
+    // Force immediate redirect to prevent any routing glitches
+    setTimeout(() => {
+      window.location.replace('/?screen=dashboard');
+    }, 100);
   };
 
   const navigationItems = [
