@@ -258,21 +258,6 @@ export default function SalesOrders({ dateFilter }) {
           <Typography variant="h5" fontWeight="bold" color="#000000">
             Sales Orders Management
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={() => setShowOrderDialog(true)}
-            sx={{
-              backgroundColor: '#000000',
-              color: 'white',
-              fontWeight: 'bold',
-              '&:hover': {
-                backgroundColor: '#333333'
-              }
-            }}
-          >
-            Create New Sales Order
-          </Button>
         </Box>
         
         <TextField

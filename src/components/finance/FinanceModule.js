@@ -105,16 +105,32 @@ export default function FinanceModule() {
             borderBottom: '1px solid rgba(255,255,255,0.15)'
           }}
         >
+          <img 
+            src="/images/npk-logo.png" 
+            alt="NPK Pharmacy" 
+            style={{ 
+              height: '60px',
+              width: 'auto',
+              marginBottom: '8px',
+              borderRadius: '8px',
+              objectFit: 'contain'
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'block';
+            }}
+          />
           <Typography
-            variant="h5"
+            variant="h6"
             sx={{
               fontWeight: 'bold',
               letterSpacing: '0.5px',
               color: '#ffffff',
-              mb: 1
+              mb: 1,
+              display: 'none'
             }}
           >
-            COREERP
+            NPK Pharmacy
           </Typography>
           <Chip 
             label="FINANCE MODULE" 

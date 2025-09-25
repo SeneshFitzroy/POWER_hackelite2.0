@@ -125,17 +125,21 @@ export default function SalesModule() {
           borderBottom: '1px solid rgba(255,255,255,0.15)'
         }}
       >
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 'bold',
-            letterSpacing: '0.5px',
-            color: '#ffffff',
-            mb: 1
-          }}
-        >
-          COREERP
-        </Typography>
+        <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
+          <img 
+            src="/images/npk-logo.png" 
+            alt="NPK Pharmacy" 
+            style={{ 
+              height: '40px',
+              width: 'auto',
+              borderRadius: '6px',
+              objectFit: 'contain'
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        </Box>
         <Chip 
           label="SALES MODULE" 
           variant="outlined" 
@@ -311,9 +315,11 @@ export default function SalesModule() {
                 }
               }}
             >
-              <MenuItem value="daily">Daily</MenuItem>
-              <MenuItem value="weekly">Weekly</MenuItem>
-              <MenuItem value="monthly">Monthly</MenuItem>
+              <MenuItem value="daily">Today</MenuItem>
+              <MenuItem value="weekly">Last 7 Days</MenuItem>
+              <MenuItem value="monthly">Last 30 Days</MenuItem>
+              <MenuItem value="quarterly">Last 90 Days</MenuItem>
+              <MenuItem value="yearly">Last Year</MenuItem>
             </Select>
           </FormControl>
         </Box>

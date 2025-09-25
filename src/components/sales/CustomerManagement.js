@@ -73,6 +73,225 @@ export default function CustomerManagement({ dateFilter }) {
   const [medicalNotes, setMedicalNotes] = useState('');
   const [status, setStatus] = useState('Active');
 
+  // Sri Lankan customer data for auto-initialization - ENHANCED WITH MORE CUSTOMERS
+  const sriLankanCustomers = [
+    {
+      name: 'Mandira De Silva',
+      phoneNumber: '0772123456',
+      email: 'mandira.desilva@gmail.com',
+      address: '45, Galle Road, Colombo 03',
+      nic: '198756789123',
+      age: '37',
+      dateOfBirth: '1987-03-15',
+      gender: 'Female',
+      bloodGroup: 'O+',
+      medicalNotes: 'Hypertension, Regular blood pressure monitoring',
+      status: 'Active',
+      totalPurchases: 287500,
+      lastVisit: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Ranil Wickremesinghe',
+      phoneNumber: '0712345678',
+      email: 'ranil.w@outlook.com',
+      address: '67, Ward Place, Colombo 07',
+      nic: '195412345678',
+      age: '70',
+      dateOfBirth: '1954-03-24',
+      gender: 'Male',
+      bloodGroup: 'A+',
+      medicalNotes: 'Diabetes, Regular medication required',
+      status: 'Active',
+      totalPurchases: 456750,
+      lastVisit: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 210 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Sachini Perera',
+      phoneNumber: '0768901234',
+      email: 'sachini.perera@yahoo.com',
+      address: '123, Kandy Road, Kadawatha',
+      nic: '199234567890',
+      age: '32',
+      dateOfBirth: '1992-07-18',
+      gender: 'Female',
+      bloodGroup: 'B+',
+      medicalNotes: 'Asthma, Inhaler prescribed',
+      status: 'Active',
+      totalPurchases: 198400,
+      lastVisit: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 150 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Nimal Fernando',
+      phoneNumber: '0714567890',
+      email: 'nimal.fernando@hotmail.com',
+      address: '89, Negombo Road, Wattala',
+      nic: '196789012345',
+      age: '57',
+      dateOfBirth: '1967-11-05',
+      gender: 'Male',
+      bloodGroup: 'AB+',
+      medicalNotes: 'Heart condition, Regular checkup required',
+      status: 'Active',
+      totalPurchases: 523600,
+      lastVisit: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 300 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Kumari Jayawardena',
+      phoneNumber: '0776543210',
+      email: 'kumari.j@gmail.com',
+      address: '234, High Level Road, Nugegoda',
+      nic: '197567890123',
+      age: '49',
+      dateOfBirth: '1975-01-20',
+      gender: 'Female',
+      bloodGroup: 'O-',
+      medicalNotes: 'Migraine, Pain medication as needed',
+      status: 'Active',
+      totalPurchases: 345200,
+      lastVisit: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 120 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Pradeep Silva',
+      phoneNumber: '0718765432',
+      email: 'pradeep.silva@slt.lk',
+      address: '56, Main Street, Maharagama',
+      nic: '198345678901',
+      age: '41',
+      dateOfBirth: '1983-09-12',
+      gender: 'Male',
+      bloodGroup: 'A-',
+      medicalNotes: 'Allergic to penicillin, Alternative antibiotics required',
+      status: 'Active',
+      totalPurchases: 167800,
+      lastVisit: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Chaminda Vaas',
+      phoneNumber: '0778889999',
+      email: 'chaminda.vaas@cricket.lk',
+      address: '88, Matara Road, Galle',
+      nic: '197712345678',
+      age: '47',
+      dateOfBirth: '1977-08-27',
+      gender: 'Male',
+      bloodGroup: 'B+',
+      medicalNotes: 'Sports injury recovery, Pain management required',
+      status: 'Active',
+      totalPurchases: 234700,
+      lastVisit: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 200 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Anoma Dissanayake',
+      phoneNumber: '0751112233',
+      email: 'anoma.d@teacher.gov.lk',
+      address: '156, Temple Road, Kandy',
+      nic: '198812345678',
+      age: '36',
+      dateOfBirth: '1988-12-10',
+      gender: 'Female',
+      bloodGroup: 'A+',
+      medicalNotes: 'Thyroid condition, Regular medication required',
+      status: 'Active',
+      totalPurchases: 412600,
+      lastVisit: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 165 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Mahela Jayawardene',
+      phoneNumber: '0769876543',
+      email: 'mahela.j@business.lk',
+      address: '21, Marine Drive, Colombo 06',
+      nic: '197705123456',
+      age: '47',
+      dateOfBirth: '1977-05-27',
+      gender: 'Male',
+      bloodGroup: 'O-',
+      medicalNotes: 'High cholesterol, Dietary supplements prescribed',
+      status: 'Active',
+      totalPurchases: 567800,
+      lastVisit: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 330 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Sanduni Wickramasinghe',
+      phoneNumber: '0753334444',
+      email: 'sanduni.w@fashion.lk',
+      address: '77, Duplication Road, Colombo 04',
+      nic: '199556789012',
+      age: '29',
+      dateOfBirth: '1995-11-22',
+      gender: 'Female',
+      bloodGroup: 'AB-',
+      medicalNotes: 'Skin allergies, Antihistamines as needed',
+      status: 'Active',
+      totalPurchases: 125400,
+      lastVisit: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 75 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Lasith Malinga',
+      phoneNumber: '0766667777',
+      email: 'lasith.m@sports.lk',
+      address: '99, Baseline Road, Colombo 09',
+      nic: '197408123456',
+      age: '50',
+      dateOfBirth: '1974-08-28',
+      gender: 'Male',
+      bloodGroup: 'O+',
+      medicalNotes: 'Joint pain, Physiotherapy supplements',
+      status: 'Active',
+      totalPurchases: 398500,
+      lastVisit: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 245 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Dilani Gunasekara',
+      phoneNumber: '0758889999',
+      email: 'dilani.g@health.gov.lk',
+      address: '33, Hospital Road, Negombo',
+      nic: '198303123456',
+      age: '41',
+      dateOfBirth: '1983-03-14',
+      gender: 'Female',
+      bloodGroup: 'B-',
+      medicalNotes: 'Iron deficiency, Regular supplements required',
+      status: 'Active',
+      totalPurchases: 289700,
+      lastVisit: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 135 * 24 * 60 * 60 * 1000)
+    }
+  ];
+
+  // Auto-initialize customers if database is empty
+  const initializeCustomers = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, 'customers'));
+      if (snapshot.empty) {
+        console.log('Auto-initializing Sri Lankan customer data...');
+        
+        for (const customer of sriLankanCustomers) {
+          await addDoc(collection(db, 'customers'), {
+            ...customer,
+            createdAt: Timestamp.fromDate(customer.createdAt),
+            lastVisit: Timestamp.fromDate(customer.lastVisit)
+          });
+        }
+        
+        console.log('Sri Lankan customer data initialized successfully!');
+        await loadCustomers(); // Reload to show new data
+      }
+    } catch (error) {
+      console.error('Error initializing customer data:', error);
+    }
+  };
+
   // Load customers from Firebase
   const loadCustomers = async () => {
     try {
@@ -92,7 +311,11 @@ export default function CustomerManagement({ dateFilter }) {
   };
 
   useEffect(() => {
-    loadCustomers();
+    const initializeData = async () => {
+      await initializeCustomers();
+      await loadCustomers();
+    };
+    initializeData();
   }, []);
 
   useEffect(() => {
