@@ -109,11 +109,12 @@ export default function FinanceModule() {
             src="/images/npk-logo.png" 
             alt="NPK Pharmacy" 
             style={{ 
-              height: '60px',
+              height: '80px',
               width: 'auto',
-              marginBottom: '8px',
-              borderRadius: '8px',
-              objectFit: 'contain'
+              marginBottom: '10px',
+              borderRadius: '10px',
+              objectFit: 'contain',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
             onError={(e) => {
               e.target.style.display = 'none';
