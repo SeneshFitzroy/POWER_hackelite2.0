@@ -28,6 +28,7 @@ import ERPDashboard from './ERPDashboard';
 import InventoryModule from './inventory/InventoryModule';
 import RegulatoryCompliance from './inventory/RegulatoryCompliance';
 import ERPDeliveryModule from './ERPDeliveryModule';
+import LegalModule from './legal/LegalModule';
 // import ColdChainModule from './coldchain/ColdChainModule';
 
 // Shared Components
@@ -141,6 +142,18 @@ const ERPApp = () => {
             onModuleChange={handleModuleChange}
             onNotification={showNotification}
           />
+        );
+      
+      case 'legal':
+        return (
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            minHeight: '100vh',
+            backgroundColor: '#f8fafc'
+          }}>
+            <LegalModule />
+          </Box>
         );
       
       case 'coldchain':

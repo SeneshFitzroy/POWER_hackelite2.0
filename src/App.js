@@ -17,6 +17,7 @@ import AdminDashboard from './components/admin/AdminDashboard'
 import AdminDeliveryManagement from './components/admin/AdminDeliveryManagement'
 import { AuthProvider } from './contexts/AuthContext'
 import { RoleProvider } from './contexts/RoleContext'
+import LegalModule from './components/legal/LegalModule'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
@@ -326,15 +327,7 @@ function App() {
               minHeight: '100vh',
               backgroundColor: '#f8fafc'
             }}>
-              <iframe 
-                src="/legal/index.html" 
-                title="Legal Module"
-                style={{ 
-                  flex: 1, 
-                  border: 'none',
-                  width: '100%'
-                }}
-              />
+              <LegalModule />
             </Box>
           } />
           <Route path="/coldchain" element={
