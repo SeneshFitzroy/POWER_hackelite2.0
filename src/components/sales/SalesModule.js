@@ -130,9 +130,10 @@ export default function SalesModule() {
             src="/images/npk-logo.png" 
             alt="NPK Pharmacy" 
             style={{ 
-              height: '40px',
+              height: '60px',
               width: 'auto',
-              borderRadius: '6px',
+              marginBottom: '8px',
+              borderRadius: '8px',
               objectFit: 'contain'
             }}
             onError={(e) => {

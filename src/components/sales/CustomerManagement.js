@@ -461,12 +461,14 @@ export default function CustomerManagement({ dateFilter }) {
     }
   ];
 
-  // Auto-initialize customers if database is empty
+  // 🚀 AUTO-INITIALIZE CUSTOMERS - FULLY AUTOMATED
   const initializeCustomers = async () => {
     try {
       const snapshot = await getDocs(collection(db, 'customers'));
+      
       if (snapshot.empty) {
-        console.log('Auto-initializing Sri Lankan customer data...');
+        // Database is empty - Add all Sri Lankan customers
+        console.log('🔄 Auto-initializing Sri Lankan customer database...');
         
         for (const customer of sriLankanCustomers) {
           await addDoc(collection(db, 'customers'), {
@@ -476,11 +478,63 @@ export default function CustomerManagement({ dateFilter }) {
           });
         }
         
-        console.log('Sri Lankan customer data initialized successfully!');
-        await loadCustomers(); // Reload to show new data
+        console.log('✅ Sri Lankan customer data initialized successfully!');
+        
+      } else {
+        // Database has customers - Check and update missing totalPurchases
+        console.log('🔄 Checking existing customers for purchase amount updates...');
+        
+        const existingCustomers = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        
+        let updatedCount = 0;
+        
+        for (const customer of existingCustomers) {
+          // Update customers without totalPurchases or with zero amounts
+          if (!customer.totalPurchases || customer.totalPurchases === 0) {
+            // Find matching Sri Lankan customer data or assign random amount
+            const matchingSriLankanCustomer = sriLankanCustomers.find(
+              sc => sc.name.toLowerCase() === customer.name.toLowerCase() || 
+                    sc.phoneNumber === customer.phoneNumber
+            );
+            
+            const totalPurchases = matchingSriLankanCustomer 
+              ? matchingSriLankanCustomer.totalPurchases
+              : Math.floor(Math.random() * (800000 - 150000) + 150000); // Random between 150k-800k
+            
+            await updateDoc(doc(db, 'customers', customer.id), {
+              totalPurchases: totalPurchases,
+              lastVisit: customer.lastVisit || Timestamp.fromDate(new Date(Date.now() - Math.floor(Math.random() * 10) * 24 * 60 * 60 * 1000))
+            });
+            
+            updatedCount++;
+          }
+        }
+        
+        // Add new customers that don't exist
+        const existingNames = existingCustomers.map(c => c.name.toLowerCase());
+        const newCustomersToAdd = sriLankanCustomers.filter(
+          sc => !existingNames.includes(sc.name.toLowerCase())
+        );
+        
+        for (const customer of newCustomersToAdd) {
+          await addDoc(collection(db, 'customers'), {
+            ...customer,
+            createdAt: Timestamp.fromDate(customer.createdAt),
+            lastVisit: Timestamp.fromDate(customer.lastVisit)
+          });
+        }
+        
+        console.log(`✅ Updated ${updatedCount} existing customers with purchase amounts`);
+        console.log(`✅ Added ${newCustomersToAdd.length} new Sri Lankan customers`);
       }
+      
+      await loadCustomers(); // Reload to show updated data
+      
     } catch (error) {
-      console.error('Error initializing customer data:', error);
+      console.error('❌ Error initializing customer data:', error);
     }
   };
 
