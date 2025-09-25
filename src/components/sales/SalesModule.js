@@ -95,12 +95,20 @@ export default function SalesModule() {
   };
 
   const handleLogout = () => {
+    console.log('Sales Logout initiated');
+    
     // Clear only sales-specific data, not main authentication
     localStorage.removeItem('salesSession');
     localStorage.removeItem('currentSalesView');
     sessionStorage.removeItem('salesData');
     
-    // Navigate back to ERP Dashboard
+    // Set dashboard access flags to ensure direct navigation to ERP Dashboard
+    localStorage.setItem('dashboardAccess', 'true');
+    localStorage.setItem('forceDashboard', 'true');
+    
+    console.log('Sales logout: Dashboard access flags set, navigating to dashboard');
+    
+    // Navigate back to ERP Dashboard with forced dashboard flag
     window.location.href = '/?screen=dashboard';
   };
 
