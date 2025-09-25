@@ -1825,13 +1825,25 @@ const ProfessionalPharmacyEcommerce = () => {
                 variant="contained"
                 size="large"
                 onClick={() => {
-                  setCartDrawerOpen(false);
-                  setCurrentView('checkout');
+                  try {
+                    setCartDrawerOpen(false);
+                    setCurrentView('checkout');
+                    showSnackbar('Proceeding to checkout...', 'info');
+                  } catch (error) {
+                    console.error('Checkout navigation error:', error);
+                    showSnackbar('Error proceeding to checkout', 'error');
+                  }
                 }}
                 sx={{
                   borderRadius: '8px',
                   py: 1.5,
-                  background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)'
+                  background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #0d47a1 0%, #1e3a8a 100%)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 4px 12px rgba(30, 58, 138, 0.4)'
+                  },
+                  transition: 'all 0.2s ease'
                 }}
               >
                 Proceed to Checkout

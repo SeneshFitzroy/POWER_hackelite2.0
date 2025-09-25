@@ -108,8 +108,9 @@ const Layout = ({ children }) => {
 
   const drawerContent = (
     <DrawerPaper elevation={0}>
-      <Box sx={{ p: 2, pb: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3, width: '100%', py: 3 }}>
+      {/* NPK Logo Header Section */}
+      <Box sx={{ p: 2, pb: 1, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mb: 2, width: '100%', py: 2 }}>
           <img 
             src="/images/npk-logo.png" 
             alt="NPK Pharmacy" 
@@ -122,21 +123,42 @@ const Layout = ({ children }) => {
             }}
             onError={(e) => {
               e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'inline-block';
+              e.target.nextSibling.style.display = 'flex';
             }}
           />
-          <Typography 
-            variant="h4" 
+          <Box 
             sx={{ 
-              color: 'white', 
-              fontWeight: 'bold',
               display: 'none', // Hidden by default, shows if logo fails
-              fontSize: '1.6rem',
-              textAlign: 'center'
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
-            NPK Pharmacy
-          </Typography>
+            <Typography 
+              variant="h5" 
+              sx={{ 
+                color: 'white', 
+                fontWeight: 'bold',
+                fontSize: '1.4rem',
+                textAlign: 'center',
+                mb: 0.5
+              }}
+            >
+              NPK PHARMACY
+            </Typography>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: 'rgba(255,255,255,0.8)', 
+                fontSize: '0.75rem',
+                textAlign: 'center',
+                textTransform: 'uppercase',
+                letterSpacing: '1px'
+              }}
+            >
+              Legal Module
+            </Typography>
+          </Box>
         </Box>
       </Box>
       
@@ -250,21 +272,40 @@ const Layout = ({ children }) => {
               }}
               onError={(e) => {
                 e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'inline-block';
+                e.target.nextSibling.style.display = 'inline-flex';
               }}
             />
-            <Typography 
-              variant="h5" 
+            <Box 
               sx={{ 
-                color: COLORS.darkGray, 
-                fontWeight: 'bold',
-                display: 'none',
-                fontSize: '1.3rem',
-                textAlign: 'center'
+                display: 'none', // Hidden by default, shows if logo fails
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
-              NPK Pharmacy
-            </Typography>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  color: COLORS.darkGray, 
+                  fontWeight: 'bold',
+                  fontSize: '1.2rem',
+                  textAlign: 'center'
+                }}
+              >
+                NPK PHARMACY
+              </Typography>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: COLORS.lighterGray, 
+                  fontSize: '0.7rem',
+                  textAlign: 'center',
+                  textTransform: 'uppercase'
+                }}
+              >
+                Legal Module
+              </Typography>
+            </Box>
           </Box>
         </Toolbar>
       </AppBar>
