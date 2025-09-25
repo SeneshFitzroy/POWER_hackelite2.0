@@ -77,6 +77,12 @@ const ERPNavigation = ({
       ]
     },
     {
+      id: 'legal',
+      label: 'Legal',
+      icon: <GavelIcon />,
+      permission: 'view_legal'
+    },
+    {
       id: 'compliance',
       label: 'Regulatory Compliance',
       icon: <GavelIcon />,
