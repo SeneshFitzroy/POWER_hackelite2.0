@@ -276,9 +276,8 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <ErrorBoundary>
-          <Routes>
+      <ErrorBoundary>
+        <Routes>
           <Route path="/inventory" element={<InventoryModule />} />
           <Route path="/pos" element={
             <Box sx={{ height: '100vh', overflow: 'hidden' }}>
@@ -296,14 +295,16 @@ function App() {
             </Box>
           } />
           <Route path="/hr/*" element={
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              minHeight: '100vh',
-              backgroundColor: '#f8fafc'
-            }}>
-              <HRModule />
-            </Box>
+            <AuthProvider>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                minHeight: '100vh',
+                backgroundColor: '#f8fafc'
+              }}>
+                <HRModule />
+              </Box>
+            </AuthProvider>
           } />
           <Route path="/legal" element={
             <Box sx={{ 
@@ -354,22 +355,31 @@ function App() {
               <AdminDashboard />
             </Box>
           } />
-          <Route path="/ecommerce" element={<ProfessionalPharmacyEcommerce />} />
+          <Route path="/ecommerce" element={
+            <Box sx={{ 
+              height: '100vh', 
+              width: '100vw',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              zIndex: 9999,
+              backgroundColor: '#ffffff',
+              overflow: 'auto'
+            }}>
+              <ProfessionalPharmacyEcommerce />
+            </Box>
+          } />
           <Route path="/delivery" element={<DeliveryManagement />} />
           <Route path="/" element={
-            location.pathname === '/' ? (
-              <>
+              <AuthProvider>
                 {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
                 {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
                 {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onAdminAccess={handleAdminAccess} onLogout={handleLogout} />}
-                {currentScreen === 'ecommerce' && <ProfessionalPharmacyEcommerce />}
-              </>
-            ) : null
+              </AuthProvider>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ErrorBoundary>
-      </AuthProvider>
     </ThemeProvider>
   )
 }
