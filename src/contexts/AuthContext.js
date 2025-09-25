@@ -1,13 +1,22 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  sendPasswordResetEmail,
-  updateProfile
-} from 'firebase/auth';
-import { auth } from '../firebase/config';
+
+// Safely import Firebase functions with error handling
+let signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updateProfile, auth;
+
+try {
+  const firebaseAuth = require('firebase/auth');
+  signInWithEmailAndPassword = firebaseAuth.signInWithEmailAndPassword;
+  createUserWithEmailAndPassword = firebaseAuth.createUserWithEmailAndPassword;
+  signOut = firebaseAuth.signOut;
+  onAuthStateChanged = firebaseAuth.onAuthStateChanged;
+  sendPasswordResetEmail = firebaseAuth.sendPasswordResetEmail;
+  updateProfile = firebaseAuth.updateProfile;
+  
+  const firebaseConfig = require('../firebase/config');
+  auth = firebaseConfig.auth;
+} catch (error) {
+  console.error('Firebase import error:', error);
+}
 
 const AuthContext = createContext();
 
@@ -38,7 +47,21 @@ const USER_ROLES = {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    console.error('useAuth must be used within an AuthProvider - returning fallback context');
+    // Return a fallback context to prevent app crashes
+    return {
+      user: null,
+      userRole: null,
+      hasPermission: () => false,
+      signup: () => Promise.reject(new Error('Auth not initialized')),
+      login: () => Promise.reject(new Error('Auth not initialized')),
+      logout: () => Promise.resolve(),
+      resetPassword: () => Promise.reject(new Error('Auth not initialized')),
+      updateUserProfile: () => Promise.reject(new Error('Auth not initialized')),
+      loading: false,
+      error: new Error('Auth context not available'),
+      demoMode: true
+    };
   }
   return context;
 }
@@ -52,8 +75,13 @@ export function AuthProvider({ children }) {
 
   // Check if Firebase is properly configured
   const isFirebaseConfigured = () => {
-    return process.env.REACT_APP_FIREBASE_API_KEY && 
-           process.env.REACT_APP_FIREBASE_API_KEY !== 'your_api_key_here';
+    try {
+      return process.env.REACT_APP_FIREBASE_API_KEY && 
+             process.env.REACT_APP_FIREBASE_API_KEY !== 'your_api_key_here';
+    } catch (error) {
+      console.error('Error checking Firebase config:', error);
+      return false;
+    }
   };
 
   // Get user role information based on email
@@ -200,15 +228,17 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
+    // Always set loading to false initially to prevent context errors
+    setLoading(false);
+    
     if (!isFirebaseConfigured()) {
       console.warn('Firebase not configured, using demo mode');
       setDemoMode(true);
-      setLoading(false);
       return;
     }
 
     try {
-      return onAuthStateChanged(auth, (firebaseUser) => {
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         setUser(firebaseUser);
         
         // If user is logged in, get their role information
@@ -230,6 +260,8 @@ export function AuthProvider({ children }) {
         
         setLoading(false);
       });
+      
+      return unsubscribe;
 
     } catch (error) {
       console.error('Auth state change error:', error);

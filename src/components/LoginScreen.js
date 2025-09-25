@@ -12,7 +12,20 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [resetEmailSent, setResetEmailSent] = useState(false)
   const [resetLoading, setResetLoading] = useState(false)
 
-  const { login, resetPassword, demoMode } = useAuth()
+  // Use try-catch to handle auth context errors gracefully
+  let authContext;
+  try {
+    authContext = useAuth();
+  } catch (error) {
+    console.error('Auth context error in LoginScreen:', error);
+    authContext = {
+      login: () => Promise.reject(new Error('Auth not available')),
+      resetPassword: () => Promise.reject(new Error('Auth not available')),
+      demoMode: true
+    };
+  }
+  
+  const { login, resetPassword, demoMode } = authContext
 
   const validateForm = () => {
     const newErrors = {}

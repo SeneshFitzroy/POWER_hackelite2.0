@@ -276,8 +276,9 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <ErrorBoundary>
-        <Routes>
+      <AuthProvider>
+        <ErrorBoundary>
+          <Routes>
           <Route path="/inventory" element={<InventoryModule />} />
           <Route path="/pos" element={
             <Box sx={{ height: '100vh', overflow: 'hidden' }}>
@@ -301,9 +302,7 @@ function App() {
               minHeight: '100vh',
               backgroundColor: '#f8fafc'
             }}>
-              <AuthProvider>
-                <HRModule />
-              </AuthProvider>
+              <HRModule />
             </Box>
           } />
           <Route path="/legal" element={
@@ -368,8 +367,9 @@ function App() {
             ) : null
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </ErrorBoundary>
+          </Routes>
+        </ErrorBoundary>
+      </AuthProvider>
     </ThemeProvider>
   )
 }
