@@ -61,7 +61,8 @@ const ERPApp = () => {
   // Handle logout
   const handleLogout = () => {
     // In a real app, this would clear authentication tokens
-    window.location.reload();
+    // Navigate back to ERP Dashboard
+    window.location.href = '/?screen=dashboard';
   };
 
   // Show notification

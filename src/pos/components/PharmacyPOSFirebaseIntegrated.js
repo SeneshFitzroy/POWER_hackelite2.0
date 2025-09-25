@@ -44,12 +44,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
   
   // Logout function
   const handleLogout = () => {
-    // Clear any stored data
-    localStorage.clear();
-    sessionStorage.clear();
+    // Clear only POS-specific data, not main authentication
+    localStorage.removeItem('posSession');
+    localStorage.removeItem('cartData');
+    sessionStorage.removeItem('posTransaction');
     
-    // Navigate immediately to login screen
-    window.location.href = '/?screen=login';
+    // Navigate back to ERP Dashboard
+    window.location.href = '/?screen=dashboard';
   };
 
   // State variables

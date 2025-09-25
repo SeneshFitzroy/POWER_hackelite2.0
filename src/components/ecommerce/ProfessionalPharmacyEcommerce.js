@@ -2605,7 +2605,7 @@ const ProfessionalPharmacyEcommerce = () => {
             Settings
           </MenuItem>
           <Divider />
-          <MenuItem>
+          <MenuItem onClick={() => window.location.href = '/?screen=dashboard'}>
             <ListItemIcon><LogoutIcon /></ListItemIcon>
             Logout
           </MenuItem>

@@ -96,12 +96,13 @@ export default function HRModule() {
   };
 
   const handleLogout = () => {
-    // Clear any stored data
-    localStorage.clear();
-    sessionStorage.clear();
+    // Clear only HR-specific data, not main authentication
+    localStorage.removeItem('hrSession');
+    localStorage.removeItem('currentHRView');
+    sessionStorage.removeItem('hrData');
     
-    // Navigate back to login screen
-    window.location.href = '/?screen=login';
+    // Navigate back to ERP Dashboard
+    window.location.href = '/?screen=dashboard';
   };
 
   const drawerContent = (

@@ -287,15 +287,15 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = () => {
-    // Clear any admin session data if needed
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('userToken');
+    // Clear only admin-specific session data, not main authentication
+    localStorage.removeItem('adminSession');
+    localStorage.removeItem('currentAdminView');
     
     // Show logout confirmation
     toast.success('Logged out successfully!');
     
-    // Force navigate to login screen with proper state
-    window.location.href = '/';
+    // Navigate back to ERP Dashboard
+    window.location.href = '/?screen=dashboard';
   };
 
   const menuItems = [

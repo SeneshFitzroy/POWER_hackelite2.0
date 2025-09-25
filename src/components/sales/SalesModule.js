@@ -95,12 +95,13 @@ export default function SalesModule() {
   };
 
   const handleLogout = () => {
-    // Clear any stored data
-    localStorage.clear();
-    sessionStorage.clear();
+    // Clear only sales-specific data, not main authentication
+    localStorage.removeItem('salesSession');
+    localStorage.removeItem('currentSalesView');
+    sessionStorage.removeItem('salesData');
     
-    // Navigate back to login screen (not splash screen)
-    window.location.href = '/?screen=login';
+    // Navigate back to ERP Dashboard
+    window.location.href = '/?screen=dashboard';
   };
 
   const drawerContent = (

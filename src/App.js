@@ -196,6 +196,8 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     const screenParam = urlParams.get('screen');
     const currentPath = window.location.pathname;
+    const hasDashboardAccess = localStorage.getItem('dashboardAccess') === 'true';
+    const lastScreen = localStorage.getItem('lastScreen');
     
     // Clear cache to ensure fresh load
     if ('caches' in window) {
@@ -220,6 +222,9 @@ function App() {
       setCurrentScreen('splash');
     } else if (screenParam === 'ecommerce') {
       setCurrentScreen('ecommerce');
+    } else if (hasDashboardAccess && lastScreen === 'dashboard') {
+      // If user has dashboard access from previous session, go directly to dashboard
+      setCurrentScreen('dashboard');
     } else {
       // Default to splash for proper login flow
       setCurrentScreen('splash');
@@ -231,6 +236,9 @@ function App() {
   }
 
   const handleLoginSuccess = () => {
+    // Set dashboard access when login is successful
+    localStorage.setItem('dashboardAccess', 'true');
+    localStorage.setItem('lastScreen', 'dashboard');
     setCurrentScreen('dashboard')
   }
 
@@ -267,15 +275,20 @@ function App() {
   }
   
   const handleLogout = () => {
-    // Clear any stored user data (if any)
-    // localStorage.removeItem('userToken') // Uncomment if you store user data
+    // Set a special authentication state that allows dashboard access
+    localStorage.setItem('dashboardAccess', 'true');
+    localStorage.setItem('lastScreen', 'dashboard');
     
-    // Navigate to login screen
-    setCurrentScreen('login')
+    // Clear module-specific data but keep dashboard access
+    localStorage.removeItem('currentModule');
+    localStorage.removeItem('moduleSession');
     
-    // If we're not on the main route, redirect to main route with login screen
+    // Return to dashboard
+    setCurrentScreen('dashboard')
+    
+    // If we're not on the main route, redirect to main route with dashboard
     if (window.location.pathname !== '/') {
-      navigate('/?screen=login')
+      navigate('/?screen=dashboard')
     }
   }
 

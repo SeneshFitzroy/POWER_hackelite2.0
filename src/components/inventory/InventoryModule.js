@@ -139,12 +139,12 @@ export default function InventoryModule({
   };
 
   const handleLogout = () => {
-    // Clear any stored data
-    localStorage.clear();
-    sessionStorage.clear();
+    // Clear only inventory-specific data, not main authentication
+    localStorage.removeItem('inventorySession');
+    localStorage.removeItem('currentInventoryView');
     
-    // Navigate back to login screen
-    window.location.href = '/?screen=login';
+    // Navigate back to ERP Dashboard
+    window.location.href = '/?screen=dashboard';
   };
 
   return (

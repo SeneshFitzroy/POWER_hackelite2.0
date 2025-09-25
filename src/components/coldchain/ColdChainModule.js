@@ -119,12 +119,13 @@ export default function ColdChainModule() {
   const sidebarWidth = 280;
 
   const handleLogout = () => {
-    // Clear any stored data
-    localStorage.clear();
-    sessionStorage.clear();
+    // Clear only cold chain-specific data, not main authentication
+    localStorage.removeItem('coldChainSession');
+    localStorage.removeItem('currentColdChainView');
+    sessionStorage.removeItem('coldChainData');
     
-    // Navigate back to login screen
-    window.location.href = '/?screen=login';
+    // Navigate back to ERP Dashboard
+    window.location.href = '/?screen=dashboard';
   };
 
   const navigationItems = [

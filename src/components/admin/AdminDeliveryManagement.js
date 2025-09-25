@@ -136,13 +136,12 @@ const AdminDeliveryManagement = () => {
 
   // Logout handler
   const handleLogout = () => {
-    // Clear any stored authentication data
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('isAuthenticated');
+    // Clear only delivery management-specific data, not main authentication
+    localStorage.removeItem('deliverySession');
+    localStorage.removeItem('currentDeliveryView');
     
-    // Navigate directly to the login screen by setting the URL with login parameter
-    window.location.href = '/?screen=login';
+    // Navigate back to ERP Dashboard
+    window.location.href = '/?screen=dashboard';
   };
 
   // Mock data for delivery statistics
