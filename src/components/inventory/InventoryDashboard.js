@@ -26,6 +26,7 @@ import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
 import { inventoryService } from '../../services/inventoryService';
+import { dataInitializationService } from '../../services/dataInitializationService';
 import { safeFormatDate, getExpiryStatus } from '../../utils/dateUtils';
 import LowStockDashboardWidget from './LowStockDashboardWidget';
 
@@ -52,30 +53,32 @@ const InventoryDashboard = () => {
       setLoading(true);
       setError(null);
 
+      // Initialize data if needed
+      const dataExists = await dataInitializationService.checkIfDataExists();
+      if (!dataExists) {
+        console.log('Initializing database with real medicine data...');
+        await dataInitializationService.initializeAllData();
+        console.log('Database initialized successfully!');
+      }
+
       // Get all medicines
       const allMedicines = await inventoryService.getAllMedicines();
       
       // Get low stock medicines
       const lowStock = await inventoryService.getLowStockMedicines(10);
       
-      // Get expiring medicines
+      // Get expiring medicines (within 30 days)
       const expiring = await inventoryService.getExpiringMedicines(30);
+      
+      // Get expired medicines
+      const expired = await inventoryService.getExpiredMedicines();
 
       // Calculate statistics
       const totalMedicines = allMedicines.length;
       const activeMedicines = allMedicines.filter(m => m.status === 'active').length;
       const lowStockCount = lowStock.length;
       const expiringCount = expiring.length;
-      
-      // Calculate expired medicines
-      const today = new Date();
-      const expiredMedicines = allMedicines.filter(medicine => {
-        if (!medicine.expiryDate) return false;
-        const expiryDate = medicine.expiryDate && typeof medicine.expiryDate === 'object' && medicine.expiryDate.toDate 
-          ? medicine.expiryDate.toDate() 
-          : new Date(medicine.expiryDate);
-        return expiryDate < today;
-      });
+      const expiredCount = expired.length;
 
       // Calculate total stock value
       const totalStockValue = allMedicines.reduce((total, medicine) => {
@@ -89,7 +92,7 @@ const InventoryDashboard = () => {
         activeMedicines,
         lowStockMedicines: lowStockCount,
         expiringMedicines: expiringCount,
-        expiredMedicines: expiredMedicines.length,
+        expiredMedicines: expiredCount,
         totalStockValue
       });
 

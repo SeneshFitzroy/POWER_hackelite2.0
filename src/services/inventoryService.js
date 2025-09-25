@@ -236,22 +236,96 @@ export const inventoryService = {
     });
   },
 
+  // Get expiring medicines (expiring within specified days)
+  getExpiringMedicines: async (daysFromNow = 30) => {
+    try {
+      const medicines = await inventoryService.getAllMedicines();
+      const currentDate = new Date();
+      const futureDate = new Date();
+      futureDate.setDate(currentDate.getDate() + daysFromNow);
+      
+      return medicines.filter(medicine => {
+        if (!medicine.expiryDate) {
+          return false;
+        }
+        const expiryDate = new Date(medicine.expiryDate);
+        return expiryDate > currentDate && expiryDate <= futureDate;
+      });
+    } catch (error) {
+      throw new Error(`Error fetching expiring medicines: ${error.message}`);
+    }
+  },
+
+  // Get expired medicines
+  getExpiredMedicines: async () => {
+    try {
+      const medicines = await inventoryService.getAllMedicines();
+      const currentDate = new Date();
+      
+      return medicines.filter(medicine => {
+        if (!medicine.expiryDate) {
+          return false;
+        }
+        const expiryDate = new Date(medicine.expiryDate);
+        return expiryDate <= currentDate;
+      });
+    } catch (error) {
+      throw new Error(`Error fetching expired medicines: ${error.message}`);
+    }
+  },
+
+  // Get quarantined medicines
+  getQuarantinedMedicines: async () => {
+    try {
+      const q = query(
+        collection(db, 'medicines'),
+        where('status', '==', 'quarantined'),
+        orderBy('name')
+      );
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    } catch (error) {
+      throw new Error(`Error fetching quarantined medicines: ${error.message}`);
+    }
+  },
+
+  // Get medicines requiring reorder
+  getMedicinesRequiringReorder: async () => {
+    try {
+      const medicines = await inventoryService.getAllMedicines();
+      return medicines.filter(medicine => {
+        return medicine.stockQuantity <= medicine.reorderPoint;
+      });
+    } catch (error) {
+      throw new Error(`Error fetching medicines requiring reorder: ${error.message}`);
+    }
+  },
+
   // Listen to expiring medicines
   subscribeExpiringMedicines: (daysFromNow, callback) => {
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + daysFromNow);
-    
-    const q = query(
-      collection(db, 'medicines'),
-      where('expiryDate', '<=', futureDate),
-      orderBy('expiryDate')
-    );
+    const q = query(collection(db, 'medicines'), orderBy('expiryDate'));
     return onSnapshot(q, (snapshot) => {
       const medicines = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      callback(medicines);
+      
+      const currentDate = new Date();
+      const futureDate = new Date();
+      futureDate.setDate(currentDate.getDate() + daysFromNow);
+      
+      const expiringMedicines = medicines.filter(medicine => {
+        if (!medicine.expiryDate) {
+          return false;
+        }
+        const expiryDate = new Date(medicine.expiryDate);
+        return expiryDate > currentDate && expiryDate <= futureDate;
+      });
+      
+      callback(expiringMedicines);
     });
   },
 

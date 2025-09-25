@@ -20,6 +20,11 @@ import { RoleProvider } from './contexts/RoleContext'
 import LegalModule from './components/legal/LegalModule'
 import './App.css'
 
+// Import test for development
+if (process.env.NODE_ENV === 'development') {
+  import('./tests/inventorySystemTest');
+}
+
 // Professional Blue Theme (Matching POS System)
 const theme = createTheme({
   palette: {

@@ -32,6 +32,7 @@ import StockTrackingEnhanced from './StockTrackingEnhanced';
 import ReorderManagement from './ReorderManagement';
 import SupplierManagementEnhanced from './SupplierManagementEnhanced';
 import InventoryDashboard from './InventoryDashboard';
+import { dataInitializationService } from '../../services/dataInitializationService';
 
 export default function InventoryModule({ 
   activeModule = 'inventory', 

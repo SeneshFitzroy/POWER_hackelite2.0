@@ -28,7 +28,6 @@ import {
   Error as ErrorIcon,
   Refresh as RefreshIcon,
   ShoppingCart as ShoppingCartIcon,
-  Visibility as ViewIcon,
   Add as AddIcon
 } from '@mui/icons-material';
 import { inventoryService } from '../../services/inventoryService';
@@ -370,22 +369,36 @@ const LowStockDashboardWidget = ({ onViewAll, onCreateOrder }) => {
                     />
                     <ListItemSecondaryAction>
                       <Box sx={{ display: 'flex', gap: 0.5 }}>
-                        <Tooltip title="Quick Reorder">
+                        <Tooltip title="Go to Supplier & Orders">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleCreateQuickOrder(medicine)}
+                            onClick={() => {
+                              // Navigate to Supplier & Orders tab (index 3)
+                              if (window.inventoryModule && window.inventoryModule.setActiveTab) {
+                                window.inventoryModule.setActiveTab(3); // Supplier & Orders tab
+                              }
+                              
+                              // Post message for navigation
+                              if (window.parent && window.parent.postMessage) {
+                                window.parent.postMessage({ 
+                                  type: 'navigate', 
+                                  module: 'supplier-management',
+                                  tab: 3
+                                }, '*');
+                              }
+                              
+                              // Alternative direct navigation
+                              if (window.location.pathname.includes('/inventory')) {
+                                setTimeout(() => {
+                                  if (window.inventoryModule && window.inventoryModule.setActiveTab) {
+                                    window.inventoryModule.setActiveTab(3);
+                                  }
+                                }, 100);
+                              }
+                            }}
                             sx={{ color: '#059669' }}
                           >
                             <AddIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="View Details">
-                          <IconButton 
-                            size="small" 
-                            onClick={() => onViewAll && onViewAll()}
-                            sx={{ color: '#1e40af' }}
-                          >
-                            <ViewIcon />
                           </IconButton>
                         </Tooltip>
                       </Box>
