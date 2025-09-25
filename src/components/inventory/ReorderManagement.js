@@ -52,6 +52,7 @@ import {
 } from '@mui/icons-material';
 import { inventoryService } from '../../services/inventoryService';
 import { purchaseOrderService } from '../../services/purchaseOrderService';
+import { dataInitializationService } from '../../services/dataInitializationService';
 import { format } from 'date-fns';
 import { safeFormatDate } from '../../utils/dateUtils';
 
@@ -77,36 +78,92 @@ const ReorderManagement = () => {
   });
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
 
-  // Load medicines and purchase orders with real-time updates
+  // Initialize data and load medicines with real-time updates
   useEffect(() => {
+    const initializeAndSubscribe = async () => {
+      try {
+        setLoading(true);
+        
+        // Initialize data if needed
+        const dataExists = await dataInitializationService.checkIfDataExists();
+        if (!dataExists) {
+          console.log('Initializing database with real medicine data...');
+          await dataInitializationService.initializeAllData();
+          console.log('Database initialized successfully!');
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error initializing data:', error);
+        setLoading(false);
+      }
+    };
+
+    initializeAndSubscribe();
+
     const unsubscribeMedicines = inventoryService.subscribeMedicines((medicinesData) => {
       setMedicines(medicinesData);
-      setLoading(false);
+      if (loading) {
+        setLoading(false);
+      }
     });
 
-    const unsubscribeOrders = purchaseOrderService.subscribePurchaseOrders((ordersData) => {
-      setPurchaseOrders(ordersData);
-    });
+    // Subscribe to purchase orders if the service exists
+    let unsubscribeOrders = null;
+    if (purchaseOrderService && purchaseOrderService.subscribePurchaseOrders) {
+      unsubscribeOrders = purchaseOrderService.subscribePurchaseOrders((ordersData) => {
+        setPurchaseOrders(ordersData);
+      });
+    }
 
     return () => {
       unsubscribeMedicines();
-      unsubscribeOrders();
+      if (unsubscribeOrders) {
+        unsubscribeOrders();
+      }
     };
-  }, []);
+  }, [loading]);
 
-  // Filter low stock medicines based on reorder point
+  // Filter medicines requiring reorder (low stock + expiring consideration)
   useEffect(() => {
-    const lowStock = medicines.filter(medicine => {
+    const today = new Date();
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(today.getDate() + 30);
+
+    const reorderRequired = medicines.filter(medicine => {
       const currentStock = medicine.stockQuantity || 0;
       const reorderPoint = medicine.reorderPoint || (medicine.minStockLevel || 10);
-      return currentStock <= reorderPoint;
+      
+      // Check if medicine is low stock
+      const isLowStock = currentStock <= reorderPoint;
+      
+      // Check if medicine is expiring soon (affects reorder urgency)
+      let isExpiringSoon = false;
+      if (medicine.expiryDate) {
+        const expiryDate = new Date(medicine.expiryDate);
+        isExpiringSoon = expiryDate <= thirtyDaysFromNow && expiryDate > today;
+      }
+      
+      // Include if low stock or if stock is low and expiring soon
+      return isLowStock || (currentStock <= reorderPoint * 1.5 && isExpiringSoon);
     });
 
-    // Sort by priority (lowest stock first)
-    lowStock.sort((a, b) => (a.stockQuantity || 0) - (b.stockQuantity || 0));
+    // Sort by priority: expired/expiring first, then lowest stock
+    reorderRequired.sort((a, b) => {
+      const aExpiry = a.expiryDate ? new Date(a.expiryDate) : new Date('2099-01-01');
+      const bExpiry = b.expiryDate ? new Date(b.expiryDate) : new Date('2099-01-01');
+      const aStock = a.stockQuantity || 0;
+      const bStock = b.stockQuantity || 0;
+      
+      // First sort by expiry urgency, then by stock level
+      if (aExpiry <= thirtyDaysFromNow && bExpiry > thirtyDaysFromNow) return -1;
+      if (bExpiry <= thirtyDaysFromNow && aExpiry > thirtyDaysFromNow) return 1;
+      
+      return aStock - bStock;
+    });
 
-    setLowStockMedicines(lowStock);
-    setFilteredMedicines(lowStock);
+    setLowStockMedicines(reorderRequired);
+    setFilteredMedicines(reorderRequired);
   }, [medicines]);
 
   // Filter by search term

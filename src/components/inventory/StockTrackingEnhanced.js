@@ -51,6 +51,7 @@ import {
 } from '@mui/icons-material';
 import { inventoryService } from '../../services/inventoryService';
 import { quarantineService } from '../../services/quarantineService';
+import { dataInitializationService } from '../../services/dataInitializationService';
 import { safeFormatDate, getExpiryStatus, getDaysUntilExpiry } from '../../utils/dateUtils';
 
 const StockTrackingEnhanced = ({ onNotification }) => {
@@ -80,11 +81,22 @@ const StockTrackingEnhanced = ({ onNotification }) => {
     let unsubscribeMedicines = null;
     let unsubscribeQuarantined = null;
     
-    const loadData = async () => {
+    const initializeAndLoadData = async () => {
       try {
         setLoading(true);
-        const quarantinedData = await quarantineService.getQuarantinedMedicines();
+        
+        // Initialize data if needed
+        const dataExists = await dataInitializationService.checkIfDataExists();
+        if (!dataExists) {
+          console.log('Initializing database with real medicine data...');
+          await dataInitializationService.initializeAllData();
+          console.log('Database initialized successfully!');
+        }
+        
+        // Load quarantined medicines
+        const quarantinedData = await inventoryService.getQuarantinedMedicines();
         setQuarantinedMedicines(quarantinedData);
+        
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -92,18 +104,20 @@ const StockTrackingEnhanced = ({ onNotification }) => {
       }
     };
 
-    // Load initial data
-    loadData();
+    // Initialize and load initial data
+    initializeAndLoadData();
     
     // Set up real-time listeners - FIXED: Add real-time updates for medicines
     unsubscribeMedicines = inventoryService.subscribeMedicines((medicinesData) => {
       setMedicines(medicinesData);
     });
     
-    // FIXED: Use the correct subscribe method
-    unsubscribeQuarantined = quarantineService.subscribeQuarantinedMedicines((quarantinedData) => {
-      setQuarantinedMedicines(quarantinedData);
+    // Set up real-time listener for quarantined medicines
+    const quarantinedQuery = inventoryService.subscribeMedicines((medicinesData) => {
+      const quarantined = medicinesData.filter(med => med.status === 'quarantined');
+      setQuarantinedMedicines(quarantined);
     });
+    unsubscribeQuarantined = quarantinedQuery;
 
     // Expose setActiveTab function globally for navigation
     window.stockTrackingRef = {
