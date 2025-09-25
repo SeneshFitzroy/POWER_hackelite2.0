@@ -15,6 +15,8 @@ import ERPDeliveryModule from './components/ERPDeliveryModule'
 import DeliveryManagement from './components/ecommerce/DeliveryManagement'
 import AdminDashboard from './components/admin/AdminDashboard'
 import AdminDeliveryManagement from './components/admin/AdminDeliveryManagement'
+import { AuthProvider } from './contexts/AuthContext'
+import { RoleProvider } from './contexts/RoleContext'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
@@ -292,14 +294,16 @@ function App() {
               <SalesModule />
             </Box>
           } />
-          <Route path="/hr" element={
+          <Route path="/hr/*" element={
             <Box sx={{ 
               display: 'flex', 
               flexDirection: 'column', 
               minHeight: '100vh',
               backgroundColor: '#f8fafc'
             }}>
-              <HRModule />
+              <AuthProvider>
+                <HRModule />
+              </AuthProvider>
             </Box>
           } />
           <Route path="/legal" element={
