@@ -740,7 +740,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                     .pharmacy-header {
                       text-align: center;
                       margin-bottom: 20px;
-                      border-bottom: 2px solid #1976d2;
+                      border-bottom: 2px solid #1e3a8a;
                       padding-bottom: 15px;
                     }
                     @media print {
@@ -1357,7 +1357,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         p: 2, 
         mb: 2, 
         borderRadius: 0,
-        background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+        background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
         boxShadow: '0 4px 12px rgba(30, 64, 175, 0.2)'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1381,7 +1381,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   }}
                   onError={(e) => { 
                     console.log('Logo failed to load, using fallback');
-                    e.target.outerHTML = '<div style="height:40px;width:120px;background:#1976d2;color:white;display:flex;align-items:center;justify-content:center;border-radius:4px;font-weight:bold;font-size:14px;">NPK PHARMACY</div>';
+                    e.target.outerHTML = '<div style="height:40px;width:120px;background:#1e3a8a;color:white;display:flex;align-items:center;justify-content:center;border-radius:4px;font-weight:bold;font-size:14px;">NPK PHARMACY</div>';
                   }}
                 />
               </Box>
@@ -1470,7 +1470,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-              <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2' }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: '#1e3a8a' }}>
                 PATIENT INFORMATION
               </Typography>
               <Button
@@ -1478,7 +1478,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 variant="contained"
                 size="small"
                 sx={{
-                  backgroundColor: '#1976d2',
+                  backgroundColor: '#1e3a8a',
                   color: 'white',
                   fontWeight: 'bold',
                   fontSize: '0.75rem',
@@ -1506,14 +1506,14 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   mb: 1.5,
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 1,
-                    '&:hover fieldset': { borderColor: '#1976d2' },
-                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
+                    '&.Mui-focused fieldset': { borderColor: '#1e3a8a' }
                   }
                 }}
                 InputProps={{
                   endAdornment: searchingPatients && (
                     <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-                      <Typography variant="caption" color="#1976d2">Searching...</Typography>
+                      <Typography variant="caption" color="#1e3a8a">Searching...</Typography>
                     </Box>
                   )
                 }}
@@ -1530,7 +1530,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                     zIndex: 1000,
                     maxHeight: 300,
                     overflow: 'auto',
-                    border: '2px solid #1976d2',
+                    border: '2px solid #1e3a8a',
                     borderRadius: 2,
                     mt: 0.5,
                     boxShadow: '0 8px 24px rgba(25, 118, 210, 0.15)'
@@ -1538,7 +1538,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 >
                   <Box sx={{ 
                     p: 1, 
-                    backgroundColor: '#1976d2', 
+                    backgroundColor: '#1e3a8a', 
                     color: 'white',
                     textAlign: 'center'
                   }}>
@@ -1573,11 +1573,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         case 'Exact NIC':
                           return { color: '#d32f2f', bg: '#ffebee', icon: '🆔', text: 'EXACT NIC' };
                         case 'Exact Phone':
-                          return { color: '#1976d2', bg: '#e3f2fd', icon: '📱', text: 'EXACT PHONE' };
+                          return { color: '#1e3a8a', bg: '#eff6ff', icon: '📱', text: 'EXACT PHONE' };
                         case 'Partial NIC':
                           return { color: '#7b1fa2', bg: '#f3e5f5', icon: '🔍', text: 'NIC MATCH' };
                         case 'Partial Phone':
-                          return { color: '#1976d2', bg: '#e8f5ff', icon: '📞', text: 'PHONE MATCH' };
+                          return { color: '#1e3a8a', bg: '#e8f5ff', icon: '📞', text: 'PHONE MATCH' };
                         case 'Name':
                           return { color: '#ff9800', bg: '#fff3e0', icon: '👤', text: 'NAME MATCH' };
                         default:
@@ -1601,7 +1601,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                           backgroundColor: index === 0 && patient.matchPriority <= 2 ? '#f8fff8' : 'white', // Highlight best matches
                           borderLeft: index === 0 && patient.matchPriority <= 2 ? '4px solid #4caf50' : 'none',
                           '&:hover': {
-                            backgroundColor: '#e3f2fd',
+                            backgroundColor: '#eff6ff',
                             transform: 'translateX(4px)',
                             transition: 'all 0.2s ease'
                           },
@@ -1627,7 +1627,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         )}
 
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
-                          <Typography variant="subtitle1" fontWeight="bold" color="#1976d2" sx={{ fontSize: '0.95rem' }}>
+                          <Typography variant="subtitle1" fontWeight="bold" color="#1e3a8a" sx={{ fontSize: '0.95rem' }}>
                             {patient.name || 'Unknown Name'}
                           </Typography>
                           <Box sx={{ display: 'flex', gap: 0.5 }}>
@@ -1680,8 +1680,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                               label={`Phone: ${patient.contact || patient.phoneNumber}`}
                               size="small"
                               sx={{
-                                backgroundColor: patient.matchType?.includes('Phone') ? '#e3f2fd' : '#e8f5ff',
-                                color: patient.matchType?.includes('Phone') ? '#1976d2' : '#1976d2',
+                                backgroundColor: patient.matchType?.includes('Phone') ? '#eff6ff' : '#e8f5ff',
+                                color: patient.matchType?.includes('Phone') ? '#1e3a8a' : '#1e3a8a',
                                 fontSize: '0.65rem',
                                 height: '18px',
                                 fontWeight: patient.matchType?.includes('Phone') ? 'bold' : 'normal'
@@ -1795,7 +1795,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
             {/* PRESCRIPTION TYPE SELECTOR */}
             <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1, color: '#1976d2' }}>
+              <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1, color: '#1e3a8a' }}>
                 PRESCRIPTION TYPE
               </Typography>
               <RadioGroup
@@ -1885,7 +1885,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
             border: '1px solid #e5e7eb',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2', mb: 1.5 }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ color: '#1e3a8a', mb: 1.5 }}>
               STAFF INFORMATION
             </Typography>
             
@@ -1903,8 +1903,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 1,
                   backgroundColor: employeeName ? '#f0f9ff' : '#ffffff',
-                  '&:hover fieldset': { borderColor: '#1976d2' },
-                  '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  '&:hover fieldset': { borderColor: '#1e3a8a' },
+                  '&.Mui-focused fieldset': { borderColor: '#1e3a8a' }
                 }
               }}
             />
@@ -1920,15 +1920,15 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 mb: 2,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 1,
-                  '&:hover fieldset': { borderColor: '#1976d2' },
-                  '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  '&:hover fieldset': { borderColor: '#1e3a8a' },
+                  '&.Mui-focused fieldset': { borderColor: '#1e3a8a' }
                 }
               }}
             />
 
             {/* Payment Method Selection - COMPACT */}
             <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" fontWeight="bold" sx={{ mb: 1, color: '#1976d2' }}>
+              <Typography variant="body2" fontWeight="bold" sx={{ mb: 1, color: '#1e3a8a' }}>
                 Payment Method:
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
@@ -1960,7 +1960,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                     borderColor: '#2196f3',
                     color: paymentMethod === 'card' ? 'white' : '#2196f3',
                     '&:hover': {
-                      backgroundColor: paymentMethod === 'card' ? '#1976d2' : '#e3f2fd'
+                      backgroundColor: paymentMethod === 'card' ? '#1e3a8a' : '#eff6ff'
                     }
                   }}
                 >
@@ -1989,7 +1989,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
             border: '1px solid #e5e7eb',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ color: '#1976d2', mb: 2 }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ color: '#1e3a8a', mb: 2 }}>
               MEDICINE SEARCH
             </Typography>
             <TextField
@@ -2001,8 +2001,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
               sx={{ 
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 1,
-                  '&:hover fieldset': { borderColor: '#1976d2' },
-                  '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                  '&:hover fieldset': { borderColor: '#1e3a8a' },
+                  '&.Mui-focused fieldset': { borderColor: '#1e3a8a' }
                 }
               }}
             />
@@ -2021,11 +2021,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
             {/* HEADER */}
             <Box sx={{ 
               p: 2, 
-              backgroundColor: '#1976d2', 
-              color: 'white',
+              backgroundColor: 'white', 
+              color: '#1e3a8a',
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center'
+              alignItems: 'center',
+              borderBottom: '2px solid #e5e7eb'
             }}>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 AVAILABLE MEDICINES - ALL IN STOCK
@@ -2034,7 +2035,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 label={`${searchResults.length} found`} 
                 size="small" 
                 sx={{ 
-                  backgroundColor: 'rgba(255,255,255,0.2)', 
+                  backgroundColor: '#1e3a8a', 
                   color: 'white',
                   fontWeight: 'bold'
                 }} 
@@ -2060,7 +2061,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                       borderRadius: 1,
                       border: '1px solid #e5e7eb',
                       '&:hover': { 
-                        borderColor: '#1976d2',
+                        borderColor: '#1e3a8a',
                         backgroundColor: '#f8f9fa'
                       },
                       transition: 'all 0.2s ease',
@@ -2085,7 +2086,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
                     <Box sx={{ width: '100%', pr: 8 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#1976d2', fontSize: '0.9rem' }}>
+                        <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#1e3a8a', fontSize: '0.9rem' }}>
                           {medicine.name}
                         </Typography>
                         <Typography variant="h6" sx={{ 
@@ -2110,8 +2111,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                           label={medicine.manufacturer} 
                           size="small" 
                           sx={{ 
-                            backgroundColor: '#e3f2fd',
-                            color: '#1976d2',
+                            backgroundColor: '#eff6ff',
+                            color: '#1e3a8a',
                             fontSize: '0.65rem',
                             height: '20px'
                           }} 
@@ -2182,13 +2183,14 @@ const PharmacyPOSFirebaseIntegrated = () => {
             {/* HEADER */}
             <Box sx={{ 
               p: 2, 
-              backgroundColor: '#1976d2', 
-              color: 'white',
+              backgroundColor: 'white', 
+              color: '#1e3a8a',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               flexWrap: 'wrap',
-              gap: 1
+              gap: 1,
+              borderBottom: '2px solid #e5e7eb'
             }}>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 SHOPPING CART
@@ -2198,7 +2200,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   label={`${totals.totalItems} items`} 
                   size="small" 
                   sx={{ 
-                    backgroundColor: 'rgba(255,255,255,0.2)', 
+                    backgroundColor: '#1e3a8a', 
                     color: 'white',
                     fontWeight: 'bold'
                   }} 
@@ -2245,7 +2247,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                     >
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                         <Box sx={{ flex: 1 }}>
-                          <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#1976d2', fontSize: '0.9rem' }}>
+                          <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#1e3a8a', fontSize: '0.9rem' }}>
                             {item.name}
                           </Typography>
                           <Typography variant="body2" color="#666" sx={{ fontSize: '0.8rem' }}>
@@ -2284,11 +2286,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
                                 py: 0.25,
                                 minHeight: 24,
                                 borderRadius: 1,
-                                backgroundColor: cartItemUnits[item.id] === 'tablets' ? '#1976d2' : 'transparent',
-                                borderColor: '#1976d2',
-                                color: cartItemUnits[item.id] === 'tablets' ? 'white' : '#1976d2',
+                                backgroundColor: cartItemUnits[item.id] === 'tablets' ? '#1e3a8a' : 'transparent',
+                                borderColor: '#1e3a8a',
+                                color: cartItemUnits[item.id] === 'tablets' ? 'white' : '#1e3a8a',
                                 '&:hover': {
-                                  backgroundColor: cartItemUnits[item.id] === 'tablets' ? '#1565c0' : '#e3f2fd'
+                                  backgroundColor: cartItemUnits[item.id] === 'tablets' ? '#1565c0' : '#eff6ff'
                                 }
                               }}
                             >
@@ -2304,11 +2306,11 @@ const PharmacyPOSFirebaseIntegrated = () => {
                                 py: 0.25,
                                 minHeight: 24,
                                 borderRadius: 1,
-                                backgroundColor: cartItemUnits[item.id] === 'cards' ? '#1976d2' : 'transparent',
-                                borderColor: '#1976d2',
-                                color: cartItemUnits[item.id] === 'cards' ? 'white' : '#1976d2',
+                                backgroundColor: cartItemUnits[item.id] === 'cards' ? '#1e3a8a' : 'transparent',
+                                borderColor: '#1e3a8a',
+                                color: cartItemUnits[item.id] === 'cards' ? 'white' : '#1e3a8a',
                                 '&:hover': {
-                                  backgroundColor: cartItemUnits[item.id] === 'cards' ? '#1565c0' : '#e3f2fd'
+                                  backgroundColor: cartItemUnits[item.id] === 'cards' ? '#1565c0' : '#eff6ff'
                                 }
                               }}
                             >
@@ -2359,13 +2361,13 @@ const PharmacyPOSFirebaseIntegrated = () => {
                           sx={{ 
                             width: '60px',
                             '& .MuiOutlinedInput-root': {
-                              backgroundColor: '#e3f2fd',
-                              borderColor: '#1976d2',
+                              backgroundColor: '#eff6ff',
+                              borderColor: '#1e3a8a',
                               '&:hover fieldset': {
-                                borderColor: '#1976d2',
+                                borderColor: '#1e3a8a',
                               },
                               '&.Mui-focused fieldset': {
-                                borderColor: '#1976d2',
+                                borderColor: '#1e3a8a',
                               }
                             }
                           }}
@@ -2427,7 +2429,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
             </Box>
 
             {/* BILLING SUMMARY - COMPACT WITH BLUE/WHITE/BLACK ONLY */}
-            <Box sx={{ p: 2, backgroundColor: 'white', borderTop: '2px solid #1976d2' }}>
+            <Box sx={{ p: 2, backgroundColor: 'white', borderTop: '2px solid #1e3a8a' }}>
               <Box sx={{ mb: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                   <Typography variant="body2">Subtotal:</Typography>
@@ -2444,12 +2446,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   justifyContent: 'space-between', 
                   mb: 1, 
                   p: 1, 
-                  backgroundColor: '#e3f2fd', 
+                  backgroundColor: '#eff6ff', 
                   borderRadius: 1,
-                  border: '1px solid #1976d2'
+                  border: '1px solid #1e3a8a'
                 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#1976d2' }}>NET TOTAL:</Typography>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>NET TOTAL:</Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
                     {formatCurrency(netTotal)}
                   </Typography>
                 </Box>
@@ -2525,7 +2527,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
       {/* NEW PATIENT FORM DIALOG */}
       <Dialog open={showPatientForm} onClose={() => setShowPatientForm(false)} maxWidth="md" fullWidth>
         <Box sx={{ p: 3 }}>
-          <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 2, textAlign: 'center' }}>
+          <Typography variant="h6" fontWeight="bold" color="#1e3a8a" sx={{ mb: 2, textAlign: 'center' }}>
             NEW PATIENT REGISTRATION
           </Typography>
           
@@ -2609,8 +2611,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 1,
-                    '&:hover fieldset': { borderColor: '#1976d2' },
-                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
+                    '&.Mui-focused fieldset': { borderColor: '#1e3a8a' }
                   }
                 }}
               >
@@ -2630,8 +2632,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 1,
-                    '&:hover fieldset': { borderColor: '#1976d2' },
-                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
+                    '&.Mui-focused fieldset': { borderColor: '#1e3a8a' }
                   }
                 }}
               />
@@ -2646,8 +2648,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 1,
-                    '&:hover fieldset': { borderColor: '#1976d2' },
-                    '&.Mui-focused fieldset': { borderColor: '#1976d2' }
+                    '&:hover fieldset': { borderColor: '#1e3a8a' },
+                    '&.Mui-focused fieldset': { borderColor: '#1e3a8a' }
                   }
                 }}
               />
@@ -2671,7 +2673,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               variant="contained"
               onClick={saveNewPatient}
               sx={{ 
-                backgroundColor: '#1976d2', 
+                backgroundColor: '#1e3a8a', 
                 color: 'white',
                 px: 3,
                 py: 1,
@@ -2691,14 +2693,14 @@ const PharmacyPOSFirebaseIntegrated = () => {
         {lastTransaction ? (
           <Box id="receipt-content" sx={{ p: 4, fontFamily: 'monospace' }}>
             {/* PHARMACY HEADER WITH LOGO */}
-            <Box sx={{ textAlign: 'center', mb: 3, borderBottom: '2px solid #1976d2', pb: 2 }}>
+            <Box sx={{ textAlign: 'center', mb: 3, borderBottom: '2px solid #1e3a8a', pb: 2 }}>
               <img 
                 src="/images/npk-logo.png" 
                 alt="NPK Logo" 
                 style={{ height: '60px', marginBottom: '10px' }}
                 onError={(e) => { e.target.style.display = 'none' }}
               />
-              <Typography variant="h5" fontWeight="bold" sx={{ color: '#1976d2', letterSpacing: '1px' }}>
+              <Typography variant="h5" fontWeight="bold" sx={{ color: '#1e3a8a', letterSpacing: '1px' }}>
                 NPK NEW PHARMACY
               </Typography>
               <Typography variant="body2" sx={{ color: '#666', mt: 0.5 }}>
@@ -2718,7 +2720,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
             {/* RECEIPT HEADER */}
             <Box sx={{ textAlign: 'center', mb: 2 }}>
               <Typography variant="h6" fontWeight="bold" sx={{ 
-                backgroundColor: '#1976d2', 
+                backgroundColor: '#1e3a8a', 
                 color: 'white', 
                 p: 1, 
                 borderRadius: 1,
@@ -2781,7 +2783,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
 
             {/* STAFF AND PATIENT INFO */}
             <Box sx={{ mb: 2, borderBottom: '1px dashed #ccc', pb: 2 }}>
-              <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+              <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1e3a8a' }}>
                 👨‍⚕️ Served By: {lastTransaction.staffName}
               </Typography>
               {(currentPatient || customerName) && (
@@ -2838,7 +2840,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
             </Box>
 
             {/* TOTALS SECTION */}
-            <Box sx={{ borderTop: '2px solid #1976d2', pt: 1, mb: 2 }}>
+            <Box sx={{ borderTop: '2px solid #1e3a8a', pt: 1, mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                 <Typography variant="body2">Subtotal:</Typography>
                 <Typography variant="body2">{formatCurrency(lastTransaction.subtotal)}</Typography>
@@ -2900,7 +2902,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               <Button
                 variant="contained"
                 onClick={printReceipt}
-                sx={{ background: '#1976d2', color: 'white' }}
+                sx={{ background: '#1e3a8a', color: 'white' }}
               >
                 🖨️ Print Receipt
               </Button>
@@ -2927,7 +2929,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
         }}
       >
         <Box sx={{ 
-          backgroundColor: '#1976d2',
+          backgroundColor: '#1e3a8a',
           color: 'white',
           p: 2,
           textAlign: 'center'
@@ -2950,22 +2952,22 @@ const PharmacyPOSFirebaseIntegrated = () => {
               mb: 3,
               border: '1px solid #e5e7eb'
             }}>
-              <Typography variant="h6" fontWeight="bold" color="#1976d2" sx={{ mb: 0.5 }}>
+              <Typography variant="h6" fontWeight="bold" color="#1e3a8a" sx={{ mb: 0.5 }}>
                 {selectedMedicineForUnit.name}
               </Typography>
               <Typography variant="body2" color="#666" sx={{ mb: 1.5 }}>
                 {selectedMedicineForUnit.genericName} - {selectedMedicineForUnit.strength}
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
+                <Typography variant="h6" sx={{ color: '#1e3a8a', fontWeight: 'bold' }}>
                   {formatCurrency(selectedMedicineForUnit.sellingPrice)} per unit
                 </Typography>
                 <Chip 
                   label={`Stock: ${getMedicineStock(selectedMedicineForUnit)}`}
                   size="small"
                   sx={{
-                    backgroundColor: '#e3f2fd',
-                    color: '#1976d2',
+                    backgroundColor: '#eff6ff',
+                    color: '#1e3a8a',
                     fontWeight: 'bold'
                   }}
                 />
@@ -2986,12 +2988,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 <Paper
                   sx={{
                     p: 2,
-                    border: selectedUnitType === 'tablets' ? '2px solid #1976d2' : '2px solid #e5e7eb',
+                    border: selectedUnitType === 'tablets' ? '2px solid #1e3a8a' : '2px solid #e5e7eb',
                     borderRadius: 2,
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      borderColor: '#1976d2',
+                      borderColor: '#1e3a8a',
                       backgroundColor: '#f8f9fa'
                     }
                   }}
@@ -3003,8 +3005,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         value="tablets"
                         checked={selectedUnitType === 'tablets'}
                         sx={{ 
-                          color: '#1976d2',
-                          '&.Mui-checked': { color: '#1976d2' }
+                          color: '#1e3a8a',
+                          '&.Mui-checked': { color: '#1e3a8a' }
                         }}
                       />
                       <Box sx={{ ml: 1 }}>
@@ -3017,7 +3019,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                       </Box>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
-                      <Typography variant="body1" fontWeight="bold" color="#1976d2">
+                      <Typography variant="body1" fontWeight="bold" color="#1e3a8a">
                         +1 unit
                       </Typography>
                       <Typography variant="body2" color="#666">
@@ -3030,12 +3032,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 <Paper
                   sx={{
                     p: 2,
-                    border: selectedUnitType === 'cards' ? '2px solid #1976d2' : '2px solid #e5e7eb',
+                    border: selectedUnitType === 'cards' ? '2px solid #1e3a8a' : '2px solid #e5e7eb',
                     borderRadius: 2,
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      borderColor: '#1976d2',
+                      borderColor: '#1e3a8a',
                       backgroundColor: '#f8f9fa'
                     }
                   }}
@@ -3047,8 +3049,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
                         value="cards"
                         checked={selectedUnitType === 'cards'}
                         sx={{ 
-                          color: '#1976d2',
-                          '&.Mui-checked': { color: '#1976d2' }
+                          color: '#1e3a8a',
+                          '&.Mui-checked': { color: '#1e3a8a' }
                         }}
                       />
                       <Box sx={{ ml: 1 }}>
@@ -3061,7 +3063,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                       </Box>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
-                      <Typography variant="body1" fontWeight="bold" color="#1976d2">
+                      <Typography variant="body1" fontWeight="bold" color="#1e3a8a">
                         +10 units
                       </Typography>
                       <Typography variant="body2" color="#666">
@@ -3094,7 +3096,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 variant="contained"
                 onClick={handleUnitSelectionAndAddToCart}
                 sx={{ 
-                  backgroundColor: '#1976d2',
+                  backgroundColor: '#1e3a8a',
                   color: 'white',
                   px: 4,
                   py: 1,
