@@ -11,6 +11,10 @@ import ColdChainModule from './components/coldchain/ColdChainModule'
 import InventoryModule from './components/inventory/InventoryModule'
 import FirebaseDataCleaner from './components/FirebaseDataCleaner'
 import ProfessionalPharmacyEcommerce from './components/ecommerce/ProfessionalPharmacyEcommerce'
+import ERPDeliveryModule from './components/ERPDeliveryModule'
+import DeliveryManagement from './components/ecommerce/DeliveryManagement'
+import AdminDashboard from './components/admin/AdminDashboard'
+import AdminDeliveryManagement from './components/admin/AdminDeliveryManagement'
 import { AuthProvider } from './contexts/AuthContext'
 import { RoleProvider } from './contexts/RoleContext'
 import './App.css'
@@ -178,8 +182,9 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('ecommerce') // Show ecommerce directly
+  const [currentScreen, setCurrentScreen] = useState('splash') // Start with splash screen
   const navigate = useNavigate()
+  const location = useLocation()
 
   // Check URL parameters and current path on component mount
   useEffect(() => {
@@ -208,9 +213,11 @@ function App() {
       setCurrentScreen('dashboard');
     } else if (screenParam === 'splash') {
       setCurrentScreen('splash');
-    } else {
-      // Default to ecommerce for better user experience
+    } else if (screenParam === 'ecommerce') {
       setCurrentScreen('ecommerce');
+    } else {
+      // Default to splash for proper login flow
+      setCurrentScreen('splash');
     }
   }, []);
 
@@ -244,6 +251,14 @@ function App() {
 
   const handleInventoryAccess = () => {
     navigate('/inventory')
+  }
+
+  const handleDeliveryAccess = () => {
+    navigate('/delivery-management')
+  }
+
+  const handleAdminAccess = () => {
+    navigate('/admin')
   }
   
   const handleLogout = () => {
@@ -309,7 +324,17 @@ function App() {
               />
             </Box>
           } />
-          <Route path="/coldchain" element={<ColdChainModule />} />
+          <Route path="/coldchain" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <ColdChainModule />
+            </Box>
+          } />
+          <Route path="/delivery-management" element={<AdminDeliveryManagement />} />
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
@@ -320,22 +345,29 @@ function App() {
               <FirebaseDataCleaner />
             </Box>
           } />
-          <Route path="/dashboard" element={
-            <>
-              {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
-              {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
-            </>
+          <Route path="/admin" element={
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              minHeight: '100vh',
+              backgroundColor: '#f8fafc'
+            }}>
+              <AdminDashboard />
+            </Box>
           } />
           <Route path="/ecommerce" element={<ProfessionalPharmacyEcommerce />} />
+          <Route path="/delivery" element={<DeliveryManagement />} />
           <Route path="/" element={
-            <>
-              {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
-              {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onLogout={handleLogout} />}
-              {currentScreen === 'ecommerce' && <ProfessionalPharmacyEcommerce />}
-            </>
+            location.pathname === '/' ? (
+              <>
+                {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
+                {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
+                {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onAdminAccess={handleAdminAccess} onLogout={handleLogout} />}
+                {currentScreen === 'ecommerce' && <ProfessionalPharmacyEcommerce />}
+              </>
+            ) : null
           } />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </ErrorBoundary>
     </ThemeProvider>

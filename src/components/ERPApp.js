@@ -27,6 +27,8 @@ import ERPNavigation from './ERPNavigation';
 import ERPDashboard from './ERPDashboard';
 import InventoryModule from './inventory/InventoryModule';
 import RegulatoryCompliance from './inventory/RegulatoryCompliance';
+import ERPDeliveryModule from './ERPDeliveryModule';
+// import ColdChainModule from './coldchain/ColdChainModule';
 
 // Shared Components
 import { Notification } from './shared/SharedComponents';
@@ -108,7 +110,9 @@ const ERPApp = () => {
             onSalesAccess={() => console.log('Sales not available in ERPApp')}
             onHRAccess={() => console.log('HR not available in ERPApp')}
             onLegalAccess={() => console.log('Legal not available in ERPApp')}
-            onColdChainAccess={() => console.log('Cold Chain not available in ERPApp')}
+            onColdChainAccess={() => handleModuleChange('coldchain')}
+            onDeliveryAccess={() => handleModuleChange('delivery')}
+            onAdminAccess={() => console.log('Admin not available in ERPApp')}
             onLogout={() => console.log('Logout not available in ERPApp')}
           />
         );
@@ -127,6 +131,34 @@ const ERPApp = () => {
       
       case 'compliance':
         return <RegulatoryCompliance />;
+      
+      case 'delivery':
+      case 'delivery-management':
+      case 'delivery-tracking':
+        return (
+          <ERPDeliveryModule 
+            activeModule={activeModule}
+            onModuleChange={handleModuleChange}
+            onNotification={showNotification}
+          />
+        );
+      
+      case 'coldchain':
+      case 'cold-chain':
+      case 'temperature-monitoring':
+        return (
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h4" sx={{ mb: 3, color: '#1565c0', fontWeight: '700' }}>
+              🧊 Cold Chain Monitoring
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              Temperature and humidity monitoring system for pharmaceutical storage.
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#666' }}>
+              Module under development. Real-time IoT monitoring coming soon.
+            </Typography>
+          </Box>
+        );
       
       default:
         return <ERPDashboard onModuleChange={handleModuleChange} />;

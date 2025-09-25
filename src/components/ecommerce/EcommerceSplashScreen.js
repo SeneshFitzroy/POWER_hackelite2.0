@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Container, Card, CardContent, Fade, LinearProgress } from '@mui/material';
-import { ShoppingCart, LocalPharmacy, Security, LocalShipping, Payment } from '@mui/icons-material';
+import ShoppingCart from '@mui/icons-material/ShoppingCart';
+import LocalPharmacy from '@mui/icons-material/LocalPharmacy';
+import Security from '@mui/icons-material/Security';
+import LocalShipping from '@mui/icons-material/LocalShipping';
+import Payment from '@mui/icons-material/Payment';
 
 const EcommerceSplashScreen = ({ onGetStarted }) => {
   const [loading, setLoading] = useState(true);

@@ -97,6 +97,10 @@ import {
 // Import components
 import ProfessionalCheckout from './ProfessionalCheckout';
 import ProfessionalEcommerceAdmin from './ProfessionalEcommerceAdmin';
+import ProfessionalFooter from './ProfessionalFooter';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { useTheme, ThemeContextProvider } from '../../contexts/ThemeContext';
 
 // Professional Medicine Database with Real Data
 const medicineCategories = [
@@ -477,12 +481,42 @@ const ProfessionalEcommerceMain = () => {
     setSnackbar({ open: true, message, severity });
   };
 
+  // Dark Mode Toggle Component
+  const DarkModeToggle = () => {
+    const { isDarkMode, toggleTheme } = useTheme();
+    
+    return (
+      <IconButton
+        color="inherit"
+        onClick={toggleTheme}
+        sx={{
+          mr: 2,
+          backgroundColor: 'rgba(255,255,255,0.1)',
+          borderRadius: '50%',
+          '&:hover': {
+            backgroundColor: 'rgba(255,255,255,0.2)',
+          }
+        }}
+      >
+        {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
+      </IconButton>
+    );
+  };
+
   // Professional Header Component
-  const ProfessionalHeader = () => (
-    <AppBar position="sticky" sx={{
-      background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-      boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)'
-    }}>
+  const ProfessionalHeader = () => {
+    const { isDarkMode } = useTheme();
+    
+    return (
+      <AppBar position="sticky" sx={{
+        background: isDarkMode 
+          ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
+          : 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+        boxShadow: isDarkMode 
+          ? '0 4px 20px rgba(15, 23, 42, 0.5)'
+          : '0 4px 20px rgba(59, 130, 246, 0.3)',
+        transition: 'all 0.3s ease'
+      }}>
       <Toolbar sx={{ py: 1 }}>
         <IconButton
           edge="start"
@@ -525,13 +559,16 @@ const ProfessionalEcommerceMain = () => {
           size="small"
           sx={{
             flexGrow: 1,
-            maxWidth: 400,
-            mr: 2,
+            maxWidth: 550, // Increased from 400
+            mr: 3, // Increased margin
             '& .MuiOutlinedInput-root': {
               backgroundColor: 'rgba(255,255,255,0.15)',
               color: 'white',
+              borderRadius: '25px', // Added rounded corners
+              height: '42px', // Made taller
               '& fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-              '& input::placeholder': { color: 'rgba(255,255,255,0.7)' }
+              '& input::placeholder': { color: 'rgba(255,255,255,0.7)' },
+              '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.5)' }
             }
           }}
           InputProps={{
@@ -543,7 +580,40 @@ const ProfessionalEcommerceMain = () => {
           }}
         />
 
-        <Box display="flex" alignItems="center" gap={1}>
+        {/* Sort By Dropdown */}
+        <FormControl size="small" sx={{ minWidth: 160, mr: 3 }}>
+          <Select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            displayEmpty
+            sx={{
+              color: 'white',
+              height: '42px',
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'rgba(255,255,255,0.3)',
+                borderRadius: '25px'
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'rgba(255,255,255,0.5)'
+              },
+              '& .MuiSvgIcon-root': {
+                color: 'white'
+              }
+            }}
+          >
+            <MenuItem value="name">Sort by Name</MenuItem>
+            <MenuItem value="price-low">Price: Low to High</MenuItem>
+            <MenuItem value="price-high">Price: High to Low</MenuItem>
+            <MenuItem value="rating">Sort by Rating</MenuItem>
+            <MenuItem value="newest">Newest First</MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* Dark/Light Mode Toggle */}
+          <DarkModeToggle />
+
+          {/* Spacer to push cart to the right */}
+          <Box sx={{ flexGrow: 0.2 }} />        <Box display="flex" alignItems="center" gap={1.5} sx={{ ml: 'auto' }}>
           <IconButton color="inherit" onClick={() => setCurrentScreen('admin')}>
             <Badge badgeContent={0} color="error">
               <SettingsIcon />
@@ -571,7 +641,8 @@ const ProfessionalEcommerceMain = () => {
         </Box>
       </Toolbar>
     </AppBar>
-  );
+    );
+  };
 
   // Product Card Component
   const ProductCard = ({ product }) => {
@@ -599,9 +670,15 @@ const ProfessionalEcommerceMain = () => {
           <CardMedia
             component="img"
             height="200"
-            image={product.images[0]}
+            image={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/400x400/e5e7eb/6b7280?text=No+Image'}
             alt={product.name}
-            sx={{ borderRadius: '16px 16px 0 0' }}
+            sx={{ 
+              borderRadius: '16px 16px 0 0',
+              objectFit: 'cover'
+            }}
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/400x400/e5e7eb/6b7280?text=No+Image';
+            }}
           />
           
           {/* Discount Badge */}
@@ -982,8 +1059,8 @@ const ProfessionalEcommerceMain = () => {
           </Grid>
         </Box>
 
-        {/* Filters and Sort */}
-        <Box display="flex" justifyContent="between" alignItems="center" flexWrap="wrap" gap={2} sx={{ mb: 3 }}>
+        {/* Products Header */}
+        <Box display="flex" justifyContent="flex-start" alignItems="center" flexWrap="wrap" gap={2} sx={{ mb: 3 }}>
           <Box>
             <Typography variant="h5" fontWeight="bold" sx={{ color: '#1e3a8a' }}>
               Products ({filteredProducts.length})
@@ -1006,26 +1083,6 @@ const ProfessionalEcommerceMain = () => {
                 </Typography>
               </Breadcrumbs>
             )}
-          </Box>
-          <Box display="flex" gap={2} alignItems="center">
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Sort By</InputLabel>
-              <Select
-                value={sortBy}
-                label="Sort By"
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <MenuItem value="name">Name A-Z</MenuItem>
-                <MenuItem value="price-low">Price: Low to High</MenuItem>
-                <MenuItem value="price-high">Price: High to Low</MenuItem>
-                <MenuItem value="rating">Highest Rated</MenuItem>
-                <MenuItem value="popularity">Most Popular</MenuItem>
-                <MenuItem value="newest">Newest First</MenuItem>
-              </Select>
-            </FormControl>
-            <IconButton>
-              <FilterListIcon />
-            </IconButton>
           </Box>
         </Box>
 
@@ -1191,8 +1248,13 @@ const ProfessionalEcommerceMain = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh' }}>
-      {renderCurrentScreen()}
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flex: 1 }}>
+        {renderCurrentScreen()}
+      </Box>
+      
+      {/* Professional Footer */}
+      <ProfessionalFooter />
 
       {/* Snackbar */}
       <Snackbar
@@ -1212,9 +1274,11 @@ const ProfessionalEcommerceMain = () => {
 // Wrap the component with the provider
 const ProfessionalEcommerceMainWithProvider = () => {
   return (
-    <EcommerceProvider>
-      <ProfessionalEcommerceMain />
-    </EcommerceProvider>
+    <ThemeContextProvider>
+      <EcommerceProvider>
+        <ProfessionalEcommerceMain />
+      </EcommerceProvider>
+    </ThemeContextProvider>
   );
 };
 

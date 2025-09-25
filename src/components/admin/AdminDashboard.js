@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { formatLKR, formatLKRCompact } from '../../utils/currencyFormatter';
 import {
   Box,
   Typography,
@@ -393,30 +394,49 @@ const AdminDashboard = () => {
   // Quick Action Button Component
 
 
-  // Comprehensive Admin Dashboard Overview
+  // Professional Admin Dashboard Overview - Streamlined & Optimized
   const ComprehensiveDashboard = () => (
-    <Container maxWidth="xl" sx={{ py: 2.5, px: 2.5 }}>
-      {/* Combined Dashboard Analytics Section */}
-      <Box display="flex" alignItems="center" gap={1} mb={2}>
-        <DashboardCustomize sx={{ color: '#1e3a8a', fontSize: 22 }} />
-        <Typography variant="h6" fontWeight="600" sx={{ color: '#1e3a8a', fontSize: '1.125rem' }}>
-          Dashboard Analytics
-        </Typography>
+    <Container maxWidth="xl" sx={{ py: 3, px: 2.5 }}>
+      {/* Executive Summary Header */}
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+        <Box display="flex" alignItems="center" gap={2}>
+          <DashboardCustomize sx={{ color: '#1e3a8a', fontSize: 28 }} />
+          <Box>
+            <Typography variant="h4" fontWeight="bold" sx={{ color: '#1e3a8a' }}>
+              Executive Dashboard
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Real-time business analytics and system monitoring
+            </Typography>
+          </Box>
+        </Box>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Chip 
+            label="Live Data" 
+            color="success" 
+            size="small" 
+            icon={<CircularProgress size={12} sx={{ color: '#fff !important' }} />}
+          />
+          <Typography variant="body2" color="text.secondary">
+            Last updated: {new Date().toLocaleTimeString()}
+          </Typography>
+        </Box>
       </Box>
-      <Grid container spacing={2.5} sx={{ mb: 3.5 }}>
-        {/* E-commerce Analytics Row */}
+
+      {/* Core Business Metrics - Single Row */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid xs={12} sm={6} md={3}>
           <StatCard
-            title="Total Sales"
-            value={`$${(adminStats.totalSales / 1000).toFixed(1)}K`}
+            title="Total Revenue"
+            value={formatLKRCompact(adminStats.totalSales)}
             icon={AttachMoney}
             trend={12.5}
-            subtitle="Monthly revenue"
+            subtitle="Monthly earnings"
           />
         </Grid>
         <Grid xs={12} sm={6} md={3}>
           <StatCard
-            title="Total Orders"
+            title="Orders"
             value={adminStats.totalOrders}
             icon={ShoppingBag}
             trend={8.2}
@@ -425,49 +445,11 @@ const AdminDashboard = () => {
         </Grid>
         <Grid xs={12} sm={6} md={3}>
           <StatCard
-            title="Active Products"
-            value={adminStats.activeProducts}
-            icon={Inventory}
-            trend={5.1}
-            subtitle="In catalog"
-          />
-        </Grid>
-        <Grid xs={12} sm={6} md={3}>
-          <StatCard
-            title="Total Customers"
-            value={adminStats.totalCustomers}
-            icon={Group}
-            trend={15.3}
-            subtitle="Registered users"
-          />
-        </Grid>
-        
-        {/* System Administration Row */}
-        <Grid xs={12} sm={6} md={3}>
-          <StatCard
-            title="System Users"
-            value={adminStats.totalUsers}
-            icon={People}
-            trend={7.8}
-            subtitle="Total registered"
-          />
-        </Grid>
-        <Grid xs={12} sm={6} md={3}>
-          <StatCard
-            title="Active Sessions"
+            title="Active Users"
             value={adminStats.activeUsers}
-            icon={CheckCircle}
+            icon={People}
             trend={12.1}
             subtitle="Currently online"
-          />
-        </Grid>
-        <Grid xs={12} sm={6} md={3}>
-          <StatCard
-            title="Security Alerts"
-            value={adminStats.securityAlerts}
-            icon={Warning}
-            trend={-15.2}
-            subtitle="This week"
           />
         </Grid>
         <Grid xs={12} sm={6} md={3}>
@@ -476,192 +458,216 @@ const AdminDashboard = () => {
             value={`${adminStats.systemHealth}%`}
             icon={Assessment}
             trend={2.1}
-            subtitle="Overall status"
+            subtitle="Overall performance"
           />
         </Grid>
       </Grid>
 
-      {/* Critical Alerts & Status */}
-      <Grid container spacing={2.5} sx={{ mt: 3.5, mb: 2 }}>
-        <Grid xs={12} sm={6} md={3}>
-          <Card sx={{ borderRadius: '12px', p: 2.5, textAlign: 'center', border: '2px solid #fbbf24', minHeight: '100px' }}>
-            <Typography variant="body1" color="text.secondary" fontWeight="600" sx={{ fontSize: '0.875rem', mb: 1 }}>
-              PENDING ORDERS
-            </Typography>
-            <Typography variant="h3" fontWeight="bold" color="warning.main" sx={{ fontSize: '2.25rem' }}>
-              {adminStats.pendingOrders}
-            </Typography>
-          </Card>
+      {/* Critical Alerts - Consolidated */}
+      <Paper sx={{ p: 3, borderRadius: '16px', mb: 3, background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)' }}>
+        <Grid container spacing={3}>
+          <Grid xs={6} md={3}>
+            <Box textAlign="center" py={1}>
+              <Typography variant="h3" fontWeight="bold" color="warning.main" sx={{ fontSize: '2rem' }}>
+                {adminStats.pendingOrders}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', mt: 0.5 }}>
+                Pending Orders
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid xs={6} md={3}>
+            <Box textAlign="center" py={1}>
+              <Typography variant="h3" fontWeight="bold" color="error.main" sx={{ fontSize: '2rem' }}>
+                {adminStats.blockedUsers}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', mt: 0.5 }}>
+                Blocked Users
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid xs={6} md={3}>
+            <Box textAlign="center" py={1}>
+              <Typography variant="h3" fontWeight="bold" color="info.main" sx={{ fontSize: '2rem' }}>
+                {adminStats.loginAttempts}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', mt: 0.5 }}>
+                Login Attempts
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid xs={6} md={3}>
+            <Box textAlign="center" py={1}>
+              <Typography variant="h3" fontWeight="bold" color="success.main" sx={{ fontSize: '2rem' }}>
+                {adminStats.systemBackups}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', mt: 0.5 }}>
+                Backups
+              </Typography>
+            </Box>
+          </Grid>
         </Grid>
-        <Grid xs={12} sm={6} md={3}>
-          <Card sx={{ borderRadius: '12px', p: 2.5, textAlign: 'center', border: '2px solid #f87171', minHeight: '100px' }}>
-            <Typography variant="body1" color="text.secondary" fontWeight="600" sx={{ fontSize: '0.875rem', mb: 1 }}>
-              BLOCKED USERS
-            </Typography>
-            <Typography variant="h3" fontWeight="bold" color="error.main" sx={{ fontSize: '2.25rem' }}>
-              {adminStats.blockedUsers}
-            </Typography>
-          </Card>
-        </Grid>
-        <Grid xs={12} sm={6} md={3}>
-          <Card sx={{ borderRadius: '12px', p: 2.5, textAlign: 'center', border: '2px solid #fbbf24', minHeight: '100px' }}>
-            <Typography variant="body1" color="text.secondary" fontWeight="600" sx={{ fontSize: '0.875rem', mb: 1 }}>
-              LOGIN ATTEMPTS
-            </Typography>
-            <Typography variant="h3" fontWeight="bold" color="warning.main" sx={{ fontSize: '2.25rem' }}>
-              {adminStats.loginAttempts}
-            </Typography>
-          </Card>
-        </Grid>
-        <Grid xs={12} sm={6} md={3}>
-          <Card sx={{ borderRadius: '12px', p: 2.5, textAlign: 'center', border: '2px solid #4ade80', minHeight: '100px' }}>
-            <Typography variant="body1" color="text.secondary" fontWeight="600" sx={{ fontSize: '0.875rem', mb: 1 }}>
-              SYSTEM BACKUPS
-            </Typography>
-            <Typography variant="h3" fontWeight="bold" color="success.main" sx={{ fontSize: '2.25rem' }}>
-              {adminStats.systemBackups}
-            </Typography>
-          </Card>
-        </Grid>
-      </Grid>
+      </Paper>
 
-      {/* Analytics & Reports Section */}
-      <Box display="flex" alignItems="center" gap={1} mb={2} sx={{ mt: 4 }}>
-        <Assessment sx={{ color: '#1e3a8a', fontSize: 22 }} />
-        <Typography variant="h6" fontWeight="600" sx={{ color: '#1e3a8a', fontSize: '1.125rem' }}>
-          Analytics & Reports
-        </Typography>
-      </Box>
-      
-      <Grid container spacing={2.5} sx={{ mb: 3.5 }}>
+      {/* Business Intelligence Dashboard */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        {/* Performance Analytics */}
         <Grid xs={12} md={8}>
-          <Paper sx={{ p: 3, borderRadius: '16px', minHeight: '300px' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper sx={{ p: 3, borderRadius: '16px', minHeight: '350px' }}>
+            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <TrendingUp sx={{ color: '#1e3a8a' }} />
-              Sales Performance Trends
+              Business Performance Analytics
             </Typography>
-            <Box display="flex" flexDirection="column" gap={2} mt={2}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" p={2} sx={{ backgroundColor: '#f8fafc', borderRadius: 2 }}>
-                <Typography fontWeight="medium">Daily Sales Growth</Typography>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <TrendingUp sx={{ fontSize: 16, color: '#10b981' }} />
-                  <Typography fontWeight="bold" color="success.main">+12.5%</Typography>
+            <Grid container spacing={2.5}>
+              <Grid xs={12} sm={6}>
+                <Box p={2.5} sx={{ backgroundColor: '#f0f9ff', borderRadius: 2, textAlign: 'center' }}>
+                  <Typography variant="h4" fontWeight="bold" color="primary.main" sx={{ fontSize: '1.5rem' }}>
+                    +15.7%
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', mt: 0.5 }}>
+                    Monthly Growth
+                  </Typography>
                 </Box>
-              </Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center" p={2} sx={{ backgroundColor: '#f8fafc', borderRadius: 2 }}>
-                <Typography fontWeight="medium">Weekly Performance</Typography>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <TrendingUp sx={{ fontSize: 16, color: '#10b981' }} />
-                  <Typography fontWeight="bold" color="success.main">+8.2%</Typography>
+              </Grid>
+              <Grid xs={12} sm={6}>
+                <Box p={2.5} sx={{ backgroundColor: '#f0fdf4', borderRadius: 2, textAlign: 'center' }}>
+                  <Typography variant="h4" fontWeight="bold" color="success.main" sx={{ fontSize: '1.5rem' }}>
+                    {formatLKR(adminStats.avgOrderValue)}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', mt: 0.5 }}>
+                    Avg Order Value
+                  </Typography>
                 </Box>
-              </Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center" p={2} sx={{ backgroundColor: '#f8fafc', borderRadius: 2 }}>
-                <Typography fontWeight="medium">Monthly Revenue</Typography>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <TrendingUp sx={{ fontSize: 16, color: '#10b981' }} />
-                  <Typography fontWeight="bold" color="success.main">+15.7%</Typography>
+              </Grid>
+              <Grid xs={12} sm={6}>
+                <Box p={2.5} sx={{ backgroundColor: '#fefce8', borderRadius: 2, textAlign: 'center' }}>
+                  <Typography variant="h4" fontWeight="bold" color="warning.main" sx={{ fontSize: '1.5rem' }}>
+                    3.4%
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', mt: 0.5 }}>
+                    Conversion Rate
+                  </Typography>
                 </Box>
-              </Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center" p={2} sx={{ backgroundColor: '#f8fafc', borderRadius: 2 }}>
-                <Typography fontWeight="medium">Yearly Growth</Typography>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <TrendingUp sx={{ fontSize: 16, color: '#10b981' }} />
-                  <Typography fontWeight="bold" color="success.main">+23.1%</Typography>
+              </Grid>
+              <Grid xs={12} sm={6}>
+                <Box p={2.5} sx={{ backgroundColor: '#f5f3ff', borderRadius: 2, textAlign: 'center' }}>
+                  <Typography variant="h4" fontWeight="bold" color="secondary.main" sx={{ fontSize: '1.5rem' }}>
+                    87.3%
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', mt: 0.5 }}>
+                    Customer Retention
+                  </Typography>
                 </Box>
+              </Grid>
+            </Grid>
+            
+            {/* Performance Trend Indicators */}
+            <Box sx={{ mt: 2.5 }}>
+              <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontSize: '0.75rem', mb: 1 }}>
+                Performance Trends
+              </Typography>
+              <Box display="flex" gap={1.5} flexWrap="wrap">
+                <Chip icon={<TrendingUp />} label="Sales +12.5%" color="success" size="small" sx={{ fontSize: '0.7rem' }} />
+                <Chip icon={<TrendingUp />} label="Users +8.2%" color="info" size="small" sx={{ fontSize: '0.7rem' }} />
+                <Chip icon={<TrendingDown />} label="Bounce -3.1%" color="success" size="small" sx={{ fontSize: '0.7rem' }} />
+                <Chip icon={<TrendingUp />} label="Revenue +23.1%" color="primary" size="small" sx={{ fontSize: '0.7rem' }} />
               </Box>
             </Box>
           </Paper>
         </Grid>
         
+        {/* Quick Insights */}
         <Grid xs={12} md={4}>
-          <Paper sx={{ p: 3, borderRadius: '16px', minHeight: '300px' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper sx={{ p: 3, borderRadius: '16px', minHeight: '350px' }}>
+            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <Assessment sx={{ color: '#f59e0b' }} />
-              Key Insights
+              Business Insights
             </Typography>
-            <Box display="flex" flexDirection="column" gap={2.5} mt={2}>
+            <Box display="flex" flexDirection="column" gap={2.5} sx={{ mt: 1 }}>
               <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>Conversion Rate</Typography>
-                <Typography variant="h5" fontWeight="bold" sx={{ color: '#1e3a8a' }}>3.4%</Typography>
-                <LinearProgress variant="determinate" value={34} sx={{ mt: 1, height: 6, borderRadius: 3, '& .MuiLinearProgress-bar': { backgroundColor: '#1e3a8a' } }} />
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                    Customer Satisfaction
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold" color="success.main" sx={{ fontSize: '1rem' }}>
+                    4.8/5
+                  </Typography>
+                </Box>
+                <LinearProgress variant="determinate" value={96} color="success" sx={{ height: 6, borderRadius: 3 }} />
               </Box>
+              
+              <Divider sx={{ my: 0.5 }} />
+              
               <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>Average Order Value</Typography>
-                <Typography variant="h5" fontWeight="bold" color="success.main">${adminStats.avgOrderValue}</Typography>
-                <LinearProgress variant="determinate" value={68} color="success" sx={{ mt: 1, height: 6, borderRadius: 3 }} />
+                <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontSize: '0.75rem' }}>
+                  Top Category
+                </Typography>
+                <Typography variant="h6" fontWeight="bold" color="primary.main" sx={{ fontSize: '1.1rem' }}>
+                  Electronics
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  45% of total sales
+                </Typography>
               </Box>
+              
               <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>Customer Satisfaction</Typography>
-                <Typography variant="h5" fontWeight="bold" color="info.main">4.8/5</Typography>
-                <LinearProgress variant="determinate" value={96} color="info" sx={{ mt: 1, height: 6, borderRadius: 3 }} />
+                <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontSize: '0.75rem' }}>
+                  Peak Hours
+                </Typography>
+                <Typography variant="h6" fontWeight="bold" sx={{ color: '#1e3a8a', fontSize: '1.1rem' }}>
+                  2:00 PM - 4:00 PM
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  Best conversion time
+                </Typography>
               </Box>
+              
               <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>System Performance</Typography>
-                <Chip 
-                  label={`${adminStats.systemHealth}% Optimal`} 
-                  color="success" 
-                  size="small" 
-                  sx={{ fontWeight: 'bold' }}
-                />
+                <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontSize: '0.75rem' }}>
+                  Return Rate
+                </Typography>
+                <Typography variant="h6" fontWeight="bold" color="warning.main" sx={{ fontSize: '1.1rem' }}>
+                  2.1%
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  Industry average: 3.2%
+                </Typography>
               </Box>
             </Box>
           </Paper>
         </Grid>
       </Grid>
 
-      {/* Top Products & Performance Section */}
-      <Grid container spacing={2.5} sx={{ mt: 1 }}>
-        <Grid xs={12} md={6}>
-          <Paper sx={{ p: 3, borderRadius: '16px' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Store sx={{ color: '#1e3a8a' }} />
-              Top Selling Products
-            </Typography>
-            <List>
-              {topProducts.map((product, index) => (
-                <ListItem key={product.id} divider={index < topProducts.length - 1}>
-                  <ListItemText
-                    primary={product.name}
-                    secondary={`${product.sales} sales • $${product.revenue} revenue`}
-                  />
-                  <Chip 
-                    label={`Stock: ${product.stock}`} 
-                    size="small" 
-                    color={product.stock > 50 ? 'success' : product.stock > 20 ? 'warning' : 'error'}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </Paper>
+      {/* Top Products Overview */}
+      <Paper sx={{ p: 3, borderRadius: '16px' }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <Store sx={{ color: '#1e3a8a' }} />
+          Top Performing Products
+        </Typography>
+        <Grid container spacing={2.5}>
+          {topProducts.slice(0, 4).map((product, index) => (
+            <Grid xs={12} sm={6} md={3} key={product.id}>
+              <Paper sx={{ p: 2.5, borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'center', minHeight: '140px' }}>
+                <Typography variant="body1" fontWeight="bold" noWrap sx={{ fontSize: '0.9rem' }}>
+                  {product.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: '0.75rem' }}>
+                  {product.sales} sales
+                </Typography>
+                <Typography variant="h6" fontWeight="bold" color="success.main" sx={{ mt: 1, fontSize: '1rem' }}>
+                  {formatLKR(product.revenue)}
+                </Typography>
+                <Chip 
+                  label={`Stock: ${product.stock}`} 
+                  size="small" 
+                  color={product.stock > 50 ? 'success' : product.stock > 20 ? 'warning' : 'error'}
+                  sx={{ mt: 1, fontSize: '0.7rem' }}
+                />
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
-        
-        <Grid xs={12} md={6}>
-          <Paper sx={{ p: 3, borderRadius: '16px' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Assessment sx={{ color: '#10b981' }} />
-              Performance Summary
-            </Typography>
-            <Box display="flex" flexDirection="column" gap={2}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" p={2} sx={{ backgroundColor: '#ecfdf5', borderRadius: 2 }}>
-                <Typography>Best Performing Category</Typography>
-                <Typography fontWeight="bold" color="success.main">Electronics</Typography>
-              </Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center" p={2} sx={{ backgroundColor: '#eff6ff', borderRadius: 2 }}>
-                <Typography>Peak Sales Hour</Typography>
-                <Typography fontWeight="bold" sx={{ color: '#1e3a8a' }}>2:00 PM - 4:00 PM</Typography>
-              </Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center" p={2} sx={{ backgroundColor: '#fef3c7', borderRadius: 2 }}>
-                <Typography>Return Rate</Typography>
-                <Typography fontWeight="bold" color="warning.main">2.1%</Typography>
-              </Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center" p={2} sx={{ backgroundColor: '#f3e8ff', borderRadius: 2 }}>
-                <Typography>Customer Retention</Typography>
-                <Typography fontWeight="bold" color="secondary.main">87.3%</Typography>
-              </Box>
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+      </Paper>
     </Container>
   );
 
@@ -700,7 +706,7 @@ const AdminDashboard = () => {
                 <TableRow key={order.id} hover>
                   <TableCell fontWeight="medium">{order.id}</TableCell>
                   <TableCell>{order.customer}</TableCell>
-                  <TableCell>${order.amount}</TableCell>
+                  <TableCell>{formatLKR(order.amount)}</TableCell>
                   <TableCell>
                     <FormControl size="small" sx={{ minWidth: 120 }}>
                       <Select
@@ -787,7 +793,7 @@ const AdminDashboard = () => {
                     </Box>
                   </TableCell>
                   <TableCell>{product.category}</TableCell>
-                  <TableCell>${product.price}</TableCell>
+                  <TableCell>{formatLKR(product.price)}</TableCell>
                   <TableCell>
                     <Chip
                       label={product.stock}
@@ -868,7 +874,7 @@ const AdminDashboard = () => {
                   </TableCell>
                   <TableCell>{customer.email}</TableCell>
                   <TableCell>{customer.orders}</TableCell>
-                  <TableCell>${customer.totalSpent}</TableCell>
+                  <TableCell>{formatLKR(customer.totalSpent)}</TableCell>
                   <TableCell>
                     <Chip
                       label={customer.status}
@@ -896,62 +902,6 @@ const AdminDashboard = () => {
           </Table>
         </TableContainer>
       </Paper>
-    </Container>
-  );
-
-  // Analytics Component
-  const AnalyticsComponent = () => (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Typography variant="h5" fontWeight="bold" gutterBottom>
-        Analytics & Reports
-      </Typography>
-      
-      <Grid container spacing={3}>
-        <Grid xs={12} md={6}>
-          <Paper sx={{ p: 3, borderRadius: '16px' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Top Selling Products
-            </Typography>
-            <List>
-              {topProducts.map((product, index) => (
-                <ListItem key={product.id} divider={index < topProducts.length - 1}>
-                  <ListItemText
-                    primary={product.name}
-                    secondary={`${product.sales} sales • $${product.revenue} revenue`}
-                  />
-                  <Chip label={`Stock: ${product.stock}`} size="small" />
-                </ListItem>
-              ))}
-            </List>
-          </Paper>
-        </Grid>
-        
-        <Grid xs={12} md={6}>
-          <Paper sx={{ p: 3, borderRadius: '16px' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Sales Performance
-            </Typography>
-            <Box display="flex" flexDirection="column" gap={2}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography>Daily Sales</Typography>
-                <Typography fontWeight="bold" color="success.main">+12.5%</Typography>
-              </Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography>Weekly Sales</Typography>
-                <Typography fontWeight="bold" color="success.main">+8.2%</Typography>
-              </Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography>Monthly Sales</Typography>
-                <Typography fontWeight="bold" color="success.main">+15.7%</Typography>
-              </Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography>Yearly Sales</Typography>
-                <Typography fontWeight="bold" color="success.main">+23.1%</Typography>
-              </Box>
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
     </Container>
   );
 
@@ -1700,135 +1650,6 @@ const AdminDashboard = () => {
       </Paper>
     </Container>
   );
-
-  // Professional Analytics & Reports - Combined Analytics
-  const ProfessionalAnalytics = () => {
-    return (
-      <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          mb: 4
-        }}>
-          📊 Analytics & Reports
-        </Typography>
-
-        <Grid container spacing={3} mb={4}>
-          <Grid xs={12} md={3}>
-            <Card sx={{ 
-              borderRadius: '20px', 
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              p: 2 
-            }}>
-              <CardContent>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="h4" fontWeight="bold">${adminStats.totalSales.toLocaleString()}</Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>Total Sales</Typography>
-                  </Box>
-                  <AttachMoney sx={{ fontSize: 40, opacity: 0.8 }} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          <Grid xs={12} md={3}>
-            <Card sx={{ 
-              borderRadius: '20px', 
-              background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-              color: 'white',
-              p: 2 
-            }}>
-              <CardContent>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="h4" fontWeight="bold">{adminStats.totalOrders.toLocaleString()}</Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>Total Orders</Typography>
-                  </Box>
-                  <ShoppingCart sx={{ fontSize: 40, opacity: 0.8 }} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid xs={12} md={3}>
-            <Card sx={{ 
-              borderRadius: '20px', 
-              background: 'linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%)',
-              color: 'white',
-              p: 2 
-            }}>
-              <CardContent>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="h4" fontWeight="bold">{adminStats.totalCustomers.toLocaleString()}</Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>Customers</Typography>
-                  </Box>
-                  <People sx={{ fontSize: 40, opacity: 0.8 }} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid xs={12} md={3}>
-            <Card sx={{ 
-              borderRadius: '20px', 
-              background: 'linear-gradient(135deg, #4776e6 0%, #8e54e9 100%)',
-              color: 'white',
-              p: 2 
-            }}>
-              <CardContent>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="h4" fontWeight="bold">{adminStats.activeProducts.toLocaleString()}</Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>Products</Typography>
-                  </Box>
-                  <Inventory sx={{ fontSize: 40, opacity: 0.8 }} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={3}>
-          <Grid xs={12} md={8}>
-            <Paper sx={{ p: 3, borderRadius: '20px', height: '400px' }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>📈 Sales Performance</Typography>
-              <Box display="flex" alignItems="center" justifyContent="center" height="300px">
-                <Typography variant="h5" color="text.secondary">Interactive Charts Coming Soon</Typography>
-              </Box>
-            </Paper>
-          </Grid>
-          
-          <Grid xs={12} md={4}>
-            <Paper sx={{ p: 3, borderRadius: '20px', height: '400px' }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>🎯 Quick Insights</Typography>
-              <Box display="flex" flexDirection="column" gap={2}>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Typography>Conversion Rate</Typography>
-                  <Typography fontWeight="bold" color="success.main">3.4%</Typography>
-                </Box>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Typography>Avg. Order Value</Typography>
-                  <Typography fontWeight="bold">${adminStats.avgOrderValue}</Typography>
-                </Box>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Typography>Active Users</Typography>
-                  <Typography fontWeight="bold" color="primary.main">{adminStats.totalUsers}</Typography>
-                </Box>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Typography>System Health</Typography>
-                  <Chip label={adminStats.systemHealth} color="success" size="small" />
-                </Box>
-              </Box>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Container>
-    );
-  };
 
 
 

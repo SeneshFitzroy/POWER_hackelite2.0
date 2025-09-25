@@ -10,7 +10,12 @@ import {
   MenuItem,
   Avatar
 } from '@mui/material';
-import { AccountCircle, ExitToApp, LocalPharmacy, Dashboard, Settings, TrendingUp } from '@mui/icons-material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import ExitToApp from '@mui/icons-material/ExitToApp';
+import LocalPharmacy from '@mui/icons-material/LocalPharmacy';
+import Dashboard from '@mui/icons-material/Dashboard';
+import Settings from '@mui/icons-material/Settings';
+import TrendingUp from '@mui/icons-material/TrendingUp';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
