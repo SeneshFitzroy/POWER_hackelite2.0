@@ -181,6 +181,7 @@ class ErrorBoundary extends React.Component {
 function App() {
   const [currentScreen, setCurrentScreen] = useState('splash') // Start with splash screen
   const navigate = useNavigate()
+  const location = useLocation()
 
   // Check URL parameters and current path on component mount
   useEffect(() => {
@@ -358,22 +359,17 @@ function App() {
               <AdminDashboard />
             </Box>
           } />
-          <Route path="/dashboard" element={
-            <>
-              {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
-              {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onAdminAccess={handleAdminAccess} onLogout={handleLogout} />}
-            </>
-          } />
           <Route path="/ecommerce" element={<ProfessionalPharmacyEcommerce />} />
           <Route path="/delivery" element={<DeliveryManagement />} />
           <Route path="/" element={
-            <>
-              {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
-              {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
-              {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onAdminAccess={handleAdminAccess} onLogout={handleLogout} />}
-              {currentScreen === 'ecommerce' && <ProfessionalPharmacyEcommerce />}
-            </>
+            location.pathname === '/' ? (
+              <>
+                {currentScreen === 'splash' && <SplashScreen onGetStarted={handleSplashComplete} />}
+                {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
+                {currentScreen === 'dashboard' && <ERPDashboard onPOSAccess={handlePOSAccess} onSalesAccess={handleSalesAccess} onHRAccess={handleHRAccess} onLegalAccess={handleLegalAccess} onColdChainAccess={handleColdChainAccess} onInventoryAccess={handleInventoryAccess} onDeliveryAccess={handleDeliveryAccess} onAdminAccess={handleAdminAccess} onLogout={handleLogout} />}
+                {currentScreen === 'ecommerce' && <ProfessionalPharmacyEcommerce />}
+              </>
+            ) : null
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
