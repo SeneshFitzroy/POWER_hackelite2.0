@@ -2,6 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase/config';
 import { collection, addDoc, getDocs, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet default icons
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
 import {
   Box,
   Container,
@@ -88,10 +99,12 @@ const AdminDeliveryManagement = () => {
   const [newDriverDialog, setNewDriverDialog] = useState(false);
   
   // Map related states
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markersRef = useRef([]);
+  const [mapLoaded, setMapLoaded] = useState(true);
+  const [mapCenter, setMapCenter] = useState([6.9271, 79.8612]); // Colombo, Sri Lanka
+  const [mapZoom, setMapZoom] = useState(13);
+  const [deliveryLocations, setDeliveryLocations] = useState([]);
+  const [driverLocations, setDriverLocations] = useState([]);
+  const [routeLines, setRouteLines] = useState([]);
   
   const [deliveryForm, setDeliveryForm] = useState({
     customer: '',
@@ -136,13 +149,7 @@ const AdminDeliveryManagement = () => {
 
   // Logout handler
   const handleLogout = () => {
-    // Clear any stored authentication data
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('isAuthenticated');
-    
-    // Navigate directly to the login screen by setting the URL with login parameter
-    window.location.href = '/?screen=login';
+    navigate('/');
   };
 
   // Mock data for delivery statistics
@@ -355,312 +362,118 @@ const AdminDeliveryManagement = () => {
     }
   };
 
-  // Google Maps Functions
-  const initializeMap = () => {
-    if (window.google && mapRef.current) {
-      const map = new window.google.maps.Map(mapRef.current, {
-        center: { lat: 6.9271, lng: 79.8612 }, // Colombo, Sri Lanka
-        zoom: 13,
-        styles: [
-          {
-            "featureType": "all",
-            "elementType": "geometry.fill",
-            "stylers": [{"weight": "2.00"}]
-          },
-          {
-            "featureType": "all",
-            "elementType": "geometry.stroke",
-            "stylers": [{"color": "#9c9c9c"}]
-          },
-          {
-            "featureType": "all",
-            "elementType": "labels.text",
-            "stylers": [{"visibility": "on"}]
-          },
-          {
-            "featureType": "landscape",
-            "elementType": "all",
-            "stylers": [{"color": "#f2f2f2"}]
-          },
-          {
-            "featureType": "landscape",
-            "elementType": "geometry.fill",
-            "stylers": [{"color": "#ffffff"}]
-          },
-          {
-            "featureType": "landscape.man_made",
-            "elementType": "geometry.fill",
-            "stylers": [{"color": "#ffffff"}]
-          },
-          {
-            "featureType": "poi",
-            "elementType": "all",
-            "stylers": [{"visibility": "off"}]
-          },
-          {
-            "featureType": "road",
-            "elementType": "all",
-            "stylers": [{"saturation": -100}, {"lightness": 45}]
-          },
-          {
-            "featureType": "road",
-            "elementType": "geometry.fill",
-            "stylers": [{"color": "#eeeeee"}]
-          },
-          {
-            "featureType": "road",
-            "elementType": "labels.text.fill",
-            "stylers": [{"color": "#7b7b7b"}]
-          },
-          {
-            "featureType": "road",
-            "elementType": "labels.text.stroke",
-            "stylers": [{"color": "#ffffff"}]
-          },
-          {
-            "featureType": "road.highway",
-            "elementType": "all",
-            "stylers": [{"visibility": "simplified"}]
-          },
-          {
-            "featureType": "road.arterial",
-            "elementType": "labels.icon",
-            "stylers": [{"visibility": "off"}]
-          },
-          {
-            "featureType": "transit",
-            "elementType": "all",
-            "stylers": [{"visibility": "off"}]
-          },
-          {
-            "featureType": "water",
-            "elementType": "all",
-            "stylers": [{"color": "#46bcec"}, {"visibility": "on"}]
-          },
-          {
-            "featureType": "water",
-            "elementType": "geometry.fill",
-            "stylers": [{"color": "#c8d7d4"}]
-          },
-          {
-            "featureType": "water",
-            "elementType": "labels.text.fill",
-            "stylers": [{"color": "#070707"}]
-          },
-          {
-            "featureType": "water",
-            "elementType": "labels.text.stroke",
-            "stylers": [{"color": "#ffffff"}]
-          }
-        ],
-        disableDefaultUI: true,
-        zoomControl: true,
-        mapTypeControl: false,
-        scaleControl: false,
-        streetViewControl: false,
-        rotateControl: false,
-        fullscreenControl: true
-      });
+  // Leaflet Map Functions
+  const generateMapData = () => {
+    // Generate realistic delivery locations around Colombo
+    const deliveryLocs = deliveries.map((delivery, index) => ({
+      id: index,
+      position: [
+        6.9271 + (Math.random() - 0.5) * 0.05, // Smaller spread for more realistic locations
+        79.8612 + (Math.random() - 0.5) * 0.05
+      ],
+      delivery: delivery
+    }));
 
-      mapInstanceRef.current = map;
-      setMapLoaded(true);
-      
-      // Load markers after a short delay to ensure map is ready
-      setTimeout(() => {
-        loadMapData();
-      }, 500);
+    // Generate driver locations
+    const driverLocs = drivers.map((driver, index) => ({
+      id: index,
+      position: [
+        6.9271 + (Math.random() - 0.5) * 0.05,
+        79.8612 + (Math.random() - 0.5) * 0.05
+      ],
+      driver: driver
+    }));
+
+    setDeliveryLocations(deliveryLocs);
+    setDriverLocations(driverLocs);
+
+    // Generate routes between drivers and deliveries
+    const routes = [];
+    for (let i = 0; i < Math.min(deliveryLocs.length, driverLocs.length, 3); i++) {
+      routes.push({
+        id: i,
+        positions: [driverLocs[i].position, deliveryLocs[i].position],
+        color: '#3b82f6',
+        driver: driverLocs[i].driver,
+        delivery: deliveryLocs[i].delivery
+      });
     }
+    setRouteLines(routes);
   };
 
   const loadMapData = () => {
-    if (!mapInstanceRef.current) {
-      return;
-    }
-
-    console.log('Loading map data with deliveries:', deliveries.length, 'drivers:', drivers.length);
-
-    // Clear existing markers
-    markersRef.current.forEach(marker => marker.setMap(null));
-    markersRef.current = [];
-
-    // Predefined locations around Colombo for better demo
-    const demoLocations = [
-      { lat: 6.9271, lng: 79.8612, name: "Colombo Fort" },
-      { lat: 6.9147, lng: 79.8730, name: "Bambalapitiya" },
-      { lat: 6.8649, lng: 79.8797, name: "Dehiwala" },
-      { lat: 6.9497, lng: 79.8500, name: "Pettah" },
-      { lat: 6.9034, lng: 79.8597, name: "Wellawatta" },
-      { lat: 6.8846, lng: 79.8746, name: "Mount Lavinia" },
-      { lat: 6.9167, lng: 79.8448, name: "Slave Island" },
-      { lat: 6.9271, lng: 79.8612, name: "Galle Face" }
-    ];
-
-    // Add delivery markers
-    deliveries.forEach((delivery, index) => {
-      const location = demoLocations[index % demoLocations.length];
-      // Add small random offset
-      const lat = location.lat + (Math.random() - 0.5) * 0.01;
-      const lng = location.lng + (Math.random() - 0.5) * 0.01;
-
-      const deliveryIcon = {
-        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-          <svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 0 C6.7 0 0 6.7 0 15 C0 25 15 40 15 40 S30 25 30 15 C30 6.7 23.3 0 15 0 Z" fill="${delivery.status === 'delivered' ? '#10b981' : '#ef4444'}"/>
-            <circle cx="15" cy="15" r="8" fill="white"/>
-            <circle cx="15" cy="15" r="4" fill="${delivery.status === 'delivered' ? '#10b981' : '#ef4444'}"/>
-          </svg>
-        `),
-        scaledSize: new window.google.maps.Size(30, 40),
-        anchor: new window.google.maps.Point(15, 40)
-      };
-
-      const marker = new window.google.maps.Marker({
-        position: { lat, lng },
-        map: mapInstanceRef.current,
-        icon: deliveryIcon,
-        title: `${delivery.customer} - ${delivery.status}`,
-        animation: window.google.maps.Animation.DROP
-      });
-
-      const infoWindow = new window.google.maps.InfoWindow({
-        content: `
-          <div style="padding: 12px; font-family: 'Roboto', Arial, sans-serif; max-width: 250px;">
-            <h3 style="margin: 0 0 8px 0; color: #1e40af; font-size: 16px;">📦 ${delivery.customer}</h3>
-            <p style="margin: 4px 0; color: #666; font-size: 14px;"><strong>📍 Address:</strong> ${delivery.address}</p>
-            <p style="margin: 4px 0; color: #666; font-size: 14px;"><strong>📊 Status:</strong> <span style="color: ${delivery.status === 'delivered' ? '#10b981' : '#ef4444'}; font-weight: bold;">${delivery.status}</span></p>
-            <p style="margin: 4px 0; color: #666; font-size: 14px;"><strong>🚚 Driver:</strong> ${delivery.driverName}</p>
-            <p style="margin: 4px 0; color: #666; font-size: 14px;"><strong>⚡ Priority:</strong> ${delivery.priority}</p>
-          </div>
-        `
-      });
-
-      marker.addListener('click', () => {
-        infoWindow.open(mapInstanceRef.current, marker);
-      });
-
-      markersRef.current.push(marker);
-    });
-
-    // Add driver markers
-    drivers.forEach((driver, index) => {
-      const location = demoLocations[(index + 3) % demoLocations.length];
-      // Add small random offset
-      const lat = location.lat + (Math.random() - 0.5) * 0.01;
-      const lng = location.lng + (Math.random() - 0.5) * 0.01;
-
-      const driverIcon = {
-        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-          <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="18" fill="#10b981" stroke="white" stroke-width="3"/>
-            <path d="M20 10 L26 18 L14 18 Z" fill="white"/>
-            <circle cx="20" cy="20" r="3" fill="white"/>
-          </svg>
-        `),
-        scaledSize: new window.google.maps.Size(40, 40),
-        anchor: new window.google.maps.Point(20, 20)
-      };
-
-      const marker = new window.google.maps.Marker({
-        position: { lat, lng },
-        map: mapInstanceRef.current,
-        icon: driverIcon,
-        title: `${driver.name} - ${driver.vehicleType}`,
-        animation: window.google.maps.Animation.DROP
-      });
-
-      const infoWindow = new window.google.maps.InfoWindow({
-        content: `
-          <div style="padding: 12px; font-family: 'Roboto', Arial, sans-serif; max-width: 250px;">
-            <h3 style="margin: 0 0 8px 0; color: #10b981; font-size: 16px;">🚚 ${driver.name}</h3>
-            <p style="margin: 4px 0; color: #666; font-size: 14px;"><strong>🚗 Vehicle:</strong> ${driver.vehicleType}</p>
-            <p style="margin: 4px 0; color: #666; font-size: 14px;"><strong>📱 Phone:</strong> ${driver.phone}</p>
-            <p style="margin: 4px 0; color: #666; font-size: 14px;"><strong>🆔 License:</strong> ${driver.licenseNumber}</p>
-            <p style="margin: 4px 0; color: #666; font-size: 14px;"><strong>⭐ Experience:</strong> ${driver.experience} years</p>
-            <div style="margin-top: 8px; padding: 4px 8px; background: #f0fdf4; border-radius: 4px; text-align: center;">
-              <span style="color: #10b981; font-weight: bold; font-size: 12px;">🟢 ONLINE & AVAILABLE</span>
-            </div>
-          </div>
-        `
-      });
-
-      marker.addListener('click', () => {
-        infoWindow.open(mapInstanceRef.current, marker);
-      });
-
-      markersRef.current.push(marker);
-    });
-
-    console.log('Added', markersRef.current.length, 'markers to map');
+    generateMapData();
   };
 
   const showAllRoutes = () => {
-    if (!mapInstanceRef.current || deliveries.length === 0 || drivers.length === 0) {
-      console.log('Cannot show routes: map not ready or no data');
-      return;
-    }
+    generateMapData();
+  };
 
-    console.log('Showing routes for', deliveries.length, 'deliveries and', drivers.length, 'drivers');
+  const centerMap = () => {
+    setMapCenter([6.9271, 79.8612]);
+    setMapZoom(13);
+  };
 
-    // Predefined locations for demo
-    const demoLocations = [
-      { lat: 6.9271, lng: 79.8612 },
-      { lat: 6.9147, lng: 79.8730 },
-      { lat: 6.8649, lng: 79.8797 },
-      { lat: 6.9497, lng: 79.8500 },
-      { lat: 6.9034, lng: 79.8597 }
-    ];
-
-    const routeColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-
-    // Create routes between drivers and active deliveries
-    const activeDeliveries = deliveries.filter(d => d.status !== 'delivered');
-    
-    activeDeliveries.slice(0, Math.min(3, drivers.length)).forEach((delivery, index) => {
-      if (drivers[index]) {
-        const driverLocation = demoLocations[index % demoLocations.length];
-        const deliveryLocation = demoLocations[(index + 2) % demoLocations.length];
-
-        const directionsService = new window.google.maps.DirectionsService();
-        const directionsRenderer = new window.google.maps.DirectionsRenderer({
-          suppressMarkers: true,
-          polylineOptions: {
-            strokeColor: routeColors[index % routeColors.length],
-            strokeWeight: 4,
-            strokeOpacity: 0.8
-          }
-        });
-        directionsRenderer.setMap(mapInstanceRef.current);
-
-        directionsService.route({
-          origin: driverLocation,
-          destination: deliveryLocation,
-          travelMode: window.google.maps.TravelMode.DRIVING
-        }, (result, status) => {
-          if (status === 'OK') {
-            directionsRenderer.setDirections(result);
-            console.log(`Route ${index + 1} created successfully`);
-          } else {
-            console.log(`Route ${index + 1} failed:`, status);
-          }
-        });
-      }
+  // Create custom icons for Leaflet
+  const createDriverIcon = () => {
+    return L.divIcon({
+      html: `
+        <div style="
+          background: #10b981;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          border: 3px solid white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        ">
+          <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
+            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+      `,
+      className: 'custom-driver-icon',
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
     });
   };
 
-  // Initialize Google Maps when tab is accessed
+  const createDeliveryIcon = () => {
+    return L.divIcon({
+      html: `
+        <div style="
+          background: #ef4444;
+          width: 25px;
+          height: 35px;
+          border-radius: 50% 50% 50% 0;
+          border: 2px solid white;
+          transform: rotate(-45deg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        ">
+          <div style="
+            background: white;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transform: rotate(45deg);
+          "></div>
+        </div>
+      `,
+      className: 'custom-delivery-icon',
+      iconSize: [25, 35],
+      iconAnchor: [12, 35]
+    });
+  };
+
+  // Initialize map data when tab is accessed
   useEffect(() => {
-    if (currentTab === 3) {
-      // Load Google Maps API if not already loaded
-      if (!window.google) {
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JzgjwE&libraries=geometry,places`;
-        script.async = true;
-        script.defer = true;
-        script.onload = initializeMap;
-        document.head.appendChild(script);
-      } else if (!mapLoaded) {
-        initializeMap();
-      }
+    if (currentTab === 3 && (deliveries.length > 0 || drivers.length > 0)) {
+      generateMapData();
     }
   }, [currentTab, deliveries, drivers]);
 
@@ -673,21 +486,44 @@ const AdminDeliveryManagement = () => {
     }
   };
 
-  // Professional Real-like Delivery Map Component
+  // Uber-style Live Delivery Map Component
   const DeliveryMap = () => {
     const [mapMode, setMapMode] = useState('live');
     
+    // Sample delivery locations around Colombo
+    const deliveryLocations = deliveries.slice(0, 8).map((delivery, index) => ({
+      id: delivery.id,
+      customer: delivery.customer,
+      driver: delivery.driverName,
+      status: delivery.status,
+      vehicle: delivery.vehicle || 'Car'
+    }));
+
+    // Sample driver locations
+    const driverLocations = drivers.slice(0, 5).map((driver) => ({
+      id: driver.id,
+      name: driver.name,
+      vehicle: driver.vehicleType,
+      status: 'Active'
+    }));
+
     return (
       <Paper sx={{ 
-        p: 3, 
         borderRadius: '12px', 
         height: '500px', 
-        position: 'relative',
+        overflow: 'hidden',
         backgroundColor: 'white',
         border: '1px solid #e5e7eb'
       }}>
         {/* Map Header with Controls */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          p: 2, 
+          borderBottom: '1px solid #e5e7eb',
+          backgroundColor: '#f8fafc'
+        }}>
           <Typography variant="h6" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#1e40af' }}>
             <MapIcon />
             Live Delivery Tracking
@@ -702,9 +538,7 @@ const AdminDeliveryManagement = () => {
                 color: mapMode === 'live' ? 'white' : '#1e40af',
                 borderColor: '#1e40af',
                 textTransform: 'none',
-                '&:hover': {
-                  backgroundColor: mapMode === 'live' ? '#1e3a8a' : '#f0f9ff'
-                }
+                minWidth: '60px'
               }}
             >
               Live
@@ -718,9 +552,7 @@ const AdminDeliveryManagement = () => {
                 color: mapMode === 'routes' ? 'white' : '#1e40af',
                 borderColor: '#1e40af',
                 textTransform: 'none',
-                '&:hover': {
-                  backgroundColor: mapMode === 'routes' ? '#1e3a8a' : '#f0f9ff'
-                }
+                minWidth: '70px'
               }}
             >
               Routes
@@ -728,95 +560,216 @@ const AdminDeliveryManagement = () => {
           </Box>
         </Box>
 
-        {/* Real-like Map Interface */}
-        <Box 
-          sx={{ 
-            width: '100%', 
-            height: '420px', 
-            borderRadius: '8px',
-            backgroundColor: '#f8fafc',
-            position: 'relative',
-            border: '1px solid #e5e7eb',
-            overflow: 'hidden',
-            backgroundImage: `
-              linear-gradient(90deg, #e5e7eb 1px, transparent 1px),
-              linear-gradient(180deg, #e5e7eb 1px, transparent 1px)
-            `,
-            backgroundSize: '20px 20px'
-          }}
-        >
-          {/* Map Navigation Controls */}
-          <Box sx={{ position: 'absolute', top: 10, right: 10, zIndex: 100, display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <IconButton 
-              size="small" 
-              sx={{ 
-                backgroundColor: 'white', 
-                boxShadow: 1, 
-                width: 32,
-                height: 32,
-                '&:hover': { backgroundColor: '#f9fafb' } 
-              }}
-            >
-              <AddIcon fontSize="small" />
-            </IconButton>
-            <IconButton 
-              size="small" 
-              sx={{ 
-                backgroundColor: 'white', 
-                boxShadow: 1, 
-                width: 32,
-                height: 32,
-                '&:hover': { backgroundColor: '#f9fafb' } 
-              }}
-            >
-              <RefreshIcon fontSize="small" />
-            </IconButton>
-          </Box>
-
-          {/* Delivery Vehicle Markers */}
-          {activeDeliveries.slice(0, 6).map((delivery, index) => {
-            const positions = [
-              { left: '15%', top: '20%' },
-              { left: '35%', top: '40%' },
-              { left: '60%', top: '25%' },
-              { left: '25%', top: '65%' },
-              { left: '75%', top: '55%' },
-              { left: '45%', top: '75%' }
-            ];
-            
-            return (
-              <Box
-                key={delivery.id}
-                sx={{
-                  position: 'absolute',
-                  left: positions[index]?.left || '50%',
-                  top: positions[index]?.top || '50%',
-                  transform: 'translate(-50%, -50%)',
-                  zIndex: 50
-                }}
-              >
-                <Tooltip 
-                  title={
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight="bold">{delivery.customer}</Typography>
-                      <Typography variant="body2">Driver: {delivery.driverName}</Typography>
-                      <Typography variant="body2">Status: {delivery.status}</Typography>
-                      <Typography variant="body2">ETA: {delivery.estimatedTime}</Typography>
-                    </Box>
-                  } 
-                  placement="top"
+        {/* Uber-style Live Map Interface */}
+        <Box sx={{ height: '438px', position: 'relative' }}>
+          <div style={{
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            position: 'relative'
+          }}>
+            {/* Map Background with Overlay */}
+            <Box sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: `
+                radial-gradient(circle at 30% 20%, rgba(30, 64, 175, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 90%, rgba(245, 158, 11, 0.1) 0%, transparent 50%)
+              `
+            }}>
+              {/* Animated Delivery Points */}
+              {deliveryLocations.map((location, index) => (
+                <Box
+                  key={location.id}
+                  sx={{
+                    position: 'absolute',
+                    left: `${20 + (index % 4) * 20}%`,
+                    top: `${15 + Math.floor(index / 4) * 25}%`,
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 10
+                  }}
                 >
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        transform: 'scale(1.1)',
-                        transition: 'transform 0.2s'
-                      }
-                    }}
-                    onClick={() => setSelectedDelivery(delivery)}
+                  <Tooltip 
+                    title={
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight="bold">{location.customer}</Typography>
+                        <Typography variant="body2">Driver: {location.driver}</Typography>
+                        <Typography variant="body2">Status: {location.status}</Typography>
+                        <Typography variant="body2">Vehicle: {location.vehicle}</Typography>
+                      </Box>
+                    } 
+                    placement="top"
                   >
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          transform: 'scale(1.1)',
+                          transition: 'transform 0.2s'
+                        }
+                      }}
+                    >
+                      {/* Delivery Location Pin */}
+                      <Box
+                        sx={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: '50%',
+                          backgroundColor: location.status === 'In Transit' ? '#ef4444' : 
+                                         location.status === 'Out for Delivery' ? '#f59e0b' : '#10b981',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+                          border: '3px solid white',
+                          fontSize: '16px'
+                        }}
+                      >
+                        📍
+                      </Box>
+                      
+                      {/* Pulse Animation for Active Deliveries */}
+                      {location.status === 'In Transit' && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: 36,
+                            height: 36,
+                            borderRadius: '50%',
+                            backgroundColor: '#ef4444',
+                            opacity: 0.3,
+                            '@keyframes pulse': {
+                              '0%': { transform: 'scale(1)', opacity: 0.3 },
+                              '50%': { transform: 'scale(1.3)', opacity: 0.1 },
+                              '100%': { transform: 'scale(1)', opacity: 0.3 }
+                            },
+                            animation: 'pulse 2s infinite'
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </Tooltip>
+                </Box>
+              ))}
+
+              {/* Driver Locations */}
+              {driverLocations.map((driver, index) => (
+                <Box
+                  key={driver.id}
+                  sx={{
+                    position: 'absolute',
+                    left: `${25 + (index % 3) * 25}%`,
+                    top: `${30 + Math.floor(index / 3) * 30}%`,
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 15
+                  }}
+                >
+                  <Tooltip 
+                    title={
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight="bold">{driver.name}</Typography>
+                        <Typography variant="body2">Vehicle: {driver.vehicle}</Typography>
+                        <Typography variant="body2">Status: {driver.status}</Typography>
+                      </Box>
+                    } 
+                    placement="top"
+                  >
+                    <Box
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        backgroundColor: '#1e40af',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        boxShadow: '0 6px 16px rgba(30, 64, 175, 0.4)',
+                        border: '3px solid white',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          transform: 'scale(1.1)',
+                          transition: 'transform 0.2s'
+                        }
+                      }}
+                    >
+                      {driver.vehicle === 'Bike' ? '🏍️' : driver.vehicle === 'Car' ? '🚗' : '🚛'}
+                    </Box>
+                  </Tooltip>
+                </Box>
+              ))}
+
+              {/* Route Lines (when in routes mode) */}
+              {mapMode === 'routes' && (
+                <svg 
+                  style={{ 
+                    position: 'absolute', 
+                    top: 0, 
+                    left: 0, 
+                    width: '100%', 
+                    height: '100%', 
+                    pointerEvents: 'none' 
+                  }}
+                >
+                  {deliveryLocations.slice(0, 3).map((location, index) => (
+                    <line
+                      key={index}
+                      x1={`${25 + (index % 3) * 25}%`}
+                      y1={`${30 + Math.floor(index / 3) * 30}%`}
+                      x2={`${20 + (index % 4) * 20}%`}
+                      y2={`${15 + Math.floor(index / 4) * 25}%`}
+                      stroke="#3b82f6"
+                      strokeWidth="3"
+                      strokeDasharray="5,5"
+                      opacity="0.7"
+                    >
+                      <animate
+                        attributeName="stroke-dashoffset"
+                        values="0;10"
+                        dur="1s"
+                        repeatCount="indefinite"
+                      />
+                    </line>
+                  ))}
+                </svg>
+              )}
+
+              {/* Live Stats Overlay */}
+              <Box sx={{
+                position: 'absolute',
+                bottom: 10,
+                left: 10,
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                borderRadius: '8px',
+                p: 1.5,
+                minWidth: '150px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              }}>
+                <Typography variant="caption" fontWeight="bold" sx={{ color: '#1e40af', display: 'block' }}>
+                  Live Stats
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#6b7280', display: 'block' }}>
+                  Active: {driverLocations.length} drivers
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#6b7280', display: 'block' }}>
+                  Coverage: 85%
+                </Typography>
+              </Box>
+            </Box>
+          </div>
+        </Box>
+      </Paper>
+    );
+  };
                     {/* Vehicle Icon */}
                     <Box
                       sx={{
@@ -864,124 +817,7 @@ const AdminDeliveryManagement = () => {
                             },
                           },
                           animation: 'pulse 2s infinite'
-                        }}
-                      />
-                    )}
-                  </Box>
-                </Tooltip>
-              </Box>
-            );
-          })}
 
-          {/* Route Lines (when in routes mode) */}
-          {mapMode === 'routes' && (
-            <svg 
-              style={{ 
-                position: 'absolute', 
-                top: 0, 
-                left: 0, 
-                width: '100%', 
-                height: '100%', 
-                pointerEvents: 'none' 
-              }}
-            >
-              {activeDeliveries.slice(0, 3).map((_, index) => (
-                <path
-                  key={index}
-                  d={`M ${15 + index * 20}% 20% Q ${30 + index * 15}% 40% ${45 + index * 10}% 75%`}
-                  stroke="#1e40af"
-                  strokeWidth="3"
-                  fill="none"
-                  strokeDasharray="5,5"
-                  opacity="0.7"
-                />
-              ))}
-            </svg>
-          )}
-
-          {/* Delivery Zones Legend */}
-          <Box sx={{ position: 'absolute', bottom: 15, left: 15, backgroundColor: 'white', p: 1.5, borderRadius: 2, boxShadow: 1 }}>
-            <Typography variant="caption" fontWeight="bold" sx={{ color: '#1e40af', mb: 1, display: 'block' }}>
-              Active Zones
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 8, height: 8, backgroundColor: '#1e40af', borderRadius: '50%' }} />
-                <Typography variant="caption">High Priority ({activeDeliveries.filter(d => d.priority === 'high').length})</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 8, height: 8, backgroundColor: '#f59e0b', borderRadius: '50%' }} />
-                <Typography variant="caption">Medium Priority ({activeDeliveries.filter(d => d.priority === 'medium').length})</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 8, height: 8, backgroundColor: '#10b981', borderRadius: '50%' }} />
-                <Typography variant="caption">Low Priority ({activeDeliveries.filter(d => d.priority === 'low').length})</Typography>
-              </Box>
-            </Box>
-          </Box>
-
-          {/* Live Map Statistics */}
-          <Box sx={{ position: 'absolute', top: 15, left: 15, backgroundColor: 'white', p: 1.5, borderRadius: 2, boxShadow: 1 }}>
-            <Typography variant="caption" fontWeight="bold" sx={{ color: '#1e40af', mb: 1, display: 'block' }}>
-              Live Stats
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              <Typography variant="caption">Active: {activeDeliveries.length}</Typography>
-              <Typography variant="caption">Avg Speed: 45 km/h</Typography>
-              <Typography variant="caption">Coverage: 85%</Typography>
-            </Box>
-          </Box>
-
-          {/* Location Marker */}
-          <Box sx={{ 
-            position: 'absolute', 
-            bottom: 15, 
-            right: 15, 
-            backgroundColor: 'rgba(30, 64, 175, 0.9)', 
-            p: 1.5, 
-            borderRadius: '8px',
-            color: 'white'
-          }}>
-            <Typography variant="body2" fontWeight="bold">
-              📍 Colombo Region
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {activeDeliveries.length} Active Deliveries
-            </Typography>
-          </Box>
-
-          {/* Legend */}
-          <Box sx={{ 
-            position: 'absolute', 
-            top: 16, 
-            right: 16, 
-            backgroundColor: 'rgba(255,255,255,0.9)', 
-            p: 1.5, 
-            borderRadius: '8px',
-            backdropFilter: 'blur(4px)'
-          }}>
-            <Typography variant="caption" fontWeight="bold" display="block" gutterBottom>
-              Status Legend
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 12, height: 12, backgroundColor: '#3b82f6', borderRadius: '50%' }} />
-                <Typography variant="caption">In Transit</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 12, height: 12, backgroundColor: '#f59e0b', borderRadius: '50%' }} />
-                <Typography variant="caption">Out for Delivery</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 12, height: 12, backgroundColor: '#10b981', borderRadius: '50%' }} />
-                <Typography variant="caption">Delivered</Typography>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Paper>
-    );
-  };
 
   // Stats Cards Component
   const StatsCard = ({ title, value, icon: Icon, color, subtitle }) => (
@@ -1184,17 +1020,15 @@ const AdminDeliveryManagement = () => {
             borderRadius: '12px', 
             height: '500px', 
             backgroundColor: 'white',
-            border: '1px solid #e5e7eb',
-            display: 'flex',
-            flexDirection: 'column'
+            border: '1px solid #e5e7eb' 
           }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h6" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#1e40af' }}>
                 <AlertIcon />
                 Active Deliveries
               </Typography>
               <Chip 
-                label={4}
+                label={activeDeliveries.length}
                 size="small"
                 sx={{
                   backgroundColor: '#1e40af',
@@ -1203,68 +1037,65 @@ const AdminDeliveryManagement = () => {
                 }}
               />
             </Box>
-            <Box sx={{ flex: 1, overflow: 'hidden' }}>
-              <List sx={{ height: '100%', overflow: 'auto', p: 0 }}>
-                {activeDeliveries.filter(d => d.status !== 'Delivered').slice(0, 4).map((delivery, index) => (
-                  <Box 
-                    key={delivery.id} 
-                    sx={{ 
-                      p: 2,
-                      mb: 1.5,
-                      borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
-                      backgroundColor: '#f8fafc',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      '&:hover': { 
-                        backgroundColor: '#f1f5f9',
-                        transform: 'translateY(-1px)',
-                        boxShadow: '0 4px 12px rgba(30, 64, 175, 0.1)'
-                      }
-                    }}
-                    onClick={() => setSelectedDelivery(delivery)}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                      <Avatar sx={{ 
-                        bgcolor: delivery.status === 'In Transit' ? '#1e40af' : 
-                                 delivery.status === 'Out for Delivery' ? '#f59e0b' : '#10b981',
-                        width: 36,
-                        height: 36
-                      }}>
-                        {delivery.vehicle === 'Bike' ? <BikeIcon /> : 
-                         delivery.vehicle === 'Car' ? <CarIcon /> : <TruckIcon />}
-                      </Avatar>
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-                          <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#1f2937', fontSize: '14px' }} noWrap>
-                            {delivery.customer}
-                          </Typography>
-                          <Chip 
-                            label={delivery.status}
-                            size="small"
-                            sx={{
-                              backgroundColor: delivery.status === 'In Transit' ? '#dbeafe' : 
-                                             delivery.status === 'Out for Delivery' ? '#fef3c7' : '#d1fae5',
-                              color: delivery.status === 'In Transit' ? '#1e40af' : 
-                                     delivery.status === 'Out for Delivery' ? '#92400e' : '#065f46',
-                              fontWeight: 600,
-                              fontSize: '10px',
-                              height: '20px'
-                            }}
-                          />
-                        </Box>
-                        <Typography variant="caption" color="text.secondary" display="block" noWrap>
-                          {delivery.orderNumber} • {delivery.driverName}
+            <List sx={{ maxHeight: '400px', overflow: 'auto', p: 0 }}>
+              {deliveries.slice(0, 6).map((delivery, index) => (
+                <Box 
+                  key={delivery.id} 
+                  sx={{ 
+                    p: 2.5,
+                    mb: 2,
+                    borderRadius: '8px',
+                    border: '1px solid #e5e7eb',
+                    backgroundColor: '#f8fafc',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { 
+                      backgroundColor: '#f1f5f9',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 4px 12px rgba(30, 64, 175, 0.1)'
+                    }
+                  }}
+                  onClick={() => setSelectedDelivery(delivery)}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                    <Avatar sx={{ 
+                      bgcolor: delivery.status === 'In Transit' ? '#1e40af' : 
+                               delivery.status === 'Out for Delivery' ? '#f59e0b' : '#10b981',
+                      width: 42,
+                      height: 42
+                    }}>
+                      {delivery.vehicle === 'Bike' ? <BikeIcon /> : 
+                       delivery.vehicle === 'Car' ? <CarIcon /> : <TruckIcon />}
+                    </Avatar>
+                    <Box sx={{ flex: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                        <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#1f2937' }}>
+                          {delivery.customer}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" display="block" noWrap>
-                          ETA: {delivery.estimatedTime} • LKR {delivery.value?.toLocaleString()}
-                        </Typography>
+                        <Chip 
+                          label={delivery.status}
+                          size="small"
+                          sx={{
+                            backgroundColor: delivery.status === 'In Transit' ? '#dbeafe' : 
+                                           delivery.status === 'Out for Delivery' ? '#fef3c7' : '#d1fae5',
+                            color: delivery.status === 'In Transit' ? '#1e40af' : 
+                                   delivery.status === 'Out for Delivery' ? '#92400e' : '#065f46',
+                            fontWeight: 600,
+                            fontSize: '11px'
+                          }}
+                        />
                       </Box>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        {delivery.orderNumber} • {delivery.driverName}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        ETA: {delivery.estimatedTime} • {formatLKR(delivery.value)}
+                      </Typography>
                     </Box>
                   </Box>
-                ))}
-              </List>
-            </Box>
+                </Box>
+              ))}
+            </List>
           </Paper>
         </Grid>
       </Grid>
@@ -1360,7 +1191,8 @@ const AdminDeliveryManagement = () => {
   const tabs = [
     { label: 'Dashboard', icon: DashboardIcon },
     { label: 'Drivers', icon: PersonIcon },
-    { label: 'Analytics', icon: SpeedIcon }
+    { label: 'Analytics', icon: SpeedIcon },
+    { label: 'Live Map', icon: MapIcon }
   ];
 
   return (
@@ -1462,6 +1294,32 @@ const AdminDeliveryManagement = () => {
               borderRadius: '8px', 
               mb: 1,
               mx: 1,
+              backgroundColor: currentTab === 2 ? 'rgba(255,255,255,0.2)' : 'transparent',
+              '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' },
+              '& .MuiListItemIcon-root': { color: 'white', minWidth: 40 },
+              '& .MuiListItemText-primary': { 
+                color: 'white', 
+                fontWeight: currentTab === 2 ? 700 : 500 
+              },
+              border: currentTab === 2 ? '1px solid rgba(255,255,255,0.3)' : 'none'
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 40 }}>
+              <SpeedIcon />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Analytics" 
+              primaryTypographyProps={{ fontSize: '14px' }}
+            />
+          </ListItemButton>
+
+          <ListItemButton 
+            selected={currentTab === 3}
+            onClick={() => setCurrentTab(3)}
+            sx={{ 
+              borderRadius: '8px', 
+              mb: 1,
+              mx: 1,
               backgroundColor: currentTab === 3 ? 'rgba(255,255,255,0.2)' : 'transparent',
               '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' },
               '& .MuiListItemIcon-root': { color: 'white', minWidth: 40 },
@@ -1473,10 +1331,10 @@ const AdminDeliveryManagement = () => {
             }}
           >
             <ListItemIcon sx={{ minWidth: 40 }}>
-              <SpeedIcon />
+              <MapIcon />
             </ListItemIcon>
             <ListItemText 
-              primary="Analytics" 
+              primary="Live Map" 
               primaryTypographyProps={{ fontSize: '14px' }}
             />
           </ListItemButton>
@@ -1841,206 +1699,215 @@ const AdminDeliveryManagement = () => {
             </Container>
           )}
           {currentTab === 3 && (
-            <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-              {/* Header */}
-              <Box sx={{ px: 3, py: 2, backgroundColor: '#1e40af', color: 'white' }}>
-                <Typography variant="h5" fontWeight="bold">
-                  Live Delivery Tracking
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Real-time fleet monitoring and route optimization
-                </Typography>
-              </Box>
-
+            <Container maxWidth="xl" sx={{ py: 4 }}>
+              <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ color: '#1e40af', mb: 4 }}>
+                Real-time Delivery Map
+              </Typography>
+              
               {/* Map Controls */}
-              <Box sx={{ 
-                display: 'flex', 
-                gap: 2, 
-                p: 2, 
-                backgroundColor: 'white',
-                borderBottom: '1px solid #e5e7eb',
-                alignItems: 'center'
-              }}>
+              <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
                 <Button
                   variant="contained"
                   startIcon={<MyLocation />}
-                  size="small"
                   sx={{ 
                     backgroundColor: '#1e40af',
                     '&:hover': { backgroundColor: '#1e3a8a' }
                   }}
-                  onClick={() => {
-                    if (mapInstanceRef.current) {
-                      const defaultLocation = { lat: 6.9271, lng: 79.8612 };
-                      mapInstanceRef.current.setCenter(defaultLocation);
-                      mapInstanceRef.current.setZoom(13);
-                    }
-                  }}
+                  onClick={centerMap}
                 >
                   Center Map
                 </Button>
                 <Button
                   variant="outlined"
                   startIcon={<RefreshIcon />}
-                  size="small"
-                  onClick={() => loadMapData()}
+                  onClick={loadMapData}
                 >
-                  Refresh
+                  Refresh Locations
                 </Button>
                 <Button
                   variant="outlined"
                   startIcon={<Navigation />}
-                  size="small"
-                  onClick={() => showAllRoutes()}
+                  onClick={showAllRoutes}
                 >
-                  Show Routes
+                  Show All Routes
                 </Button>
-
-                {/* Live Status Badge */}
-                <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
-                  <Box
-                    sx={{
-                      width: 8,
-                      height: 8,
-                      backgroundColor: '#10b981',
-                      borderRadius: '50%',
-                      mr: 1,
-                      animation: mapLoaded ? 'pulse 2s infinite' : 'none',
-                      '@keyframes pulse': {
-                        '0%': { opacity: 1 },
-                        '50%': { opacity: 0.5 },
-                        '100%': { opacity: 1 }
-                      }
-                    }}
-                  />
-                  <Typography variant="body2" color={mapLoaded ? '#10b981' : '#64748b'} fontWeight="600">
-                    {mapLoaded ? 'LIVE TRACKING' : 'CONNECTING...'}
-                  </Typography>
-                </Box>
               </Box>
 
               {/* Map Container */}
-              <Box sx={{ flex: 1, position: 'relative', backgroundColor: '#e2e8f0' }}>
-                <div
-                  ref={mapRef}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: '#e2e8f0'
-                  }}
-                />
-                
-                {/* Map Loading Overlay */}
-                {!mapLoaded && (
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: 'rgba(248, 250, 252, 0.9)',
-                      zIndex: 1000
-                    }}
-                  >
-                    <Box textAlign="center">
-                      <Box sx={{ 
-                        width: 64, 
-                        height: 64, 
-                        borderRadius: '50%',
-                        border: '4px solid #e5e7eb',
-                        borderTop: '4px solid #1e40af',
-                        animation: 'spin 1s linear infinite',
-                        mb: 2,
-                        '@keyframes spin': {
-                          '0%': { transform: 'rotate(0deg)' },
-                          '100%': { transform: 'rotate(360deg)' }
-                        }
-                      }} />
-                      <Typography variant="h6" color="#1e40af" gutterBottom fontWeight="600">
-                        Loading Live Map...
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Connecting to GPS tracking system
-                      </Typography>
-                    </Box>
-                  </Box>
-                )}
-              </Box>
-
-              {/* Bottom Panel - Active Deliveries */}
-              <Box sx={{ 
-                height: '200px', 
-                backgroundColor: 'white', 
-                borderTop: '1px solid #e5e7eb',
-                overflow: 'hidden'
+              <Paper sx={{ 
+                height: '600px', 
+                borderRadius: '12px', 
+                overflow: 'hidden',
+                border: '1px solid #e5e7eb'
               }}>
-                <Box sx={{ px: 3, py: 2, borderBottom: '1px solid #e5e7eb' }}>
-                  <Typography variant="h6" fontWeight="600" color="#1e40af">
-                    Active Deliveries ({deliveries.filter(d => d.status !== 'delivered').length})
-                  </Typography>
-                </Box>
-                
-                <Box sx={{ 
-                  height: 'calc(200px - 60px)', 
-                  overflow: 'auto',
-                  px: 3,
-                  py: 1
-                }}>
-                  {deliveries.filter(d => d.status !== 'delivered').length === 0 ? (
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      height: '100%',
-                      color: '#64748b'
-                    }}>
-                      <Typography variant="body2">No active deliveries</Typography>
-                    </Box>
-                  ) : (
-                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                      {deliveries.filter(d => d.status !== 'delivered').map((delivery, index) => (
-                        <Paper key={index} sx={{ 
+                <MapContainer
+                  center={mapCenter}
+                  zoom={mapZoom}
+                  style={{ height: '100%', width: '100%', borderRadius: '12px' }}
+                  zoomControl={true}
+                  scrollWheelZoom={true}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  
+                  {/* Driver Markers */}
+                  {driverLocations.map((driverLoc) => (
+                    <Marker
+                      key={`driver-${driverLoc.id}`}
+                      position={driverLoc.position}
+                      icon={createDriverIcon()}
+                    >
+                      <Popup>
+                        <div style={{ padding: '8px', fontFamily: 'Arial, sans-serif' }}>
+                          <h3 style={{ margin: '0 0 8px 0', color: '#10b981' }}>
+                            🚗 {driverLoc.driver.name}
+                          </h3>
+                          <p style={{ margin: '4px 0', color: '#666' }}>
+                            <strong>Vehicle:</strong> {driverLoc.driver.vehicleType}
+                          </p>
+                          <p style={{ margin: '4px 0', color: '#666' }}>
+                            <strong>Phone:</strong> {driverLoc.driver.phone}
+                          </p>
+                          <p style={{ margin: '4px 0', color: '#666' }}>
+                            <strong>License:</strong> {driverLoc.driver.licenseNumber}
+                          </p>
+                          <p style={{ margin: '4px 0', color: '#666' }}>
+                            <strong>Experience:</strong> {driverLoc.driver.experience} years
+                          </p>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+
+                  {/* Delivery Markers */}
+                  {deliveryLocations.map((deliveryLoc) => (
+                    <Marker
+                      key={`delivery-${deliveryLoc.id}`}
+                      position={deliveryLoc.position}
+                      icon={createDeliveryIcon()}
+                    >
+                      <Popup>
+                        <div style={{ padding: '8px', fontFamily: 'Arial, sans-serif' }}>
+                          <h3 style={{ margin: '0 0 8px 0', color: '#1e40af' }}>
+                            📦 {deliveryLoc.delivery.customer}
+                          </h3>
+                          <p style={{ margin: '4px 0', color: '#666' }}>
+                            <strong>Address:</strong> {deliveryLoc.delivery.address}
+                          </p>
+                          <p style={{ margin: '4px 0', color: '#666' }}>
+                            <strong>Status:</strong> {deliveryLoc.delivery.status}
+                          </p>
+                          <p style={{ margin: '4px 0', color: '#666' }}>
+                            <strong>Driver:</strong> {deliveryLoc.delivery.driverName}
+                          </p>
+                          <p style={{ margin: '4px 0', color: '#666' }}>
+                            <strong>Priority:</strong> {deliveryLoc.delivery.priority}
+                          </p>
+                          {deliveryLoc.delivery.value && (
+                            <p style={{ margin: '4px 0', color: '#666' }}>
+                              <strong>Value:</strong> LKR {deliveryLoc.delivery.value}
+                            </p>
+                          )}
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+
+                  {/* Route Lines */}
+                  {routeLines.map((route) => (
+                    <Polyline
+                      key={`route-${route.id}`}
+                      positions={route.positions}
+                      color={route.color}
+                      weight={4}
+                      opacity={0.8}
+                      dashArray="10, 10"
+                    />
+                  ))}
+                </MapContainer>
+              </Paper>
+
+              {/* Map Legend */}
+              <Grid container spacing={3} sx={{ mt: 3 }}>
+                <Grid xs={12} md={8}>
+                  <Paper sx={{ p: 3, borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                    <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#1e40af' }}>
+                      Active Deliveries
+                    </Typography>
+                    <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
+                      {deliveries.slice(0, 5).map((delivery, index) => (
+                        <Box key={index} sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'space-between',
                           p: 2,
-                          minWidth: 250,
+                          mb: 1,
                           backgroundColor: '#f8fafc',
-                          border: '1px solid #e5e7eb',
                           borderRadius: '8px',
-                          flex: '0 0 auto'
+                          border: '1px solid #e5e7eb'
                         }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                            <Box sx={{
-                              width: 12,
-                              height: 12,
-                              backgroundColor: delivery.status === 'in-transit' ? '#10b981' : '#f59e0b',
-                              borderRadius: '50%'
-                            }} />
-                            <Typography variant="body2" fontWeight="bold">
-                              {delivery.customer}
-                            </Typography>
-                            <Chip 
-                              label={delivery.status} 
-                              size="small"
-                              color={delivery.status === 'in-transit' ? 'success' : 'warning'}
-                              sx={{ ml: 'auto' }}
-                            />
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <LocationIcon sx={{ color: delivery.status === 'delivered' ? '#10b981' : '#1e40af' }} />
+                            <Box>
+                              <Typography variant="body2" fontWeight="bold">{delivery.customer}</Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {delivery.address}
+                              </Typography>
+                            </Box>
                           </Box>
-                          <Typography variant="caption" color="text.secondary" display="block">
-                            📍 {delivery.address}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" display="block">
-                            🚚 {delivery.driverName} • Priority: {delivery.priority}
-                          </Typography>
-                        </Paper>
+                          <Chip 
+                            label={delivery.status} 
+                            size="small"
+                            color={
+                              delivery.status === 'delivered' ? 'success' :
+                              delivery.status === 'in-transit' ? 'primary' : 'warning'
+                            }
+                          />
+                        </Box>
                       ))}
                     </Box>
-                  )}
-                </Box>
-              </Box>
-            </Box>
+                  </Paper>
+                </Grid>
+                
+                <Grid xs={12} md={4}>
+                  <Paper sx={{ p: 3, borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                    <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#1e40af' }}>
+                      Map Legend
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ 
+                          width: 16, 
+                          height: 16, 
+                          backgroundColor: '#10b981', 
+                          borderRadius: '50%' 
+                        }} />
+                        <Typography variant="body2">Active Drivers</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ 
+                          width: 16, 
+                          height: 16, 
+                          backgroundColor: '#ef4444', 
+                          borderRadius: '50%' 
+                        }} />
+                        <Typography variant="body2">Delivery Locations</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ 
+                          width: 20, 
+                          height: 3, 
+                          backgroundColor: '#3b82f6' 
+                        }} />
+                        <Typography variant="body2">Delivery Routes</Typography>
+                      </Box>
+                    </Box>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Container>
           )}
         </Box>
       </Box>
