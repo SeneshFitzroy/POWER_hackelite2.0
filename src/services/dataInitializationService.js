@@ -291,12 +291,20 @@ const realMedicineData = [
 
 // Service for initializing database with real data
 export const dataInitializationService = {
-  // Check if medicines collection is empty
+  // Check if data collections exist
   checkIfDataExists: async () => {
     try {
       const medicinesRef = collection(db, 'medicines');
-      const snapshot = await getDocs(medicinesRef);
-      return !snapshot.empty;
+      const medicinesSnapshot = await getDocs(medicinesRef);
+      
+      const purchaseOrdersRef = collection(db, 'purchaseOrders');
+      const ordersSnapshot = await getDocs(purchaseOrdersRef);
+      
+      const suppliersRef = collection(db, 'suppliers');
+      const suppliersSnapshot = await getDocs(suppliersRef);
+      
+      // Return true if any of the main collections have data
+      return !medicinesSnapshot.empty || !ordersSnapshot.empty || !suppliersSnapshot.empty;
     } catch (error) {
       console.error('Error checking data existence:', error);
       return false;
@@ -403,6 +411,284 @@ export const dataInitializationService = {
     }
   },
 
+  // Initialize purchase orders with real data
+  initializePurchaseOrders: async () => {
+    try {
+      console.log('Initializing purchase orders...');
+      
+      // Check if purchase orders already exist
+      const purchaseOrdersRef = collection(db, 'purchaseOrders');
+      const snapshot = await getDocs(purchaseOrdersRef);
+      
+      if (!snapshot.empty) {
+        console.log('Purchase orders already exist, skipping initialization');
+        return;
+      }
+
+      const realPurchaseOrderData = [
+        {
+          medicineId: "med001",
+          medicineName: "Paracetamol 500mg",
+          quantityOrdered: 500,
+          supplier: "MedSupply Corp",
+          supplierId: "sup001",
+          status: "pending",
+          priority: "high",
+          unitCost: 0.15,
+          totalCost: 75.00,
+          orderDate: new Date('2025-01-20'),
+          expectedDeliveryDate: new Date('2025-01-27'),
+          notes: "Urgent reorder - critically low stock",
+          orderNumber: "PO-2025-001",
+          approvedBy: "Dr. Smith",
+          department: "Pharmacy"
+        },
+        {
+          medicineId: "med002",
+          medicineName: "Amoxicillin 250mg",
+          quantityOrdered: 300,
+          supplier: "Pharma Distributors Ltd",
+          supplierId: "sup002",
+          status: "approved",
+          priority: "high",
+          unitCost: 0.30,
+          totalCost: 90.00,
+          orderDate: new Date('2025-01-18'),
+          expectedDeliveryDate: new Date('2025-01-25'),
+          approvedDate: new Date('2025-01-19'),
+          notes: "Low stock - antibiotic restocking",
+          orderNumber: "PO-2025-002",
+          approvedBy: "Dr. Johnson",
+          department: "Pharmacy"
+        },
+        {
+          medicineId: "med003",
+          medicineName: "Insulin Glargine 100IU/ml",
+          quantityOrdered: 100,
+          supplier: "Diabetes Care Supplies",
+          supplierId: "sup003",
+          status: "received",
+          priority: "critical",
+          unitCost: 20.00,
+          totalCost: 2000.00,
+          orderDate: new Date('2025-01-10'),
+          expectedDeliveryDate: new Date('2025-01-17'),
+          receivedDate: new Date('2025-01-17'),
+          notes: "Critical diabetes medication - emergency restock",
+          orderNumber: "PO-2025-003",
+          approvedBy: "Dr. Wilson",
+          receivedBy: "Pharmacist Brown",
+          department: "Pharmacy"
+        },
+        {
+          medicineId: "med004",
+          medicineName: "Omeprazole 20mg",
+          quantityOrdered: 400,
+          supplier: "GastroMed Supplies",
+          supplierId: "sup004",
+          status: "pending",
+          priority: "medium",
+          unitCost: 0.60,
+          totalCost: 240.00,
+          orderDate: new Date('2025-01-22'),
+          expectedDeliveryDate: new Date('2025-01-30'),
+          notes: "Routine restock - expiring soon batch replacement",
+          orderNumber: "PO-2025-004",
+          approvedBy: "Dr. Davis",
+          department: "Pharmacy"
+        },
+        {
+          medicineId: "med005",
+          medicineName: "Atorvastatin 20mg",
+          quantityOrdered: 250,
+          supplier: "CardioPharm Ltd",
+          supplierId: "sup005",
+          status: "cancelled",
+          priority: "low",
+          unitCost: 0.85,
+          totalCost: 212.50,
+          orderDate: new Date('2025-01-15'),
+          cancelledDate: new Date('2025-01-20'),
+          notes: "Cancelled - found alternative supplier with better pricing",
+          orderNumber: "PO-2025-005",
+          approvedBy: "Dr. Miller",
+          cancelledBy: "Procurement Manager",
+          department: "Pharmacy"
+        },
+        {
+          medicineId: "med006",
+          medicineName: "Metformin 500mg",
+          quantityOrdered: 600,
+          supplier: "DiabetesCare Plus",
+          supplierId: "sup006",
+          status: "shipped",
+          priority: "medium",
+          unitCost: 0.20,
+          totalCost: 120.00,
+          orderDate: new Date('2025-01-16'),
+          expectedDeliveryDate: new Date('2025-01-24'),
+          shippedDate: new Date('2025-01-23'),
+          trackingNumber: "TRK123456789",
+          notes: "Standard restock - tracking available",
+          orderNumber: "PO-2025-006",
+          approvedBy: "Dr. Anderson",
+          department: "Pharmacy"
+        }
+      ];
+
+      // Add purchase orders to Firestore using batch
+      const batch = writeBatch(db);
+      let count = 0;
+
+      for (const orderData of realPurchaseOrderData) {
+        const docRef = doc(collection(db, 'purchaseOrders'));
+        batch.set(docRef, {
+          ...orderData,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        count++;
+      }
+
+      await batch.commit();
+      console.log(`Successfully initialized ${count} purchase orders`);
+      
+    } catch (error) {
+      console.error('Error initializing purchase orders:', error);
+      throw error;
+    }
+  },
+
+  // Initialize suppliers data
+  initializeSuppliers: async () => {
+    try {
+      console.log('Initializing suppliers...');
+      
+      // Check if suppliers already exist
+      const suppliersRef = collection(db, 'suppliers');
+      const snapshot = await getDocs(suppliersRef);
+      
+      if (!snapshot.empty) {
+        console.log('Suppliers already exist, skipping initialization');
+        return;
+      }
+
+      const realSupplierData = [
+        {
+          id: "sup001",
+          name: "MedSupply Corp",
+          contactPerson: "John Anderson",
+          email: "john@medsupply.com",
+          phone: "+1-800-MED-SUPP",
+          address: "123 Medical District, Healthcare City, HC 12345",
+          category: "General Pharmaceuticals",
+          rating: 4.5,
+          paymentTerms: "Net 30",
+          deliveryTime: "5-7 business days",
+          minimumOrder: 1000,
+          isActive: true,
+          specialties: ["Analgesics", "Antibiotics", "General Medicine"]
+        },
+        {
+          id: "sup002",
+          name: "Pharma Distributors Ltd",
+          contactPerson: "Sarah Wilson",
+          email: "sarah@pharmadist.com",
+          phone: "+1-800-PHARMA-1",
+          address: "456 Distribution Ave, Medical Hub, MH 54321",
+          category: "Prescription Drugs",
+          rating: 4.2,
+          paymentTerms: "Net 45",
+          deliveryTime: "3-5 business days",
+          minimumOrder: 500,
+          isActive: true,
+          specialties: ["Antibiotics", "Cardiovascular", "Respiratory"]
+        },
+        {
+          id: "sup003",
+          name: "Diabetes Care Supplies",
+          contactPerson: "Dr. Michael Chen",
+          email: "michael@diabetescare.com",
+          phone: "+1-800-DIABETES",
+          address: "789 Endocrine Way, Specialty Medical Plaza, SMP 98765",
+          category: "Specialized Medicine",
+          rating: 4.8,
+          paymentTerms: "Net 15",
+          deliveryTime: "2-3 business days",
+          minimumOrder: 100,
+          isActive: true,
+          specialties: ["Antidiabetic", "Insulin", "Blood Glucose Monitors"]
+        },
+        {
+          id: "sup004",
+          name: "GastroMed Supplies",
+          contactPerson: "Lisa Rodriguez",
+          email: "lisa@gastromed.com",
+          phone: "+1-800-GASTRO-1",
+          address: "321 Digestive Health Blvd, Medical Center, MC 13579",
+          category: "Gastrointestinal",
+          rating: 4.3,
+          paymentTerms: "Net 30",
+          deliveryTime: "4-6 business days",
+          minimumOrder: 250,
+          isActive: true,
+          specialties: ["Proton Pump Inhibitors", "Antacids", "Digestive Health"]
+        },
+        {
+          id: "sup005",
+          name: "CardioPharm Ltd",
+          contactPerson: "Robert Johnson",
+          email: "robert@cardiopharm.com",
+          phone: "+1-800-CARDIO-1",
+          address: "654 Heart Health Street, Cardiac Center, CC 24680",
+          category: "Cardiovascular",
+          rating: 4.6,
+          paymentTerms: "Net 30",
+          deliveryTime: "3-5 business days",
+          minimumOrder: 200,
+          isActive: true,
+          specialties: ["Statins", "ACE Inhibitors", "Beta Blockers"]
+        },
+        {
+          id: "sup006",
+          name: "DiabetesCare Plus",
+          contactPerson: "Emma Thompson",
+          email: "emma@diabetescareplus.com",
+          phone: "+1-800-DIAB-PLUS",
+          address: "987 Metabolic Medicine Ave, Endocrine District, ED 11223",
+          category: "Endocrine & Metabolic",
+          rating: 4.4,
+          paymentTerms: "Net 30",
+          deliveryTime: "4-7 business days",
+          minimumOrder: 300,
+          isActive: true,
+          specialties: ["Metformin", "Diabetic Supplies", "Metabolic Disorders"]
+        }
+      ];
+
+      // Add suppliers to Firestore using batch
+      const batch = writeBatch(db);
+      let count = 0;
+
+      for (const supplierData of realSupplierData) {
+        const docRef = doc(collection(db, 'suppliers'), supplierData.id);
+        batch.set(docRef, {
+          ...supplierData,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        count++;
+      }
+
+      await batch.commit();
+      console.log(`Successfully initialized ${count} suppliers`);
+      
+    } catch (error) {
+      console.error('Error initializing suppliers:', error);
+      throw error;
+    }
+  },
+
   // Initialize all data
   initializeAllData: async () => {
     try {
@@ -419,6 +705,8 @@ export const dataInitializationService = {
       await dataInitializationService.initializeMedicines();
       await dataInitializationService.initializeQuarantineRecords();
       await dataInitializationService.initializeStockTransactions();
+      await dataInitializationService.initializePurchaseOrders();
+      await dataInitializationService.initializeSuppliers();
       
       console.log('All data initialized successfully!');
       return true;
@@ -434,7 +722,7 @@ export const dataInitializationService = {
       console.log('Force reinitializing data...');
       
       // Clear existing data
-      const collections = ['medicines', 'quarantine_records', 'stock_transactions'];
+      const collections = ['medicines', 'quarantine_records', 'stock_transactions', 'purchaseOrders', 'suppliers'];
       
       for (const collectionName of collections) {
         const collectionRef = collection(db, collectionName);
@@ -454,6 +742,8 @@ export const dataInitializationService = {
       await dataInitializationService.initializeMedicines();
       await dataInitializationService.initializeQuarantineRecords();
       await dataInitializationService.initializeStockTransactions();
+      await dataInitializationService.initializePurchaseOrders();
+      await dataInitializationService.initializeSuppliers();
       
       console.log('Force reinitialization completed!');
       return true;

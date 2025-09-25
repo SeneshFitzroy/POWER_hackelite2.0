@@ -80,52 +80,61 @@ const ReorderManagement = () => {
 
   // Initialize data and load medicines with real-time updates
   useEffect(() => {
+    let unsubscribeMedicines = null;
+    let unsubscribeOrders = null;
+    
     const initializeAndSubscribe = async () => {
       try {
+        console.log('ReorderManagement: Starting initialization...');
         setLoading(true);
         
         // Initialize data if needed
         const dataExists = await dataInitializationService.checkIfDataExists();
+        console.log('ReorderManagement: Data exists?', dataExists);
+        
         if (!dataExists) {
-          console.log('Initializing database with real medicine data...');
+          console.log('ReorderManagement: Initializing database with real data...');
           await dataInitializationService.initializeAllData();
-          console.log('Database initialized successfully!');
+          console.log('ReorderManagement: Database initialized successfully!');
+        }
+
+        // Set up real-time subscriptions
+        unsubscribeMedicines = inventoryService.subscribeMedicines((medicinesData) => {
+          console.log('ReorderManagement: Received medicines data:', medicinesData.length);
+          setMedicines(medicinesData);
+          setLoading(false); // Set loading to false when data arrives
+        });
+
+        // Subscribe to purchase orders
+        if (purchaseOrderService && purchaseOrderService.subscribePurchaseOrders) {
+          unsubscribeOrders = purchaseOrderService.subscribePurchaseOrders((ordersData) => {
+            console.log('ReorderManagement: Received purchase orders data:', ordersData.length);
+            setPurchaseOrders(ordersData);
+          });
         }
         
-        setLoading(false);
       } catch (error) {
-        console.error('Error initializing data:', error);
+        console.error('ReorderManagement: Error initializing data:', error);
         setLoading(false);
       }
     };
 
     initializeAndSubscribe();
 
-    const unsubscribeMedicines = inventoryService.subscribeMedicines((medicinesData) => {
-      setMedicines(medicinesData);
-      if (loading) {
-        setLoading(false);
-      }
-    });
-
-    // Subscribe to purchase orders if the service exists
-    let unsubscribeOrders = null;
-    if (purchaseOrderService && purchaseOrderService.subscribePurchaseOrders) {
-      unsubscribeOrders = purchaseOrderService.subscribePurchaseOrders((ordersData) => {
-        setPurchaseOrders(ordersData);
-      });
-    }
-
     return () => {
-      unsubscribeMedicines();
+      if (unsubscribeMedicines) {
+        unsubscribeMedicines();
+      }
       if (unsubscribeOrders) {
         unsubscribeOrders();
       }
     };
-  }, [loading]);
+  }, []); // Remove loading dependency to prevent re-runs
 
   // Filter medicines requiring reorder (low stock + expiring consideration)
   useEffect(() => {
+    console.log('ReorderManagement: Processing medicines for reorder analysis...', medicines.length);
+    
     const today = new Date();
     const thirtyDaysFromNow = new Date();
     thirtyDaysFromNow.setDate(today.getDate() + 30);
@@ -145,8 +154,14 @@ const ReorderManagement = () => {
       }
       
       // Include if low stock or if stock is low and expiring soon
-      return isLowStock || (currentStock <= reorderPoint * 1.5 && isExpiringSoon);
+      const shouldReorder = isLowStock || (currentStock <= reorderPoint * 1.5 && isExpiringSoon);
+      
+      console.log(`Checking ${medicine.name}: Stock ${currentStock}, Reorder Point ${reorderPoint}, Low Stock: ${isLowStock}, Should Reorder: ${shouldReorder}`);
+      
+      return shouldReorder;
     });
+
+    console.log('ReorderManagement: Found medicines needing reorder:', reorderRequired.length);
 
     // Sort by priority: expired/expiring first, then lowest stock
     reorderRequired.sort((a, b) => {
@@ -164,6 +179,7 @@ const ReorderManagement = () => {
 
     setLowStockMedicines(reorderRequired);
     setFilteredMedicines(reorderRequired);
+    console.log('ReorderManagement: Set filtered medicines:', reorderRequired.length);
   }, [medicines]);
 
   // Filter by search term
@@ -322,6 +338,7 @@ const ReorderManagement = () => {
   };
 
   if (loading) {
+    console.log('ReorderManagement: Currently loading...');
     return (
       <Box sx={{ 
         display: 'flex', 
@@ -333,6 +350,13 @@ const ReorderManagement = () => {
       </Box>
     );
   }
+
+  console.log('ReorderManagement: Rendering with:', {
+    medicines: medicines.length,
+    lowStockMedicines: lowStockMedicines.length,
+    filteredMedicines: filteredMedicines.length,
+    loading
+  });
 
   return (
     <Box sx={{ 

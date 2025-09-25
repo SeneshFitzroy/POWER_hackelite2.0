@@ -39,7 +39,6 @@ import {
   Warning as WarningIcon,
   Error as ErrorIcon,
   Schedule as ScheduleIcon,
-  Visibility as ViewIcon,
   Edit as EditIcon,
   Block as BlockIcon,
   CheckCircle as CheckCircleIcon,
@@ -64,7 +63,6 @@ const StockTrackingEnhanced = ({ onNotification }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
-  const [actionDialogOpen, setActionDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     stockQuantity: 0,
@@ -199,9 +197,36 @@ const StockTrackingEnhanced = ({ onNotification }) => {
       );
     }
 
-    // Apply status filter
+    // Apply status filter with enhanced logic
     if (filterStatus !== 'all') {
-      filtered = filtered.filter(medicine => medicine.status === filterStatus);
+      filtered = filtered.filter(medicine => {
+        switch (filterStatus) {
+          case 'active':
+            return medicine.status === 'active' || (!medicine.status && medicine.stockQuantity > 0);
+          case 'inactive':
+            return medicine.status === 'inactive' || medicine.stockQuantity === 0;
+          case 'expired':
+            const daysUntilExpiry = getDaysUntilExpiry(medicine.expiryDate);
+            return medicine.status === 'expired' || (daysUntilExpiry !== null && daysUntilExpiry < 0);
+          case 'quarantined':
+            return medicine.status === 'quarantined';
+          case 'low_stock':
+            const currentStock = medicine.stockQuantity || 0;
+            const minStock = medicine.minStockLevel || lowStockThreshold;
+            return currentStock <= minStock && currentStock > 0;
+          case 'out_of_stock':
+            return (medicine.stockQuantity || 0) === 0;
+          case 'critical':
+            const criticalStock = medicine.stockQuantity || 0;
+            const criticalMin = (medicine.minStockLevel || lowStockThreshold) * 0.5;
+            return criticalStock <= criticalMin;
+          case 'expiring_soon':
+            const expiringSoonDays = getDaysUntilExpiry(medicine.expiryDate);
+            return expiringSoonDays !== null && expiringSoonDays >= 0 && expiringSoonDays <= 90;
+          default:
+            return medicine.status === filterStatus;
+        }
+      });
     }
 
     setFilteredMedicines(filtered);
@@ -217,19 +242,22 @@ const StockTrackingEnhanced = ({ onNotification }) => {
   };
 
   const handleQuarantineAction = async (medicine) => {
+    console.log('Quarantine button clicked for medicine:', medicine.name);
     try {
       if (activeTab === 4) {
         // Release from quarantine
-        await quarantineService.releaseFromQuarantine(medicine.id, 'Manual release');
-        setActionDialogOpen(false);
-        await loadAllData();
-        alert('Medicine released from quarantine successfully');
+        if (window.confirm(`Are you sure you want to release ${medicine.name} from quarantine?`)) {
+          await quarantineService.releaseFromQuarantine(medicine.id, 'Manual release');
+          await loadAllData();
+          alert('Medicine released from quarantine successfully');
+        }
       } else {
         // Quarantine medicine
-        await quarantineService.quarantineMedicine(medicine.id, 'Manual quarantine');
-        setActionDialogOpen(false);
-        await loadAllData();
-        alert('Medicine quarantined successfully');
+        if (window.confirm(`Are you sure you want to quarantine ${medicine.name}?`)) {
+          await quarantineService.quarantineMedicine(medicine.id, 'Manual quarantine');
+          await loadAllData();
+          alert('Medicine quarantined successfully');
+        }
       }
     } catch (error) {
       console.error('Error handling quarantine action:', error);
@@ -238,6 +266,7 @@ const StockTrackingEnhanced = ({ onNotification }) => {
   };
 
   const handleDeleteMedicine = async (medicine) => {
+    console.log('Delete button clicked for medicine:', medicine.name);
     try {
       if (window.confirm(`Are you sure you want to delete ${medicine.name}? This action cannot be undone.`)) {
         await inventoryService.deleteMedicine(medicine.id);
@@ -251,6 +280,7 @@ const StockTrackingEnhanced = ({ onNotification }) => {
   };
 
   const handleEditMedicine = (medicine) => {
+    console.log('Edit button clicked for medicine:', medicine.name);
     setSelectedMedicine(medicine);
     setEditForm({
       stockQuantity: medicine.stockQuantity || 0,
@@ -477,13 +507,25 @@ const StockTrackingEnhanced = ({ onNotification }) => {
                   <InputLabel>Status Filter</InputLabel>
                   <Select
                     value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
+                    onChange={(e) => {
+                      console.log('Status filter changed to:', e.target.value);
+                      setFilterStatus(e.target.value);
+                    }}
                     label="Status Filter"
-                    sx={{ borderRadius: '10px' }}
+                    sx={{ 
+                      borderRadius: '10px',
+                      backgroundColor: '#f8fafc'
+                    }}
                   >
                     <MenuItem value="all">All Status</MenuItem>
                     <MenuItem value="active">Active</MenuItem>
                     <MenuItem value="inactive">Inactive</MenuItem>
+                    <MenuItem value="expired">Expired</MenuItem>
+                    <MenuItem value="quarantined">Quarantined</MenuItem>
+                    <MenuItem value="low_stock">Low Stock</MenuItem>
+                    <MenuItem value="out_of_stock">Out of Stock</MenuItem>
+                    <MenuItem value="critical">Critical</MenuItem>
+                    <MenuItem value="expiring_soon">Expiring Soon</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -621,16 +663,16 @@ const StockTrackingEnhanced = ({ onNotification }) => {
                               <CheckCircleIcon />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="View Details">
+                          <Tooltip title="Edit Medicine">
                             <IconButton 
                               size="small" 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleViewDetails(medicine);
+                                handleEditMedicine(medicine);
                               }}
-                              sx={{ color: '#1e40af' }}
+                              sx={{ color: '#6b7280' }}
                             >
-                              <ViewIcon />
+                              <EditIcon />
                             </IconButton>
                           </Tooltip>
                         </Box>
@@ -744,16 +786,16 @@ const StockTrackingEnhanced = ({ onNotification }) => {
                       </TableCell>
                       <TableCell sx={{ p: { xs: 1, md: 2 } }}>
                         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                          <Tooltip title="View Details">
+                          <Tooltip title="Edit">
                             <IconButton 
                               size="small" 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleViewDetails(medicine);
+                                handleEditMedicine(medicine);
                               }}
-                              sx={{ color: '#1e40af' }}
+                              sx={{ color: '#6b7280' }}
                             >
-                              <ViewIcon />
+                              <EditIcon />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title={activeTab === 4 ? "Release from Quarantine" : "Quarantine"}>
@@ -761,8 +803,7 @@ const StockTrackingEnhanced = ({ onNotification }) => {
                               size="small" 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedMedicine(medicine);
-                                setActionDialogOpen(true);
+                                handleQuarantineAction(medicine);
                               }}
                               sx={{ color: activeTab === 4 ? '#059669' : '#dc2626' }}
                             >
@@ -779,18 +820,6 @@ const StockTrackingEnhanced = ({ onNotification }) => {
                               sx={{ color: '#dc2626' }}
                             >
                               <DeleteIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Edit">
-                            <IconButton 
-                              size="small" 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditMedicine(medicine);
-                              }}
-                              sx={{ color: '#6b7280' }}
-                            >
-                              <EditIcon />
                             </IconButton>
                           </Tooltip>
                         </Box>
@@ -854,37 +883,7 @@ const StockTrackingEnhanced = ({ onNotification }) => {
         </DialogActions>
       </Dialog>
 
-      {/* Action Dialog */}
-      <Dialog open={actionDialogOpen} onClose={() => setActionDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {activeTab === 4 ? 'Release from Quarantine' : 'Quarantine Medicine'}
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            {activeTab === 4 
-              ? 'Are you sure you want to release this medicine from quarantine?'
-              : 'Are you sure you want to quarantine this medicine?'
-            }
-          </Typography>
-          {selectedMedicine && (
-            <Alert severity={activeTab === 4 ? "info" : "warning"}>
-              <Typography variant="subtitle2">{selectedMedicine.name}</Typography>
-              <Typography variant="body2">Batch: {selectedMedicine.batchNumber || 'N/A'}</Typography>
-              <Typography variant="body2">Stock: {selectedMedicine.stockQuantity || 0} units</Typography>
-            </Alert>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setActionDialogOpen(false)}>Cancel</Button>
-          <Button 
-            onClick={() => handleQuarantineAction(selectedMedicine)} 
-            variant="contained" 
-            color={activeTab === 4 ? "success" : "error"}
-          >
-            {activeTab === 4 ? 'Release' : 'Quarantine'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+
 
       {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
