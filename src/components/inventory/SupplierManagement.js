@@ -90,7 +90,20 @@ const SupplierManagement = () => {
   const loadSuppliers = async () => {
     try {
       setLoading(true);
-      const suppliersData = await supplierService.getAllSuppliers();
+      let suppliersData = await supplierService.getAllSuppliers();
+      
+      // Auto-initialize Sri Lankan data if no suppliers exist
+      if (suppliersData.length === 0) {
+        console.log('No suppliers found, initializing Sri Lankan data...');
+        try {
+          await supplierService.initializeSriLankanSuppliers();
+          suppliersData = await supplierService.getAllSuppliers();
+          console.log('Sri Lankan suppliers initialized successfully');
+        } catch (initError) {
+          console.error('Error initializing Sri Lankan suppliers:', initError);
+        }
+      }
+      
       setSuppliers(suppliersData);
     } catch (error) {
       console.error('Error loading suppliers:', error);
@@ -385,23 +398,25 @@ const SupplierManagement = () => {
         </Grid>
       </Grid>
 
-      {/* Search Bar */}
+      {/* Search Bar and Actions */}
       <Card sx={{ mb: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
         <CardContent>
-          <TextField
-            fullWidth
-            placeholder="Search suppliers..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ maxWidth: 400 }}
-          />
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <TextField
+              fullWidth
+              placeholder="Search suppliers..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ maxWidth: 400 }}
+            />
+          </Box>
         </CardContent>
       </Card>
 

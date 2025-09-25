@@ -75,7 +75,20 @@ const PurchaseOrderManagement = () => {
   const loadPurchaseOrders = async () => {
     try {
       setLoading(true);
-      const orders = await purchaseOrderService.getAllPurchaseOrders();
+      let orders = await purchaseOrderService.getAllPurchaseOrders();
+      
+      // Auto-initialize Sri Lankan data if no purchase orders exist
+      if (orders.length === 0) {
+        console.log('No purchase orders found, initializing Sri Lankan data...');
+        try {
+          await purchaseOrderService.initializeSriLankanPurchaseOrders();
+          orders = await purchaseOrderService.getAllPurchaseOrders();
+          console.log('Sri Lankan purchase orders initialized successfully');
+        } catch (initError) {
+          console.error('Error initializing Sri Lankan purchase orders:', initError);
+        }
+      }
+      
       setPurchaseOrders(orders);
       setFilteredOrders(orders);
     } catch (error) {

@@ -80,11 +80,31 @@ const SupplierManagementEnhanced = () => {
   const loadAllData = async () => {
     try {
       setLoading(true);
-      const [suppliersData, ordersData, historyData] = await Promise.all([
+      let [suppliersData, ordersData, historyData] = await Promise.all([
         supplierService.getAllSuppliers(),
         purchaseOrderService.getAllPurchaseOrders(),
         purchaseOrderService.getPurchaseHistory()
       ]);
+
+      // Auto-initialize Sri Lankan data if no suppliers exist
+      if (suppliersData.length === 0) {
+        console.log('No suppliers found, initializing Sri Lankan data...');
+        try {
+          await supplierService.initializeSriLankanSuppliers();
+          await purchaseOrderService.initializeSriLankanPurchaseOrders();
+          
+          // Reload data after initialization
+          [suppliersData, ordersData, historyData] = await Promise.all([
+            supplierService.getAllSuppliers(),
+            purchaseOrderService.getAllPurchaseOrders(),
+            purchaseOrderService.getPurchaseHistory()
+          ]);
+          console.log('Sri Lankan data initialized successfully');
+        } catch (initError) {
+          console.error('Error initializing Sri Lankan data:', initError);
+        }
+      }
+
       setSuppliers(suppliersData);
       setPurchaseOrders(ordersData);
       setPurchaseHistory(historyData);

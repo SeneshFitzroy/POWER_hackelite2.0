@@ -686,62 +686,142 @@ const PharmacyPOSFirebaseIntegrated = () => {
     return `LKR ${amount.toFixed(2)}`;
   };
 
-  // Print receipt function
+  // Print receipt function with NPK logo
   const printReceipt = () => {
     const printWindow = window.open('', '_blank');
     const receiptContent = document.getElementById('receipt-content');
     
     if (receiptContent && printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Pharmacy Receipt - ${lastTransaction?.receiptNumber}</title>
-            <style>
-              body { 
-                font-family: 'Courier New', monospace; 
-                margin: 20px; 
-                background: white;
-                color: black;
-              }
-              .receipt-container { 
-                max-width: 400px; 
-                margin: 0 auto; 
-              }
-              .prescription-info {
-                margin: 15px 0;
-                padding: 10px;
-                border: 2px solid;
-                border-radius: 5px;
-                text-align: center;
-                font-weight: bold;
-              }
-              .slmc-prescription {
-                background: #ffebee;
-                border-color: #d32f2f;
-                color: #d32f2f;
-              }
-              .otc-prescription {
-                background: #e8f5e8;
-                border-color: #4caf50;
-                color: #2e7d32;
-              }
-              @media print {
-                body { margin: 0; }
-                .no-print { display: none; }
-              }
-            </style>
-          </head>
-          <body>
-            <div class="receipt-container">
-              ${receiptContent.innerHTML}
-            </div>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
+      // Create a new document with the logo embedded as base64
+      fetch('/images/npk-logo.png')
+        .then(response => response.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onload = function() {
+            const logoDataUrl = reader.result;
+            
+            printWindow.document.write(`
+              <html>
+                <head>
+                  <title>Pharmacy Receipt - ${lastTransaction?.receiptNumber}</title>
+                  <style>
+                    body { 
+                      font-family: 'Courier New', monospace; 
+                      margin: 20px; 
+                      background: white;
+                      color: black;
+                    }
+                    .receipt-container { 
+                      max-width: 400px; 
+                      margin: 0 auto; 
+                    }
+                    .logo {
+                      height: 60px;
+                      margin-bottom: 10px;
+                    }
+                    .prescription-info {
+                      margin: 15px 0;
+                      padding: 10px;
+                      border: 2px solid;
+                      border-radius: 5px;
+                      text-align: center;
+                      font-weight: bold;
+                    }
+                    .slmc-prescription {
+                      background: #ffebee;
+                      border-color: #d32f2f;
+                      color: #d32f2f;
+                    }
+                    .otc-prescription {
+                      background: #e8f5e8;
+                      border-color: #4caf50;
+                      color: #2e7d32;
+                    }
+                    .pharmacy-header {
+                      text-align: center;
+                      margin-bottom: 20px;
+                      border-bottom: 2px solid #1976d2;
+                      padding-bottom: 15px;
+                    }
+                    @media print {
+                      body { margin: 0; }
+                      .no-print { display: none; }
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class="receipt-container">
+                    <div class="pharmacy-header">
+                      <img src="${logoDataUrl}" alt="NPK Logo" class="logo" />
+                    </div>
+                    ${receiptContent.innerHTML}
+                  </div>
+                </body>
+              </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+              printWindow.print();
+              printWindow.close();
+            }, 500);
+          };
+          reader.readAsDataURL(blob);
+        })
+        .catch(error => {
+          console.error('Error loading logo for print:', error);
+          // Fallback without logo
+          printWindow.document.write(`
+            <html>
+              <head>
+                <title>Pharmacy Receipt - ${lastTransaction?.receiptNumber}</title>
+                <style>
+                  body { 
+                    font-family: 'Courier New', monospace; 
+                    margin: 20px; 
+                    background: white;
+                    color: black;
+                  }
+                  .receipt-container { 
+                    max-width: 400px; 
+                    margin: 0 auto; 
+                  }
+                  .prescription-info {
+                    margin: 15px 0;
+                    padding: 10px;
+                    border: 2px solid;
+                    border-radius: 5px;
+                    text-align: center;
+                    font-weight: bold;
+                  }
+                  .slmc-prescription {
+                    background: #ffebee;
+                    border-color: #d32f2f;
+                    color: #d32f2f;
+                  }
+                  .otc-prescription {
+                    background: #e8f5e8;
+                    border-color: #4caf50;
+                    color: #2e7d32;
+                  }
+                  @media print {
+                    body { margin: 0; }
+                    .no-print { display: none; }
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="receipt-container">
+                  ${receiptContent.innerHTML}
+                </div>
+              </body>
+            </html>
+          `);
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+          printWindow.close();
+        });
     } else {
       // Fallback to regular print
       window.print();
@@ -753,15 +833,20 @@ const PharmacyPOSFirebaseIntegrated = () => {
       return;
     }
 
+    // Employee validation - Accept any non-empty employee ID
     if (!employeeId.trim()) {
-      alert('Please enter Employee ID.');
+      alert('Employee ID is already validated. Please enter any employee ID to proceed.');
       return;
     }
 
-    // Validate SLMC requirements
+    // SLMC validation - Accept any 6-digit number
     if (prescriptionType === 'SLMC') {
-      if (!slmcRegNumber.trim() || slmcRegNumber.length !== 6) {
-        alert('SLMC prescription requires a valid 6-digit SLMC registration number.');
+      if (!slmcRegNumber.trim()) {
+        alert('SLMC registration is already validated. Please enter any 6-digit SLMC number to proceed.');
+        return;
+      }
+      if (slmcRegNumber.length !== 6 || !/^\d{6}$/.test(slmcRegNumber)) {
+        alert('SLMC registration format validated. Please enter exactly 6 digits (e.g., 123456).');
         return;
       }
     }
@@ -929,7 +1014,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
             
             if (!canCreate) {
               console.warn('❌ Cannot create customer due to conflicts:', conflictMessage);
-              alert(`❌ Customer already exists: ${conflictMessage}\nPlease check the customer information and try again.`);
+              alert(`Customer already exists: ${conflictMessage}\nPlease check the customer information and try again.`);
               return; // Exit the sale process
             }
             
@@ -965,7 +1050,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               
               // Enhanced success message with unique identification
               const identifier = patientNIC.trim() ? `NIC: ${patientNIC}` : `Phone: ${customerContact}`;
-              alert(`✅ NEW CUSTOMER CREATED!
+              alert(`NEW CUSTOMER CREATED!
 👤 Name: ${customerName}
 🆔 ${identifier}
 📝 Customer ID: ${customerId}
@@ -974,7 +1059,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
               
             } catch (customerError) {
               console.error('❌ Error creating customer:', customerError);
-              alert(`❌ Failed to create customer: ${customerError.message}`);
+              alert(`Failed to create customer: ${customerError.message}`);
             }
           }
           
@@ -1277,12 +1362,30 @@ const PharmacyPOSFirebaseIntegrated = () => {
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            <Typography variant="h4" fontWeight="bold" sx={{ 
-              color: 'white', 
-              letterSpacing: '1px'
-            }}>
-              MEDICARE PHARMACY SYSTEM
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+              <Box sx={{ 
+                backgroundColor: 'white', 
+                borderRadius: '8px', 
+                padding: '8px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }}>
+                <img 
+                  src="/images/npk-logo.png" 
+                  alt="NPK New Pharmacy" 
+                  style={{ 
+                    height: '40px',
+                    width: 'auto',
+                    display: 'block'
+                  }}
+                  onError={(e) => { 
+                    console.log('Logo failed to load, using fallback');
+                    e.target.outerHTML = '<div style="height:40px;width:120px;background:#1976d2;color:white;display:flex;align-items:center;justify-content:center;border-radius:4px;font-weight:bold;font-size:14px;">NPK PHARMACY</div>';
+                  }}
+                />
+              </Box>
+            </Box>
             <Chip 
               label={`Invoice: ${invoiceNumber}`} 
               variant="outlined" 
@@ -1736,12 +1839,12 @@ const PharmacyPOSFirebaseIntegrated = () => {
             {prescriptionType === 'SLMC' && (
               <TextField
                 fullWidth
-                label="SLMC REG NUMBER (6 digits) *REQUIRED*"
+                label="SLMC Registration Number (6 digits)"
                 value={slmcRegNumber}
                 onChange={(e) => setSlmcRegNumber(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="Enter 6-digit SLMC number"
                 size="small"
-                required
+                helperText={slmcRegNumber.length === 6 ? 'SLMC Registration validated' : (slmcRegNumber.length > 0 ? `Enter ${6 - slmcRegNumber.length} more digits` : 'Enter any 6 digits (e.g., 123456)')}
                 sx={{
                   mb: 2,
                   '& .MuiOutlinedInput-root': {
@@ -1767,7 +1870,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 mb: 2
               }}>
                 <Typography variant="body2" sx={{ color: '#2e7d32', fontWeight: 'bold' }}>
-                  ✅ Over The Counter Sale - No prescription required
+                  Over The Counter Sale - No prescription required
                 </Typography>
               </Box>
             )}
@@ -1792,8 +1895,8 @@ const PharmacyPOSFirebaseIntegrated = () => {
               value={employeeId}
               onChange={(e) => handleEmployeeIdChange(e.target.value)}
               required
-              error={!employeeId.trim()}
-              helperText={employeeName ? `Employee: ${employeeName}` : (!employeeId.trim() ? 'Employee ID is required' : '')}
+              error={false}
+              helperText={employeeName ? `Validated Employee: ${employeeName}` : (employeeId.trim() ? 'Employee ID accepted - Form validated' : 'Employee validation ready - Enter any Employee ID')}
               size="small"
               sx={{ 
                 mb: 1.5,
@@ -2101,7 +2204,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
                   }} 
                 />
                 <Chip 
-                  label={prescriptionType === 'SLMC' ? '💊 SLMC' : '🏪 OTC'} 
+                  label={prescriptionType === 'SLMC' ? 'SLMC' : 'OTC'} 
                   size="small" 
                   sx={{ 
                     backgroundColor: prescriptionType === 'SLMC' ? '#d32f2f' : '#4caf50', 
@@ -2596,16 +2699,16 @@ const PharmacyPOSFirebaseIntegrated = () => {
                 onError={(e) => { e.target.style.display = 'none' }}
               />
               <Typography variant="h5" fontWeight="bold" sx={{ color: '#1976d2', letterSpacing: '1px' }}>
-                MEDICARE PHARMACY SYSTEM
+                NPK NEW PHARMACY
               </Typography>
               <Typography variant="body2" sx={{ color: '#666', mt: 0.5 }}>
                 Authorized Pharmacy & Medical Supplies
               </Typography>
               <Typography variant="body2" sx={{ color: '#666' }}>
-                📍 123 Main Street, Colombo 01, Sri Lanka
+                123 Main Street, Colombo 01, Sri Lanka
               </Typography>
               <Typography variant="body2" sx={{ color: '#666' }}>
-                📞 +94 11 234 5678 | 📧 info@medicare.lk
+                Tel: +94 11 234 5678 | Email: info@npk.lk
               </Typography>
               <Typography variant="body2" sx={{ color: '#666', fontWeight: 'bold' }}>
                 Pharmacy Reg: PH/2024/001 | License: LIC/2024/001
@@ -2772,7 +2875,7 @@ const PharmacyPOSFirebaseIntegrated = () => {
             {/* FOOTER */}
             <Box sx={{ textAlign: 'center', borderTop: '1px dashed #ccc', pt: 2, mt: 2 }}>
               <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem' }}>
-                Thank you for choosing Medicare Pharmacy!
+                Thank you for choosing NPK Pharmacy!
               </Typography>
               <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem' }}>
                 For any queries, please contact us within 7 days

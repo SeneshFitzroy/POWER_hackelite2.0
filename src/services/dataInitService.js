@@ -390,6 +390,35 @@ export const initializeSampleData = async () => {
   }
 };
 
+// Function to initialize Sri Lankan supplier and purchase order data
+export const initializeSriLankanInventoryData = async () => {
+  try {
+    console.log('Initializing Sri Lankan inventory data...');
+    
+    // Import services dynamically to avoid circular dependencies
+    const { supplierService } = await import('./supplierService');
+    const { purchaseOrderService } = await import('./purchaseOrderService');
+    
+    // Initialize suppliers
+    const supplierResult = await supplierService.initializeSriLankanSuppliers();
+    console.log(`Initialized ${supplierResult.count} Sri Lankan suppliers`);
+    
+    // Initialize purchase orders
+    const orderResult = await purchaseOrderService.initializeSriLankanPurchaseOrders();
+    console.log(`Initialized ${orderResult.count} Sri Lankan purchase orders`);
+    
+    return { 
+      success: true, 
+      message: `Successfully initialized ${supplierResult.count} suppliers and ${orderResult.count} purchase orders with realistic Sri Lankan data`,
+      suppliers: supplierResult.count,
+      orders: orderResult.count
+    };
+  } catch (error) {
+    console.error('Error initializing Sri Lankan inventory data:', error);
+    return { success: false, message: error.message };
+  }
+};
+
 // Function to clear all data (for testing purposes)
 export const clearAllData = async () => {
   try {
