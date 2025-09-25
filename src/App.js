@@ -14,6 +14,7 @@ import ProfessionalPharmacyEcommerce from './components/ecommerce/ProfessionalPh
 import ERPDeliveryModule from './components/ERPDeliveryModule'
 import DeliveryManagement from './components/ecommerce/DeliveryManagement'
 import AdminDashboard from './components/admin/AdminDashboard'
+import AdminDeliveryManagement from './components/admin/AdminDeliveryManagement'
 import './App.css'
 
 // Professional Blue Theme (Matching POS System)
@@ -329,16 +330,7 @@ function App() {
               <ColdChainModule />
             </Box>
           } />
-          <Route path="/delivery-management" element={
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              minHeight: '100vh',
-              backgroundColor: '#f8fafc'
-            }}>
-              <ERPDeliveryModule />
-            </Box>
-          } />
+          <Route path="/delivery-management" element={<AdminDeliveryManagement />} />
           <Route path="/clear-data" element={
             <Box sx={{ 
               display: 'flex', 
