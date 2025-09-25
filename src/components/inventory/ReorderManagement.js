@@ -278,7 +278,11 @@ const ReorderManagement = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ 
+      height: '100%',
+      overflow: 'auto',
+      flex: 1
+    }}>
       {/* Header */}
       <Box sx={{ 
         display: 'flex', 

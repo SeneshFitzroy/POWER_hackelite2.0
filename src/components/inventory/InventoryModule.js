@@ -422,7 +422,9 @@ export default function InventoryModule({
           py: isMobile ? 2 : 3, 
           px: isMobile ? 2 : 3,
           height: isMobile ? 'calc(100% - 64px)' : '100%', 
-          overflow: 'auto' 
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
         }}>
           {activeTab === 0 && <InventoryDashboard />}
           {activeTab === 1 && <StockTrackingEnhanced onNotification={onNotification} />}

@@ -135,7 +135,12 @@ const InventoryDashboard = () => {
   }
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 } }}>
+    <Box sx={{ 
+      p: { xs: 2, md: 3 },
+      height: '100%',
+      overflow: 'auto',
+      flex: 1
+    }}>
       {/* Header */}
       <Box sx={{ 
         display: 'flex', 

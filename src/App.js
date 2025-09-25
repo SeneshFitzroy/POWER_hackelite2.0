@@ -278,7 +278,20 @@ function App() {
     <ThemeProvider theme={theme}>
       <ErrorBoundary>
         <Routes>
-          <Route path="/inventory" element={<InventoryModule />} />
+          <Route path="/inventory" element={
+            <Box sx={{ 
+              height: '100vh', 
+              width: '100vw',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              zIndex: 9999,
+              backgroundColor: '#f8fafc',
+              overflow: 'hidden'
+            }}>
+              <InventoryModule />
+            </Box>
+          } />
           <Route path="/pos" element={
             <Box sx={{ height: '100vh', overflow: 'hidden' }}>
               <PharmacyPOS />
