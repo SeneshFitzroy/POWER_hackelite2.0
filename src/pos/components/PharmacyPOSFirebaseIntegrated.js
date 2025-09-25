@@ -44,12 +44,20 @@ const PharmacyPOSFirebaseIntegrated = () => {
   
   // Logout function
   const handleLogout = () => {
+    console.log('POS Logout initiated');
+    
     // Clear only POS-specific data, not main authentication
     localStorage.removeItem('posSession');
     localStorage.removeItem('cartData');
     sessionStorage.removeItem('posTransaction');
     
-    // Navigate back to ERP Dashboard
+    // Set dashboard access flags to ensure direct navigation to ERP Dashboard
+    localStorage.setItem('dashboardAccess', 'true');
+    localStorage.setItem('forceDashboard', 'true');
+    
+    console.log('POS logout: Dashboard access flags set, navigating to dashboard');
+    
+    // Navigate back to ERP Dashboard with forced dashboard flag
     window.location.href = '/?screen=dashboard';
   };
 

@@ -189,6 +189,7 @@ class ErrorBoundary extends React.Component {
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('splash') // Start with splash screen
+  const [dashboardForced, setDashboardForced] = useState(false) // Track if dashboard is forced
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -199,6 +200,8 @@ function App() {
     const currentPath = window.location.pathname;
     const hasDashboardAccess = localStorage.getItem('dashboardAccess') === 'true';
     const lastScreen = localStorage.getItem('lastScreen');
+    
+    console.log('App initialization:', { screenParam, hasDashboardAccess, lastScreen, currentPath });
     
     // Clear cache to ensure fresh load
     if ('caches' in window) {
@@ -214,23 +217,53 @@ function App() {
       return;
     }
     
-    // Check if specific screen is requested
+    // PRIORITY 1: If dashboard is forced or explicitly requested, always show dashboard
+    const forceDashboard = localStorage.getItem('forceDashboard') === 'true';
+    if (screenParam === 'dashboard' || forceDashboard) {
+      console.log('Dashboard explicitly requested or forced, setting screen to dashboard');
+      setDashboardForced(true);
+      setCurrentScreen('dashboard');
+      return;
+    }
+    
+    // PRIORITY 2: Check other screen parameters
     if (screenParam === 'login') {
       setCurrentScreen('login');
-    } else if (screenParam === 'dashboard') {
-      setCurrentScreen('dashboard');
     } else if (screenParam === 'splash') {
       setCurrentScreen('splash');
     } else if (screenParam === 'ecommerce') {
       setCurrentScreen('ecommerce');
     } else if (hasDashboardAccess && lastScreen === 'dashboard') {
       // If user has dashboard access from previous session, go directly to dashboard
+      console.log('User has dashboard access from previous session, going to dashboard');
       setCurrentScreen('dashboard');
     } else {
       // Default to splash for proper login flow
       setCurrentScreen('splash');
     }
   }, []);
+
+  // Prevent any redirects when dashboard is forced
+  useEffect(() => {
+    if (dashboardForced && currentScreen !== 'dashboard') {
+      console.log('Dashboard is forced but screen changed, reverting to dashboard');
+      setCurrentScreen('dashboard');
+    }
+  }, [currentScreen, dashboardForced]);
+
+  // Override authentication redirects when dashboard is forced
+  useEffect(() => {
+    if (dashboardForced) {
+      console.log('Dashboard forced - preventing any authentication redirects');
+      // Clear any authentication timeout redirects
+      const timeouts = [window.loginTimeout, window.authTimeout];
+      timeouts.forEach(timeout => {
+        if (timeout) {
+          clearTimeout(timeout);
+        }
+      });
+    }
+  }, [dashboardForced]);
 
   const handleSplashComplete = () => {
     setCurrentScreen('login')
@@ -276,20 +309,24 @@ function App() {
   }
   
   const handleLogout = () => {
+    console.log('Logout initiated - forcing dashboard access');
+    
     // Set a special authentication state that allows dashboard access
     localStorage.setItem('dashboardAccess', 'true');
     localStorage.setItem('lastScreen', 'dashboard');
+    localStorage.setItem('forceDashboard', 'true');
     
     // Clear module-specific data but keep dashboard access
     localStorage.removeItem('currentModule');
     localStorage.removeItem('moduleSession');
     
-    // Return to dashboard
-    setCurrentScreen('dashboard')
+    // Force dashboard state and prevent redirects
+    setDashboardForced(true);
+    setCurrentScreen('dashboard');
     
     // If we're not on the main route, redirect to main route with dashboard
     if (window.location.pathname !== '/') {
-      navigate('/?screen=dashboard')
+      navigate('/?screen=dashboard');
     }
   }
 
