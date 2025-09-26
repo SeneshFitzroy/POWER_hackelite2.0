@@ -1596,10 +1596,221 @@ const AdminDashboard = () => {
   // Payment Management Component
   const PaymentsComponent = () => (
     <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Typography variant="h5" fontWeight="bold" gutterBottom>💳 Payment Management</Typography>
-      <Paper sx={{ p: 3, borderRadius: '16px' }}>
-        <Typography>Payment processing, refunds, and transaction monitoring functionality.</Typography>
-      </Paper>
+      <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>
+        💳 Payment Management System
+      </Typography>
+      
+      <Grid container spacing={3}>
+        {/* Payment Stats Cards */}
+        <Grid item xs={12} md={3}>
+          <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white' }}>
+            <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
+              Rs. 485,750
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              Total Revenue Today
+            </Typography>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px', background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)', color: 'white' }}>
+            <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
+              342
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              Successful Payments
+            </Typography>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white' }}>
+            <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
+              18
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              Pending Payments
+            </Typography>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px', background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', color: 'white' }}>
+            <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
+              5
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              Failed Payments
+            </Typography>
+          </Card>
+        </Grid>
+
+        {/* Recent Transactions */}
+        <Grid item xs={12}>
+          <Paper sx={{ borderRadius: '16px', overflow: 'hidden' }}>
+            <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: '#1e3a8a' }}>
+                � Recent Payment Transactions
+              </Typography>
+            </Box>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#f8fafc' }}>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Transaction ID</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Customer</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Amount</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Payment Method</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Date & Time</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', color: '#374151' }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {[
+                    { id: 'TXN-001', customer: 'John Silva', amount: 3850, method: 'Credit Card', status: 'Completed', date: '2025-09-26 10:30 AM', type: 'visa' },
+                    { id: 'TXN-002', customer: 'Mary Fernando', amount: 2450, method: 'Bank Transfer', status: 'Pending', date: '2025-09-26 10:15 AM', type: 'bank' },
+                    { id: 'TXN-003', customer: 'David Perera', amount: 5200, method: 'eZ Cash', status: 'Completed', date: '2025-09-26 09:45 AM', type: 'mobile' },
+                    { id: 'TXN-004', customer: 'Priya Wickrama', amount: 1850, method: 'Dialog Pay', status: 'Failed', date: '2025-09-26 09:30 AM', type: 'mobile' },
+                    { id: 'TXN-005', customer: 'Nimal Rajapaksa', amount: 6200, method: 'Cash on Delivery', status: 'Completed', date: '2025-09-25 18:20 PM', type: 'cod' },
+                    { id: 'TXN-006', customer: 'Ruwan Gunasekara', amount: 3100, method: 'PayHere', status: 'Completed', date: '2025-09-25 17:15 PM', type: 'online' }
+                  ].map((payment) => (
+                    <TableRow key={payment.id} hover sx={{ '&:hover': { backgroundColor: '#f8fafc' } }}>
+                      <TableCell sx={{ fontWeight: 'medium', color: '#1e3a8a' }}>{payment.id}</TableCell>
+                      <TableCell>{payment.customer}</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: '#059669' }}>
+                        Rs. {payment.amount.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={payment.method} 
+                          size="small"
+                          sx={{ 
+                            backgroundColor: payment.type === 'visa' ? '#e3f2fd' : 
+                                           payment.type === 'bank' ? '#f3e5f5' :
+                                           payment.type === 'mobile' ? '#e8f5e8' :
+                                           payment.type === 'cod' ? '#fff3e0' : '#fce4ec',
+                            color: payment.type === 'visa' ? '#1976d2' : 
+                                   payment.type === 'bank' ? '#7b1fa2' :
+                                   payment.type === 'mobile' ? '#388e3c' :
+                                   payment.type === 'cod' ? '#f57c00' : '#e91e63'
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={payment.status} 
+                          size="small"
+                          color={payment.status === 'Completed' ? 'success' : 
+                                 payment.status === 'Pending' ? 'warning' : 'error'}
+                          sx={{ fontWeight: 'bold' }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ color: '#6b7280' }}>{payment.date}</TableCell>
+                      <TableCell>
+                        <Box display="flex" gap={1}>
+                          <IconButton size="small" sx={{ color: '#3b82f6' }}>
+                            <VisibilityIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton size="small" sx={{ color: '#10b981' }}>
+                            <ReceiptIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton size="small" sx={{ color: '#f59e0b' }}>
+                            <RefreshIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+
+        {/* Payment Methods Summary */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3, borderRadius: '16px' }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 3, color: '#1e3a8a' }}>
+              🏦 Payment Methods Usage
+            </Typography>
+            <Box sx={{ space: 2 }}>
+              {[
+                { method: 'Credit/Debit Cards', count: 156, percentage: 45.6, color: '#3b82f6' },
+                { method: 'Bank Transfers', count: 89, percentage: 26.1, color: '#10b981' },
+                { method: 'Mobile Payments', count: 67, percentage: 19.6, color: '#f59e0b' },
+                { method: 'Cash on Delivery', count: 30, percentage: 8.7, color: '#ef4444' }
+              ].map((item) => (
+                <Box key={item.method} sx={{ mb: 2 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                    <Typography variant="body2" fontWeight="medium">{item.method}</Typography>
+                    <Typography variant="body2" color="text.secondary">{item.count} transactions</Typography>
+                  </Box>
+                  <Box sx={{ width: '100%', backgroundColor: '#f1f5f9', borderRadius: '8px', height: 8 }}>
+                    <Box 
+                      sx={{ 
+                        width: `${item.percentage}%`, 
+                        backgroundColor: item.color, 
+                        height: '100%', 
+                        borderRadius: '8px',
+                        transition: 'width 0.3s ease'
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                    {item.percentage}% of total
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Quick Actions */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3, borderRadius: '16px' }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 3, color: '#1e3a8a' }}>
+              ⚡ Quick Payment Actions
+            </Typography>
+            <Box display="flex" flexDirection="column" gap={2}>
+              <Button 
+                variant="contained" 
+                fullWidth 
+                startIcon={<AddIcon />}
+                sx={{ 
+                  borderRadius: '12px', 
+                  py: 1.5,
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
+                }}
+              >
+                Process Manual Payment
+              </Button>
+              <Button 
+                variant="outlined" 
+                fullWidth 
+                startIcon={<ReceiptIcon />}
+                sx={{ borderRadius: '12px', py: 1.5 }}
+              >
+                Generate Payment Report
+              </Button>
+              <Button 
+                variant="outlined" 
+                fullWidth 
+                startIcon={<RefreshIcon />}
+                sx={{ borderRadius: '12px', py: 1.5 }}
+              >
+                Reconcile Transactions
+              </Button>
+              <Button 
+                variant="outlined" 
+                fullWidth 
+                startIcon={<SettingsIcon />}
+                sx={{ borderRadius: '12px', py: 1.5 }}
+              >
+                Payment Gateway Settings
+              </Button>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
     </Container>
   );
 

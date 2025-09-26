@@ -130,26 +130,16 @@ export default function HRModule() {
           borderBottom: '1px solid rgba(255,255,255,0.15)'
         }}
       >
-        <Box display="flex" alignItems="center" gap={1} sx={{ mb: 1 }}>
+        <Box display="flex" alignItems="center" justifyContent="center" sx={{ mb: 1 }}>
           <img 
             src="/images/npk-logo.png" 
             alt="NPK Pharmacy" 
             style={{ 
-              height: '32px', 
+              height: '40px', 
               width: 'auto',
               filter: 'brightness(0) invert(1)' // Makes logo white
             }} 
           />
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 'bold',
-              letterSpacing: '0.5px',
-              color: '#ffffff'
-            }}
-          >
-            NPK Pharmacy
-          </Typography>
         </Box>
         <Chip 
           label="HR MODULE" 

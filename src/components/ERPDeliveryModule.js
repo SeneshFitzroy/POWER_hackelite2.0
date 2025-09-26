@@ -719,10 +719,124 @@ const ERPDeliveryModule = () => {
                 </Badge>
               } 
             />
+            <Tab 
+              label={
+                <Badge badgeContent={availableDrivers.length} color="info">
+                  Driver Management
+                </Badge>
+              } 
+            />
           </Tabs>
 
           <Box sx={{ p: 3 }}>
-            {filteredDeliveries.length === 0 ? (
+            {currentTab === 4 ? (
+              // Driver Management Tab Content
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#1e3a8a' }}>
+                    🚗 Available Drivers ({availableDrivers.length})
+                  </Typography>
+                </Grid>
+                {availableDrivers.map(driver => (
+                  <Grid item xs={12} md={6} lg={4} key={driver.id}>
+                    <Card sx={{ 
+                      borderRadius: '16px', 
+                      overflow: 'hidden',
+                      border: driver.status === 'available' ? '2px solid #10b981' : '2px solid #f59e0b',
+                      transition: 'all 0.3s ease',
+                      '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 }
+                    }}>
+                      <CardContent sx={{ p: 3 }}>
+                        <Box display="flex" alignItems="center" gap={2} sx={{ mb: 2 }}>
+                          <Avatar 
+                            src={driver.avatar} 
+                            sx={{ width: 60, height: 60, border: '3px solid #fff', boxShadow: 2 }}
+                          />
+                          <Box flex={1}>
+                            <Typography variant="h6" fontWeight="bold" sx={{ mb: 0.5 }}>
+                              {driver.name}
+                            </Typography>
+                            <Chip 
+                              label={driver.status.toUpperCase()} 
+                              size="small"
+                              color={driver.status === 'available' ? 'success' : 'warning'}
+                              sx={{ fontWeight: 'bold' }}
+                            />
+                          </Box>
+                        </Box>
+
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            📱 Phone: {driver.phone}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            🚗 Vehicle: {driver.vehicle} ({driver.vehicleNumber})
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            🆔 License: {driver.licenseNumber}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            📅 Experience: {driver.experience}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            📍 Address: {driver.address}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            🚨 Emergency: {driver.emergencyContact}
+                          </Typography>
+                        </Box>
+
+                        <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Typography variant="body2" fontWeight="bold">
+                              ⭐ {driver.rating}/5
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              ({driver.totalDeliveries} deliveries)
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        <Box display="flex" gap={1}>
+                          <Button 
+                            variant="contained" 
+                            size="small" 
+                            fullWidth
+                            startIcon={<PhoneIcon />}
+                            onClick={() => window.open(`tel:${driver.phone}`)}
+                            sx={{ 
+                              borderRadius: '8px',
+                              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                            }}
+                          >
+                            Call
+                          </Button>
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            fullWidth
+                            startIcon={<LocationOnIcon />}
+                            sx={{ borderRadius: '8px' }}
+                          >
+                            Track
+                          </Button>
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            fullWidth
+                            startIcon={<AssignmentIcon />}
+                            disabled={driver.status === 'busy'}
+                            sx={{ borderRadius: '8px' }}
+                          >
+                            Assign
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            ) : filteredDeliveries.length === 0 ? (
               <Alert severity="info">
                 No deliveries found matching your search criteria
               </Alert>
