@@ -2,12 +2,13 @@ import React from 'react';
 import {
   Box,
   Container,
-  Grid,
+  
   Typography,
   Link,
   IconButton,
   Divider
 } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
   Facebook as FacebookIcon,
   Twitter as TwitterIcon,
@@ -32,7 +33,7 @@ const ProfessionalFooter = () => {
       <Container maxWidth="lg" sx={{ py: 5 }}>
         <Grid container spacing={4}>
           {/* Company Info */}
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <img 
                 src="/images/npk-logo.png" 
@@ -66,7 +67,7 @@ const ProfessionalFooter = () => {
           </Grid>
 
           {/* Quick Links */}
-          <Grid item xs={12} sm={6} md={2}>
+          <Grid xs={12} sm={6} md={2}>
             <Typography variant="h6" fontWeight="600" sx={{ mb: 2.5, color: 'white' }}>
               Quick Links
             </Typography>
@@ -92,7 +93,7 @@ const ProfessionalFooter = () => {
           </Grid>
 
           {/* Services */}
-          <Grid item xs={12} sm={6} md={2}>
+          <Grid xs={12} sm={6} md={2}>
             <Typography variant="h6" fontWeight="600" sx={{ mb: 2.5, color: 'white' }}>
               Services
             </Typography>
@@ -118,7 +119,7 @@ const ProfessionalFooter = () => {
           </Grid>
 
           {/* Contact Info */}
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <Typography variant="h6" fontWeight="600" sx={{ mb: 2.5, color: 'white' }}>
               Contact
             </Typography>
@@ -181,7 +182,7 @@ const ProfessionalFooter = () => {
               { icon: LocalShippingIcon, label: 'Fast Delivery' },
               { icon: VerifiedIcon, label: 'Quality Assured' }
             ].map((item, index) => (
-              <Grid item xs={4} sm={4} md={2} key={index}>
+              <Grid xs={4} sm={4} md={2} key={index}>
                 <Box sx={{ textAlign: 'center' }}>
                   <item.icon sx={{ fontSize: 24, color: '#10b981', mb: 0.5 }} />
                   <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.8)', display: 'block' }}>
@@ -237,3 +238,5 @@ const ProfessionalFooter = () => {
 };
 
 export default ProfessionalFooter;
+
+

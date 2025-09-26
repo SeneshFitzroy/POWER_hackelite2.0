@@ -1,0 +1,45 @@
+/* Medicine placeholder image */
+.medicine-placeholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 12px 12px 0 0;
+  color: #9ca3af;
+  font-size: 14px;
+  text-align: center;
+}
+
+.medicine-placeholder svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 8px;
+}
+
+/* Ensure buttons are clickable */
+.ecommerce-button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  position: relative;
+  z-index: 10;
+}
+
+.ecommerce-button:hover {
+  transform: translateY(-1px) !important;
+}
+
+/* Fix any potential overlay issues */
+.product-card {
+  position: relative;
+  overflow: visible;
+}
+
+.product-card-actions {
+  position: relative;
+  z-index: 20;
+  background: white;
+  padding: 16px;
+}

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext, createContext } from 'react';
 import {
   Box,
   Container,
-  Grid,
   Card,
   CardContent,
   CardMedia,
@@ -55,6 +54,7 @@ import {
   Skeleton,
   Tooltip
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import {
   Search as SearchIcon,
   ShoppingCart as ShoppingCartIcon,
@@ -838,7 +838,7 @@ const ProductDetailModal = ({ product, open, onClose }) => {
       <DialogContent sx={{ p: 3 }}>
         <Grid container spacing={3}>
           {/* Product Images */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Box>
               <CardMedia
                 component="img"
@@ -877,7 +877,7 @@ const ProductDetailModal = ({ product, open, onClose }) => {
           </Grid>
 
           {/* Product Details */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
               {product.brand}
             </Typography>
@@ -1011,7 +1011,7 @@ const ProductDetailModal = ({ product, open, onClose }) => {
               </Typography>
               <Grid container spacing={2}>
                 {Object.entries(product.specifications).map(([key, value]) => (
-                  <Grid item xs={12} sm={6} key={key}>
+                  <Grid xs={12} sm={6} key={key}>
                     <Paper sx={{ p: 2, borderRadius: '8px' }}>
                       <Typography variant="body2" color="text.secondary">
                         {key}
@@ -1060,7 +1060,7 @@ const ProductDetailModal = ({ product, open, onClose }) => {
                 Shipping Information
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Paper sx={{ p: 3, borderRadius: '12px', textAlign: 'center' }}>
                     <LocalShippingIcon sx={{ fontSize: 40, color: '#3b82f6', mb: 1 }} />
                     <Typography variant="h6" fontWeight="bold">
@@ -1074,7 +1074,7 @@ const ProductDetailModal = ({ product, open, onClose }) => {
                     </Typography>
                   </Paper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Paper sx={{ p: 3, borderRadius: '12px', textAlign: 'center' }}>
                     <ScheduleIcon sx={{ fontSize: 40, color: '#10b981', mb: 1 }} />
                     <Typography variant="h6" fontWeight="bold">
@@ -1205,7 +1205,7 @@ const ProfessionalEcommerce = () => {
             </Typography>
             <Grid container spacing={2}>
               {medicineCategories.map((category) => (
-                <Grid item xs={6} sm={4} md={3} key={category.id}>
+                <Grid xs={6} sm={4} md={3} key={category.id}>
                   <Card
                     onClick={() => setSelectedCategory(category.id)}
                     sx={{
@@ -1246,7 +1246,7 @@ const ProfessionalEcommerce = () => {
           {loading ? (
             <Grid container spacing={3}>
               {[...Array(8)].map((_, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                <Grid xs={12} sm={6} md={4} lg={3} key={index}>
                   <Card sx={{ borderRadius: '16px' }}>
                     <Skeleton variant="rectangular" height={200} />
                     <CardContent>
@@ -1261,7 +1261,7 @@ const ProfessionalEcommerce = () => {
           ) : (
             <Grid container spacing={3}>
               {filteredProducts.map((product) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
+                <Grid xs={12} sm={6} md={4} lg={3} key={product.id}>
                   <Box onClick={() => handleProductClick(product)}>
                     <ProductCard product={product} />
                   </Box>
@@ -1336,3 +1336,5 @@ const ProfessionalEcommerce = () => {
 };
 
 export default ProfessionalEcommerce;
+
+

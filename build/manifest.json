@@ -1,0 +1,15 @@
+{
+  "short_name": "CoreERP",
+  "name": "CoreERP - Smart ERP System",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzIxOTZGMyIvPgo8cGF0aCBkPSJNMTYgMTZIMzJWMjRIMTZWMTZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMzYgMTZINDhWMjRIMzZWMTZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTYgMjhIMjhWMzZIMTZWMjhaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMzIgMjhINDhWMzZIMzJWMjhaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTYgNDBINDhWNDhIMTZWNDBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2196F3",
+  "background_color": "#ffffff"
+}

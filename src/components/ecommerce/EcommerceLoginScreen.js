@@ -8,7 +8,7 @@ import {
   Typography,
   Tab,
   Tabs,
-  Grid,
+  
   Divider,
   IconButton,
   InputAdornment,
@@ -16,7 +16,7 @@ import {
   Checkbox,
   FormControlLabel,
   Alert
-} from '@mui/material';
+} from '@mui/material';`nimport Grid from '@mui/material/Grid2';
 import {
   Email,
   Lock,
@@ -161,7 +161,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
               {tabValue === 0 ? (
                 // Login Form
                 <Grid container spacing={3}>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Email Address"
@@ -178,7 +178,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Password"
@@ -202,7 +202,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                       <FormControlLabel
                         control={<Checkbox />}
@@ -217,7 +217,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
               ) : (
                 // Signup Form
                 <Grid container spacing={3}>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <TextField
                       fullWidth
                       label="First Name"
@@ -233,7 +233,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <TextField
                       fullWidth
                       label="Last Name"
@@ -242,7 +242,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       required
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Email Address"
@@ -259,7 +259,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Phone Number"
@@ -275,7 +275,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Password"
@@ -292,7 +292,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Confirm Password"
@@ -309,7 +309,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -361,7 +361,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                   </Typography>
                 </Divider>
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
+                  <Grid xs={4}>
                     <Button
                       fullWidth
                       variant="outlined"
@@ -372,7 +372,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       Google
                     </Button>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid xs={4}>
                     <Button
                       fullWidth
                       variant="outlined"
@@ -383,7 +383,7 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
                       Facebook
                     </Button>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid xs={4}>
                     <Button
                       fullWidth
                       variant="outlined"
@@ -405,3 +405,5 @@ const EcommerceLoginScreen = ({ onLoginSuccess }) => {
 };
 
 export default EcommerceLoginScreen;
+
+

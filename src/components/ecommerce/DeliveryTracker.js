@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Grid,
+  
   LinearProgress,
   Alert,
   AppBar,
@@ -28,6 +28,7 @@ import {
   Badge,
   CircularProgress
 } from '@mui/material';
+import { Grid } from '@mui/material';
 // Material-UI Icons
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -630,7 +631,7 @@ const DeliveryTracker = ({ orderId, onClose }) => {
 
             {/* Action Buttons */}
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid xs={6}>
                 <Button
                   fullWidth
                   variant="contained"
@@ -653,7 +654,7 @@ const DeliveryTracker = ({ orderId, onClose }) => {
                   Call Driver
                 </Button>
               </Grid>
-              <Grid item xs={6}>
+              <Grid xs={6}>
                 <Button
                   fullWidth
                   variant="outlined"
@@ -908,3 +909,5 @@ const DeliveryTracker = ({ orderId, onClose }) => {
 };
 
 export default DeliveryTracker;
+
+

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
+import './ecommerce-fixes.css';
 import {
   Box,
   Container,
@@ -47,9 +48,9 @@ import {
   FormControlLabel,
   Checkbox,
   Tabs,
-  Tab,
-  Grid
+  Tab
 } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
   Search as SearchIcon,
   ShoppingCart as ShoppingCartIcon,
@@ -1278,16 +1279,23 @@ const ProfessionalPharmacyEcommerce = () => {
           <CardMedia
             component="img"
             height="200"
-            image={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/400x400/e5e7eb/6b7280?text=No+Image'}
+            image={product.images && product.images.length > 0 ? product.images[0] : '/images/medicines/placeholder-medicine.jpg'}
             alt={product.name}
             sx={{ 
               borderRadius: '12px 12px 0 0',
               objectFit: 'cover'
             }}
             onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/400x400/e5e7eb/6b7280?text=No+Image';
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
             }}
           />
+          
+          {/* Image Fallback */}
+          <div className="medicine-placeholder" style={{ display: 'none' }}>
+            <LocalPharmacyIcon />
+            <span>No Image Available</span>
+          </div>
           
           {product.originalPrice > product.price && (
             <Chip
@@ -1368,14 +1376,17 @@ const ProfessionalPharmacyEcommerce = () => {
           </Typography>
         </CardContent>
 
-        <Box sx={{ p: 2, pt: 0, display: 'flex', gap: 1 }}>
+        <Box className="product-card-actions" sx={{ p: 2, pt: 0, display: 'flex', gap: 1 }}>
           <Button
+            className="ecommerce-button"
             variant="outlined"
             onClick={(e) => {
+              console.log('View More clicked!', product.name);
+              e.preventDefault();
               e.stopPropagation();
               try {
                 setSelectedProduct(product);
-                setProductDetailOpen(true);
+                setCurrentView('product');
               } catch (error) {
                 console.error('View product error:', error);
                 showSnackbar(`Error viewing ${product.name}`, 'error');
@@ -1400,15 +1411,17 @@ const ProfessionalPharmacyEcommerce = () => {
             View More
           </Button>
           <Button
+            className="ecommerce-button"
             variant="contained"
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={() => {
+              console.log('🔥 BUTTON CLICKED!', product.name);
+              alert('Button works! Adding to cart...');
               try {
                 addToCart(product);
                 showSnackbar(`${product.name} added to cart!`);
               } catch (error) {
                 console.error('Add to cart error:', error);
-                showSnackbar(`Error adding ${product.name} to cart`, 'error');
+                alert('Error: ' + error.message);
               }
             }}
             disabled={!product.inStock}
@@ -1472,7 +1485,7 @@ const ProfessionalPharmacyEcommerce = () => {
         <DialogContent sx={{ p: 3 }}>
           <Grid container spacing={3}>
             {/* Product Images */}
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid xs={12} md={6}>
               <Box sx={{ position: 'relative', mb: 2 }}>
                 <img
                   src={selectedProduct.images[selectedImage]}
@@ -1543,7 +1556,7 @@ const ProfessionalPharmacyEcommerce = () => {
             </Grid>
 
             {/* Product Info */}
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid xs={12} md={6}>
               <Chip
                 label={selectedProduct.category.toUpperCase()}
                 size="small"
@@ -1892,7 +1905,7 @@ const ProfessionalPharmacyEcommerce = () => {
         {/* Products Grid */}
         <Grid container spacing={3}>
           {filteredProducts.map((product) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
+            <Grid xs={12} sm={6} md={4} lg={3} key={product.id}>
               <ProductCard product={product} />
             </Grid>
           ))}
@@ -2026,7 +2039,7 @@ const ProfessionalPharmacyEcommerce = () => {
             <Box>
               <Typography variant="h6" sx={{ mb: 3 }}>Customer Information</Typography>
               <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="First Name"
@@ -2035,7 +2048,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Last Name"
@@ -2044,7 +2057,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Email Address"
@@ -2054,7 +2067,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Phone Number"
@@ -2063,7 +2076,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid size={{ xs: 12 }}>
+                <Grid xs={12}>
                   <TextField
                     fullWidth
                     label="NIC Number"
@@ -2080,7 +2093,7 @@ const ProfessionalPharmacyEcommerce = () => {
             <Box>
               <Typography variant="h6" sx={{ mb: 3 }}>Shipping Address</Typography>
               <Grid container spacing={2}>
-                <Grid size={{ xs: 12 }}>
+                <Grid xs={12}>
                   <TextField
                     fullWidth
                     label="Street Address"
@@ -2091,7 +2104,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     rows={2}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 8 }}>
+                <Grid xs={12} sm={8}>
                   <TextField
                     fullWidth
                     label="City"
@@ -2100,7 +2113,7 @@ const ProfessionalPharmacyEcommerce = () => {
                     required
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 4 }}>
+                <Grid xs={12} sm={4}>
                   <TextField
                     fullWidth
                     label="Postal Code"
@@ -2129,7 +2142,7 @@ const ProfessionalPharmacyEcommerce = () => {
               
               {paymentInfo.paymentMethod === 'card' && (
                 <Grid container spacing={2}>
-                  <Grid size={{ xs: 12 }}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Cardholder Name"
@@ -2138,7 +2151,7 @@ const ProfessionalPharmacyEcommerce = () => {
                       required
                     />
                   </Grid>
-                  <Grid size={{ xs: 12 }}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Card Number"
@@ -2148,7 +2161,7 @@ const ProfessionalPharmacyEcommerce = () => {
                       required
                     />
                   </Grid>
-                  <Grid size={{ xs: 6 }}>
+                  <Grid xs={6}>
                     <TextField
                       fullWidth
                       label="Expiry Date"
@@ -2158,7 +2171,7 @@ const ProfessionalPharmacyEcommerce = () => {
                       required
                     />
                   </Grid>
-                  <Grid size={{ xs: 6 }}>
+                  <Grid xs={6}>
                     <TextField
                       fullWidth
                       label="CVV"
@@ -2488,7 +2501,7 @@ const ProfessionalPharmacyEcommerce = () => {
           </Typography>
           
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 3 }}>
+            <Grid xs={12} md={3}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="primary">
                   {products.length}
@@ -2496,7 +2509,7 @@ const ProfessionalPharmacyEcommerce = () => {
                 <Typography variant="body1">Total Products</Typography>
               </Card>
             </Grid>
-            <Grid size={{ xs: 12, md: 3 }}>
+            <Grid xs={12} md={3}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="success.main">
                   156
@@ -2504,7 +2517,7 @@ const ProfessionalPharmacyEcommerce = () => {
                 <Typography variant="body1">Orders Today</Typography>
               </Card>
             </Grid>
-            <Grid size={{ xs: 12, md: 3 }}>
+            <Grid xs={12} md={3}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="warning.main">
                   LKR 12,450
@@ -2512,7 +2525,7 @@ const ProfessionalPharmacyEcommerce = () => {
                 <Typography variant="body1">Revenue Today</Typography>
               </Card>
             </Grid>
-            <Grid size={{ xs: 12, md: 3 }}>
+            <Grid xs={12} md={3}>
               <Card sx={{ p: 3, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="bold" color="error.main">
                   23
@@ -2566,7 +2579,7 @@ const ProfessionalPharmacyEcommerce = () => {
         <ProfessionalHeader />
         <Container maxWidth="lg" sx={{ py: 4 }}>
           <Button
-            startIcon={<NavigateNext sx={{ transform: 'rotate(180deg)' }} />}
+            startIcon={<NavigateNextIcon sx={{ transform: 'rotate(180deg)' }} />}
             onClick={() => setCurrentView('home')}
             sx={{ mb: 3 }}
           >
@@ -2575,7 +2588,7 @@ const ProfessionalPharmacyEcommerce = () => {
           
           <Paper sx={{ p: 4 }}>
             <Grid container spacing={4}>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid xs={12} md={6}>
                 <Box
                   component="img"
                   src={selectedProduct.images[0]}
@@ -2588,7 +2601,7 @@ const ProfessionalPharmacyEcommerce = () => {
                   }}
                 />
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid xs={12} md={6}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   {selectedProduct.category.toUpperCase()}
                 </Typography>
@@ -2795,3 +2808,7 @@ const ProfessionalPharmacyEcommerce = () => {
 };
 
 export default ProfessionalPharmacyEcommerce;
+
+
+
+

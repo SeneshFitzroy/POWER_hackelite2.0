@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
-  Grid,
   Card,
   CardContent,
   CardMedia,
@@ -47,6 +46,7 @@ import {
   AccordionSummary,
   AccordionDetails
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import {
   Search as SearchIcon,
   ShoppingCart as ShoppingCartIcon,
@@ -1026,7 +1026,7 @@ const ProfessionalEcommerceMain = () => {
           </Typography>
           <Grid container spacing={2}>
             {medicineCategories.slice(1).map((category) => (
-              <Grid item xs={6} sm={4} md={3} key={category.id}>
+              <Grid xs={6} sm={4} md={3} key={category.id}>
                 <Card
                   onClick={() => setSelectedCategory(category.id)}
                   sx={{
@@ -1097,7 +1097,7 @@ const ProfessionalEcommerceMain = () => {
         ) : (
           <Grid container spacing={3}>
             {filteredProducts.map((product) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
+              <Grid xs={12} sm={6} md={4} lg={3} key={product.id}>
                 <ProductCard product={product} />
               </Grid>
             ))}
@@ -1283,3 +1283,5 @@ const ProfessionalEcommerceMainWithProvider = () => {
 };
 
 export default ProfessionalEcommerceMainWithProvider;
+
+

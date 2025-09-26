@@ -6,7 +6,7 @@ import {
   TextField,
   Button,
   Typography,
-  Grid,
+  
   Divider,
   IconButton,
   InputAdornment,
@@ -21,7 +21,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText
-} from '@mui/material';
+} from '@mui/material';`nimport Grid from '@mui/material/Grid2';
 import {
   Visibility,
   VisibilityOff,
@@ -163,7 +163,7 @@ const ProfessionalLoginPage = () => {
 
         <Grid container spacing={4}>
           {/* Login/Signup Form */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Paper 
               elevation={8} 
               sx={{ 
@@ -288,7 +288,7 @@ const ProfessionalLoginPage = () => {
               <TabPanel value={activeTab} index={1}>
                 <form onSubmit={handleSignup}>
                   <Grid container spacing={2}>
-                    <Grid item xs={6}>
+                    <Grid xs={6}>
                       <TextField
                         fullWidth
                         label="First Name"
@@ -304,7 +304,7 @@ const ProfessionalLoginPage = () => {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid xs={6}>
                       <TextField
                         fullWidth
                         label="Last Name"
@@ -457,7 +457,7 @@ const ProfessionalLoginPage = () => {
           </Grid>
 
           {/* Benefits and Features */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Box sx={{ mb: 4 }}>
               <Typography variant="h5" fontWeight="bold" gutterBottom color="primary">
                 Why Choose MediCare Lanka?
@@ -465,7 +465,7 @@ const ProfessionalLoginPage = () => {
               
               <Grid container spacing={3}>
                 {features.map((feature, index) => (
-                  <Grid item xs={12} sm={6} key={index}>
+                  <Grid xs={12} sm={6} key={index}>
                     <Paper 
                       sx={{ 
                         p: 3, 
@@ -551,3 +551,5 @@ const ProfessionalLoginPage = () => {
 };
 
 export default ProfessionalLoginPage;
+
+

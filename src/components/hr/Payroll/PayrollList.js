@@ -149,8 +149,137 @@ const PayrollList = () => {
   };
 
   const generatePayslip = (payroll) => {
-    // This would generate a PDF payslip
-    toast.success('Payslip generated successfully');
+    const employee = employees.find(emp => emp.id === payroll.employeeId);
+    if (!employee) {
+      toast.error('Employee data not found');
+      return;
+    }
+
+    // Create printable payslip content
+    const payslipContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 20px; margin-bottom: 20px;">
+          <h1 style="color: #1e3a8a; margin: 0;">NPK PHARMACY (PVT) LTD</h1>
+          <p style="margin: 5px 0; color: #666;">123 Main Street, Colombo 01, Sri Lanka</p>
+          <p style="margin: 5px 0; color: #666;">Tel: +94 11 234 5678 | Email: hr@npkpharmacy.lk</p>
+          <h2 style="color: #1e3a8a; margin: 20px 0 10px 0;">SALARY SLIP</h2>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div>
+              <strong>Employee ID:</strong> ${employee.employeeId || employee.id}
+            </div>
+            <div>
+              <strong>Month/Year:</strong> ${new Date(payroll.month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div>
+              <strong>Employee Name:</strong> ${payroll.employeeName}
+            </div>
+            <div>
+              <strong>Generated Date:</strong> ${new Date().toLocaleDateString()}
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div>
+              <strong>Designation:</strong> ${employee.position || 'N/A'}
+            </div>
+            <div>
+              <strong>Department:</strong> ${employee.department || 'Pharmacy'}
+            </div>
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <tr style="background-color: #f8fafc;">
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">EARNINGS</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">AMOUNT (LKR)</th>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 10px;">Basic Salary</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${payroll.basicSalary?.toLocaleString() || '0'}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 10px;">Allowances</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${payroll.allowances?.toLocaleString() || '0'}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 10px;">Overtime</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${payroll.overtime?.toLocaleString() || '0'}</td>
+          </tr>
+          <tr style="background-color: #e8f5e8;">
+            <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold;">GROSS SALARY</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right; font-weight: bold;">LKR ${payroll.grossSalary?.toLocaleString() || '0'}</td>
+          </tr>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <tr style="background-color: #fef2f2;">
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">DEDUCTIONS</th>
+            <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">AMOUNT (LKR)</th>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 10px;">EPF (8%)</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${Math.round((payroll.basicSalary || 0) * 0.08).toLocaleString()}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 10px;">ETF (3%)</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${Math.round((payroll.basicSalary || 0) * 0.03).toLocaleString()}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 10px;">Tax Deductions</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${payroll.taxDeductions?.toLocaleString() || '0'}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 10px;">Other Deductions</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${payroll.otherDeductions?.toLocaleString() || '0'}</td>
+          </tr>
+          <tr style="background-color: #fee2e2;">
+            <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold;">TOTAL DEDUCTIONS</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right; font-weight: bold;">LKR ${payroll.totalDeductions?.toLocaleString() || '0'}</td>
+          </tr>
+        </table>
+
+        <div style="background-color: #f0f9ff; border: 2px solid #1e3a8a; padding: 15px; text-align: center; margin: 20px 0;">
+          <h3 style="color: #1e3a8a; margin: 0;">NET SALARY: LKR ${payroll.netSalary?.toLocaleString() || '0'}</h3>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center; color: #666; font-size: 12px;">
+          <p>This is a system-generated payslip and does not require a signature.</p>
+          <p>For any queries, please contact HR Department: hr@npkpharmacy.lk</p>
+          <p style="margin-top: 20px;">Generated on: ${new Date().toLocaleString()}</p>
+        </div>
+      </div>
+    `;
+
+    // Create new window for printing
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Payslip - ${payroll.employeeName} - ${payroll.month}</title>
+          <style>
+            body { margin: 0; padding: 20px; }
+            @media print {
+              body { margin: 0; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          ${payslipContent}
+          <div class="no-print" style="text-align: center; margin-top: 20px;">
+            <button onclick="window.print()" style="background: #1e3a8a; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Print Payslip</button>
+            <button onclick="window.close()" style="background: #6b7280; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px;">Close</button>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    
+    toast.success('Payslip generated successfully - Ready to print!');
   };
 
   const filteredPayrolls = payrolls.filter(payroll => {

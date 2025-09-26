@@ -233,7 +233,11 @@ const ERPDeliveryModule = () => {
       currentLocation: { lat: 6.9147, lng: 79.8730 },
       rating: 4.7,
       totalDeliveries: 856,
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+      licenseNumber: 'DL-789456123',
+      experience: '3 years',
+      address: '45 Baseline Road, Colombo 09',
+      emergencyContact: '+94 11 234 5678'
     },
     {
       id: 4,
@@ -245,7 +249,75 @@ const ERPDeliveryModule = () => {
       currentLocation: { lat: 6.8955, lng: 79.8563 },
       rating: 4.6,
       totalDeliveries: 523,
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face'
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+      licenseNumber: 'DL-456789012',
+      experience: '5 years',
+      address: '78 Kandy Road, Colombo 07',
+      emergencyContact: '+94 11 567 8901'
+    },
+    {
+      id: 5,
+      name: 'Ruwan Gunasekara',
+      phone: '+94 76 333 4444',
+      vehicle: 'Motorcycle',
+      vehicleNumber: 'BIKE-7890',
+      status: 'busy',
+      currentLocation: { lat: 6.9022, lng: 79.8610 },
+      rating: 4.9,
+      totalDeliveries: 1245,
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+      licenseNumber: 'DL-123789456',
+      experience: '7 years',
+      address: '92 High Level Road, Maharagama',
+      emergencyContact: '+94 11 789 0123'
+    },
+    {
+      id: 6,
+      name: 'Sandun Fernando',
+      phone: '+94 75 555 6666',
+      vehicle: 'Car',
+      vehicleNumber: 'CAR-2468',
+      status: 'available',
+      currentLocation: { lat: 6.8778, lng: 79.8758 },
+      rating: 4.5,
+      totalDeliveries: 389,
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+      licenseNumber: 'DL-987654321',
+      experience: '2 years',
+      address: '156 Galle Road, Mount Lavinia',
+      emergencyContact: '+94 11 456 7890'
+    },
+    {
+      id: 7,
+      name: 'Amara Jayasinghe',
+      phone: '+94 78 888 9999',
+      vehicle: 'Truck',
+      vehicleNumber: 'TRK-1357',
+      status: 'available',
+      currentLocation: { lat: 6.9319, lng: 79.8478 },
+      rating: 4.8,
+      totalDeliveries: 677,
+      avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face',
+      licenseNumber: 'DL-654321987',
+      experience: '8 years',
+      address: '203 Negombo Road, Wattala',
+      emergencyContact: '+94 11 321 6547'
+    },
+    {
+      id: 8,
+      name: 'Tharanga Perera',
+      phone: '+94 71 222 3333',
+      vehicle: 'Motorcycle',
+      vehicleNumber: 'BIKE-4680',
+      status: 'available',
+      currentLocation: { lat: 6.9388, lng: 79.8542 },
+      rating: 4.4,
+      totalDeliveries: 298,
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+      licenseNumber: 'DL-111222333',
+      experience: '1.5 years',
+      address: '67 Parliament Road, Battaramulla',
+      emergencyContact: '+94 11 987 6543'
     }
   ]);
 

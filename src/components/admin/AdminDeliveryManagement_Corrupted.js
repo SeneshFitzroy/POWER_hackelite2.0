@@ -1235,7 +1235,21 @@ const AdminDeliveryManagement = () => {
         <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h5" fontWeight="bold" sx={{ color: 'white', mb: 0.5 }}>
-              COREERP
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 0.5 }}>
+                <img 
+                  src="/images/npk-logo.png" 
+                  alt="NPK Logo" 
+                  style={{ 
+                    height: '40px', 
+                    width: 'auto',
+                    marginRight: '8px',
+                    filter: 'brightness(0) invert(1)' // Make logo white for dark sidebar
+                  }} 
+                />
+                <Typography variant="h5" fontWeight="bold" sx={{ color: 'white' }}>
+                  NPK Pharmacy
+                </Typography>
+              </Box>
             </Typography>
             <Box sx={{ 
               backgroundColor: 'rgba(255,255,255,0.2)', 

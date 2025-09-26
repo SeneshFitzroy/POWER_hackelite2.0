@@ -368,26 +368,56 @@ export default function Finance({ dateFilter }) {
         status: 'initiated'
       };
 
-      // 🚀 DIRECT PAYPAL REDIRECT - NO SANDBOX
-      // Professional PayPal Integration - Direct to Live PayPal Portal
-      
-      setAlert({
-        show: true,
-        type: 'info',
-        message: '💳 REDIRECTING TO PAYPAL...\n🔄 Opening PayPal payment portal\n🛡️ Secure payment processing'
-      });
+      // Convert LKR to USD for PayPal (1 USD = 300 LKR)
+      const usdAmount = (amount / 300).toFixed(2);
 
-      // Direct redirect to PayPal home page as requested
-      setTimeout(() => {
-        window.open('https://www.paypal.com/us/home', '_blank');
-        setAlert({
-          show: true,
-          type: 'success',
-          message: '✅ PAYPAL OPENED SUCCESSFULLY!\n💰 Complete your payment securely\n🔒 NPK Pharmacy - Trusted Partner'
+      // PayPal Sandbox URL with payment parameters
+      const paypalSandboxUrl = new URL('https://www.sandbox.paypal.com/cgi-bin/webscr');
+      paypalSandboxUrl.searchParams.append('cmd', '_xclick');
+      paypalSandboxUrl.searchParams.append('business', 'sb-merchant@sandbox.paypal.com');
+      paypalSandboxUrl.searchParams.append('item_name', `${type === 'employee' ? 'Salary Payment' : 'Bill Payment'} - ${recipientName}`);
+      paypalSandboxUrl.searchParams.append('amount', usdAmount);
+      paypalSandboxUrl.searchParams.append('currency_code', 'USD');
+      paypalSandboxUrl.searchParams.append('return', window.location.origin + '/payment-success');
+      paypalSandboxUrl.searchParams.append('cancel_return', window.location.origin + '/payment-cancelled');
+      paypalSandboxUrl.searchParams.append('custom', JSON.stringify({
+        originalAmount: amount,
+        currency: 'LKR',
+        type: type,
+        recipient: recipient,
+        transactionId: paymentData.paypal_transaction_id
+      }));
+
+      // Directly redirect to PayPal Sandbox
+      window.open(paypalSandboxUrl.toString(), '_blank');
+
+      // Check if popup was blocked
+      if (!paypalWindow) {
+        setSnackbar({
+          open: true,
+          message: 'Popup blocked! Please allow popups and try again, or manually navigate to PayPal.',
+          severity: 'warning'
         });
-      }, 1000);
         
-
+        // Fallback: redirect in the same window
+        setTimeout(() => {
+          if (window.confirm('Popup was blocked. Redirect to PayPal in this window?')) {
+            window.location.href = paypalSandboxUrl.toString();
+          }
+        }, 2000);
+      } else {
+        // Monitor the popup window
+        const checkClosed = setInterval(() => {
+          if (paypalWindow.closed) {
+            clearInterval(checkClosed);
+            setSnackbar({
+              open: true,
+              message: 'PayPal window closed. If payment was completed, it may take a few minutes to reflect.',
+              severity: 'info'
+            });
+          }
+        }, 1000);
+      }
 
       // Simulate payment completion after 5 seconds (in real app, this would be handled by PayPal IPN)
       setTimeout(() => {
@@ -536,306 +566,6 @@ export default function Finance({ dateFilter }) {
       message: `Payment ${employee.paymentBlocked ? 'unblocked' : 'blocked'} for ${employee.name}`,
       severity: 'info'
     });
-  };
-
-  // 🚀 QUICK REPORTS FUNCTIONALITY - 100% WORKING
-  const handleViewReports = () => {
-    setSnackbar({
-      open: true,
-      message: '📊 GENERATING PROFESSIONAL FINANCIAL REPORT...\n🔄 Processing data and charts\n📈 POS-style formatting applied',
-      severity: 'info'
-    });
-
-    setTimeout(() => {
-      // Create professional financial report content
-      const reportContent = generateFinancialReportHTML();
-      
-      // Open new window with professional report
-      const reportWindow = window.open('', '_blank', 'width=1000,height=800,scrollbars=yes');
-      reportWindow.document.write(reportContent);
-      reportWindow.document.close();
-      reportWindow.focus();
-      
-      setSnackbar({
-        open: true,
-        message: '✅ FINANCIAL REPORT OPENED SUCCESSFULLY!\n📄 Professional POS-style formatting\n🏢 NPK Pharmacy branding applied',
-        severity: 'success'
-      });
-    }, 1500);
-  };
-
-  const handleExportReport = () => {
-    setSnackbar({
-      open: true,
-      message: '📥 EXPORTING FINANCIAL REPORT...\n💾 Preparing CSV download\n📊 All data included',
-      severity: 'info'
-    });
-
-    setTimeout(() => {
-      // Generate CSV content
-      const csvContent = generateFinancialReportCSV();
-      
-      // Create and download CSV file
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `NPK_Financial_Report_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-      
-      setSnackbar({
-        open: true,
-        message: '✅ FINANCIAL REPORT EXPORTED!\n💾 CSV file downloaded\n📈 Complete financial data included',
-        severity: 'success'
-      });
-    }, 1000);
-  };
-
-  // Generate Professional Financial Report HTML
-  const generateFinancialReportHTML = () => {
-    const currentDate = new Date().toLocaleString();
-    
-    return `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>NPK Pharmacy - Financial Report</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { 
-              font-family: 'Arial', sans-serif; 
-              font-size: 12px;
-              line-height: 1.4;
-              color: #000;
-              background: white;
-              padding: 20px;
-            }
-            .header {
-              text-align: center;
-              border-bottom: 3px solid #1e3a8a;
-              padding-bottom: 15px;
-              margin-bottom: 25px;
-            }
-            .logo { height: 60px; margin-bottom: 10px; }
-            .company-name { 
-              font-size: 24px; 
-              font-weight: bold; 
-              color: #1e3a8a;
-              margin: 10px 0;
-            }
-            .report-title {
-              font-size: 18px;
-              font-weight: bold;
-              margin: 5px 0;
-            }
-            .timestamp {
-              font-size: 11px;
-              color: #666;
-              margin-top: 8px;
-            }
-            .section {
-              margin: 20px 0;
-              padding: 15px;
-              border: 1px solid #ddd;
-              border-radius: 5px;
-            }
-            .section-title {
-              font-size: 16px;
-              font-weight: bold;
-              color: #1e3a8a;
-              margin-bottom: 10px;
-              border-bottom: 1px solid #eee;
-              padding-bottom: 5px;
-            }
-            table { 
-              width: 100%; 
-              border-collapse: collapse; 
-              margin: 10px 0;
-            }
-            th, td { 
-              border: 1px solid #ccc; 
-              padding: 8px; 
-              text-align: left;
-            }
-            th { 
-              background: #f5f5f5; 
-              font-weight: bold;
-            }
-            .amount { text-align: right; font-weight: bold; }
-            .total-row { 
-              background: #e3f2fd; 
-              font-weight: bold;
-            }
-            .metric-card {
-              display: inline-block;
-              width: 23%;
-              margin: 1%;
-              padding: 15px;
-              background: #f8f9fa;
-              border-radius: 5px;
-              text-align: center;
-            }
-            .metric-value {
-              font-size: 20px;
-              font-weight: bold;
-              color: #1e3a8a;
-            }
-            .metric-label {
-              font-size: 11px;
-              color: #666;
-              margin-top: 5px;
-            }
-            @media print {
-              body { padding: 10px; font-size: 10px; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <img src="/images/npk-logo.png" alt="NPK Logo" class="logo" />
-            <div class="company-name">NPK PHARMACY</div>
-            <div class="report-title">COMPREHENSIVE FINANCIAL REPORT</div>
-            <div class="timestamp">Generated: ${currentDate}</div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">📊 KEY FINANCIAL METRICS</div>
-            <div class="metric-card">
-              <div class="metric-value">LKR ${financialMetrics.totalRevenue.toLocaleString()}</div>
-              <div class="metric-label">Total Revenue</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-value">LKR ${financialMetrics.totalExpenses.toLocaleString()}</div>
-              <div class="metric-label">Total Expenses</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-value">LKR ${financialMetrics.netProfit.toLocaleString()}</div>
-              <div class="metric-label">Net Profit</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-value">LKR ${financialMetrics.cashBalance.toLocaleString()}</div>
-              <div class="metric-label">Cash Balance</div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">💰 REVENUE BREAKDOWN</div>
-            <table>
-              <tr>
-                <th>Revenue Source</th>
-                <th class="amount">Amount (LKR)</th>
-                <th class="amount">Percentage</th>
-              </tr>
-              <tr>
-                <td>Prescription Sales</td>
-                <td class="amount">${(financialMetrics.totalRevenue * 0.45).toLocaleString()}</td>
-                <td class="amount">45%</td>
-              </tr>
-              <tr>
-                <td>OTC Medicine Sales</td>
-                <td class="amount">${(financialMetrics.totalRevenue * 0.35).toLocaleString()}</td>
-                <td class="amount">35%</td>
-              </tr>
-              <tr>
-                <td>Health Products</td>
-                <td class="amount">${(financialMetrics.totalRevenue * 0.15).toLocaleString()}</td>
-                <td class="amount">15%</td>
-              </tr>
-              <tr>
-                <td>Consultation Fees</td>
-                <td class="amount">${(financialMetrics.totalRevenue * 0.05).toLocaleString()}</td>
-                <td class="amount">5%</td>
-              </tr>
-              <tr class="total-row">
-                <td>TOTAL REVENUE</td>
-                <td class="amount">${financialMetrics.totalRevenue.toLocaleString()}</td>
-                <td class="amount">100%</td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="section">
-            <div class="section-title">💸 EXPENSE BREAKDOWN</div>
-            <table>
-              <tr>
-                <th>Expense Category</th>
-                <th class="amount">Amount (LKR)</th>
-                <th class="amount">Percentage</th>
-              </tr>
-              <tr>
-                <td>Cost of Goods Sold</td>
-                <td class="amount">${(financialMetrics.totalExpenses * 0.60).toLocaleString()}</td>
-                <td class="amount">60%</td>
-              </tr>
-              <tr>
-                <td>Staff Salaries</td>
-                <td class="amount">${(financialMetrics.totalExpenses * 0.25).toLocaleString()}</td>
-                <td class="amount">25%</td>
-              </tr>
-              <tr>
-                <td>Rent & Utilities</td>
-                <td class="amount">${(financialMetrics.totalExpenses * 0.10).toLocaleString()}</td>
-                <td class="amount">10%</td>
-              </tr>
-              <tr>
-                <td>Other Expenses</td>
-                <td class="amount">${(financialMetrics.totalExpenses * 0.05).toLocaleString()}</td>
-                <td class="amount">5%</td>
-              </tr>
-              <tr class="total-row">
-                <td>TOTAL EXPENSES</td>
-                <td class="amount">${financialMetrics.totalExpenses.toLocaleString()}</td>
-                <td class="amount">100%</td>
-              </tr>
-            </table>
-          </div>
-
-          <div style="margin-top: 40px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ddd; padding-top: 15px;">
-            <p><strong>NPK Pharmacy - Professional Financial Reporting System</strong></p>
-            <p>This report contains confidential financial information</p>
-            <p>Generated on ${currentDate} | Report ID: RPT-${Date.now()}</p>
-          </div>
-        </body>
-      </html>
-    `;
-  };
-
-  // Generate CSV for Financial Report
-  const generateFinancialReportCSV = () => {
-    const currentDate = new Date().toLocaleString();
-    
-    let csvContent = `NPK PHARMACY - FINANCIAL REPORT\n`;
-    csvContent += `Generated: ${currentDate}\n\n`;
-    
-    csvContent += `KEY FINANCIAL METRICS\n`;
-    csvContent += `Total Revenue,LKR ${financialMetrics.totalRevenue.toLocaleString()}\n`;
-    csvContent += `Total Expenses,LKR ${financialMetrics.totalExpenses.toLocaleString()}\n`;
-    csvContent += `Net Profit,LKR ${financialMetrics.netProfit.toLocaleString()}\n`;
-    csvContent += `Cash Balance,LKR ${financialMetrics.cashBalance.toLocaleString()}\n\n`;
-    
-    csvContent += `REVENUE BREAKDOWN\n`;
-    csvContent += `Revenue Source,Amount (LKR),Percentage\n`;
-    csvContent += `Prescription Sales,${(financialMetrics.totalRevenue * 0.45).toLocaleString()},45%\n`;
-    csvContent += `OTC Medicine Sales,${(financialMetrics.totalRevenue * 0.35).toLocaleString()},35%\n`;
-    csvContent += `Health Products,${(financialMetrics.totalRevenue * 0.15).toLocaleString()},15%\n`;
-    csvContent += `Consultation Fees,${(financialMetrics.totalRevenue * 0.05).toLocaleString()},5%\n`;
-    csvContent += `TOTAL REVENUE,${financialMetrics.totalRevenue.toLocaleString()},100%\n\n`;
-    
-    csvContent += `EXPENSE BREAKDOWN\n`;
-    csvContent += `Expense Category,Amount (LKR),Percentage\n`;
-    csvContent += `Cost of Goods Sold,${(financialMetrics.totalExpenses * 0.60).toLocaleString()},60%\n`;
-    csvContent += `Staff Salaries,${(financialMetrics.totalExpenses * 0.25).toLocaleString()},25%\n`;
-    csvContent += `Rent & Utilities,${(financialMetrics.totalExpenses * 0.10).toLocaleString()},10%\n`;
-    csvContent += `Other Expenses,${(financialMetrics.totalExpenses * 0.05).toLocaleString()},5%\n`;
-    csvContent += `TOTAL EXPENSES,${financialMetrics.totalExpenses.toLocaleString()},100%\n`;
-    
-    return csvContent;
   };
 
   // Remove employee (soft delete)
@@ -1198,7 +928,6 @@ export default function Finance({ dateFilter }) {
                   size="small"
                   startIcon={<Assessment />}
                   variant="outlined"
-                  onClick={handleViewReports}
                   sx={{ 
                     color: '#1e3a8a',
                     borderColor: '#1e3a8a',
@@ -1212,7 +941,6 @@ export default function Finance({ dateFilter }) {
                 <Button
                   size="small"
                   startIcon={<Download />}
-                  onClick={handleExportReport}
                   sx={{ color: '#1e3a8a' }}
                 >
                   Export

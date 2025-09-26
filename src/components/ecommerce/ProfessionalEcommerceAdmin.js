@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
-  Grid,
+  
   Card,
   CardContent,
   Typography,
@@ -43,7 +43,7 @@ import {
   Alert,
   Snackbar,
   CircularProgress
-} from '@mui/material';
+} from '@mui/material';`nimport Grid from '@mui/material/Grid2';
 import {
   Dashboard as DashboardIcon,
   ShoppingCart as ShoppingCartIcon,
@@ -78,16 +78,16 @@ import {
 const StatCard = ({ title, value, icon: Icon, trend, change, color = '#1e3a8a' }) => (
   <Card sx={{
     borderRadius: '16px',
-    background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
+    background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
     color: 'white',
     height: '140px',
     position: 'relative',
     overflow: 'hidden',
-    boxShadow: `0 8px 25px ${color}30`,
+    boxShadow: '0 8px 25px rgba(30, 58, 138, 0.3)',
     transition: 'transform 0.2s ease-in-out',
     '&:hover': {
       transform: 'translateY(-2px)',
-      boxShadow: `0 12px 35px ${color}40`
+      boxShadow: '0 12px 35px rgba(30, 58, 138, 0.4)'
     }
   }}>
     <CardContent sx={{ p: 2.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -112,11 +112,6 @@ const StatCard = ({ title, value, icon: Icon, trend, change, color = '#1e3a8a' }
       
       {trend !== undefined && (
         <Box display="flex" alignItems="center" mt={1.5}>
-          {trend > 0 ? (
-            <TrendingUpIcon sx={{ fontSize: 14, mr: 0.75, color: '#4ade80' }} />
-          ) : trend < 0 ? (
-            <TrendingDownIcon sx={{ fontSize: 14, mr: 0.75, color: '#f87171' }} />
-          ) : null}
           <Typography variant="body2" fontWeight="medium" sx={{ opacity: 0.9, fontSize: '0.875rem' }}>
             {trend !== 0 && `${Math.abs(trend)}%`} {change || 'from last month'}
           </Typography>
@@ -263,7 +258,7 @@ const ProfessionalEcommerceAdmin = () => {
 
       {/* Key Metrics */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Total Sales"
             value={`Rs. ${(dashboardStats.totalSales / 1000).toFixed(1)}K`}
@@ -273,7 +268,7 @@ const ProfessionalEcommerceAdmin = () => {
             color="#10b981"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Total Orders"
             value={dashboardStats.totalOrders}
@@ -283,7 +278,7 @@ const ProfessionalEcommerceAdmin = () => {
             color="#3b82f6"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Active Products"
             value={dashboardStats.activeProducts}
@@ -293,7 +288,7 @@ const ProfessionalEcommerceAdmin = () => {
             color="#8b5cf6"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Total Customers"
             value={dashboardStats.totalCustomers}
@@ -307,7 +302,7 @@ const ProfessionalEcommerceAdmin = () => {
 
       {/* Alert Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card sx={{ borderRadius: '12px', border: '2px solid #f59e0b', textAlign: 'center', p: 2 }}>
             <Typography variant="body2" color="text.secondary" fontWeight="600" sx={{ mb: 1 }}>
               PENDING ORDERS
@@ -317,7 +312,7 @@ const ProfessionalEcommerceAdmin = () => {
             </Typography>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card sx={{ borderRadius: '12px', border: '2px solid #ef4444', textAlign: 'center', p: 2 }}>
             <Typography variant="body2" color="text.secondary" fontWeight="600" sx={{ mb: 1 }}>
               LOW STOCK ITEMS
@@ -327,7 +322,7 @@ const ProfessionalEcommerceAdmin = () => {
             </Typography>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card sx={{ borderRadius: '12px', border: '2px solid #10b981', textAlign: 'center', p: 2 }}>
             <Typography variant="body2" color="text.secondary" fontWeight="600" sx={{ mb: 1 }}>
               NEW CUSTOMERS
@@ -337,7 +332,7 @@ const ProfessionalEcommerceAdmin = () => {
             </Typography>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card sx={{ borderRadius: '12px', border: '2px solid #3b82f6', textAlign: 'center', p: 2 }}>
             <Typography variant="body2" color="text.secondary" fontWeight="600" sx={{ mb: 1 }}>
               CONVERSION RATE
@@ -351,7 +346,7 @@ const ProfessionalEcommerceAdmin = () => {
 
       {/* Recent Activity & Quick Stats */}
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid xs={12} md={8}>
           <Paper sx={{ borderRadius: '16px', p: 3 }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
               Recent Orders
@@ -412,7 +407,7 @@ const ProfessionalEcommerceAdmin = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Paper sx={{ borderRadius: '16px', p: 3, mb: 3 }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
               Top Selling Products
@@ -745,9 +740,137 @@ const ProfessionalEcommerceAdmin = () => {
     { label: 'Orders', icon: ShoppingCartIcon, value: 1 },
     { label: 'Products', icon: InventoryIcon, value: 2 },
     { label: 'Customers', icon: PeopleIcon, value: 3 },
-    { label: 'Analytics', icon: AssessmentIcon, value: 4 },
-    { label: 'Settings', icon: SettingsIcon, value: 5 }
+    { label: 'Payments', icon: PaymentIcon, value: 4 },
+    { label: 'Analytics', icon: AssessmentIcon, value: 5 },
+    { label: 'Settings', icon: SettingsIcon, value: 6 }
   ];
+
+  // Payments Management Component
+  const PaymentsManagement = () => (
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>
+        💳 Payment Management
+      </Typography>
+      
+      <Grid container spacing={3}>
+        {/* Payment Stats */}
+        <Grid xs={12} md={3}>
+          <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px' }}>
+            <Typography variant="h4" fontWeight="bold" color="primary">
+              Rs. 125,450
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Total Revenue (Today)
+            </Typography>
+          </Card>
+        </Grid>
+        <Grid xs={12} md={3}>
+          <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px' }}>
+            <Typography variant="h4" fontWeight="bold" color="success.main">
+              248
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Successful Payments
+            </Typography>
+          </Card>
+        </Grid>
+        <Grid xs={12} md={3}>
+          <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px' }}>
+            <Typography variant="h4" fontWeight="bold" color="warning.main">
+              12
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Pending Payments
+            </Typography>
+          </Card>
+        </Grid>
+        <Grid xs={12} md={3}>
+          <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px' }}>
+            <Typography variant="h4" fontWeight="bold" color="error.main">
+              3
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Failed Payments
+            </Typography>
+          </Card>
+        </Grid>
+
+        {/* Recent Payments Table */}
+        <Grid xs={12}>
+          <Paper sx={{ borderRadius: '16px', overflow: 'hidden' }}>
+            <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
+              <Typography variant="h6" fontWeight="bold">
+                Recent Payments
+              </Typography>
+            </Box>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell fontWeight="bold">Payment ID</TableCell>
+                    <TableCell fontWeight="bold">Customer</TableCell>
+                    <TableCell fontWeight="bold">Amount</TableCell>
+                    <TableCell fontWeight="bold">Method</TableCell>
+                    <TableCell fontWeight="bold">Status</TableCell>
+                    <TableCell fontWeight="bold">Date</TableCell>
+                    <TableCell fontWeight="bold">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {[
+                    { id: 'PAY001', customer: 'John Silva', amount: 2850, method: 'Card', status: 'Completed', date: '2025-09-26' },
+                    { id: 'PAY002', customer: 'Mary Fernando', amount: 1450, method: 'Bank Transfer', status: 'Pending', date: '2025-09-26' },
+                    { id: 'PAY003', customer: 'David Perera', amount: 3200, method: 'Cash on Delivery', status: 'Completed', date: '2025-09-25' },
+                    { id: 'PAY004', customer: 'Priya Wickrama', amount: 1850, method: 'eZ Cash', status: 'Failed', date: '2025-09-25' },
+                    { id: 'PAY005', customer: 'Nimal Rajapaksa', amount: 4200, method: 'Card', status: 'Completed', date: '2025-09-25' }
+                  ].map((payment) => (
+                    <TableRow key={payment.id} hover>
+                      <TableCell fontWeight="medium">{payment.id}</TableCell>
+                      <TableCell>{payment.customer}</TableCell>
+                      <TableCell fontWeight="bold">Rs. {payment.amount.toLocaleString()}</TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={payment.method} 
+                          size="small"
+                          sx={{ 
+                            backgroundColor: payment.method === 'Card' ? '#e3f2fd' : 
+                                           payment.method === 'Bank Transfer' ? '#f3e5f5' :
+                                           payment.method === 'Cash on Delivery' ? '#fff3e0' : '#e8f5e8',
+                            color: payment.method === 'Card' ? '#1976d2' : 
+                                   payment.method === 'Bank Transfer' ? '#7b1fa2' :
+                                   payment.method === 'Cash on Delivery' ? '#f57c00' : '#388e3c'
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={payment.status} 
+                          size="small"
+                          color={payment.status === 'Completed' ? 'success' : 
+                                 payment.status === 'Pending' ? 'warning' : 'error'}
+                        />
+                      </TableCell>
+                      <TableCell>{payment.date}</TableCell>
+                      <TableCell>
+                        <Box display="flex" gap={1}>
+                          <IconButton size="small" color="primary">
+                            <VisibilityIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton size="small" color="primary">
+                            <ReceiptIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
+  );
 
   const getTabContent = (tab) => {
     switch (tab) {
@@ -760,8 +883,10 @@ const ProfessionalEcommerceAdmin = () => {
       case 3:
         return <CustomersManagement />;
       case 4:
-        return <DashboardOverview />; // Analytics placeholder
+        return <PaymentsManagement />;
       case 5:
+        return <DashboardOverview />; // Analytics placeholder
+      case 6:
         return <DashboardOverview />; // Settings placeholder
       default:
         return <DashboardOverview />;
@@ -915,3 +1040,5 @@ const ProfessionalEcommerceAdmin = () => {
 };
 
 export default ProfessionalEcommerceAdmin;
+
+

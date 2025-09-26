@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Box,
   Container,
-  Grid,
+  
   Card,
   CardContent,
   Typography,
@@ -36,6 +36,7 @@ import {
   CircularProgress,
   Snackbar
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import {
   ArrowBack as ArrowBackIcon,
   Add as AddIcon,
@@ -157,7 +158,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
       </Typography>
       
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid xs={12} md={8}>
           <Paper sx={{ borderRadius: '16px', p: 3 }}>
             <List>
               {cart.map((item, index) => (
@@ -216,7 +217,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Paper sx={{ borderRadius: '16px', p: 3, position: 'sticky', top: 20 }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
               Order Summary
@@ -265,10 +266,10 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
       </Typography>
       
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid xs={12} md={8}>
           <Paper sx={{ borderRadius: '16px', p: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="First Name"
@@ -277,7 +278,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Last Name"
@@ -286,7 +287,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Email Address"
@@ -296,7 +297,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Phone Number"
@@ -305,7 +306,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
                   required
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <TextField
                   fullWidth
                   label="Street Address"
@@ -316,7 +317,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="City"
@@ -325,7 +326,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Postal Code"
@@ -334,7 +335,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
                   required
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <FormControl fullWidth required>
                   <InputLabel>District</InputLabel>
                   <Select
@@ -422,7 +423,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Paper sx={{ borderRadius: '16px', p: 3, position: 'sticky', top: 20 }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
               Delivery Summary
@@ -485,159 +486,233 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
   // Payment Method Step
   const PaymentMethodStep = () => (
     <Box>
-      <Typography variant="h5" fontWeight="bold" sx={{ mb: 3, color: '#1e3a8a' }}>
-        Payment Method
-      </Typography>
+      {/* Enhanced Header */}
+      <Paper sx={{ 
+        borderRadius: '20px', 
+        p: 4, 
+        mb: 4,
+        background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+        color: 'white',
+        textAlign: 'center'
+      }}>
+        <CreditCardIcon sx={{ fontSize: 48, mb: 2 }} />
+        <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
+          💳 Secure Payment Gateway
+        </Typography>
+        <Typography variant="h6" sx={{ opacity: 0.9 }}>
+          🔒 SSL Encrypted • Bank-Level Security • Instant Processing
+        </Typography>
+      </Paper>
       
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ borderRadius: '16px', p: 3 }}>
-            <FormControl component="fieldset" fullWidth>
-              <FormLabel component="legend" sx={{ mb: 2, fontWeight: 'bold' }}>
-                Choose Payment Method
-              </FormLabel>
-              <RadioGroup
-                value={paymentInfo.method}
-                onChange={handlePaymentChange('method')}
-              >
-                <FormControlLabel
-                  value="card"
-                  control={<Radio />}
-                  label={
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <CreditCardIcon sx={{ color: '#3b82f6' }} />
-                      <Typography variant="body1" fontWeight="medium">
-                        Credit/Debit Card
-                      </Typography>
-                    </Box>
-                  }
-                />
-                <FormControlLabel
-                  value="bank"
-                  control={<Radio />}
-                  label={
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <AccountBalanceIcon sx={{ color: '#10b981' }} />
-                      <Typography variant="body1" fontWeight="medium">
-                        Bank Transfer
-                      </Typography>
-                    </Box>
-                  }
-                />
-                <FormControlLabel
-                  value="cod"
-                  control={<Radio />}
-                  label={
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <PaymentIcon sx={{ color: '#f59e0b' }} />
-                      <Typography variant="body1" fontWeight="medium">
-                        Cash on Delivery
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </RadioGroup>
-            </FormControl>
-
-            {/* Credit Card Form */}
-            {paymentInfo.method === 'card' && (
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-                  Card Details
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Cardholder Name"
-                      value={paymentInfo.cardholderName}
-                      onChange={handlePaymentChange('cardholderName')}
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Card Number"
-                      value={paymentInfo.cardNumber}
-                      onChange={handlePaymentChange('cardNumber')}
-                      placeholder="1234 5678 9012 3456"
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Expiry Date"
-                      value={paymentInfo.expiryDate}
-                      onChange={handlePaymentChange('expiryDate')}
-                      placeholder="MM/YY"
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="CVV"
-                      value={paymentInfo.cvv}
-                      onChange={handlePaymentChange('cvv')}
-                      type="password"
-                      required
-                    />
-                  </Grid>
-                </Grid>
-                
-                <Alert severity="info" sx={{ mt: 2 }}>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <SecurityIcon />
-                    Your payment information is secured with 256-bit SSL encryption
+      <Grid container spacing={4}>
+        <Grid xs={12} md={8}>
+          {/* Payment Method Selection */}
+          <Paper sx={{ 
+            borderRadius: '20px', 
+            p: 4, 
+            mb: 3,
+            background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+            border: '1px solid #e2e8f0'
+          }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 3, color: '#334155' }}>
+              💳 Select Payment Method
+            </Typography>
+            
+            <Grid container spacing={2}>
+              {/* Credit Card Option */}
+              <Grid xs={12} sm={4}>
+                <Paper 
+                  onClick={() => handlePaymentChange('method')({ target: { value: 'card' } })}
+                  sx={{
+                    p: 3,
+                    borderRadius: '16px',
+                    cursor: 'pointer',
+                    border: paymentInfo.method === 'card' ? '3px solid #3b82f6' : '2px solid #e2e8f0',
+                    background: paymentInfo.method === 'card' 
+                      ? 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)'
+                      : 'white',
+                    color: paymentInfo.method === 'card' ? 'white' : 'inherit',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 10px 25px rgba(59, 130, 246, 0.15)'
+                    }
+                  }}
+                >
+                  <Box textAlign="center">
+                    <CreditCardIcon sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h6" fontWeight="bold">
+                      Credit/Debit Card
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+                      Visa, MasterCard, Amex
+                    </Typography>
                   </Box>
-                </Alert>
-              </Box>
-            )}
-
-            {/* Bank Transfer Details */}
-            {paymentInfo.method === 'bank' && (
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-                  Bank Transfer Details
-                </Typography>
-                <Alert severity="info" sx={{ mb: 2 }}>
-                  Please transfer the total amount to the following account and upload the receipt.
-                </Alert>
-                <Paper sx={{ p: 2, backgroundColor: '#f8fafc' }}>
-                  <Typography variant="body1" fontWeight="bold">
-                    Kaluthara Pharmacy (Pvt) Ltd
-                  </Typography>
-                  <Typography variant="body2">
-                    Bank: Commercial Bank of Ceylon
-                  </Typography>
-                  <Typography variant="body2">
-                    Account Number: 8001234567890
-                  </Typography>
-                  <Typography variant="body2">
-                    Branch: Kaluthara
-                  </Typography>
                 </Paper>
-              </Box>
-            )}
+              </Grid>
 
-            {/* Cash on Delivery */}
-            {paymentInfo.method === 'cod' && (
-              <Box sx={{ mt: 3 }}>
-                <Alert severity="warning">
-                  You will pay Rs. {total.toFixed(2)} when your order is delivered.
-                  Please have the exact amount ready.
-                </Alert>
-              </Box>
-            )}
+              {/* Bank Transfer Option */}
+              <Grid xs={12} sm={4}>
+                <Paper 
+                  onClick={() => handlePaymentChange('method')({ target: { value: 'bank' } })}
+                  sx={{
+                    p: 3,
+                    borderRadius: '16px',
+                    cursor: 'pointer',
+                    border: paymentInfo.method === 'bank' ? '3px solid #10b981' : '2px solid #e2e8f0',
+                    background: paymentInfo.method === 'bank' 
+                      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                      : 'white',
+                    color: paymentInfo.method === 'bank' ? 'white' : 'inherit',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 10px 25px rgba(16, 185, 129, 0.15)'
+                    }
+                  }}
+                >
+                  <Box textAlign="center">
+                    <AccountBalanceIcon sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h6" fontWeight="bold">
+                      Bank Transfer
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+                      Secure bank payment
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+
+              {/* Cash on Delivery Option */}
+              <Grid xs={12} sm={4}>
+                <Paper 
+                  onClick={() => handlePaymentChange('method')({ target: { value: 'cod' } })}
+                  sx={{
+                    p: 3,
+                    borderRadius: '16px',
+                    cursor: 'pointer',
+                    border: paymentInfo.method === 'cod' ? '3px solid #f59e0b' : '2px solid #e2e8f0',
+                    background: paymentInfo.method === 'cod' 
+                      ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                      : 'white',
+                    color: paymentInfo.method === 'cod' ? 'white' : 'inherit',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 10px 25px rgba(245, 158, 11, 0.15)'
+                    }
+                  }}
+                >
+                  <Box textAlign="center">
+                    <PaymentIcon sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h6" fontWeight="bold">
+                      Cash on Delivery
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+                      Pay when you receive
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
           </Paper>
+
+          {/* Payment Forms */}
+          {paymentInfo.method === 'card' && (
+            <Paper sx={{ borderRadius: '16px', p: 3, mb: 3 }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
+                💳 Card Details
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Cardholder Name"
+                    value={paymentInfo.cardholderName}
+                    onChange={handlePaymentChange('cardholderName')}
+                    required
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Card Number"
+                    value={paymentInfo.cardNumber}
+                    onChange={handlePaymentChange('cardNumber')}
+                    placeholder="1234 5678 9012 3456"
+                    required
+                  />
+                </Grid>
+                <Grid xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Expiry Date"
+                    value={paymentInfo.expiryDate}
+                    onChange={handlePaymentChange('expiryDate')}
+                    placeholder="MM/YY"
+                    required
+                  />
+                </Grid>
+                <Grid xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="CVV"
+                    value={paymentInfo.cvv}
+                    onChange={handlePaymentChange('cvv')}
+                    type="password"
+                    required
+                  />
+                </Grid>
+              </Grid>
+              
+              <Alert severity="info" sx={{ mt: 2 }}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <SecurityIcon />
+                  Your payment information is secured with 256-bit SSL encryption
+                </Box>
+              </Alert>
+            </Paper>
+          )}
+
+          {paymentInfo.method === 'bank' && (
+            <Paper sx={{ borderRadius: '16px', p: 3, mb: 3 }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
+                🏦 Bank Transfer Details
+              </Typography>
+              <Alert severity="success" sx={{ mb: 2 }}>
+                Transfer Rs. {total.toFixed(2)} to any account below and WhatsApp receipt to +94 77 123 4567
+              </Alert>
+              
+              <Paper sx={{ p: 2, mb: 2, backgroundColor: '#f0f9ff' }}>
+                <Typography variant="body1" fontWeight="bold">Commercial Bank - Main Account</Typography>
+                <Typography variant="body2">Account: 8001-234-567-890 | Branch: Colombo Fort</Typography>
+              </Paper>
+              
+              <Paper sx={{ p: 2, backgroundColor: '#f8fafc' }}>
+                <Typography variant="body2" fontWeight="600">Quick Pay Options:</Typography>
+                <Box display="flex" gap={1} mt={1}>
+                  <Chip label="eZ Cash" size="small" />
+                  <Chip label="Dialog Pay" size="small" />
+                  <Chip label="PayHere" size="small" />
+                </Box>
+              </Paper>
+            </Paper>
+          )}
+
+          {paymentInfo.method === 'cod' && (
+            <Paper sx={{ borderRadius: '16px', p: 3, mb: 3 }}>
+              <Alert severity="warning">
+                💰 You will pay Rs. {total.toFixed(2)} when your order is delivered.
+                Please have the exact amount ready.
+              </Alert>
+            </Paper>
+          )}
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Paper sx={{ borderRadius: '16px', p: 3, position: 'sticky', top: 20 }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-              Payment Summary
+              💰 Payment Summary
             </Typography>
             
             <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
@@ -659,7 +734,7 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
               </Typography>
             </Box>
 
-            <Box sx={{ mb: 2 }}>
+            {paymentInfo.method && (
               <Chip
                 icon={
                   paymentInfo.method === 'card' ? <CreditCardIcon /> :
@@ -672,20 +747,18 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
                   'Cash on Delivery'
                 }
                 color="primary"
-                sx={{ fontWeight: 'bold' }}
+                sx={{ fontWeight: 'bold', mb: 2 }}
               />
-            </Box>
+            )}
 
             <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-              By placing this order, you agree to our Terms of Service and Privacy Policy
+              🔒 Secure checkout protected by SSL encryption
             </Typography>
           </Paper>
         </Grid>
       </Grid>
     </Box>
-  );
-
-  // Order Confirmation Step
+  );  // Order Confirmation Step
   const OrderConfirmationStep = () => (
     <Box textAlign="center" sx={{ py: 4 }}>
       {loading ? (
@@ -912,3 +985,5 @@ const ProfessionalCheckout = ({ cart = [], onBack, onOrderComplete }) => {
 };
 
 export default ProfessionalCheckout;
+
+

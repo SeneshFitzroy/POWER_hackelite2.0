@@ -156,11 +156,45 @@ const AttendanceList = () => {
 
   const getDailyStats = () => {
     const todayAttendance = attendance.filter(att => att.date === selectedDate);
+    const presentCount = todayAttendance.filter(att => att.status === 'present').length;
+    const lateCount = todayAttendance.filter(att => att.status === 'late').length;
+    const absentCount = todayAttendance.filter(att => att.status === 'absent').length;
+    
+    // Calculate actual absent count - employees not marked present or late
+    const actualAbsentCount = Math.max(0, employees.length - presentCount - lateCount);
+    
     return {
-      present: todayAttendance.filter(att => att.status === 'present').length,
-      absent: employees.length - todayAttendance.length,
-      late: todayAttendance.filter(att => att.status === 'late').length,
+      present: presentCount,
+      absent: Math.max(absentCount, actualAbsentCount), // Use the higher count for accuracy
+      late: lateCount,
       total: employees.length
+    };
+  };
+
+  const getWeeklyStats = () => {
+    if (viewMode !== 'weekly') return getDailyStats();
+    
+    const weeklyAttendance = attendance.filter(att => {
+      const date = new Date(selectedDate);
+      const start = new Date(date);
+      start.setDate(date.getDate() - date.getDay());
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      
+      const attDate = new Date(att.date);
+      return attDate >= start && attDate <= end;
+    });
+    
+    const uniqueEmployees = [...new Set(weeklyAttendance.map(att => att.employeeId))];
+    const presentDays = weeklyAttendance.filter(att => att.status === 'present').length;
+    const absentDays = weeklyAttendance.filter(att => att.status === 'absent').length;
+    const lateDays = weeklyAttendance.filter(att => att.status === 'late').length;
+    
+    return {
+      present: presentDays,
+      absent: Math.max(absentDays, (employees.length * 7) - presentDays - lateDays),
+      late: lateDays,
+      total: employees.length * 7 // Total possible attendance for the week
     };
   };
 
@@ -219,7 +253,7 @@ const AttendanceList = () => {
   );
 
   const renderDailyView = () => {
-    const stats = getDailyStats();
+    const stats = viewMode === 'weekly' ? getWeeklyStats() : getDailyStats();
     
     return (
       <Box sx={{ space: 4 }}>

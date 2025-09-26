@@ -165,3 +165,4 @@ const EcommerceSplashScreen = ({ onGetStarted }) => {
 };
 
 export default EcommerceSplashScreen;
+

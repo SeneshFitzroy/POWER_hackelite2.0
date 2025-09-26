@@ -3,7 +3,7 @@ import {
   Box,
   Paper,
   Typography,
-  Grid,
+  
   Card,
   CardContent,
   Button,
@@ -28,6 +28,7 @@ import {
   InputLabel,
   Select
 } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
   LocalShipping as TruckIcon,
   AccessTime as TimeIcon,
@@ -229,7 +230,7 @@ const DeliveryManagement = () => {
         <Divider sx={{ my: 2 }} />
 
         <Grid container spacing={2} mb={2}>
-          <Grid item xs={6}>
+          <Grid xs={6}>
             <Typography variant="body2" color="text.secondary">
               Items
             </Typography>
@@ -237,7 +238,7 @@ const DeliveryManagement = () => {
               {order.items} items
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid xs={6}>
             <Typography variant="body2" color="text.secondary">
               Value
             </Typography>
@@ -245,7 +246,7 @@ const DeliveryManagement = () => {
               Rs. {order.value.toLocaleString()}
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid xs={6}>
             <Typography variant="body2" color="text.secondary">
               Order Time
             </Typography>
@@ -253,7 +254,7 @@ const DeliveryManagement = () => {
               {order.orderTime}
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid xs={6}>
             <Typography variant="body2" color="text.secondary">
               Est. Delivery
             </Typography>
@@ -338,7 +339,7 @@ const DeliveryManagement = () => {
         </Box>
 
         <Grid container spacing={2} mb={2}>
-          <Grid item xs={6}>
+          <Grid xs={6}>
             <Typography variant="body2" color="text.secondary">
               Vehicle
             </Typography>
@@ -352,7 +353,7 @@ const DeliveryManagement = () => {
               {driver.vehicleNumber}
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid xs={6}>
             <Typography variant="body2" color="text.secondary">
               Location
             </Typography>
@@ -363,7 +364,7 @@ const DeliveryManagement = () => {
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={6}>
+          <Grid xs={6}>
             <Typography variant="body2" color="text.secondary">
               Rating
             </Typography>
@@ -393,7 +394,7 @@ const DeliveryManagement = () => {
 
       <Grid container spacing={3}>
         {/* Orders Section */}
-        <Grid item xs={12} md={8}>
+        <Grid xs={12} md={8}>
           <Paper sx={{ p: 3, borderRadius: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
             <Typography variant="h5" fontWeight="bold" mb={3}>
               Orders
@@ -440,7 +441,7 @@ const DeliveryManagement = () => {
         </Grid>
 
         {/* Drivers Section */}
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Paper sx={{ p: 3, borderRadius: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
             <Typography variant="h5" fontWeight="bold" mb={3}>
               Delivery Partners
@@ -504,3 +505,5 @@ const DeliveryManagement = () => {
 };
 
 export default DeliveryManagement;
+
+

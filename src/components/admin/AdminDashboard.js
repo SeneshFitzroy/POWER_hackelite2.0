@@ -165,29 +165,33 @@ const AdminDashboard = () => {
       
       // Mock e-commerce data
       const mockRecentOrders = [
-        { id: 'ORD001', customer: 'John Doe', amount: 299.99, status: 'Pending', date: '2025-09-24' },
-        { id: 'ORD002', customer: 'Jane Smith', amount: 459.50, status: 'Shipped', date: '2025-09-24' },
-        { id: 'ORD003', customer: 'Mike Johnson', amount: 189.99, status: 'Delivered', date: '2025-09-23' },
-        { id: 'ORD004', customer: 'Sarah Wilson', amount: 599.99, status: 'Processing', date: '2025-09-23' },
-        { id: 'ORD005', customer: 'David Brown', amount: 99.99, status: 'Cancelled', date: '2025-09-22' }
+        { id: 'NPK001', customer: 'Saman Perera', amount: 2450.00, status: 'Delivered', date: '2025-09-26', items: 'Paracetamol, Vitamin C, Cold Cream' },
+        { id: 'NPK002', customer: 'Kamani Fernando', amount: 1850.00, status: 'Processing', date: '2025-09-26', items: 'Ibuprofen, AB Gold Soap' },
+        { id: 'NPK003', customer: 'Nimal Silva', amount: 3200.00, status: 'Shipped', date: '2025-09-25', items: 'ABCDERM Cream, Paracetamol x2' },
+        { id: 'NPK004', customer: 'Arjuna Rajapaksa', amount: 950.00, status: 'Pending', date: '2025-09-25', items: 'Vitamin C, Cold Cream' },
+        { id: 'NPK005', customer: 'Malini Gunasekara', amount: 4150.00, status: 'Delivered', date: '2025-09-24', items: 'Medicine Bundle, Vitamin C x2' },
+        { id: 'NPK006', customer: 'Ruwan Jayasinghe', amount: 1650.00, status: 'Processing', date: '2025-09-24', items: 'Ibuprofen, Personal Care Set' },
+        { id: 'NPK007', customer: 'Sanduni Wickramasinghe', amount: 2850.00, status: 'Shipped', date: '2025-09-23', items: 'ABCDERM Set, Paracetamol' }
       ];
 
       // Mock system users for management
       const mockSystemUsers = [
-        { id: 1, name: 'John Doe', email: 'john@company.com', role: 'Admin', status: 'Active', lastLogin: '2025-09-24 10:30 AM', attempts: 0 },
-        { id: 2, name: 'Jane Smith', email: 'jane@company.com', role: 'Manager', status: 'Active', lastLogin: '2025-09-24 09:15 AM', attempts: 0 },
-        { id: 3, name: 'Mike Johnson', email: 'mike@company.com', role: 'User', status: 'Blocked', lastLogin: '2025-09-23 02:45 PM', attempts: 5 },
-        { id: 4, name: 'Sarah Wilson', email: 'sarah@company.com', role: 'User', status: 'Active', lastLogin: '2025-09-24 08:20 AM', attempts: 1 },
-        { id: 5, name: 'David Brown', email: 'david@company.com', role: 'Manager', status: 'Pending', lastLogin: 'Never', attempts: 0 }
+        { id: 1, name: 'John Perera (CEO)', email: 'john.ceo.pharma@gmail.com', role: 'CEO/Admin', status: 'Active', lastLogin: '2025-09-26 08:30 AM', attempts: 0, password: 'JohnCEO2002' },
+        { id: 2, name: 'John Fernando (Pharmacist)', email: 'john.reg.pharma@gmail.com', role: 'Registered Pharmacist', status: 'Active', lastLogin: '2025-09-26 07:45 AM', attempts: 0, password: 'JohnReg2002' },
+        { id: 3, name: 'John Silva (Cashier)', email: 'john.cashier.pharma@gmail.com', role: 'Cashier', status: 'Active', lastLogin: '2025-09-26 09:15 AM', attempts: 0, password: 'JohnCash2002' },
+        { id: 4, name: 'John Kumara (Assistant)', email: 'john.assit.pharma@gmail.com', role: 'Pharmacy Assistant', status: 'Active', lastLogin: '2025-09-26 08:00 AM', attempts: 1, password: 'JohnAssit2002' },
+        { id: 5, name: 'Priyanka Wickramasinghe', email: 'priyanka.manager@npkpharma.lk', role: 'Operations Manager', status: 'Active', lastLogin: '2025-09-26 07:30 AM', attempts: 0, password: 'NPKManager2025' }
       ];
 
       // Mock login attempts for security monitoring
       const mockLoginAttempts = [
-        { id: 1, email: 'john@company.com', ip: '192.168.1.100', timestamp: '2025-09-24 10:30:15', status: 'Success', location: 'New York, US' },
-        { id: 2, email: 'suspicious@hacker.com', ip: '45.123.45.67', timestamp: '2025-09-24 10:25:30', status: 'Failed', location: 'Unknown' },
-        { id: 3, email: 'jane@company.com', ip: '192.168.1.105', timestamp: '2025-09-24 09:15:45', status: 'Success', location: 'California, US' },
-        { id: 4, email: 'admin@test.com', ip: '178.45.67.89', timestamp: '2025-09-24 08:50:22', status: 'Failed', location: 'Russia' },
-        { id: 5, email: 'sarah@company.com', ip: '192.168.1.110', timestamp: '2025-09-24 08:20:10', status: 'Success', location: 'Texas, US' }
+        { id: 1, email: 'john.ceo.pharma@gmail.com', ip: '192.168.1.100', timestamp: '2025-09-26 08:30:15', status: 'Success', location: 'Colombo, Sri Lanka' },
+        { id: 2, email: 'john.reg.pharma@gmail.com', ip: '192.168.1.102', timestamp: '2025-09-26 07:45:30', status: 'Success', location: 'Kandy, Sri Lanka' },
+        { id: 3, email: 'john.cashier.pharma@gmail.com', ip: '192.168.1.103', timestamp: '2025-09-26 09:15:45', status: 'Success', location: 'Gampaha, Sri Lanka' },
+        { id: 4, email: 'john.assit.pharma@gmail.com', ip: '192.168.1.104', timestamp: '2025-09-26 08:00:22', status: 'Success', location: 'Kalutara, Sri Lanka' },
+        { id: 5, email: 'priyanka.manager@npkpharma.lk', ip: '192.168.1.105', timestamp: '2025-09-26 07:30:10', status: 'Success', location: 'Negombo, Sri Lanka' },
+        { id: 6, email: 'unknown@suspicious.com', ip: '45.123.45.67', timestamp: '2025-09-26 03:25:30', status: 'Failed', location: 'Unknown' },
+        { id: 7, email: 'hacker@test.com', ip: '178.45.67.89', timestamp: '2025-09-26 02:50:22', status: 'Blocked', location: 'Unknown Location' }
       ];
 
       // Mock legal documents
@@ -209,25 +213,28 @@ const AdminDashboard = () => {
       ];
 
       const mockTopProducts = [
-        { id: 1, name: 'Wireless Headphones', sales: 245, revenue: 12250, stock: 45 },
-        { id: 2, name: 'Smart Watch', sales: 189, revenue: 37800, stock: 23 },
-        { id: 3, name: 'Laptop Stand', sales: 156, revenue: 4680, stock: 67 },
-        { id: 4, name: 'USB-C Cable', sales: 298, revenue: 2980, stock: 156 },
-        { id: 5, name: 'Phone Case', sales: 167, revenue: 3340, stock: 89 }
+        { id: 1, name: 'Paracetamol 500mg Tablets', sales: 456, revenue: 159600, stock: 234 },
+        { id: 2, name: 'Ibuprofen 400mg Tablets', sales: 342, revenue: 143640, stock: 156 },
+        { id: 3, name: 'Vitamin C 1000mg', sales: 289, revenue: 361250, stock: 78 },
+        { id: 4, name: 'ABCDERM COLD-CREAM CORPS', sales: 234, revenue: 163800, stock: 45 },
+        { id: 5, name: 'ABCDERM CHANGE INTENSIF CREAM', sales: 189, revenue: 85050, stock: 32 }
       ];
 
       const mockCustomers = [
-        { id: 1, name: 'John Doe', email: 'john@email.com', orders: 12, totalSpent: 2450.99, status: 'VIP' },
-        { id: 2, name: 'Jane Smith', email: 'jane@email.com', orders: 8, totalSpent: 1890.50, status: 'Regular' },
-        { id: 3, name: 'Mike Johnson', email: 'mike@email.com', orders: 15, totalSpent: 3200.75, status: 'VIP' },
-        { id: 4, name: 'Sarah Wilson', email: 'sarah@email.com', orders: 5, totalSpent: 980.25, status: 'New' }
+        { id: 1, name: 'Saman Perera', email: 'saman.perera@gmail.com', orders: 12, totalSpent: 8450.99, status: 'VIP' },
+        { id: 2, name: 'Nimal Silva', email: 'nimal.silva@yahoo.com', orders: 8, totalSpent: 6890.50, status: 'Regular' },
+        { id: 3, name: 'Kamani Fernando', email: 'kamani.fernando@gmail.com', orders: 15, totalSpent: 12200.75, status: 'VIP' },
+        { id: 4, name: 'Arjuna Rajapaksa', email: 'arjuna.r@gmail.com', orders: 5, totalSpent: 3980.25, status: 'New' },
+        { id: 5, name: 'Malini Gunasekara', email: 'malini.gun@hotmail.com', orders: 9, totalSpent: 7650.00, status: 'Regular' }
       ];
 
       const mockProducts = [
-        { id: 1, name: 'Wireless Headphones', category: 'Electronics', price: 99.99, stock: 45, status: 'Active' },
-        { id: 2, name: 'Smart Watch', category: 'Electronics', price: 199.99, stock: 23, status: 'Active' },
-        { id: 3, name: 'Laptop Stand', category: 'Accessories', price: 29.99, stock: 67, status: 'Active' },
-        { id: 4, name: 'USB-C Cable', category: 'Accessories', price: 9.99, stock: 156, status: 'Active' }
+        { id: 1, name: 'ABCDERM COLD-CREAM CORPS', category: 'PERSONAL-CARE', price: 700.00, stock: 45, status: 'Active' },
+        { id: 2, name: 'ABCDERM CHANGE INTENSIF CREAM', category: 'PERSONAL-CARE', price: 450.00, stock: 32, status: 'Active' },
+        { id: 3, name: 'Ibuprofen 400mg Tablets', category: 'MEDICINE', price: 420.00, stock: 156, status: 'Active' },
+        { id: 4, name: 'AB GOLD BAR SOAP', category: 'PERSONAL-CARE', price: 550.00, stock: 56, status: 'Active' },
+        { id: 5, name: 'Paracetamol 500mg Tablets', category: 'MEDICINE', price: 350.00, stock: 234, status: 'Active' },
+        { id: 6, name: 'Vitamin C 1000mg', category: 'VITAMINS', price: 1250.00, stock: 78, status: 'Active' }
       ];
 
       const mockActivity = [
@@ -691,14 +698,6 @@ const AdminDashboard = () => {
         <Typography variant="h5" fontWeight="bold">
           Order Management
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => handleAddNew('order')}
-          sx={{ borderRadius: '10px' }}
-        >
-          New Order
-        </Button>
       </Box>
 
       <Paper sx={{ borderRadius: '16px', overflow: 'hidden' }}>
@@ -964,36 +963,13 @@ const AdminDashboard = () => {
           )}
           {activeTab === 1 && (
             <Box display="flex" alignItems="center" gap={2}>
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => handleAddNew('product')}
-                sx={{
-                  backgroundColor: '#1e3a8a',
-                  '&:hover': { backgroundColor: '#1d4ed8' },
-                  borderRadius: '10px',
-                  fontWeight: 'bold'
-                }}
-              >
-                Add Product
-              </Button>
+              <Badge badgeContent={adminStats.totalProducts} color="primary">
+                <Inventory sx={{ color: '#1e3a8a' }} />
+              </Badge>
             </Box>
           )}
           {activeTab === 2 && (
             <Box display="flex" alignItems="center" gap={2}>
-              <Button
-                variant="contained"
-                startIcon={<PersonAdd />}
-                onClick={() => handleAddNew('customer')}
-                sx={{
-                  backgroundColor: '#1e3a8a',
-                  '&:hover': { backgroundColor: '#1d4ed8' },
-                  borderRadius: '10px',
-                  fontWeight: 'bold'
-                }}
-              >
-                Add New Customer
-              </Button>
               <Badge badgeContent={recentActivity.length} color="error">
                 <Notifications sx={{ color: '#1e3a8a' }} />
               </Badge>
@@ -1291,14 +1267,6 @@ const AdminDashboard = () => {
           <Typography variant="h5" fontWeight="bold">
             👥 System User Management - High Privilege Control
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<PersonAdd />}
-            onClick={() => handleAddNew('user')}
-            sx={{ borderRadius: '10px' }}
-          >
-            Add New User
-          </Button>
         </Box>
 
         <Paper sx={{ borderRadius: '16px', overflow: 'hidden' }}>
@@ -1779,9 +1747,16 @@ const AdminDashboard = () => {
     }}>
       {/* Header */}
       <Box sx={{ p: 3, textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <Typography variant="h5" fontWeight="bold" sx={{ color: 'white', mb: 0.5 }}>
-          COREERP
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+          <img 
+            src="/images/npk-logo.png" 
+            alt="NPK Logo" 
+            style={{ 
+              height: '60px', 
+              width: 'auto'
+            }} 
+          />
+        </Box>
         <Chip 
           label="E-COMMERCE MODULE" 
           size="small" 

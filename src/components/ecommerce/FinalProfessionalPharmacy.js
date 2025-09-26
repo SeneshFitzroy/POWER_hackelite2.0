@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Container,
-  Grid,
+  
   Card,
   CardContent,
   CardMedia,
@@ -32,7 +32,7 @@ import {
   Chip,
   createTheme,
   ThemeProvider
-} from '@mui/material';
+} from '@mui/material';`nimport Grid from '@mui/material/Grid2';
 
 // Icons
 import SearchIcon from '@mui/icons-material/Search';
@@ -814,7 +814,7 @@ const FinalProfessionalPharmacy = () => {
           {/* Products Grid - Professional Layout */}
           <Grid container spacing={5}>
             {filteredProducts.map((product) => (
-              <Grid item key={product.id} xs={12} sm={6} md={4} xl={3}>
+              <Grid key={product.id} xs={12} sm={6} md={4} xl={3}>
                 <ProductCard product={product} />
               </Grid>
             ))}
@@ -936,14 +936,14 @@ const FinalProfessionalPharmacy = () => {
               </DialogTitle>
               <DialogContent>
                 <Grid container spacing={3}>
-                  <Grid item xs={12} md={5}>
+                  <Grid xs={12} md={5}>
                     <img
                       src={selectedProduct.image || '/images/medicines/default-medicine.jpg'}
                       alt={selectedProduct.name}
                       style={{ width: '100%', borderRadius: 8 }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={7}>
+                  <Grid xs={12} md={7}>
                     <Typography variant="h4" color="primary" fontWeight="bold" gutterBottom>
                       ₨{selectedProduct.price.toFixed(2)}
                     </Typography>
@@ -1028,3 +1028,5 @@ const FinalProfessionalPharmacy = () => {
 };
 
 export default FinalProfessionalPharmacy;
+
+
