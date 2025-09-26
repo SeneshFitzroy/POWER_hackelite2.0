@@ -6,7 +6,7 @@ import {
   Typography,
   Container,
   Paper,
-  Grid2 as Grid,
+  Grid,
   Card,
   CardContent,
   AppBar,
@@ -450,7 +450,7 @@ const AdminDashboard = () => {
 
       {/* Core Business Metrics - Single Row */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Total Revenue"
             value={formatLKRCompact(adminStats.totalSales)}

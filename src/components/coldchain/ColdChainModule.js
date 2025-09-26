@@ -585,17 +585,22 @@ startxref
             borderBottom: '1px solid rgba(255,255,255,0.15)'
           }}
         >
-          <Typography 
-            variant="h4" 
-            sx={{ 
-              color: 'white', 
-              fontWeight: 'bold', 
-              mb: 1,
-              fontSize: '1.8rem'
-            }}
-          >
-            COREERP
-          </Typography>
+          <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
+            <img 
+              src="/images/npk-logo.png" 
+              alt="NPK Pharmacy" 
+              style={{ 
+                height: '60px',
+                width: 'auto',
+                marginBottom: '8px',
+                borderRadius: '8px',
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
+          </Box>
           <Chip 
             label="COLD CHAIN" 
             size="small" 
@@ -754,7 +759,7 @@ startxref
                 <Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <Typography variant="h4" sx={{ color: '#1f2937', fontWeight: 'bold' }}>
-                      🌡️ Cold Chain Monitoring Dashboard
+                      Cold Chain Monitoring Dashboard
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                       <Chip 
@@ -902,7 +907,7 @@ startxref
                 <Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <Typography variant="h4" sx={{ color: '#1f2937', fontWeight: 'bold' }}>
-                      🚨 Alerts & Notifications
+                      Alerts & Notifications
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                       <Chip 
@@ -1061,7 +1066,7 @@ startxref
                 <Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <Typography variant="h4" sx={{ color: '#1f2937', fontWeight: 'bold' }}>
-                      📊 Reports & Analytics
+                      Reports & Analytics
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 2 }}>
                       <Button
@@ -1070,7 +1075,7 @@ startxref
                         onClick={downloadCSV}
                         sx={{ borderColor: '#3b82f6', color: '#3b82f6' }}
                       >
-                        Download CSV
+                        🔴 Download CSV
                       </Button>
                       <Button
                         variant="outlined"
@@ -1083,137 +1088,19 @@ startxref
                     </Box>
                   </Box>
 
-                  {/* Filter Controls */}
-                  <Card sx={{ mb: 3 }}>
-                    <CardContent>
-                      <Typography variant="h6" sx={{ mb: 2 }}>
-                        Filter Options
-                      </Typography>
-                      <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} sm={4}>
-                          <FormControl fullWidth size="small">
-                            <Typography variant="body2" sx={{ mb: 1 }}>Sensor</Typography>
-                            <Select
-                              value={selectedSensorFilter}
-                              onChange={(e) => setSelectedSensorFilter(e.target.value)}
-                            >
-                              <MenuItem value="all">All Sensors</MenuItem>
-                              {sensors.map(sensor => (
-                                <MenuItem key={sensor.id} value={sensor.id}>
-                                  {sensor.name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                          <Typography variant="body2" sx={{ mb: 1 }}>Start Date</Typography>
-                          <TextField
-                            type="date"
-                            size="small"
-                            fullWidth
-                            value={dateRange.startDate.toISOString().split('T')[0]}
-                            onChange={(e) => setDateRange(prev => ({
-                              ...prev,
-                              startDate: new Date(e.target.value)
-                            }))}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                          <Typography variant="body2" sx={{ mb: 1 }}>End Date</Typography>
-                          <TextField
-                            type="date"
-                            size="small"
-                            fullWidth
-                            value={dateRange.endDate.toISOString().split('T')[0]}
-                            onChange={(e) => setDateRange(prev => ({
-                              ...prev,
-                              endDate: new Date(e.target.value)
-                            }))}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={2}>
-                          <Button
-                            variant="contained"
-                            startIcon={<Refresh />}
-                            onClick={() => {
-                              setSelectedSensorFilter('all');
-                              setDateRange({
-                                startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-                                endDate: new Date()
-                              });
-                            }}
-                            fullWidth
-                            sx={{ mt: 2 }}
-                          >
-                            Reset
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </CardContent>
-                  </Card>
+
 
                   {/* Reports Tabs */}
                   <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
                     <Tabs value={reportsTab} onChange={(e, newValue) => setReportsTab(newValue)}>
-                      <Tab label="Overview" />
                       <Tab label="Sensor Statistics" />
                       <Tab label="Data Table" />
                       <Tab label="Trends" />
                     </Tabs>
                   </Box>
 
-                  {/* Overview Tab */}
-                  {reportsTab === 0 && (
-                    <Grid container spacing={3}>
-                      <Grid item xs={12} md={3}>
-                        <Card sx={{ textAlign: 'center', p: 2 }}>
-                          <Typography variant="h3" sx={{ color: '#3b82f6', fontWeight: 'bold' }}>
-                            {sensors.length}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Total Sensors
-                          </Typography>
-                        </Card>
-                      </Grid>
-                      <Grid item xs={12} md={3}>
-                        <Card sx={{ textAlign: 'center', p: 2 }}>
-                          <Typography variant="h3" sx={{ color: '#ef4444', fontWeight: 'bold' }}>
-                            {alerts.length}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Active Alerts
-                          </Typography>
-                        </Card>
-                      </Grid>
-                      <Grid item xs={12} md={3}>
-                        <Card sx={{ textAlign: 'center', p: 2 }}>
-                          <Typography variant="h3" sx={{ color: '#3b82f6', fontWeight: 'bold' }}>
-                            {getFilteredReadings().length}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Filtered Readings
-                          </Typography>
-                        </Card>
-                      </Grid>
-                      <Grid item xs={12} md={3}>
-                        <Card sx={{ textAlign: 'center', p: 2 }}>
-                          <Chip 
-                            icon={isRunning ? <PlayArrow /> : <Stop />}
-                            label={isRunning ? 'Running' : 'Stopped'}
-                            color={isRunning ? 'success' : 'error'}
-                            sx={{ fontSize: '1.2rem', py: 2 }}
-                          />
-                          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                            Simulation Status
-                          </Typography>
-                        </Card>
-                      </Grid>
-                    </Grid>
-                  )}
-
                   {/* Sensor Statistics Tab */}
-                  {reportsTab === 1 && (
+                  {reportsTab === 0 && (
                     <Grid container spacing={3}>
                       {Object.values(getSensorStatistics()).map((stats, index) => (
                         <Grid item xs={12} md={6} key={index}>
@@ -1224,7 +1111,7 @@ startxref
                                 {stats.name}
                               </Typography>
                               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                📍 {stats.location}
+                                Location: {stats.location}
                               </Typography>
                               
                               <Grid container spacing={2}>
@@ -1271,7 +1158,7 @@ startxref
                   )}
 
                   {/* Data Table Tab */}
-                  {reportsTab === 2 && (
+                  {reportsTab === 1 && (
                     <Card>
                       <CardContent>
                         <Typography variant="h6" sx={{ mb: 2 }}>
@@ -1320,7 +1207,7 @@ startxref
                   )}
 
                   {/* Trends Tab */}
-                  {reportsTab === 3 && (
+                  {reportsTab === 2 && (
                     <Grid container spacing={3}>
                       {sensors.map(sensor => {
                         const chartData = getChartData(sensor.id);
@@ -1377,7 +1264,7 @@ startxref
                 {/* Settings Management */}
                 <Box>
                   <Typography variant="h4" sx={{ mb: 3, color: '#1f2937', fontWeight: 'bold' }}>
-                    ⚙️ Sensor Settings
+                    Sensor Settings
                   </Typography>
                   
                   <Grid container spacing={3}>
@@ -1429,7 +1316,7 @@ startxref
                             </Box>
                             
                             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                              📍 {editingSensor?.id === sensor.id ? (
+                              Location: {editingSensor?.id === sensor.id ? (
                                 <TextField
                                   value={editFormData.location || ''}
                                   onChange={(e) => setEditFormData(prev => ({ ...prev, location: e.target.value }))}

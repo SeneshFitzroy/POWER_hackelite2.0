@@ -130,15 +130,20 @@ export default function HRModule() {
           borderBottom: '1px solid rgba(255,255,255,0.15)'
         }}
       >
-        <Box display="flex" alignItems="center" justifyContent="center" sx={{ mb: 1 }}>
+        <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
           <img 
             src="/images/npk-logo.png" 
             alt="NPK Pharmacy" 
             style={{ 
-              height: '40px', 
+              height: '60px',
               width: 'auto',
-              filter: 'brightness(0) invert(1)' // Makes logo white
-            }} 
+              marginBottom: '8px',
+              borderRadius: '8px',
+              objectFit: 'contain'
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
           />
         </Box>
         <Chip 
