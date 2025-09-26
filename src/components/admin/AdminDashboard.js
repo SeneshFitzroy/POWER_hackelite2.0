@@ -6,7 +6,7 @@ import {
   Typography,
   Container,
   Paper,
-  Grid,
+  Grid2 as Grid,
   Card,
   CardContent,
   AppBar,
@@ -105,7 +105,12 @@ import {
   Timeline,
   Receipt,
   Sync,
-  StorageRounded
+  StorageRounded,
+  Visibility as VisibilityIcon,
+  Receipt as ReceiptIcon,
+  Refresh as RefreshIcon,
+  Settings as SettingsIcon,
+  Add as AddIcon
 } from '@mui/icons-material';
 
 import { toast } from 'react-hot-toast';
@@ -1602,7 +1607,7 @@ const AdminDashboard = () => {
       
       <Grid container spacing={3}>
         {/* Payment Stats Cards */}
-        <Grid item xs={12} md={3}>
+        <Grid xs={12} md={3}>
           <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white' }}>
             <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
               Rs. 485,750
@@ -1612,7 +1617,7 @@ const AdminDashboard = () => {
             </Typography>
           </Card>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid xs={12} md={3}>
           <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px', background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)', color: 'white' }}>
             <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
               342
@@ -1622,7 +1627,7 @@ const AdminDashboard = () => {
             </Typography>
           </Card>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid xs={12} md={3}>
           <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white' }}>
             <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
               18
@@ -1632,7 +1637,7 @@ const AdminDashboard = () => {
             </Typography>
           </Card>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid xs={12} md={3}>
           <Card sx={{ p: 3, textAlign: 'center', borderRadius: '16px', background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', color: 'white' }}>
             <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
               5
@@ -1644,7 +1649,7 @@ const AdminDashboard = () => {
         </Grid>
 
         {/* Recent Transactions */}
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <Paper sx={{ borderRadius: '16px', overflow: 'hidden' }}>
             <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
               <Typography variant="h6" fontWeight="bold" sx={{ color: '#1e3a8a' }}>
@@ -1727,7 +1732,7 @@ const AdminDashboard = () => {
         </Grid>
 
         {/* Payment Methods Summary */}
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Paper sx={{ p: 3, borderRadius: '16px' }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 3, color: '#1e3a8a' }}>
               🏦 Payment Methods Usage
@@ -1765,7 +1770,7 @@ const AdminDashboard = () => {
         </Grid>
 
         {/* Quick Actions */}
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Paper sx={{ p: 3, borderRadius: '16px' }}>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 3, color: '#1e3a8a' }}>
               ⚡ Quick Payment Actions
