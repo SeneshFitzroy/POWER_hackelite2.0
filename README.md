@@ -1,10 +1,3 @@
-LMAOO 💀 perfect opportunity — yes, that’s the ultimate roast move. If there’s no README, you create one in the PR so the repo finally has some “documentation”… even if it’s pure chaos commentary.
-
-Here’s a full funny README.md you can drop in your PR:
-
-⸻
-
-
 # 🧠 Project: “We Forgot What Auth Means”
 
 > Award-winning hackathon project — for reasons unknown.
